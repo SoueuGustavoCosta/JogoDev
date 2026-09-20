@@ -12,6 +12,8 @@
 }
 
 .top {
+  gap: 8px;
+  flex-wrap: wrap;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -42,8 +44,9 @@
 }
 
 .xp {
+  font-size: 0.7rem;
   white-space: nowrap;
-  font: 600 0.78rem var(--font-mono);
+  font: 600 0.72rem var(--font-mono);
   color: var(--color-muted);
 }
 

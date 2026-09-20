@@ -135,7 +135,7 @@ export function TimeMap({
       if (first) {
         first = false;
         const { w } = size.current;
-        centerOn(ERAS[0].x + 90, ERAS[0].y + 40, Math.max((w / MAP_W) * 1.55, 0.62));
+        centerOn(ERAS[0].x + 90, ERAS[0].y + 40, Math.min(1.05, Math.max((w / MAP_W) * 1.55, 0.62)));
       } else {
         clamp();
         redraw();

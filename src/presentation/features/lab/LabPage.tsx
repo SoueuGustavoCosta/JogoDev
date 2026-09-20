@@ -161,9 +161,9 @@ export function LabPage() {
 
   return (
     <article>
-      <p className="eyebrow">Laboratório</p>
-      <h1>Laboratório SQL</h1>
-      <p>Um PostgreSQL de verdade rodando dentro do seu navegador. Escreva, execute, erre e tente de novo.</p>
+      <p className="eyebrow">Máquina do Tempo</p>
+      <h1>Máquina do Tempo</h1>
+      <p>Um PostgreSQL de verdade rodando dentro do seu navegador. Escreva, execute, erre e tente de novo: nada aqui estraga nada.</p>
 
       <div className={styles.bar}>
         <div className={styles.seg} role="group" aria-label="Banco de dados">
