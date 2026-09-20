@@ -67,11 +67,11 @@ export function PrologueScreen() {
     analytics.track('prologue_completed');
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduced) {
-      navigate('/trilhas/banco-de-dados');
+      navigate('/');
       return;
     }
     setWarping(true);
-    window.setTimeout(() => navigate('/trilhas/banco-de-dados'), 1700);
+    window.setTimeout(() => navigate('/'), 1700);
   }
 
   return (

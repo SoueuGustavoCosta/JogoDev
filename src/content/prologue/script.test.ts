@@ -7,7 +7,7 @@ describe('roteiro do prólogo', () => {
     expect(validateScript(prologueScript)).toEqual([]);
   });
 
-  it('termina no salto para a Era dos Dados', () => {
+  it('termina com o salto para o mapa', () => {
     expect(Object.values(prologueScript.steps).some((s) => s.warp)).toBe(true);
   });
 });
