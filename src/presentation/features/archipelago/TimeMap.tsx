@@ -73,6 +73,7 @@ export function TimeMap({
   const [sheet, setSheet] = useState<Sheet>(null);
   const [say, setSay] = useState<ReactNode>(null);
   const [tipVisible, setTipVisible] = useState(true);
+  const [entering, setEntering] = useState<string | null>(null);
 
   const clamp = useCallback(() => {
     const { w, h } = size.current;
@@ -340,7 +341,11 @@ export function TimeMap({
           <b>SINTAXE</b> · Chegamos à <b>{era.name}</b>. Entrando...
         </>,
       );
-      window.setTimeout(() => mounted.current && onEnterEra(era), reducedMotion() ? 0 : 700);
+      if (reducedMotion()) onEnterEra(era);
+      else {
+        setEntering(era.color);
+        window.setTimeout(() => mounted.current && onEnterEra(era), 900);
+      }
     } else {
       setSay(
         <>
@@ -354,7 +359,8 @@ export function TimeMap({
   const c = cam.current;
 
   return (
-    <div className={styles.root}>
+    <div className={`${styles.root} ${entering ? styles.leaving : ""}`}>
+      {entering ? <div className={styles.portal} style={{ ["--portal" as string]: entering }} aria-hidden="true" /> : null}
       <svg
         ref={svgRef}
         className={styles.map}
