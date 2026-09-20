@@ -1,5 +1,8 @@
 export type AnalyticsEventName =
   | 'page_view'
+  | 'prologue_started'
+  | 'prologue_completed'
+  | 'prologue_skipped'
   | 'island_opened'
   | 'module_started'
   | 'quiz_answered'
