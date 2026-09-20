@@ -52,7 +52,7 @@ export function ModulePage() {
       <div className={styles.sintaxe}>
         <SintaxeFace size={44} />
         <p>
-          <b>SINTAXE</b> · Toda lição parte de um problema real. Leia com calma; quando estiver pronto, o
+          <b>Senhorita Sintaxe</b> · Toda lição parte de um problema real. Leia com calma; quando estiver pronto, o
           paradoxo no fim destrava o próximo salto.
         </p>
       </div>

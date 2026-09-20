@@ -628,7 +628,7 @@ export function TimeMap({
           {sheet.kind === 'hub' ? (
             <div className={styles.sheetBody}>
               <div className={styles.who}>
-                <SintaxeFace size={34} /> SINTAXE
+                <SintaxeFace size={34} /> SENHORITA SINTAXE
               </div>
               <h2>Praça da Sintaxe</h2>
               <p>
@@ -648,7 +648,7 @@ export function TimeMap({
           {sheet.kind === 'eco' ? (
             <div className={styles.sheetBody}>
               <div className={styles.who}>
-                <SintaxeFace size={34} /> SINTAXE
+                <SintaxeFace size={34} /> SENHORITA SINTAXE
               </div>
               <p className={styles.speech}>
                 Um <b>rastro do Eco</b>! Alguém fez uma gambiarra na Era dos Dados por aqui. Entre na era para

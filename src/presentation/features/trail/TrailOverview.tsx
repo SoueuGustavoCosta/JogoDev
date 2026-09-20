@@ -41,7 +41,7 @@ export function TrailOverview() {
         <div className={styles.sintaxe}>
           <SintaxeFace size={52} />
           <p>
-            <b>SINTAXE</b> · <span dangerouslySetInnerHTML={{ __html: trail.intro }} />
+            <b>Senhorita Sintaxe</b> · <span dangerouslySetInnerHTML={{ __html: trail.intro }} />
           </p>
         </div>
       ) : null}

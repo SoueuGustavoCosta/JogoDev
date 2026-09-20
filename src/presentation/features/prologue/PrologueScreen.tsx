@@ -101,9 +101,9 @@ export function PrologueScreen() {
         </div>
       </div>
 
-      <section className={styles.dialog} role="log" aria-live="polite" aria-label="Conversa com a Sintaxe" ref={logRef}>
+      <section className={styles.dialog} role="log" aria-live="polite" aria-label="Conversa com a Senhorita Sintaxe" ref={logRef}>
         <div className={styles.bubble} key={stepId}>
-          <div className={styles.who}>SINTAXE</div>
+          <div className={styles.who}>SENHORITA SINTAXE</div>
           {step.say.map((line, i) => (
             <p key={i}>{interpolate(line, name)}</p>
           ))}

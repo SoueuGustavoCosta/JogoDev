@@ -12,7 +12,7 @@ export const prologueScript: PrologueScript = {
     historia: {
       id: 'historia',
       say: [
-        'Prazer, {name}. Eu sou a Sintaxe, a guia da Linha do Tempo.',
+        'Prazer, {name}. Eu sou a Senhorita Sintaxe, a guia da Linha do Tempo.',
         'Ela rachou: as eras ficaram embaralhadas e ninguém mais lembra por que as tecnologias foram inventadas.',
       ],
       choices: [

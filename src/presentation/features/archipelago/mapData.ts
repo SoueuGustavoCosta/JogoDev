@@ -111,7 +111,7 @@ export const ERAS: MapEra[] = [
     icon: 'ia',
     status: 'nevoa',
     years: 'ERA 7',
-    description: 'Ainda inexplorada. A Sintaxe diz que a névoa só abre quando o mapa estiver mais completo.',
+    description: 'Ainda inexplorada. A Senhorita Sintaxe diz que a névoa só abre quando o mapa estiver mais completo.',
   },
 ];
 
