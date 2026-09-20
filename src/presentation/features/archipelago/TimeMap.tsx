@@ -7,11 +7,13 @@ import {
   ICON_PATHS,
   MAP_H,
   MAP_W,
-  SATELLITES,
   pathToEra,
   type MapCharacter,
   type MapEra,
 } from './mapData';
+
+/** Só mostra no mapa as eras que já têm ilha jogável (trilha registrada). As demais ficam ocultas até existirem. */
+const VISIBLE_ERAS = ERAS.filter((e) => e.status === 'ativo');
 import styles from './TimeMap.module.css';
 
 type Cam = { x: number; y: number; k: number };
@@ -190,13 +192,13 @@ export function TimeMap({
     ctx.fillRect(0, 0, w, h);
     ctx.strokeStyle = '#2c2647';
     ctx.lineWidth = 2;
-    ERAS.forEach((e) => {
+    VISIBLE_ERAS.forEach((e) => {
       ctx.beginPath();
       ctx.moveTo(ox + HUB.x * s, oy + HUB.y * s);
       ctx.lineTo(ox + e.x * s, oy + e.y * s);
       ctx.stroke();
     });
-    ERAS.forEach((e) => {
+    VISIBLE_ERAS.forEach((e) => {
       ctx.fillStyle = e.status === 'nevoa' ? '#4a4560' : e.color;
       ctx.beginPath();
       ctx.arc(ox + e.x * s, oy + e.y * s, e.status === 'ativo' ? 9 : 6, 0, 7);
@@ -389,7 +391,7 @@ export function TimeMap({
             <circle key={r} cx={HUB.x} cy={HUB.y} r={r} fill="none" stroke="#2c2647" strokeWidth={1.5} strokeDasharray="3 9" />
           ))}
 
-          {ERAS.map((e) => {
+          {VISIBLE_ERAS.map((e) => {
             const fog = e.status === 'nevoa';
             const d = pathToEra(e);
             return (
@@ -412,20 +414,7 @@ export function TimeMap({
             );
           })}
 
-          {SATELLITES.map((s) => (
-            <g key={s.name}>
-              <line x1={790} y1={480} x2={s.x} y2={s.y} stroke="#ff6b1f" strokeWidth={2} opacity={0.6} />
-              <g transform={`translate(${s.x} ${s.y})`}>
-                <circle r={20} fill="#151225" stroke="#ff6b1f" strokeWidth={2} />
-                <circle r={5} fill="#ff6b1f" />
-                <text y={38} textAnchor="middle" fill="#9b94b8" fontSize={15} fontFamily="JetBrains Mono, monospace" fontWeight={700}>
-                  {s.name}
-                </text>
-              </g>
-            </g>
-          ))}
-
-          {ERAS.map((e) => {
+          {VISIBLE_ERAS.map((e) => {
             const fog = e.status === 'nevoa';
             const pr = progress[e.id];
             const circ = 2 * Math.PI * 56;
