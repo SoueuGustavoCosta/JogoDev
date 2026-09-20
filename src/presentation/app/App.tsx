@@ -15,6 +15,9 @@ const LabPage = lazy(() => import('@/presentation/features/lab').then((m) => ({ 
 const SettingsPage = lazy(() =>
   import('@/presentation/features/settings').then((m) => ({ default: m.SettingsPage })),
 );
+const PrologueScreen = lazy(() =>
+  import('@/presentation/features/prologue').then((m) => ({ default: m.PrologueScreen })),
+);
 const PrivacyPage = lazy(() =>
   import('@/presentation/features/settings').then((m) => ({ default: m.PrivacyPage })),
 );
@@ -30,6 +33,7 @@ function AppRoutes() {
           <Route path="trilhas/:trailId/laboratorio" element={<LabPage />} />
           <Route path="configuracoes" element={<SettingsPage />} />
           <Route path="privacidade" element={<PrivacyPage />} />
+          <Route path="prologo" element={<PrologueScreen />} />
         </Route>
       </Routes>
     </Suspense>

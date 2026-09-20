@@ -1,0 +1,285 @@
+.root {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: radial-gradient(900px 600px at 50% 30%, rgba(155, 77, 255, 0.22), transparent 65%),
+    radial-gradient(600px 400px at 90% 90%, rgba(94, 231, 255, 0.1), transparent 60%), var(--color-bg);
+}
+
+.stars {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(1.4px 1.4px at 12% 18%, #fff, transparent),
+    radial-gradient(1px 1px at 78% 12%, #c9a2ff, transparent), radial-gradient(1.6px 1.6px at 40% 42%, #fff, transparent),
+    radial-gradient(1px 1px at 88% 55%, #fff, transparent), radial-gradient(1.3px 1.3px at 22% 72%, #c9a2ff, transparent),
+    radial-gradient(1px 1px at 62% 82%, #fff, transparent), radial-gradient(1.2px 1.2px at 6% 48%, #fff, transparent),
+    radial-gradient(1px 1px at 52% 8%, #5ee7ff, transparent), radial-gradient(1.3px 1.3px at 94% 30%, #fff, transparent);
+  opacity: 0.7;
+  animation: twinkle 4s ease-in-out infinite;
+}
+
+.streaks {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  background: repeating-conic-gradient(from 0deg at 50% 42%, rgba(94, 231, 255, 0.55) 0deg 0.6deg, transparent 0.6deg 9deg);
+  mask-image: radial-gradient(circle at 50% 42%, transparent 6%, #000 70%);
+}
+
+.warping .streaks {
+  animation: warpIn 1.7s ease-in forwards;
+}
+
+.warping .stage,
+.warping .dialog {
+  animation: fadeOut 0.6s ease-in forwards;
+}
+
+.hud {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: max(12px, env(safe-area-inset-top)) 14px 0;
+}
+
+.brand {
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 1rem;
+}
+
+.brand i {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-cyan), var(--color-purple));
+  margin-right: 7px;
+}
+
+.skip {
+  min-height: var(--touch-target);
+  padding: 0 16px;
+  border-radius: 99px;
+  border: 1px solid var(--color-line);
+  background: rgba(21, 18, 37, 0.8);
+  color: var(--color-muted);
+  font: 700 0.78rem var(--font-mono);
+  cursor: pointer;
+}
+
+.stage {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+}
+
+.sintaxe {
+  position: relative;
+  width: min(280px, 70vw);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: float 3.2s ease-in-out infinite;
+}
+
+.face {
+  filter: drop-shadow(0 0 28px rgba(155, 77, 255, 0.65));
+  width: min(210px, 52vw);
+  height: auto;
+}
+
+.glyph {
+  position: absolute;
+  font: 800 2.6rem var(--font-mono);
+  color: var(--color-orange);
+  text-shadow: 0 0 18px rgba(255, 107, 31, 0.7);
+}
+
+.gl {
+  left: -6px;
+  top: 34%;
+  animation: bobA 2.4s ease-in-out infinite;
+}
+.gr {
+  right: -6px;
+  top: 34%;
+  animation: bobB 2.6s ease-in-out infinite;
+}
+.gs {
+  right: 14%;
+  top: -14px;
+  color: var(--color-cyan);
+  font-size: 1.9rem;
+  text-shadow: 0 0 16px rgba(94, 231, 255, 0.7);
+  animation: bobA 1.9s ease-in-out infinite;
+}
+
+.line {
+  margin-top: 8px;
+  min-height: 1.5em;
+  font: 600 0.78rem var(--font-mono);
+  color: var(--color-code-str);
+}
+
+.typing::after {
+  content: '█';
+  animation: blink 1s steps(2) infinite;
+}
+
+.dialog {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 0 14px max(18px, env(safe-area-inset-bottom));
+  max-height: 58dvh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bubble {
+  background: rgba(21, 18, 37, 0.92);
+  border: 1px solid var(--color-line);
+  border-radius: 18px;
+  padding: 12px 14px;
+  backdrop-filter: blur(8px);
+  animation: rise 0.4s;
+}
+
+.who {
+  font: 700 0.68rem var(--font-mono);
+  color: var(--color-cyan);
+  margin-bottom: 4px;
+}
+
+.bubble p {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.bubble p:last-of-type {
+  margin-bottom: 0;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.row input {
+  flex: 1;
+  min-width: 0;
+  background: var(--color-bg);
+  border: 1px solid var(--color-purple);
+  border-radius: 12px;
+  color: var(--color-text);
+  padding: 12px;
+  font: 16px var(--font-body);
+}
+
+.btn {
+  min-height: var(--touch-target);
+  padding: 0 18px;
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--color-purple), #7a2fe0);
+  color: #fff;
+  font: 700 0.9rem var(--font-body);
+  cursor: pointer;
+}
+
+.choice {
+  min-height: var(--touch-target);
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--color-cyan);
+  background: rgba(21, 18, 37, 0.85);
+  color: var(--color-cyan);
+  font: 700 0.9rem var(--font-body);
+  text-align: left;
+  cursor: pointer;
+  animation: rise 0.5s;
+}
+
+.primary {
+  border: 0;
+  background: linear-gradient(135deg, #2bb8d6, #5b5cf0);
+  color: #fff;
+  text-align: center;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+@keyframes float {
+  50% {
+    transform: translateY(-10px);
+  }
+}
+@keyframes bobA {
+  50% {
+    transform: translateY(-8px);
+  }
+}
+@keyframes bobB {
+  50% {
+    transform: translateY(8px);
+  }
+}
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+@keyframes twinkle {
+  50% {
+    opacity: 0.4;
+  }
+}
+@keyframes warpIn {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  60% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    transform: scale(2.4);
+    filter: brightness(2);
+  }
+}
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stars,
+  .sintaxe,
+  .glyph,
+  .typing::after,
+  .bubble,
+  .choice {
+    animation: none;
+  }
+}

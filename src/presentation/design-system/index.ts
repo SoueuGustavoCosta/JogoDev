@@ -5,3 +5,4 @@ export * from './NotebookFrame';
 export * from './Modal';
 export * from './Toast';
 export * from './Icons';
+export * from './Sintaxe';
