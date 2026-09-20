@@ -1,0 +1,12 @@
+.track {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-panel-2);
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-purple), var(--color-orange));
+  transition: width 0.3s ease;
+}

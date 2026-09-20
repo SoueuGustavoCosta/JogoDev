@@ -1,0 +1,46 @@
+.frame {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-line);
+  background: #0e0c1a;
+  overflow: hidden;
+  margin: 16px 0;
+}
+
+.titlebar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--color-panel-2);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+}
+
+.dotRed {
+  background: #ff5f56;
+}
+.dotYellow {
+  background: #ffbd2e;
+}
+.dotGreen {
+  background: #27c93f;
+}
+
+.title {
+  margin-left: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.body {
+  overflow-x: auto;
+}

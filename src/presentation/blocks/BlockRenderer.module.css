@@ -1,0 +1,121 @@
+.h {
+  font-family: var(--font-title);
+  font-size: 1.25rem;
+  margin: 28px 0 12px;
+}
+
+.p {
+  line-height: 1.6;
+  margin: 0 0 16px;
+}
+
+.note {
+  border: 1px solid var(--color-purple);
+  background: rgba(155, 77, 255, 0.08);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin: 16px 0;
+}
+
+.noteWarn {
+  border-color: var(--color-bad);
+  background: rgba(255, 93, 122, 0.08);
+}
+
+.noteLabel {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-purple-soft);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.noteWarn .noteLabel {
+  color: var(--color-bad);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+@media (min-width: 640px) {
+  .cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.list {
+  line-height: 1.7;
+  padding-left: 22px;
+  margin: 0 0 16px;
+}
+
+.pre {
+  margin: 0;
+  padding: 16px;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  white-space: pre;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.9rem;
+}
+
+.table th,
+.table td {
+  border-bottom: 1px solid var(--color-line);
+  padding: 8px 12px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.table th {
+  color: var(--color-muted);
+  font-weight: 600;
+}
+
+.flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.flowItem {
+  background: var(--color-panel-2);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  font-size: 0.9rem;
+}
+
+.flowArrow {
+  color: var(--color-muted);
+}
+
+.labButton {
+  margin-top: 10px;
+}
+
+.placeholder {
+  border: 1px dashed var(--color-line);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  color: var(--color-muted);
+  text-align: center;
+  margin: 16px 0;
+}

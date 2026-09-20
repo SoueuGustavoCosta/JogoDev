@@ -1,0 +1,71 @@
+:root {
+  --color-bg: #0a0912;
+  --color-panel: #151225;
+  --color-panel-2: #1b1731;
+  --color-text: #ece9f8;
+  --color-muted: #9b94b8;
+  --color-line: #2c2647;
+
+  --color-purple: #9b4dff;
+  --color-purple-soft: #c9a2ff;
+  --color-orange: #ff6b1f;
+  --color-orange-soft: #ffa36b;
+  --color-good: #3ee0a1;
+  --color-bad: #ff5d7a;
+
+  --font-title: 'Syne', system-ui, sans-serif;
+  --font-body: 'Instrument Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+
+  --touch-target: 44px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+#root {
+  min-height: 100dvh;
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: 16px;
+}
+
+a {
+  color: var(--color-purple-soft);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-purple-soft);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

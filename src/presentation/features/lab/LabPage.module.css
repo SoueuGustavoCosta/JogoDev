@@ -1,0 +1,143 @@
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.seg {
+  display: inline-flex;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.segButton {
+  min-height: var(--touch-target);
+  padding: 8px 14px;
+  background: var(--color-panel);
+  color: var(--color-text);
+  border: none;
+  cursor: pointer;
+}
+
+.segButtonOn {
+  background: var(--color-purple);
+}
+
+.status {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 160px;
+  background: transparent;
+  border: none;
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  padding: 16px;
+  resize: vertical;
+}
+
+.textarea:focus {
+  outline: none;
+}
+
+.shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 16px 0;
+}
+
+.shortcutKey {
+  min-width: 36px;
+  min-height: 36px;
+  background: var(--color-panel-2);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  cursor: pointer;
+}
+
+.labActions {
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.outScroll {
+  overflow-x: auto;
+  padding: 12px 16px;
+}
+
+.outOk {
+  padding: 12px 16px;
+  color: var(--color-good);
+}
+
+.outInfo {
+  padding: 12px 16px;
+  color: var(--color-muted);
+}
+
+.outErr {
+  padding: 12px 16px;
+  color: var(--color-bad);
+}
+
+.outErrCode {
+  display: block;
+  font-family: var(--font-mono);
+  margin-bottom: 6px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0;
+}
+
+.chip {
+  min-height: 36px;
+  padding: 6px 12px;
+  background: var(--color-panel-2);
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.missionsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+@media (min-width: 640px) {
+  .missionsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.missionDone {
+  border-color: var(--color-good);
+}
+
+.feedbackOk {
+  color: var(--color-good);
+}
+
+.feedbackBad {
+  color: var(--color-bad);
+}
