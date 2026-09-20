@@ -1,46 +1,111 @@
-.frame {
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-line);
-  background: #0e0c1a;
-  overflow: hidden;
-  margin: 16px 0;
+.mac {
+  width: 100%;
+  max-width: 860px;
+  margin: 18px auto 34px;
 }
 
-.titlebar {
+.lid {
+  position: relative;
+  border: 1.5px solid transparent;
+  border-radius: 20px 20px 6px 6px;
+  padding: 14px 14px 16px;
+  background: linear-gradient(#050409, #050409) padding-box,
+    linear-gradient(135deg, var(--color-purple), #5b2bb0 45%, var(--color-orange)) border-box;
+  box-shadow: 0 0 70px -14px rgba(155, 77, 255, 0.6), 0 24px 80px -30px rgba(255, 107, 31, 0.4);
+}
+
+.lid::before {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  border-radius: 50%;
+  background: #1d1a2e;
+  box-shadow: inset 0 0 0 1px #2c2647;
+}
+
+.screen {
+  background: #0d0b17;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #221c38;
+  margin-top: 4px;
+}
+
+.bar {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  background: var(--color-panel-2);
-  border-bottom: 1px solid var(--color-line);
+  gap: 7px;
+  padding: 9px 14px;
+  background: #12101f;
+  border-bottom: 1px solid #221c38;
 }
 
-.dot {
+.bar i {
   width: 11px;
   height: 11px;
   border-radius: 50%;
+  flex: none;
 }
-
-.dotRed {
-  background: #ff5f56;
+.bar i:nth-child(1) {
+  background: #ff5f57;
 }
-.dotYellow {
-  background: #ffbd2e;
+.bar i:nth-child(2) {
+  background: #febc2e;
 }
-.dotGreen {
-  background: #27c93f;
+.bar i:nth-child(3) {
+  background: #28c840;
 }
 
 .title {
-  margin-left: 6px;
+  margin-left: 10px;
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 0.74rem;
   color: var(--color-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.action {
+  margin-left: auto;
+  flex: none;
 }
 
 .body {
   overflow-x: auto;
+}
+
+.base {
+  height: 13px;
+  margin: 0 -3.5%;
+  border-radius: 0 0 22px 22px;
+  background: linear-gradient(#332c4f, #171227);
+  position: relative;
+  box-shadow: 0 18px 40px -14px rgba(155, 77, 255, 0.5);
+}
+
+.base::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 16%;
+  height: 6px;
+  transform: translateX(-50%);
+  background: #0a0812;
+  border-radius: 0 0 8px 8px;
+}
+
+@media (max-width: 520px) {
+  .base {
+    margin: 0 -2%;
+  }
+  .lid {
+    padding: 12px 8px 12px;
+  }
 }

@@ -1,114 +1,278 @@
 .h {
-  font-family: var(--font-title);
-  font-size: 1.25rem;
-  margin: 28px 0 12px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 40px 0 12px;
+  letter-spacing: -0.01em;
 }
 
 .p {
-  line-height: 1.6;
-  margin: 0 0 16px;
+  margin: 0 0 14px;
+  max-width: 68ch;
 }
 
 .note {
-  border: 1px solid var(--color-purple);
-  background: rgba(155, 77, 255, 0.08);
-  border-radius: var(--radius-md);
-  padding: 14px 16px;
-  margin: 16px 0;
+  border-left: 3px solid var(--color-purple);
+  background: var(--color-panel);
+  border-radius: 0 12px 12px 0;
+  padding: 14px 18px;
+  margin: 20px 0;
+  max-width: 72ch;
 }
 
 .noteWarn {
-  border-color: var(--color-bad);
-  background: rgba(255, 93, 122, 0.08);
+  border-color: var(--color-orange);
 }
 
-.noteLabel {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--color-purple-soft);
+.noteKey {
   display: block;
-  margin-bottom: 6px;
+  font: 500 0.72rem var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-purple-soft);
+  margin-bottom: 4px;
 }
 
-.noteWarn .noteLabel {
-  color: var(--color-bad);
+.noteWarn .noteKey {
+  color: var(--color-orange);
+}
+
+.note p {
+  margin: 0;
+  color: var(--color-text);
 }
 
 .cards {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
   gap: 12px;
-  margin: 16px 0;
+  margin: 14px 0 20px;
 }
 
-@media (min-width: 640px) {
-  .cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-.list {
-  line-height: 1.7;
-  padding-left: 22px;
-  margin: 0 0 16px;
-}
-
-.pre {
-  margin: 0;
+.card {
+  background: var(--color-panel);
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
   padding: 16px;
-  font-family: var(--font-mono);
-  font-size: 0.9rem;
-  line-height: 1.55;
-  white-space: pre;
 }
 
-.tableWrap {
-  overflow-x: auto;
+.card h3 {
+  color: var(--color-purple-soft);
+  margin-bottom: 6px;
+  font-size: 1rem;
 }
 
-.table {
-  border-collapse: collapse;
-  width: 100%;
-  font-size: 0.9rem;
-}
-
-.table th,
-.table td {
-  border-bottom: 1px solid var(--color-line);
-  padding: 8px 12px;
-  text-align: left;
-  white-space: nowrap;
-}
-
-.table th {
+.card p {
+  font-size: 0.93rem;
   color: var(--color-muted);
-  font-weight: 600;
+  margin: 0;
+}
+
+.tick {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 20px;
+  display: grid;
+  gap: 8px;
+  max-width: 68ch;
+}
+
+.tick li {
+  padding-left: 22px;
+  position: relative;
+}
+
+.tick li::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 0.6em;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--color-orange);
+  box-shadow: 0 0 8px var(--color-orange);
+}
+
+.steps {
+  padding-left: 0;
+  list-style: none;
+  counter-reset: s;
+  margin: 12px 0 20px;
+  display: grid;
+  gap: 8px;
+  max-width: 68ch;
+}
+
+.steps li {
+  counter-increment: s;
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.steps li::before {
+  content: counter(s);
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-panel-2);
+  border: 1px solid var(--color-line);
+  color: var(--color-orange);
+  font: 0.75rem var(--font-mono);
+  display: grid;
+  place-items: center;
+  transform: translateY(-1px);
 }
 
 .flow {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   gap: 8px;
-  margin: 16px 0;
+  margin: 14px 0 22px;
+  align-items: center;
 }
 
 .flowItem {
-  background: var(--color-panel-2);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.flowItem span {
+  font: 0.82rem var(--font-mono);
+  background: var(--color-panel);
   border: 1px solid var(--color-line);
-  border-radius: var(--radius-sm);
+  border-radius: 8px;
   padding: 6px 12px;
-  font-size: 0.9rem;
 }
 
-.flowArrow {
+.flowItem span.flowFirst {
+  border-color: var(--color-purple);
+  color: var(--color-purple-soft);
+}
+
+.flowItem i {
+  color: var(--color-orange);
+  font-style: normal;
+}
+
+.tbl {
+  overflow-x: auto;
+  margin: 14px 0 22px;
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
+  background: var(--color-panel);
+}
+
+.tbl table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.93rem;
+}
+
+.tbl th {
+  font: 0.72rem var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--color-muted);
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--color-line);
+  white-space: nowrap;
 }
 
-.labButton {
-  margin-top: 10px;
+.tbl td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--color-line);
+  vertical-align: top;
+}
+
+.tbl tr:last-child td {
+  border-bottom: 0;
+}
+
+.tbl td:first-child {
+  font-family: var(--font-mono);
+  color: var(--color-orange-soft);
+  white-space: nowrap;
+}
+
+.sql {
+  margin: 0;
+  padding: 16px 4px 16px 0;
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+  line-height: 1.7;
+  counter-reset: ln;
+  min-width: max-content;
+}
+
+.line {
+  display: block;
+  padding-right: 18px;
+  white-space: pre;
+}
+
+.line::before {
+  counter-increment: ln;
+  content: counter(ln);
+  display: inline-block;
+  width: 38px;
+  padding-right: 14px;
+  text-align: right;
+  color: #4a4368;
+  user-select: none;
+}
+
+.kw {
+  color: var(--color-orange);
+  font-weight: 500;
+}
+.type {
+  color: var(--color-purple-soft);
+}
+.str {
+  color: var(--color-code-str);
+}
+.num {
+  color: var(--color-code-num);
+}
+.cm {
+  color: #6a6288;
+  font-style: italic;
+}
+.fn {
+  color: #7fd4ff;
+}
+
+.runBtn {
+  background: transparent;
+  border: 1px solid var(--color-purple);
+  color: var(--color-purple-soft);
+  border-radius: 6px;
+  padding: 3px 10px;
+  font: 0.72rem var(--font-mono);
+  white-space: nowrap;
+  cursor: pointer;
+  min-height: 28px;
+}
+
+.runBtn:hover {
+  background: rgba(155, 77, 255, 0.18);
+  color: #fff;
+}
+
+.raw {
+  padding: 10px;
+  overflow-x: auto;
+}
+
+.raw svg {
+  min-width: 640px;
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
 .placeholder {

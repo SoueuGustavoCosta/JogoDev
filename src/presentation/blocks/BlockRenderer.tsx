@@ -1,10 +1,11 @@
 import type { Block } from '@/domain/trail';
-import { Button, NotebookFrame } from '@/presentation/design-system';
+import { NotebookFrame } from '@/presentation/design-system';
+import { highlightSql } from './highlight';
 import styles from './BlockRenderer.module.css';
 
 /** Conteúdo é autoral (vive em src/content), nunca dado do usuário: seguro para innerHTML. */
-function Html({ html, className }: { html: string; className?: string }) {
-  return <span className={className} dangerouslySetInnerHTML={{ __html: html }} />;
+function Html({ html }: { html: string }) {
+  return <span dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
 export function BlockRenderer({
@@ -19,13 +20,19 @@ export function BlockRenderer({
       return <h2 className={styles.h}>{block.x}</h2>;
 
     case 'p':
-      return <p className={styles.p}><Html html={block.x} /></p>;
+      return (
+        <p className={styles.p}>
+          <Html html={block.x} />
+        </p>
+      );
 
     case 'note':
       return (
         <div className={`${styles.note} ${block.warn ? styles.noteWarn : ''}`}>
-          <span className={styles.noteLabel}>{block.k}</span>
-          <Html html={block.x} />
+          <b className={styles.noteKey}>{block.k}</b>
+          <p>
+            <Html html={block.x} />
+          </p>
         </div>
       );
 
@@ -33,9 +40,9 @@ export function BlockRenderer({
       return (
         <div className={styles.cards}>
           {block.items.map((item, i) => (
-            <div key={i} className={styles.note}>
-              <strong>{item.h}</strong>
-              <p className={styles.p} style={{ margin: '6px 0 0' }}>
+            <div key={i} className={styles.card}>
+              <h3>{item.h}</h3>
+              <p>
                 <Html html={item.x} />
               </p>
             </div>
@@ -45,7 +52,7 @@ export function BlockRenderer({
 
     case 'ul':
       return (
-        <ul className={styles.list}>
+        <ul className={styles.tick}>
           {block.items.map((item, i) => (
             <li key={i}>
               <Html html={item} />
@@ -56,35 +63,49 @@ export function BlockRenderer({
 
     case 'ol':
       return (
-        <ol className={styles.list}>
+        <ol className={styles.steps}>
           {block.items.map((item, i) => (
             <li key={i}>
-              <Html html={item} />
+              <span>
+                <Html html={item} />
+              </span>
             </li>
           ))}
         </ol>
       );
 
-    case 'code':
+    case 'code': {
+      const lines = highlightSql(block.x);
       return (
-        <NotebookFrame title={block.file}>
-          <pre className={styles.pre}>
-            <code>{block.x}</code>
+        <NotebookFrame
+          title={block.file}
+          action={
+            !block.nolab && onOpenInLab ? (
+              <button type="button" className={styles.runBtn} onClick={() => onOpenInLab(block.x)}>
+                Abrir na Máquina ▸
+              </button>
+            ) : null
+          }
+        >
+          <pre className={styles.sql}>
+            {lines.map((tokens, i) => (
+              <span key={i} className={styles.line}>
+                {tokens.map((t, j) => (
+                  <span key={j} className={styles[t.kind]}>
+                    {t.text}
+                  </span>
+                ))}
+              </span>
+            ))}
           </pre>
-          {!block.nolab && onOpenInLab ? (
-            <div style={{ padding: '0 16px 16px' }}>
-              <Button size="sm" variant="alt" className={styles.labButton} onClick={() => onOpenInLab(block.x)}>
-                Abrir no laboratório
-              </Button>
-            </div>
-          ) : null}
         </NotebookFrame>
       );
+    }
 
     case 'table': {
       const table = (
-        <div className={styles.tableWrap}>
-          <table className={styles.table}>
+        <div className={styles.tbl}>
+          <table>
             <thead>
               <tr>
                 {block.cols.map((c, i) => (
@@ -114,9 +135,9 @@ export function BlockRenderer({
       return (
         <div className={styles.flow}>
           {block.items.map((item, i) => (
-            <span key={i} style={{ display: 'contents' }}>
-              {i > 0 ? <span className={styles.flowArrow}>→</span> : null}
-              <span className={styles.flowItem}>{item}</span>
+            <span key={i} className={styles.flowItem}>
+              {i > 0 ? <i>→</i> : null}
+              <span className={i === 0 ? styles.flowFirst : undefined}>{item}</span>
             </span>
           ))}
         </div>
@@ -125,7 +146,7 @@ export function BlockRenderer({
     case 'raw':
       return (
         <NotebookFrame title={block.file}>
-          <div style={{ padding: 16 }}>
+          <div className={styles.raw}>
             <Html html={block.x} />
           </div>
         </NotebookFrame>
@@ -135,8 +156,7 @@ export function BlockRenderer({
     case 'syntax':
       return (
         <div className={styles.placeholder}>
-          Widget interativo em construção nesta migração — o conteúdo da lição continua completo nos
-          blocos ao redor.
+          Widget interativo em construção — o conteúdo da lição continua completo nos blocos ao redor.
         </div>
       );
 
