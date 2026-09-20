@@ -48,7 +48,6 @@ export function Layout() {
   return (
     <div className={styles.root}>
       <button type="button" className={styles.pix} onClick={() => setSupportOpen(true)} aria-label="Contribua com o meu Pix">
-        <span aria-hidden="true">♥</span>
         Contribua com o meu Pix
       </button>
       <nav className={styles.nav} aria-label="Navegação principal">
