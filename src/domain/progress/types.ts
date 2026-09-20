@@ -19,6 +19,9 @@ export type TrailProgress = {
 
 export type Progress = {
   version: number;
+  /** Nome do viajante, guardado só no navegador (nunca vai para as métricas). */
+  travelerName?: string;
+  prologueSeen?: boolean;
   trails: Record<string, TrailProgress>;
 };
 
