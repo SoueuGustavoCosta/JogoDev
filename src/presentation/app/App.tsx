@@ -15,6 +15,9 @@ const LabPage = lazy(() => import('@/presentation/features/lab').then((m) => ({ 
 const SettingsPage = lazy(() =>
   import('@/presentation/features/settings').then((m) => ({ default: m.SettingsPage })),
 );
+const PrivacyPage = lazy(() =>
+  import('@/presentation/features/settings').then((m) => ({ default: m.PrivacyPage })),
+);
 
 function AppRoutes() {
   return (
@@ -26,6 +29,7 @@ function AppRoutes() {
           <Route path="trilhas/:trailId/modulos/:moduleId" element={<ModulePage />} />
           <Route path="trilhas/:trailId/laboratorio" element={<LabPage />} />
           <Route path="configuracoes" element={<SettingsPage />} />
+          <Route path="privacidade" element={<PrivacyPage />} />
         </Route>
       </Routes>
     </Suspense>

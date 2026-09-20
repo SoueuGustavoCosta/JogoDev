@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { Link, NavLink, Outlet } from 'react-router-dom';
 import { SUPPORT_COPY } from '@/domain/support';
 import { SupportModal } from '@/presentation/features/support';
 import styles from './Layout.module.css';
@@ -38,6 +38,10 @@ export function Layout({ children }: { children?: ReactNode }) {
           >
             {SUPPORT_COPY.footerLinkLabel}
           </button>
+          {' · '}
+          <Link to="/privacidade" className={styles.footerLink}>
+            Privacidade
+          </Link>
         </footer>
       </main>
       {supportOpen ? <SupportModal onClose={() => setSupportOpen(false)} /> : null}
