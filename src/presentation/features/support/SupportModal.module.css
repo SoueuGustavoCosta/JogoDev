@@ -18,18 +18,6 @@
   padding: 10px;
 }
 
-.keyRow {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  background: var(--color-panel-2);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  word-break: break-all;
-  margin-bottom: 12px;
-}
 
 .actions {
   display: flex;

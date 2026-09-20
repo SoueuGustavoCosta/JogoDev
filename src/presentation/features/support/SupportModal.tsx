@@ -51,20 +51,13 @@ export function SupportModal({ onClose }: { onClose: () => void }) {
       )}
 
       <p>
-        Recebedor: <strong>{PIX.receiverName}</strong> ({PIX.receiverCity}) — confira no seu app do banco.
+        Recebedor: <strong>{PIX.receiverName}</strong> — confira no seu app do banco.
       </p>
 
-      <div className={styles.keyRow}>{PIX.key}</div>
-
       <div className={styles.actions}>
-        <Button size="sm" onClick={() => copy(PIX.key, 'Chave')}>
-          {SUPPORT_COPY.copyKeyButton}
+        <Button onClick={() => brCode && copy(brCode, 'Código')} disabled={!brCode}>
+          {SUPPORT_COPY.copyPixCopiaECola}
         </Button>
-        {brCode ? (
-          <Button size="sm" variant="ghost" onClick={() => copy(brCode, 'Código')}>
-            {SUPPORT_COPY.copyPixCopiaECola}
-          </Button>
-        ) : null}
       </div>
 
       {copiedFeedback ? <p role="status">{copiedFeedback}</p> : null}
