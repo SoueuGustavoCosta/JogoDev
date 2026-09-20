@@ -96,3 +96,15 @@ export function Rocket() {
     </svg>
   );
 }
+
+export const MapIcon = () => (
+  <Svg>
+    <path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2zM9 4v14M15 6v14" />
+  </Svg>
+);
+export const TravelerIcon = () => (
+  <Svg>
+    <circle cx="12" cy="8" r="4" />
+    <path d="M4 21c1-5 5-7 8-7s7 2 8 7" />
+  </Svg>
+);
