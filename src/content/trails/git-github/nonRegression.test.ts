@@ -45,4 +45,13 @@ describe('conteúdo da Era "Código Compartilhado" (git-github)', () => {
     expect(gitGithubTrail.lab).toBe('git');
     expect(gitGithubTrail.symbol).toBe('git');
   });
+
+  it('a conversa de chegada com a Senhorita Sintaxe é uma sequência de falas curtas', () => {
+    expect(Array.isArray(gitGithubTrail.intro)).toBe(true);
+    expect(gitGithubTrail.intro!.length).toBeGreaterThanOrEqual(2);
+    expect(gitGithubTrail.intro!.length).toBeLessThanOrEqual(4);
+    for (const line of gitGithubTrail.intro!) {
+      expect(line.length).toBeGreaterThan(0);
+    }
+  });
 });

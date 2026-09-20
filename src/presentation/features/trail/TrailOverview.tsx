@@ -3,10 +3,11 @@ import { Link, Navigate, useParams } from 'react-router-dom';
 import { getTrailProgress } from '@/application/usecases';
 import { maxXpForTrail } from '@/domain/progress';
 import { SUPPORT_COPY } from '@/domain/support';
+import type { Module, Trail } from '@/domain/trail';
 import { getTrailById } from '@/content/registry';
-import { SintaxeFace } from '@/presentation/design-system';
 import { SupportModal } from '@/presentation/features/support';
 import { useServices } from '@/presentation/app/ServicesContext';
+import { TrailIntroDialogue, hasSeenTrailIntro } from './TrailIntroDialogue';
 import styles from './TrailOverview.module.css';
 
 export function TrailOverview() {
@@ -15,6 +16,11 @@ export function TrailOverview() {
   const [supportOpen, setSupportOpen] = useState(false);
 
   const trail = trailId ? getTrailById(trailId) : undefined;
+
+  const [introOpen, setIntroOpen] = useState(() => {
+    if (!trail?.intro?.length) return false;
+    return !hasSeenTrailIntro(trail.id);
+  });
 
   useEffect(() => {
     if (trail) analytics.track('island_opened', { island: trail.id });
@@ -37,15 +43,42 @@ export function TrailOverview() {
       </h1>
       <p className={styles.lead}>{trail.tagline}</p>
 
-      {trail.intro ? (
-        <div className={styles.sintaxe}>
-          <SintaxeFace size={52} />
-          <p>
-            <b>Senhorita Sintaxe</b> · <span dangerouslySetInnerHTML={{ __html: trail.intro }} />
-          </p>
-        </div>
-      ) : null}
+      {introOpen && trail.intro?.length ? (
+        <TrailIntroDialogue trailId={trail.id} lines={trail.intro} onDone={() => setIntroOpen(false)} />
+      ) : (
+        <TrailOverviewBody
+          trail={trail}
+          firstOpen={firstOpen}
+          started={started}
+          trophy={trophy}
+          quizCount={quizCount}
+          supportOpen={supportOpen}
+          setSupportOpen={setSupportOpen}
+        />
+      )}
+    </article>
+  );
+}
 
+function TrailOverviewBody({
+  trail,
+  firstOpen,
+  started,
+  trophy,
+  quizCount,
+  supportOpen,
+  setSupportOpen,
+}: {
+  trail: Trail;
+  firstOpen: Module | undefined;
+  started: boolean;
+  trophy: boolean;
+  quizCount: number;
+  supportOpen: boolean;
+  setSupportOpen: (open: boolean) => void;
+}) {
+  return (
+    <>
       <div className={styles.row}>
         {firstOpen ? (
           <Link to={`/trilhas/${trail.id}/modulos/${firstOpen.id}`} className={styles.primary}>
@@ -105,6 +138,6 @@ export function TrailOverview() {
       ) : null}
 
       {supportOpen ? <SupportModal onClose={() => setSupportOpen(false)} /> : null}
-    </article>
+    </>
   );
 }
