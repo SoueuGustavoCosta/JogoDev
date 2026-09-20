@@ -76,6 +76,10 @@ export type Trail = {
   tagline: string;
   symbol: SymbolId;
   accent: string;
+  /** Rótulo da era mostrado na tela de entrada da ilha (ex.: "Era 4 · Código Compartilhado"). */
+  eyebrow?: string;
+  /** Fala da Sintaxe que abre a ilha, situando o problema da era. Pode conter <b> simples. */
+  intro?: string;
   modules: Module[];
   missions?: Mission[];
   lab?: 'sql' | 'git' | null;

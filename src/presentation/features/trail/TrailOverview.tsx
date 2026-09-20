@@ -4,6 +4,7 @@ import { getTrailProgress } from '@/application/usecases';
 import { maxXpForTrail } from '@/domain/progress';
 import { SUPPORT_COPY } from '@/domain/support';
 import { getTrailById } from '@/content/registry';
+import { SintaxeFace } from '@/presentation/design-system';
 import { SupportModal } from '@/presentation/features/support';
 import { useServices } from '@/presentation/app/ServicesContext';
 import styles from './TrailOverview.module.css';
@@ -30,11 +31,20 @@ export function TrailOverview() {
 
   return (
     <article className={styles.hero}>
-      <p className="eyebrow">Era 1 · 1963 → hoje</p>
+      <p className="eyebrow">{trail.eyebrow ?? 'Era 1 · 1963 → hoje'}</p>
       <h1>
         <em>{trail.title}</em>
       </h1>
       <p className={styles.lead}>{trail.tagline}</p>
+
+      {trail.intro ? (
+        <div className={styles.sintaxe}>
+          <SintaxeFace size={52} />
+          <p>
+            <b>SINTAXE</b> · <span dangerouslySetInnerHTML={{ __html: trail.intro }} />
+          </p>
+        </div>
+      ) : null}
 
       <div className={styles.row}>
         {firstOpen ? (

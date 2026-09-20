@@ -17,6 +17,31 @@
   margin: 14px 0 0;
 }
 
+.sintaxe {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin: 22px 0 6px;
+  padding: 14px 16px;
+  border: 1px solid var(--color-line);
+  background: var(--color-panel);
+  border-radius: 16px;
+  max-width: 68ch;
+}
+
+.sintaxe p {
+  margin: 0;
+  font-size: 0.94rem;
+  line-height: 1.5;
+  color: var(--color-muted);
+}
+
+.sintaxe b {
+  color: var(--color-cyan);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+}
+
 .row {
   display: flex;
   gap: 12px;
