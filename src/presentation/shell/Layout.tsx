@@ -47,6 +47,10 @@ export function Layout() {
 
   return (
     <div className={styles.root}>
+      <button type="button" className={styles.pix} onClick={() => setSupportOpen(true)} aria-label="Contribua com o meu Pix">
+        <span aria-hidden="true">♥</span>
+        Contribua com o meu Pix
+      </button>
       <nav className={styles.nav} aria-label="Navegação principal">
         <NavItem to="/" end label="Mapa" icon={<MapIcon />} />
         <NavItem to="/configuracoes" label="Viajante" icon={<TravelerIcon />} />
@@ -62,6 +66,9 @@ export function Layout() {
       ) : (
         <div className={styles.column}>
           <header className={styles.top}>
+            <Link to="/" className={styles.back}>
+              ◂ Voltar ao mapa
+            </Link>
             <Link to="/" className={styles.brand}>
               <span className={styles.brandDot} />
               Viajante {hud.name}
@@ -71,7 +78,9 @@ export function Layout() {
             </div>
           </header>
           <main className={styles.main}>
-            <Outlet />
+            <div key={location.pathname} className={styles.page}>
+              <Outlet />
+            </div>
           </main>
           <footer className={styles.footer}>
             <button type="button" className={styles.footerLink} onClick={() => setSupportOpen(true)}>
