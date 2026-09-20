@@ -10,6 +10,7 @@ const ArchipelagoHome = lazy(() =>
 const TrailOverview = lazy(() =>
   import('@/presentation/features/trail').then((m) => ({ default: m.TrailOverview })),
 );
+const TrailShell = lazy(() => import('@/presentation/features/trail').then((m) => ({ default: m.TrailShell })));
 const ModulePage = lazy(() => import('@/presentation/features/trail').then((m) => ({ default: m.ModulePage })));
 const LabPage = lazy(() => import('@/presentation/features/lab').then((m) => ({ default: m.LabPage })));
 const SettingsPage = lazy(() =>
@@ -28,9 +29,11 @@ function AppRoutes() {
       <Routes>
         <Route element={<Layout />}>
           <Route index element={<ArchipelagoHome />} />
-          <Route path="trilhas/:trailId" element={<TrailOverview />} />
-          <Route path="trilhas/:trailId/modulos/:moduleId" element={<ModulePage />} />
-          <Route path="trilhas/:trailId/laboratorio" element={<LabPage />} />
+          <Route path="trilhas/:trailId" element={<TrailShell />}>
+            <Route index element={<TrailOverview />} />
+            <Route path="modulos/:moduleId" element={<ModulePage />} />
+            <Route path="laboratorio" element={<LabPage />} />
+          </Route>
           <Route path="configuracoes" element={<SettingsPage />} />
           <Route path="privacidade" element={<PrivacyPage />} />
           <Route path="prologo" element={<PrologueScreen />} />

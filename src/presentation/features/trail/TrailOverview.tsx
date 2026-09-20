@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { getTrailProgress } from '@/application/usecases';
-import { isModuleUnlocked } from '@/domain/progress';
+import { maxXpForTrail } from '@/domain/progress';
 import { SUPPORT_COPY } from '@/domain/support';
 import { getTrailById } from '@/content/registry';
-import { DEFAULT_EXPLORATION_MODE } from '@/config/exploration';
-import { Button, ProgressBar } from '@/presentation/design-system';
 import { SupportModal } from '@/presentation/features/support';
 import { useServices } from '@/presentation/app/ServicesContext';
 import styles from './TrailOverview.module.css';
@@ -24,62 +22,79 @@ export function TrailOverview() {
 
   if (!trail) return <Navigate to="/" replace />;
 
-  const { trailProgress, xp, maxXp } = getTrailProgress({ repository: progressRepository }, { trail });
-  const trophyAwarded = Boolean(trailProgress?.trophyAwarded);
+  const { trailProgress, xp } = getTrailProgress({ repository: progressRepository }, { trail });
+  const firstOpen = trail.modules.find((m) => !trailProgress?.modules[m.id]?.completed);
+  const started = xp > 0 || Object.keys(trailProgress?.modules ?? {}).length > 0;
+  const trophy = Boolean(trailProgress?.trophyAwarded);
+  const quizCount = trail.modules.reduce((sum, m) => sum + m.quiz.length, 0);
 
   return (
-    <div>
-      <p className="eyebrow">Ilha</p>
-      <h1>{trail.title}</h1>
-      <p>{trail.tagline}</p>
-      <ProgressBar value={xp} max={maxXp} label={`Progresso em ${trail.title}`} />
-      <p>
-        {xp} / {maxXp} XP
-      </p>
+    <article className={styles.hero}>
+      <p className="eyebrow">Era 1 · 1963 → hoje</p>
+      <h1>
+        <em>{trail.title}</em>
+      </h1>
+      <p className={styles.lead}>{trail.tagline}</p>
 
-      {trail.lab ? (
-        <Link to={`/trilhas/${trail.id}/laboratorio`}>
-          <Button variant="ghost">Ir para o laboratório</Button>
-        </Link>
-      ) : null}
-
-      <div className={styles.list}>
-        {trail.modules.map((module, index) => {
-          const unlocked = isModuleUnlocked(trail, module.id, trailProgress, DEFAULT_EXPLORATION_MODE);
-          const completed = Boolean(trailProgress?.modules[module.id]?.completed);
-          return (
-            <Link
-              key={module.id}
-              to={unlocked ? `/trilhas/${trail.id}/modulos/${module.id}` : '#'}
-              className={`${styles.item} ${unlocked ? '' : styles.itemLocked}`}
-              aria-disabled={!unlocked}
-            >
-              <span>
-                {index + 1}. {module.short}
-              </span>
-              <span className={styles.badge}>{completed ? '✓ concluído' : unlocked ? module.level : '🔒'}</span>
-            </Link>
-          );
-        })}
+      <div className={styles.row}>
+        {firstOpen ? (
+          <Link to={`/trilhas/${trail.id}/modulos/${firstOpen.id}`} className={styles.primary}>
+            {started ? 'Continuar a viagem' : 'Começar a viagem'} ▸
+          </Link>
+        ) : null}
+        {trail.lab ? (
+          <Link to={`/trilhas/${trail.id}/laboratorio`} className={styles.ghost}>
+            Máquina do Tempo
+          </Link>
+        ) : null}
       </div>
 
-      {trophyAwarded ? (
+      <div className={styles.facts}>
+        <span>
+          <b>{trail.modules.length}</b>saltos
+        </span>
+        <span>
+          <b>{quizCount}</b>paradoxos
+        </span>
+        <span>
+          <b>{trail.missions?.length ?? 0}</b>missões práticas
+        </span>
+        <span>
+          <b>{maxXpForTrail(trail)}</b>XP no total
+        </span>
+      </div>
+
+      <div className={styles.how}>
+        <div>
+          <b>1 · Salte no tempo</b>
+          <span>Cada salto parte de um problema real da época e chega na solução que usamos hoje.</span>
+        </div>
+        <div>
+          <b>2 · Resolva o paradoxo</b>
+          <span>Errar nunca é punição: é o Eco ganhando uma rodada, e a dica te mostra o caminho.</span>
+        </div>
+        <div>
+          <b>3 · Acenda o cristal</b>
+          <span>Cada salto concluído vira um cristal. Pratique de verdade na Máquina do Tempo.</span>
+        </div>
+      </div>
+
+      {trophy ? (
         <div className={styles.trophy}>
-          <p>🏆 Troféu da ilha conquistado!</p>
+          <div className={styles.trophyIcon} aria-hidden="true">
+            🏆
+          </div>
+          <h2>Artefato da era conquistado!</h2>
           <p>
             {SUPPORT_COPY.trophyInvite}{' '}
-            <button
-              type="button"
-              onClick={() => setSupportOpen(true)}
-              style={{ background: 'none', border: 'none', color: 'inherit', textDecoration: 'underline', cursor: 'pointer' }}
-            >
-              Colabore com o projeto
+            <button type="button" className={styles.link} onClick={() => setSupportOpen(true)}>
+              {SUPPORT_COPY.footerLinkLabel}
             </button>
           </p>
         </div>
       ) : null}
 
       {supportOpen ? <SupportModal onClose={() => setSupportOpen(false)} /> : null}
-    </div>
+    </article>
   );
 }

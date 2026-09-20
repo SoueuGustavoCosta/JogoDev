@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { answerQuiz } from '@/application/usecases';
 import type { QuizAnswer } from '@/domain/progress';
 import type { QuizItem } from '@/domain/trail';
-import { Button } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
 import styles from './QuizRunner.module.css';
 
+const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+/** Um paradoxo por vez. Errar nunca penaliza: a opção errada apaga e o aluno tenta outra. */
 export function QuizRunner({
   trailId,
   moduleId,
@@ -19,111 +21,124 @@ export function QuizRunner({
 }) {
   const { progressRepository, analytics } = useServices();
   const [index, setIndex] = useState(0);
-  const [selected, setSelected] = useState<number | null>(null);
+  const [wrong, setWrong] = useState<number[]>([]);
   const [fillValue, setFillValue] = useState('');
-  const [checked, setChecked] = useState(false);
-  const [correct, setCorrect] = useState(false);
+  const [fillWrong, setFillWrong] = useState(false);
+  const [solved, setSolved] = useState<number | 'fill' | null>(null);
 
   const item = quiz[index];
   const isFill = 'fill' in item;
 
-  function check() {
-    const answer: QuizAnswer = isFill ? { kind: 'fill', text: fillValue } : { kind: 'choice', optionIndex: selected! };
+  function submit(answer: QuizAnswer, choiceIndex?: number) {
     const result = answerQuiz(
       { repository: progressRepository, analytics },
       { trailId, moduleId, quizIndex: index, item, answer },
     );
-    setCorrect(result.correct);
-    setChecked(true);
+    if (result.correct) {
+      setSolved(choiceIndex ?? 'fill');
+      setFillWrong(false);
+    } else if (choiceIndex !== undefined) {
+      setWrong((w) => [...w, choiceIndex]);
+    } else {
+      setFillWrong(true);
+    }
   }
 
   function next() {
     if (index + 1 < quiz.length) {
       setIndex(index + 1);
-      setSelected(null);
+      setWrong([]);
       setFillValue('');
-      setChecked(false);
-      setCorrect(false);
+      setFillWrong(false);
+      setSolved(null);
     } else {
       onFinished();
     }
   }
 
-  const canCheck = isFill ? fillValue.trim().length > 0 : selected !== null;
+  const isSolved = solved !== null;
 
   return (
-    <div className={styles.wrap}>
-      <p className={styles.progress}>
-        Pergunta {index + 1} de {quiz.length}
-      </p>
-      <p className={styles.question}>{item.q}</p>
+    <section className={styles.quiz} aria-label="Paradoxo do salto">
+      <div className={styles.box}>
+        <div className={styles.top}>
+          <span>
+            Paradoxo {index + 1} de {quiz.length}
+          </span>
+          <span>{quiz.length - index - (isSolved ? 1 : 0)} restantes</span>
+        </div>
+        <p className={styles.question}>{item.q}</p>
 
-      {isFill ? (
-        <div className={styles.fillRow}>
-          <span>{item.pre}</span>
-          <input
-            className={styles.fillInput}
-            value={fillValue}
-            onChange={(e) => setFillValue(e.target.value)}
-            placeholder={item.placeholder ?? '?'}
-            disabled={checked}
-            autoCapitalize="off"
-            autoCorrect="off"
-            spellCheck={false}
-            aria-label="Sua resposta"
-          />
-          <span>{item.post}</span>
-        </div>
-      ) : (
-        <div className={styles.options}>
-          {item.options.map((option, i) => {
-            const isSelected = selected === i;
-            const showCorrect = checked && i === item.answer;
-            const showWrong = checked && isSelected && i !== item.answer;
-            return (
-              <button
-                key={i}
-                type="button"
-                className={`${styles.option} ${showCorrect ? styles.optionCorrect : ''} ${showWrong ? styles.optionWrong : ''}`}
-                onClick={() => !checked && setSelected(i)}
-                disabled={checked}
-                aria-pressed={isSelected}
-              >
-                {option}
-              </button>
-            );
-          })}
-        </div>
-      )}
-
-      {!checked ? (
-        <div style={{ marginTop: 16 }}>
-          <Button onClick={check} disabled={!canCheck}>
-            Verificar
-          </Button>
-        </div>
-      ) : (
-        <div className={styles.explain}>
-          <p>{correct ? 'Isso mesmo!' : 'Ainda não, tente outra opção.'}</p>
-          {correct ? <p>{item.explain}</p> : null}
-          <div style={{ marginTop: 10 }}>
-            {correct ? (
-              <Button onClick={next}>{index + 1 < quiz.length ? 'Próximo' : 'Concluir'}</Button>
-            ) : (
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  setChecked(false);
-                  setSelected(null);
-                  setFillValue('');
-                }}
-              >
-                Tentar de novo
-              </Button>
-            )}
+        {isFill ? (
+          <>
+            <form
+              className={styles.fillRow}
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!isSolved && fillValue.trim()) submit({ kind: 'fill', text: fillValue });
+              }}
+            >
+              <span>{item.pre}</span>
+              <input
+                value={fillValue}
+                onChange={(e) => setFillValue(e.target.value)}
+                placeholder={item.placeholder ?? '?'}
+                disabled={isSolved}
+                autoCapitalize="off"
+                autoCorrect="off"
+                spellCheck={false}
+                aria-label="Sua resposta"
+              />
+              <span>{item.post}</span>
+              {!isSolved ? (
+                <button type="submit" className={styles.check} disabled={!fillValue.trim()}>
+                  Verificar
+                </button>
+              ) : null}
+            </form>
+          </>
+        ) : (
+          <div className={styles.opts}>
+            {item.options.map((option, i) => {
+              const ok = solved === i;
+              const no = wrong.includes(i);
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  className={`${styles.opt} ${ok ? styles.ok : ''} ${no ? styles.no : ''}`}
+                  disabled={isSolved || no}
+                  onClick={() => submit({ kind: 'choice', optionIndex: i }, i)}
+                >
+                  <b>{LETTERS[i]}</b>
+                  <span>{option}</span>
+                </button>
+              );
+            })}
           </div>
-        </div>
-      )}
-    </div>
+        )}
+
+        {fillWrong || wrong.length > 0 ? (
+          !isSolved ? (
+            <div className={`${styles.fb} ${styles.bad}`} role="status">
+              Ainda não, tente outra opção.
+            </div>
+          ) : null
+        ) : null}
+
+        {isSolved ? (
+          <>
+            <div className={`${styles.fb} ${styles.good}`} role="status">
+              <b>Paradoxo resolvido.</b> {item.explain}
+            </div>
+            <div className={styles.act}>
+              <button type="button" className={styles.next} onClick={next}>
+                {index + 1 < quiz.length ? 'Próximo paradoxo ▸' : 'Acender o cristal ▸'}
+              </button>
+            </div>
+          </>
+        ) : null}
+      </div>
+    </section>
   );
 }

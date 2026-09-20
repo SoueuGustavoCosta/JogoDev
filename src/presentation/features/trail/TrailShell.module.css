@@ -1,0 +1,134 @@
+.layout {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr);
+  gap: 36px;
+  align-items: start;
+}
+
+.content {
+  min-width: 0;
+}
+
+.rail {
+  position: sticky;
+  top: 12px;
+  display: flex;
+  flex-direction: column;
+  padding: 6px 0;
+  max-height: calc(100dvh - 24px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.node {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 8px;
+  border: 0;
+  background: none;
+  text-align: left;
+  border-radius: 10px;
+  position: relative;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+  width: 100%;
+  text-decoration: none;
+  min-height: 40px;
+}
+
+.dot {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-line);
+  display: grid;
+  place-items: center;
+  font: 0.72rem var(--font-mono);
+  background: var(--color-bg);
+  position: relative;
+  z-index: 1;
+}
+
+.node:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 21px;
+  top: 34px;
+  bottom: -7px;
+  width: 2px;
+  background: var(--color-line);
+}
+
+.done {
+  color: var(--color-text);
+}
+.done .dot {
+  background: var(--color-purple);
+  border-color: var(--color-purple);
+  color: #fff;
+}
+.done:not(:last-child)::after {
+  background: var(--color-purple);
+}
+
+.cur {
+  color: #fff;
+  background: var(--color-panel);
+}
+.cur .dot {
+  border-color: var(--color-orange);
+  color: var(--color-orange);
+  box-shadow: 0 0 0 3px rgba(255, 107, 31, 0.18), 0 0 16px rgba(255, 107, 31, 0.6);
+}
+
+.lock {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.sel:not(.cur) {
+  background: var(--color-panel);
+  color: var(--color-text);
+}
+
+.trophy .dot {
+  border-color: var(--color-orange-soft);
+}
+
+.trophy.done .dot {
+  background: var(--color-orange);
+  border-color: var(--color-orange);
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+  .rail {
+    position: static;
+    flex-direction: row;
+    overflow-x: auto;
+    max-height: none;
+    padding: 4px 0 10px;
+    gap: 2px;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .node {
+    width: auto;
+    flex: none;
+    padding: 4px;
+  }
+  .label {
+    display: none;
+  }
+  .node:not(:last-child)::after {
+    display: none;
+  }
+  .sel .dot {
+    border-color: var(--color-cyan);
+    color: var(--color-cyan);
+  }
+}

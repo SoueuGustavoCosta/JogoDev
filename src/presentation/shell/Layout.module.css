@@ -22,9 +22,10 @@
 }
 
 .brand {
+  white-space: nowrap;
   font-family: var(--font-title);
   font-weight: 800;
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   display: flex;
   align-items: center;
   gap: 9px;
@@ -41,6 +42,7 @@
 }
 
 .xp {
+  white-space: nowrap;
   font: 600 0.78rem var(--font-mono);
   color: var(--color-muted);
 }

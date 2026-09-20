@@ -6,3 +6,4 @@ export * from './Modal';
 export * from './Toast';
 export * from './Icons';
 export * from './Sintaxe';
+export * from './Confetti';

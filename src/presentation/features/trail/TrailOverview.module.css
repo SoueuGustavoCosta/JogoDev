@@ -1,35 +1,124 @@
-.list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 16px;
+.hero {
+  padding-block: 8px;
 }
 
-.item {
+.hero h1 em {
+  font-style: normal;
+  background: linear-gradient(90deg, var(--color-purple-soft), var(--color-orange));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.lead {
+  font-size: 1.12rem;
+  color: var(--color-muted);
+  max-width: 60ch;
+  margin: 14px 0 0;
+}
+
+.row {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
   gap: 12px;
-  background: var(--color-panel);
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-md);
-  padding: 14px 16px;
-  text-decoration: none;
-  color: var(--color-text);
+  flex-wrap: wrap;
+  margin: 22px 0 6px;
+}
+
+.primary,
+.ghost {
+  display: inline-flex;
+  align-items: center;
   min-height: var(--touch-target);
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-weight: 700;
+  text-decoration: none;
 }
 
-.itemLocked {
-  opacity: 0.5;
-  pointer-events: none;
+.primary {
+  background: linear-gradient(135deg, var(--color-purple), #7b2ff0);
+  color: #fff;
+  box-shadow: 0 8px 28px -8px rgba(155, 77, 255, 0.8);
 }
 
-.badge {
-  font-size: 0.75rem;
+.ghost {
+  border: 1px solid var(--color-line);
   color: var(--color-muted);
 }
 
+.facts {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+  margin-top: 26px;
+  font: 0.82rem var(--font-mono);
+  color: var(--color-muted);
+}
+
+.facts b {
+  display: block;
+  font-family: var(--font-title);
+  font-size: 1.9rem;
+  color: var(--color-text);
+}
+
+.how {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin-top: 30px;
+}
+
+.how div {
+  border-top: 2px solid var(--color-purple);
+  padding-top: 12px;
+}
+
+.how div:nth-child(2) {
+  border-color: var(--color-orange);
+}
+
+.how div:nth-child(3) {
+  border-color: var(--color-cyan);
+}
+
+.how b {
+  display: block;
+  font-family: var(--font-title);
+  font-size: 1.05rem;
+  margin-bottom: 4px;
+}
+
+.how span {
+  color: var(--color-muted);
+  font-size: 0.93rem;
+}
+
 .trophy {
-  margin-top: 24px;
+  margin-top: 36px;
   text-align: center;
+  border: 1px solid var(--color-orange);
+  border-radius: 16px;
+  padding: 22px;
+  background: linear-gradient(135deg, rgba(155, 77, 255, 0.12), rgba(255, 107, 31, 0.1));
+}
+
+.trophyIcon {
+  font-size: 3.4rem;
+  filter: drop-shadow(0 0 30px rgba(255, 107, 31, 0.6));
+}
+
+.trophy p {
+  color: var(--color-muted);
+  font-size: 0.88rem;
+  margin: 8px auto 0;
+}
+
+.link {
+  background: none;
+  border: 0;
+  color: var(--color-muted);
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
 }
