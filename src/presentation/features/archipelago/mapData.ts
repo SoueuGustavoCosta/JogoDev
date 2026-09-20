@@ -75,9 +75,10 @@ export const ERAS: MapEra[] = [
     y: 830,
     color: '#ffa36b',
     icon: 'git',
-    status: 'breve',
+    status: 'ativo',
     years: 'ERA 4',
-    description: 'Git e GitHub: como times escrevem juntos sem se atropelar.',
+    trailId: 'git-github',
+    description: 'Git e GitHub: como times escrevem juntos sem se atropelar. Do primeiro commit ao primeiro push, com laboratório de terminal.',
   },
   {
     id: 'nuvem',
