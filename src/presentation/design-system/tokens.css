@@ -12,16 +12,21 @@
   --color-orange-soft: #ffa36b;
   --color-good: #3ee0a1;
   --color-bad: #ff5d7a;
+  --color-cyan: #5ee7ff;
+  --color-gold: #ffd479;
+  --color-code-str: #8be9b0;
+  --color-code-num: #ffd479;
 
-  --font-title: 'Syne', system-ui, sans-serif;
-  --font-body: 'Instrument Sans', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-title: 'Syne', 'Trebuchet MS', sans-serif;
+  --font-body: 'Instrument Sans', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
 
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 18px;
 
   --touch-target: 44px;
+  color-scheme: dark;
 }
 
 * {
@@ -36,11 +41,34 @@ body {
   color: var(--color-text);
   font-family: var(--font-body);
   font-size: 16px;
+  line-height: 1.6;
   -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-image:
+    radial-gradient(900px 500px at 85% -10%, rgba(155, 77, 255, 0.16), transparent 60%),
+    radial-gradient(700px 420px at -5% 30%, rgba(255, 107, 31, 0.07), transparent 60%);
+  background-attachment: fixed;
 }
 
 #root {
   min-height: 100dvh;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-title);
+  line-height: 1.12;
+  margin: 0;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: clamp(1.7rem, 5vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
 button,
@@ -51,12 +79,31 @@ select {
   font-size: 16px;
 }
 
+code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--color-panel-2);
+  border: 1px solid var(--color-line);
+  border-radius: 5px;
+  padding: 1px 6px;
+  color: var(--color-orange-soft);
+}
+
 a {
   color: var(--color-purple-soft);
 }
 
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-orange);
+  margin: 0 0 8px;
+}
+
 :focus-visible {
-  outline: 2px solid var(--color-purple-soft);
+  outline: 2px solid var(--color-orange);
   outline-offset: 2px;
 }
 
