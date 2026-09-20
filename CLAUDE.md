@@ -201,7 +201,7 @@ export const PIX = {
 ```
 
 **Tom e presença (importante): a colaboração é discreta, nunca insistente.** O Pix precisa estar ao alcance de quem quiser ajudar, mas o app não pede, não cobra e não interrompe o estudo. Regras:
-- Um link pequeno e de baixo contraste, "Colabore com o projeto", no **rodapé** e na tela de configurações/perfil. **Sem botão fixo no cabeçalho, sem item na barra de navegação, sem cartão em todas as telas.**
+- Um link pequeno e de baixo contraste, "Colabore com o projeto", no **rodapé** e na tela de configurações/perfil. **Decisão do autor (2026-09-20):** além disso, uma bolinha dourada fixa no canto superior direito, "Contribua com o meu Pix", que só abre o modal ao toque. Continua sem item na barra de navegação e sem cartão em todas as telas.
 - **No máximo uma menção suave por marco grande**, na tela de troféu de uma trilha (uma frase curta e um link, sem destaque de cor).
 - **Nada de pop-up, banner, contador ou lembrete automático**, nem depois de módulos concluídos. O modal só abre quando o aluno toca no link.
 - Nenhuma frase de culpa ou urgência ("ajude a manter o projeto vivo!"). Tom de convite: "Se a trilha te ajudou e você quiser colaborar, o Pix está aqui."
