@@ -1,0 +1,2416 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Trilha PostgreSQL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+:root{
+  --bg:#0a0912;
+  --bg2:#100e1b;
+  --panel:#151225;
+  --panel2:#1b1731;
+  --line:#2c2647;
+  --text:#ece9f8;
+  --muted:#9b94b8;
+  --purple:#9b4dff;
+  --purple-soft:#c9a2ff;
+  --orange:#ff6b1f;
+  --orange-soft:#ffa36b;
+  --good:#3ee0a1;
+  --bad:#ff5d7a;
+  --code-str:#8be9b0;
+  --code-num:#ffd479;
+  --f-display:"Syne","Trebuchet MS",sans-serif;
+  --f-body:"Instrument Sans","Segoe UI",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--text);font-family:var(--f-body);font-size:16px;line-height:1.6;
+  padding-inline:16px;padding-block:0 48px;
+  background-image:radial-gradient(900px 500px at 85% -10%,rgba(155,77,255,.16),transparent 60%),radial-gradient(700px 420px at -5% 30%,rgba(255,107,31,.07),transparent 60%);
+  background-attachment:fixed;
+}
+button{font:inherit;color:inherit;cursor:pointer}
+code{font-family:var(--f-mono);font-size:.88em;background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:var(--orange-soft)}
+:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+
+.app{max-width:1180px;margin:0 auto}
+.top{display:flex;align-items:center;gap:16px;padding-block:18px;flex-wrap:wrap}
+.brand{font-family:var(--f-display);font-weight:800;font-size:1.25rem;letter-spacing:-.01em;display:flex;align-items:center;gap:10px;margin-right:auto}
+.brand .dot{width:12px;height:12px;border-radius:3px;background:linear-gradient(135deg,var(--purple),var(--orange));box-shadow:0 0 14px rgba(155,77,255,.8)}
+.stat{font-family:var(--f-mono);font-size:.8rem;color:var(--muted);display:flex;align-items:center;gap:8px}
+.stat b{color:var(--orange);font-weight:700;font-size:.95rem}
+.bar{width:120px;height:6px;border-radius:9px;background:var(--panel2);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--purple),var(--orange));transition:width .5s}
+
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:36px;align-items:start}
+
+/* trail map */
+.map{position:sticky;top:12px;display:flex;flex-direction:column;padding:6px 0;max-height:calc(100vh - 24px);overflow-y:auto;scrollbar-width:thin}
+.node{display:flex;align-items:center;gap:12px;padding:7px 8px;border:0;background:none;text-align:left;border-radius:10px;position:relative;color:var(--muted);font-size:.9rem;width:100%}
+.node .c{flex:none;width:28px;height:28px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-family:var(--f-mono);font-size:.72rem;background:var(--bg);position:relative;z-index:1}
+.node:not(:last-child)::after{content:"";position:absolute;left:21px;top:34px;bottom:-7px;width:2px;background:var(--line)}
+.node.done{color:var(--text)}
+.node.done .c{background:var(--purple);border-color:var(--purple);color:#fff}
+.node.done:not(:last-child)::after{background:var(--purple)}
+.node.cur{color:#fff;background:var(--panel)}
+.node.cur .c{border-color:var(--orange);color:var(--orange);box-shadow:0 0 0 3px rgba(255,107,31,.18),0 0 16px rgba(255,107,31,.6)}
+.node.lock{opacity:.45;cursor:not-allowed}
+.node.sel:not(.cur){background:var(--panel)}
+.node.trophy .c{border-color:var(--orange-soft);color:var(--orange)}
+.node.trophy.done .c{background:var(--orange);border-color:var(--orange);color:#1a0d05}
+
+/* generic */
+.eyebrow{font-family:var(--f-mono);font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--orange);margin:0 0 10px}
+h1,h2,h3{font-family:var(--f-display);line-height:1.1;text-wrap:balance;margin:0}
+h1{font-size:clamp(2rem,5vw,3.1rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:1.5rem;font-weight:700;margin:40px 0 12px;letter-spacing:-.01em}
+h3{font-size:1.05rem;font-weight:700}
+p{margin:0 0 14px;max-width:68ch}
+.lead{font-size:1.12rem;color:var(--muted);max-width:60ch}
+.btn{border:0;border-radius:10px;padding:12px 20px;font-weight:700;background:linear-gradient(135deg,var(--purple),#7b2ff0);color:#fff;box-shadow:0 8px 28px -8px rgba(155,77,255,.8);transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-1px)}
+.btn.alt{background:linear-gradient(135deg,var(--orange),#e8500a);box-shadow:0 8px 28px -8px rgba(255,107,31,.8)}
+.btn.ghost{background:transparent;border:1px solid var(--line);box-shadow:none;color:var(--muted)}
+.btn[disabled]{opacity:.4;cursor:not-allowed;transform:none}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1fr);gap:28px;padding-block:8px 8px}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,var(--purple-soft),var(--orange));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .row{display:flex;gap:12px;flex-wrap:wrap;margin:22px 0 6px}
+.facts{display:flex;gap:28px;flex-wrap:wrap;margin-top:26px;font-family:var(--f-mono);font-size:.82rem;color:var(--muted)}
+.facts b{display:block;font-family:var(--f-display);font-size:1.9rem;color:var(--text)}
+.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:8px}
+.how div{border-top:2px solid var(--purple);padding-top:12px}
+.how div:nth-child(2){border-color:var(--orange)}
+.how b{display:block;font-family:var(--f-display);font-size:1.05rem;margin-bottom:4px}
+.how span{color:var(--muted);font-size:.93rem}
+
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:14px 0 20px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+.card h3{color:var(--purple-soft);margin-bottom:6px;font-size:1rem}
+.card p{font-size:.93rem;color:var(--muted);margin:0}
+.card code{font-size:.8em}
+
+.note{border-left:3px solid var(--purple);background:var(--panel);border-radius:0 12px 12px 0;padding:14px 18px;margin:20px 0;max-width:72ch}
+.note b.k{display:block;font-family:var(--f-mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--purple-soft);margin-bottom:4px}
+.note p{margin:0;color:var(--text)}
+.note.warn{border-color:var(--orange)}
+.note.warn b.k{color:var(--orange)}
+ol.steps{padding-left:0;list-style:none;counter-reset:s;margin:12px 0 20px;display:grid;gap:8px;max-width:68ch}
+ol.steps li{counter-increment:s;display:flex;gap:12px;align-items:baseline}
+ol.steps li::before{content:counter(s);flex:none;width:24px;height:24px;border-radius:50%;background:var(--panel2);border:1px solid var(--line);color:var(--orange);font-family:var(--f-mono);font-size:.75rem;display:grid;place-items:center;transform:translateY(-1px)}
+ul.tick{list-style:none;padding:0;margin:10px 0 20px;display:grid;gap:8px;max-width:68ch}
+ul.tick li{padding-left:22px;position:relative}
+ul.tick li::before{content:"";position:absolute;left:2px;top:.6em;width:8px;height:8px;border-radius:2px;background:var(--orange);box-shadow:0 0 8px var(--orange)}
+
+.flow{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 22px;align-items:center}
+.flow span{font-family:var(--f-mono);font-size:.82rem;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 12px}
+.flow span.a{border-color:var(--purple);color:var(--purple-soft)}
+.flow i{color:var(--orange);font-style:normal}
+
+.tbl{overflow-x:auto;margin:14px 0 22px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+.tbl table{width:100%;border-collapse:collapse;font-size:.93rem}
+.tbl th{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl td{padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td:first-child{font-family:var(--f-mono);color:var(--orange-soft);white-space:nowrap}
+
+/* macbook */
+.mac{width:100%;max-width:860px;margin:18px auto 34px}
+.mac-lid{position:relative;border:1.5px solid transparent;border-radius:20px 20px 6px 6px;padding:14px 14px 16px;
+  background:linear-gradient(#050409,#050409) padding-box,linear-gradient(135deg,var(--purple),#5b2bb0 45%,var(--orange)) border-box;
+  box-shadow:0 0 70px -14px rgba(155,77,255,.6),0 24px 80px -30px rgba(255,107,31,.4)}
+.mac-lid::before{content:"";position:absolute;top:5px;left:50%;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:#1d1a2e;box-shadow:inset 0 0 0 1px #2c2647}
+.mac-screen{background:#0d0b17;border-radius:8px;overflow:hidden;border:1px solid #221c38;margin-top:4px}
+.win-bar{display:flex;align-items:center;gap:7px;padding:9px 14px;background:#12101f;border-bottom:1px solid #221c38}
+.win-bar i{width:11px;height:11px;border-radius:50%}
+.win-bar i:nth-child(1){background:#ff5f57}.win-bar i:nth-child(2){background:#febc2e}.win-bar i:nth-child(3){background:#28c840}
+.win-title{margin-left:10px;font-family:var(--f-mono);font-size:.74rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.win-body{padding:0;overflow-x:auto}
+.mac-base{height:13px;margin:0 -3.5%;border-radius:0 0 22px 22px;background:linear-gradient(#332c4f,#171227);position:relative;box-shadow:0 18px 40px -14px rgba(155,77,255,.5)}
+.mac-base::after{content:"";position:absolute;left:50%;top:0;width:16%;height:6px;transform:translateX(-50%);background:#0a0812;border-radius:0 0 8px 8px}
+
+pre.sql{margin:0;padding:16px 4px 16px 0;font-family:var(--f-mono);font-size:.84rem;line-height:1.7;counter-reset:ln;min-width:max-content}
+pre.sql .l{display:block;padding-right:18px;white-space:pre}
+pre.sql .l::before{counter-increment:ln;content:counter(ln);display:inline-block;width:38px;padding-right:14px;text-align:right;color:#4a4368;user-select:none}
+.kw{color:var(--orange);font-weight:500}
+.t{color:var(--purple-soft)}
+.s{color:var(--code-str)}
+.n{color:var(--code-num)}
+.cm{color:#6a6288;font-style:italic}
+.f{color:#7fd4ff}
+.res{width:100%;border-collapse:collapse;font-family:var(--f-mono);font-size:.82rem}
+.res th{background:#17132b;color:var(--purple-soft);text-align:left;padding:9px 16px;font-weight:500;border-bottom:1px solid #2c2647;white-space:nowrap}
+.res td{padding:8px 16px;border-bottom:1px solid #1b1731;white-space:nowrap}
+.res tr:last-child td{border-bottom:0}
+.res .null{color:#6a6288;font-style:italic}
+.res-foot{padding:8px 16px;font-family:var(--f-mono);font-size:.72rem;color:var(--muted);border-top:1px solid #221c38;background:#12101f}
+.caret{display:inline-block;width:8px;height:1em;background:var(--orange);vertical-align:-2px;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* gui mock */
+.gui{display:grid;grid-template-columns:150px minmax(0,1fr);min-height:330px;font-size:.82rem}
+.tree{background:#0f0c1a;border-right:1px solid #221c38;padding:12px 8px;font-family:var(--f-mono);font-size:.72rem;color:var(--muted);line-height:2;overflow:hidden}
+.tree div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tree .l1{padding-left:10px}.tree .l2{padding-left:20px}.tree .l3{padding-left:30px}.tree .l4{padding-left:40px}.tree .l5{padding-left:50px}
+.tree .hi{color:var(--orange);font-weight:700}
+.pane{padding:14px 16px;min-width:0}
+.tabs{display:flex;gap:4px;margin-bottom:14px;border-bottom:1px solid #221c38}
+.tabs button{background:none;border:0;padding:8px 14px;color:var(--muted);border-bottom:2px solid transparent;font-size:.82rem;font-weight:600}
+.tabs button.on{color:#fff;border-color:var(--orange)}
+.gui label.fl{display:block;color:var(--muted);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px}
+.gui input[type=text],.gui select{background:#0a0812;border:1px solid #2c2647;border-radius:7px;color:var(--text);padding:7px 9px;font-family:var(--f-mono);font-size:.8rem;width:100%;min-width:0}
+.gui input[type=text]:focus,.gui select:focus{border-color:var(--purple);outline:0}
+.crow{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1.2fr) 42px 42px 26px;gap:6px;align-items:center;margin-bottom:6px}
+.crow.h{color:var(--muted);font-size:.66rem;letter-spacing:.06em;text-transform:uppercase}
+.crow .ck{text-align:center}
+.crow input[type=checkbox]{accent-color:var(--orange);width:16px;height:16px}
+.crow .x{background:none;border:0;color:var(--muted);font-size:1rem;line-height:1}
+.crow .x:hover{color:var(--bad)}
+.addc{margin-top:6px;background:transparent;border:1px dashed var(--purple);color:var(--purple-soft);border-radius:8px;padding:6px 12px;font-size:.78rem}
+.gnote{margin:14px 0 0;font-size:.78rem;color:var(--muted);max-width:none}
+.gui pre.sql{padding-block:6px}
+
+.sx-tabs{display:flex;gap:8px;justify-content:center;margin-bottom:-6px}
+.sx-tabs button{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 16px;font-size:.85rem;color:var(--muted)}
+.sx-tabs button.on{border-color:var(--orange);color:#fff;box-shadow:0 0 16px -4px rgba(255,107,31,.7)}
+
+/* quiz */
+.quiz{margin-top:44px;padding-top:28px;border-top:1px solid var(--line)}
+.qbox{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;max-width:760px}
+.qtop{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--orange);margin-bottom:12px}
+.qtop span:last-child{color:var(--muted)}
+.qq{font-family:var(--f-display);font-size:1.25rem;font-weight:700;line-height:1.3;margin-bottom:16px}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:baseline;transition:border-color .15s,background .15s}
+.opt:hover:not([disabled]){border-color:var(--purple)}
+.opt b{font-family:var(--f-mono);color:var(--purple-soft);font-size:.8rem}
+.opt.ok{border-color:var(--good);background:rgba(62,224,161,.1)}
+.opt.no{border-color:var(--bad);background:rgba(255,93,122,.1);opacity:.7}
+.opt[disabled]{cursor:default}
+.fillrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#0a0812;border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-family:var(--f-mono);font-size:.95rem;margin-bottom:12px}
+.fillrow input{background:var(--panel2);border:1px dashed var(--orange);border-radius:6px;color:var(--orange-soft);font-family:var(--f-mono);font-size:.95rem;padding:4px 8px;width:11ch;min-width:0}
+.fb{margin-top:14px;padding:12px 14px;border-radius:10px;font-size:.94rem}
+.fb.good{background:rgba(62,224,161,.1);border:1px solid rgba(62,224,161,.4)}
+.fb.bad{background:rgba(255,93,122,.1);border:1px solid rgba(255,93,122,.4)}
+.qact{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap}
+.qdone{border:1px solid var(--purple);background:var(--panel);border-radius:16px;padding:22px;max-width:760px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+.qdone p{margin:0}
+
+/* trophy */
+.trophy-wrap{text-align:center;padding-block:10px 20px;position:relative}
+.trophy-wrap svg{width:min(260px,70%);height:auto;filter:drop-shadow(0 0 40px rgba(255,107,31,.55))}
+.trophy-wrap h1{margin:10px 0 10px}
+.trophy-wrap p{margin-inline:auto}
+.rank{display:inline-block;font-family:var(--f-mono);font-size:.85rem;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--orange);color:var(--orange);border-radius:999px;padding:6px 16px;margin:6px 0 18px;box-shadow:0 0 20px -4px rgba(255,107,31,.6)}
+.tstats{display:flex;justify-content:center;gap:34px;flex-wrap:wrap;margin:14px 0 24px}
+.tstats b{display:block;font-family:var(--f-display);font-size:2rem}
+.tstats span{font-family:var(--f-mono);font-size:.75rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+canvas.conf{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:5}
+.locked-note{color:var(--muted)}
+
+footer.ft{margin-top:60px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:.85rem}
+.ft button{background:none;border:0;color:var(--muted);text-decoration:underline;padding:0;font-size:.85rem}
+
+@media(max-width:900px){
+  .layout{grid-template-columns:minmax(0,1fr);gap:18px}
+  .map{position:static;flex-direction:row;overflow-x:auto;max-height:none;padding:4px 0 10px;gap:2px;border-bottom:1px solid var(--line)}
+  .node{width:auto;flex:none;padding:4px}
+  .node .t2{display:none}
+  .node:not(:last-child)::after{display:none}
+  .gui{grid-template-columns:minmax(0,1fr)}
+  .tree{display:none}
+  .bar{width:80px}
+}
+@media(max-width:520px){
+  .crow{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) 34px 34px 22px}
+  .mac-base{margin:0 -2%}
+  .qbox{padding:16px}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .caret{animation:none}
+  .btn,.bar i{transition:none}
+}
+.gui [data-sql]{overflow-x:auto}
+.win-title{flex:0 1 auto}
+.runbtn{margin-left:auto;background:transparent;border:1px solid var(--purple);color:var(--purple-soft);border-radius:6px;padding:3px 10px;font-size:.72rem;font-family:var(--f-mono);white-space:nowrap}
+.runbtn:hover{background:rgba(155,77,255,.18);color:#fff}
+.btn.sm{padding:8px 14px;font-size:.85rem;border-radius:8px}
+.btn small{font-family:var(--f-mono);font-weight:400;opacity:.75;margin-left:4px}
+.labbar{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;margin:20px 0 10px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{background:var(--panel);border:0;padding:8px 14px;font-size:.86rem;color:var(--muted)}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button.on{background:var(--purple);color:#fff}
+.labstat{font-family:var(--f-mono);font-size:.78rem;color:var(--muted)}
+.labstat.bad{color:var(--bad);max-width:70ch;line-height:1.5}
+.chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center;min-height:32px;margin-bottom:4px}
+.chips-l{font-family:var(--f-mono);font-size:.74rem;color:var(--muted)}
+.chip{background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-family:var(--f-mono);font-size:.78rem;color:var(--orange-soft)}
+.chip:hover{border-color:var(--orange)}
+#labsql{display:block;width:100%;min-height:190px;background:#0a0812;color:var(--text);border:0;padding:14px 16px;font-family:var(--f-mono);font-size:.86rem;line-height:1.7;resize:vertical;tab-size:4;caret-color:var(--orange)}
+#labsql:focus{outline:0;box-shadow:inset 0 0 0 1px var(--purple)}
+.labact{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 14px;border-top:1px solid #221c38;background:#12101f}
+.labtip{margin-left:auto;font-size:.74rem;color:var(--muted);font-family:var(--f-mono)}
+#labout{min-height:110px}
+.out-scroll{overflow-x:auto}
+.out-ok,.out-info{padding:12px 16px;font-family:var(--f-mono);font-size:.82rem}
+.out-ok{color:var(--good)}
+.out-info{color:var(--purple-soft);line-height:1.6}
+.out-info code{font-size:.9em}
+.out-err{padding:14px 16px;border-left:3px solid var(--bad);background:rgba(255,93,122,.08)}
+.out-err .raw{display:block;background:none;border:0;padding:0;color:var(--bad);font-size:.82rem;white-space:pre-wrap;word-break:break-word}
+.out-err p{margin:8px 0 0;font-size:.92rem;color:var(--text);max-width:none}
+h2 .cnt{font-family:var(--f-mono);font-size:.8rem;color:var(--orange);margin-left:8px;border:1px solid var(--orange);border-radius:999px;padding:2px 10px;vertical-align:middle}
+.card.done{border-color:rgba(62,224,161,.5)}
+.card.sel{border-color:var(--orange);box-shadow:0 0 22px -8px rgba(255,107,31,.7)}
+.card .btn{margin-top:12px}
+.ok-b{font-family:var(--f-mono);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--good);border:1px solid rgba(62,224,161,.5);border-radius:999px;padding:1px 8px;margin-left:6px;vertical-align:middle}
+details summary{cursor:pointer;color:var(--purple-soft);font-size:.9rem;margin-top:6px}
+@media(max-width:520px){.labtip{display:none}.runbtn{font-size:.66rem;padding:2px 8px}}
+
+.der{padding:10px;overflow-x:auto}.der svg{min-width:640px;width:100%;height:auto;display:block}
+.der-e{fill:var(--panel2);stroke:var(--purple);stroke-width:2}.der-r{fill:var(--panel2);stroke:var(--orange);stroke-width:2}
+.der-a{fill:var(--bg);stroke:var(--purple-soft);stroke-width:1.5}.der-l{stroke:var(--muted);stroke-width:1.5;fill:none}
+.der text{fill:var(--text);font:600 13px var(--f-body)}.der .der-c{fill:var(--orange-soft);font:500 12px var(--f-mono)}.der .der-k{text-decoration:underline}
+.pixbox{margin:26px 0;padding:18px 20px;border:1px solid var(--purple);border-radius:14px;background:linear-gradient(135deg,rgba(155,77,255,.14),rgba(255,107,31,.10))}
+.pixt{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}.pixt b{font-family:var(--f-display);font-size:1.05rem}.pixt span{color:var(--muted);font-size:.93rem}
+.pixrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.pixlbl{font-size:.8rem;color:var(--orange-soft)}
+.pixkey{font-family:var(--f-mono);font-size:.85rem;background:var(--bg);padding:8px 10px;border-radius:8px;word-break:break-all;user-select:all;flex:1;min-width:240px}
+.apoie{background:transparent;border:1px solid var(--orange);color:var(--orange-soft);border-radius:999px;padding:6px 14px;font:600 .85rem var(--f-body);cursor:pointer}
+.apoie:hover{background:var(--orange);color:#fff}
+
+</style>
+
+</head><body><div class="app">
+  <header class="top">
+    <div class="brand"><span class="dot"></span>Trilha PostgreSQL</div>
+    <div class="stat">XP <b id="xp">0</b></div>
+    <button type="button" class="apoie" data-go="apoie">♥ Contribua</button>
+    <div class="stat"><span id="pct">0/22</span><span class="bar"><i id="barfill"></i></span></div>
+  </header>
+  <div class="layout">
+    <nav class="map" id="map" aria-label="Mapa da trilha"></nav>
+    <main id="view"></main>
+  </div>
+  <footer class="ft">
+    <span>Trilha de estudo do zero ao avançado. O progresso fica salvo neste navegador.</span>
+    <button id="reset" type="button">Recomeçar do zero</button>
+  </footer>
+</div>
+<script>
+/* ============ CONTEÚDO DA TRILHA (dados separados do motor: pronto para virar app) ============ */
+const MODS = [
+{
+  id:'porque', short:'Por que existe um banco', tag:'Fundamentos',
+  title:'Por que existe um banco de dados?',
+  lead:'Antes de digitar qualquer comando, entenda o problema que os bancos vieram resolver.',
+  blocks:[
+    {t:'h', x:'O problema: dados espalhados'},
+    {t:'p', x:`Imagine uma loja de bairro. No começo, os pedidos ficam num caderno. Depois viram uma planilha. Depois, três planilhas em três computadores, com o mesmo cliente escrito de três jeitos: "Ana Souza", "ana souza" e "A. Souza". Quando o negócio cresce, a bagunça cresce junto.`},
+    {t:'cards', items:[
+      {h:'Duplicação', x:'O mesmo dado guardado em vários lugares, ocupando espaço e dando trabalho para atualizar.'},
+      {h:'Inconsistência', x:'Um lugar diz que o estoque é 10, outro diz 7. Qual está certo?'},
+      {h:'Concorrência', x:'Duas pessoas editando o mesmo arquivo ao mesmo tempo e uma apagando o trabalho da outra.'},
+      {h:'Segurança', x:'Como deixar o financeiro ver os valores sem deixar o estagiário apagar tudo?'},
+      {h:'Escala', x:'Uma planilha aguenta milhares de linhas. Um banco aguenta milhões e responde rápido.'}
+    ]},
+    {t:'note', k:'Curiosidade', x:`Em 1970, Edgar F. Codd, pesquisador da IBM, propôs o <b>modelo relacional</b>: guardar dados em tabelas ligadas por valores em comum. Essa ideia é a base do PostgreSQL, MySQL, Oracle e SQL Server até hoje.`},
+    {t:'h', x:'Três palavras que todo mundo confunde'},
+    {t:'cards', items:[
+      {h:'Dado', x:'Um fato solto. Por exemplo: "Ana" ou 42. Sozinho, não diz muita coisa.'},
+      {h:'Banco de dados', x:'Um conjunto organizado de dados que se relacionam, como todos os clientes e pedidos de uma loja.'},
+      {h:'SGBD', x:'Sistema Gerenciador de Banco de Dados: o programa que guarda, protege e responde perguntas sobre os dados. O PostgreSQL é um SGBD.'}
+    ]},
+    {t:'note', k:'Analogia', x:`Pense numa biblioteca. Os <b>livros</b> são os dados, a <b>biblioteca</b> inteira é o banco de dados e o <b>bibliotecário</b> é o SGBD: ele sabe onde tudo está, controla quem pega o quê e não deixa dois leitores levarem o mesmo exemplar.`}
+  ],
+  quiz:[
+    {q:'Qual é o papel do SGBD?', o:['Ser o arquivo onde os dados ficam escritos','Ser o programa que guarda, protege e consulta os dados','Ser a linguagem usada para escrever consultas','Ser o computador onde o banco roda'], a:1, e:'SGBD é o software gerenciador. O PostgreSQL é um SGBD; SQL é a linguagem que usamos para conversar com ele.'},
+    {q:'O nome de um cliente escrito de três formas diferentes em planilhas separadas é qual problema?', o:['Escala','Segurança','Inconsistência','Concorrência'], a:2, e:'Dados que deveriam ser iguais aparecem diferentes: isso é inconsistência.'},
+    {q:'Quem propôs o modelo relacional em 1970?', o:['Edgar F. Codd','Bill Gates','Linus Torvalds','Larry Ellison'], a:0, e:'Codd, da IBM. O modelo relacional organiza dados em tabelas.'}
+  ]
+},
+{
+  id:'tipos', short:'Tipos de bancos', tag:'Fundamentos',
+  title:'Tipos de bancos e por que PostgreSQL',
+  lead:'Existem várias famílias de bancos. Vamos ver as principais e escolher a nossa.',
+  blocks:[
+    {t:'h', x:'As famílias mais comuns'},
+    {t:'cards', items:[
+      {h:'Relacional', x:'Tabelas com linhas e colunas ligadas por chaves. PostgreSQL, MySQL, SQL Server. Ideal para cadastros, pedidos e finanças.'},
+      {h:'Documento', x:'Guarda blocos flexíveis parecidos com JSON. MongoDB. Bom quando cada registro tem formato diferente.'},
+      {h:'Chave-valor', x:'Como um dicionário gigante e rapidíssimo. Redis. Usado para cache e sessões de login.'},
+      {h:'Grafo', x:'Foca nas conexões entre as coisas. Neo4j. Bom para redes sociais e recomendações.'}
+    ]},
+    {t:'h', x:'Por que vamos usar PostgreSQL'},
+    {t:'ul', items:[
+      'É <b>gratuito e open source</b>, com mais de 30 anos de história e uma comunidade enorme.',
+      'É muito <b>confiável</b>: respeita as propriedades ACID, que garantem que seus dados não ficam pela metade quando algo dá errado (veremos no módulo avançado).',
+      'Tem <b>tipos ricos</b>: JSONB, arrays, UUID, datas com fuso horário. Você aprende o básico agora e cresce sem trocar de banco.',
+      'Combina com o caminho de Java (Spring/JPA) e Python (FastAPI), e é o banco por trás de serviços como o Supabase.'
+    ]},
+    {t:'h', x:'SQL, PostgreSQL, pgAdmin e psql: quem é quem?'},
+    {t:'table', mac:false, cols:['Nome','O que é'], rows:[
+      ['SQL','A <b>linguagem</b> usada para conversar com bancos relacionais.'],
+      ['PostgreSQL','O <b>SGBD</b>: o motor que guarda e processa os dados.'],
+      ['pgAdmin','Uma <b>interface visual</b> para usar o PostgreSQL com cliques.'],
+      ['psql','O <b>terminal</b> do PostgreSQL: você digita comandos SQL nele.']
+    ]}
+  ],
+  quiz:[
+    {q:'O Redis pertence a qual família de bancos?', o:['Relacional','Chave-valor','Grafo','Documento'], a:1, e:'Redis guarda pares chave-valor e é muito usado como cache.'},
+    {q:'Qual tipo de banco é o mais indicado para clientes, pedidos e produtos ligados entre si?', o:['Chave-valor','Grafo','Relacional','Nenhum, use uma planilha'], a:2, e:'Dados com relações bem definidas combinam com o modelo relacional.'},
+    {q:'Qual afirmação está correta?', o:['SQL é o programa que guarda os dados','PostgreSQL é uma linguagem de programação','pgAdmin é uma interface visual para o PostgreSQL','psql é um tipo de dado'], a:2, e:'SQL é a linguagem, PostgreSQL é o SGBD, pgAdmin é a interface visual e psql é o terminal.'}
+  ]
+},
+{
+  id:'interface', short:'Conhecendo a interface', tag:'Ferramentas',
+  title:'Conhecendo a interface: cliques ou código',
+  lead:'Dá para criar uma tabela sem escrever uma linha de código. E dá para criar só com código. Vamos ver os dois lados.',
+  blocks:[
+    {t:'h', x:'Primeiros passos'},
+    {t:'ol', items:[
+      'Baixe o instalador em <code>postgresql.org/download</code>. Ele já inclui o servidor, o <b>pgAdmin</b> e o <b>psql</b>.',
+      'Durante a instalação, defina uma <b>senha</b> para o usuário <code>postgres</code> e anote. Deixe a porta padrão <code>5432</code>.',
+      'Abra o pgAdmin, conecte no servidor local e digite a senha. Pronto: você está dentro.'
+    ]},
+    {t:'h', x:'Duas portas para o mesmo lugar'},
+    {t:'cards', items:[
+      {h:'Modo visual', x:'Você clica com o botão direito em Tables, escolhe Create, preenche formulários e salva. Ótimo para explorar e para os primeiros dias.'},
+      {h:'Modo código', x:'Você abre a Query Tool (ou o psql), escreve comandos SQL e executa. É o que se usa no trabalho de verdade.'}
+    ]},
+    {t:'p', x:`O segredo é que os dois fazem a <b>mesma coisa</b>. Cada clique no pgAdmin vira um comando SQL por baixo dos panos. Teste na tela abaixo: monte uma tabela no modo visual e depois olhe a aba <b>Código SQL</b>.`},
+    {t:'gui'},
+    {t:'note', k:'Dica', x:`No pgAdmin real, toda janela de criação tem uma aba <b>SQL</b> que mostra o comando gerado. É uma das melhores formas de aprender SQL: faça por cliques e leia o código que apareceu.`},
+    {t:'h', x:'Por que quem trabalha na área prefere código?'},
+    {t:'ul', items:[
+      '<b>Repetível</b>: o mesmo script cria o banco igual em qualquer computador.',
+      '<b>Versionável</b>: você guarda o script no Git e vê quem mudou o quê.',
+      '<b>Portátil</b>: funciona em servidores sem interface gráfica.'
+    ]},
+    {t:'h', x:'O terminal do PostgreSQL (psql)'},
+    {t:'code', file:'psql — atalhos que você vai usar', x:`-- comandos do psql começam com barra invertida
+\\l              -- lista os bancos de dados
+\\c loja_dev     -- conecta no banco loja_dev
+\\dt             -- lista as tabelas do banco atual
+\\d produtos     -- mostra a estrutura da tabela produtos
+\\q              -- sai do psql`}
+  ],
+  quiz:[
+    {q:'Quando você cria uma tabela clicando no pgAdmin, o que acontece por baixo dos panos?', o:['Nada: o pgAdmin guarda em um arquivo próprio','O pgAdmin gera e executa um comando SQL','O Windows cria a tabela','O banco é reiniciado'], a:1, e:'A interface só facilita: ela monta o SQL e envia para o PostgreSQL.'},
+    {q:'Qual é uma vantagem de criar o banco por scripts de código?', o:['É impossível errar','Não precisa de senha','Pode ser repetido e versionado no Git','Só funciona no Mac'], a:2, e:'Scripts são repetíveis e podem ser guardados e revisados como qualquer código.'},
+    {q:'Complete: qual comando do psql lista as tabelas do banco atual?', fill:true, pre:'', post:'', ok:['\\dt'], ph:'\\?', e:'\\dt (de "display tables") lista as tabelas.'}
+  ]
+},
+{
+  id:'sintaxe', short:'Sintaxe e indentação', tag:'Ferramentas',
+  title:'Sintaxe e indentação: escrever SQL que gente lê',
+  lead:'O PostgreSQL entende SQL de qualquer jeito. Pessoas, não. Aprenda as regras e as boas maneiras.',
+  blocks:[
+    {t:'h', x:'As regras que o banco exige'},
+    {t:'ul', items:[
+      'Todo comando termina com <code>;</code> (ponto e vírgula).',
+      'Textos ficam entre <b>aspas simples</b>: <code>\'Ana\'</code>. Aspas duplas são para nomes de colunas e tabelas, e é melhor evitar.',
+      'Comentários: <code>-- uma linha</code> ou <code>/* vários trechos */</code>. O banco ignora tudo isso.',
+      'Sem aspas, o PostgreSQL trata nomes como minúsculos: <code>Produtos</code> e <code>produtos</code> são a mesma tabela.'
+    ]},
+    {t:'h', x:'As boas maneiras (convenções)'},
+    {t:'ul', items:[
+      'Palavras da linguagem em <b>MAIÚSCULAS</b> (<code>SELECT</code>, <code>FROM</code>) e nomes que você inventa em <b>minúsculas</b> com underline: <code>data_pedido</code>. Isso se chama snake_case.',
+      'Uma <b>cláusula por linha</b>: <code>SELECT</code>, <code>FROM</code>, <code>WHERE</code> cada uma começando uma linha nova.',
+      '<b>Indentação</b> de 4 espaços (ou 2, mas escolha um e mantenha) para tudo que pertence a uma cláusula.',
+      'Uma coluna por linha quando a lista for longa, com a vírgula no fim da linha.'
+    ]},
+    {t:'p', x:`Veja a mesma consulta escrita de dois jeitos. As duas funcionam exatamente igual. Clique nas abas e responda: em qual você acharia um erro mais rápido?`},
+    {t:'syntax'},
+    {t:'note', k:'Regra de ouro', x:`Espaços e quebras de linha não mudam o resultado. Então use-os a seu favor: o código é lido muito mais vezes do que é escrito.`}
+  ],
+  quiz:[
+    {q:'Qual a forma correta de escrever um texto em SQL?', o:['"Ana"','\'Ana\'','(Ana)','Ana;'], a:1, e:'Textos (strings) usam aspas simples.'},
+    {q:'A indentação e as quebras de linha mudam o resultado da consulta?', o:['Sim, o banco lê só a primeira linha','Sim, mas só em consultas grandes','Não, servem para facilitar a leitura','Só mudam se estiver em minúsculas'], a:2, e:'O SQL ignora espaços extras. A indentação é um cuidado com quem vai ler.'},
+    {q:'Complete: todo comando SQL termina com...', fill:true, pre:'SELECT 1', post:'', ok:[';'], ph:'?', e:'O ponto e vírgula marca o fim do comando.'}
+  ]
+},
+{
+  id:'tiposdados', short:'Tipos de dados', tag:'Estrutura',
+  title:'Tipos de dados: INT, VARCHAR e companhia',
+  lead:'Cada coluna precisa dizer que tipo de coisa vai guardar. É o que o banco usa para proteger seus dados de erros.',
+  blocks:[
+    {t:'p', x:`Uma coluna <code>idade</code> não deveria aceitar "banana". Definir o tipo é como colocar cada coisa na gaveta certa. Estes são os que você mais vai usar:`},
+    {t:'table', mac:false, cols:['Tipo','Guarda','Exemplo'], rows:[
+      ['INTEGER (INT)','Números inteiros','<code>42</code>, <code>-7</code>'],
+      ['BIGINT','Inteiros muito grandes','<code>9000000000</code>'],
+      ['SERIAL','Inteiro que se numera sozinho (1, 2, 3...). Perfeito para ids','<code>1</code>, <code>2</code>, <code>3</code>'],
+      ['NUMERIC(10,2)','Decimal exato: 10 dígitos no total, 2 depois da vírgula. Use para dinheiro','<code>249.90</code>'],
+      ['VARCHAR(n)','Texto de até n caracteres','<code>\'Ana Souza\'</code>'],
+      ['TEXT','Texto de qualquer tamanho','uma descrição longa'],
+      ['BOOLEAN','Verdadeiro ou falso','<code>TRUE</code>, <code>FALSE</code>'],
+      ['DATE','Só a data','<code>\'2026-09-19\'</code>'],
+      ['TIMESTAMP','Data e hora','<code>\'2026-09-19 14:30:00\'</code>'],
+      ['UUID','Identificador único longo e aleatório','<code>a0eebc99-9c0b-...</code>'],
+      ['JSONB','Um bloco JSON pesquisável','<code>{"cor":"azul"}</code>']
+    ]},
+    {t:'h', x:'Escolhas que quebram a cabeça de iniciantes'},
+    {t:'cards', items:[
+      {h:'Dinheiro', x:'Use <code>NUMERIC(10,2)</code>. Tipos como REAL e DOUBLE guardam valores aproximados e podem gerar centavos fantasmas.'},
+      {h:'CPF e telefone', x:'Use <code>VARCHAR</code>. Não fazemos conta com eles e um CPF pode começar com zero, que um INTEGER apagaria.'},
+      {h:'VARCHAR ou TEXT?', x:'No PostgreSQL o desempenho é o mesmo. Use VARCHAR(n) quando existe um limite natural (nome, e-mail) e TEXT quando não existe.'},
+      {h:'Datas', x:'Nunca guarde data como texto. Com <code>DATE</code> e <code>TIMESTAMP</code> você pode somar dias, comparar e ordenar direito.'}
+    ]}
+  ],
+  quiz:[
+    {q:'Qual tipo é o mais indicado para o preço de um produto?', o:['VARCHAR(10)','NUMERIC(10,2)','BOOLEAN','DATE'], a:1, e:'NUMERIC guarda decimais de forma exata, o que importa para dinheiro.'},
+    {q:'Por que o CPF deve ser VARCHAR e não INTEGER?', o:['Porque INTEGER é lento','Porque CPF tem zero à esquerda e não fazemos conta com ele','Porque INTEGER não existe no PostgreSQL','Porque CPF é sempre texto longo'], a:1, e:'Um INTEGER descartaria o zero inicial. CPF é identificador, não número para somar.'},
+    {q:'Qual tipo numera sozinho 1, 2, 3... a cada nova linha?', o:['SERIAL','VARCHAR','TIMESTAMP','JSONB'], a:0, e:'SERIAL cria uma sequência automática, ótima para chaves primárias.'}
+  ]
+},
+{
+  id:'create', short:'CREATE DATABASE e TABLE', tag:'Estrutura',
+  title:'CREATE DATABASE e CREATE TABLE',
+  lead:'Chegou a hora de construir: primeiro o banco, depois as tabelas.',
+  blocks:[
+    {t:'h', x:'1. Criando o banco'},
+    {t:'code', file:'01_criar_banco.sql', x:`-- cria um banco vazio chamado loja_dev
+CREATE DATABASE loja_dev;
+
+-- no psql, entre nele:
+-- \\c loja_dev`},
+    {t:'note', k:'No pgAdmin', x:`Clique com o botão direito em <b>Databases</b>, escolha <b>Create → Database</b>, digite o nome e salve. Mesmo resultado, sem código.`},
+    {t:'h', x:'2. Criando tabelas'},
+    {t:'p', x:`Dentro do banco, cada tabela descreve uma "coisa" do mundo real: categorias, produtos, clientes. Cada coluna tem <b>nome</b>, <b>tipo</b> e, se preciso, <b>regras</b>.`},
+    {t:'code', file:'02_criar_tabelas.sql', x:`CREATE TABLE categorias (
+    id    SERIAL PRIMARY KEY,
+    nome  VARCHAR(60) NOT NULL UNIQUE
+);
+
+CREATE TABLE produtos (
+    id            SERIAL PRIMARY KEY,
+    nome          VARCHAR(120) NOT NULL,
+    descricao     TEXT,
+    preco         NUMERIC(10, 2) NOT NULL CHECK (preco >= 0),
+    estoque       INTEGER NOT NULL DEFAULT 0,
+    ativo         BOOLEAN DEFAULT TRUE,
+    criado_em     TIMESTAMP DEFAULT NOW(),
+    categoria_id  INTEGER REFERENCES categorias (id)
+);`},
+    {t:'h', x:'As regras (constraints) em uma olhada'},
+    {t:'cards', items:[
+      {h:'PRIMARY KEY', x:'Identifica cada linha de forma única. Não repete e não pode ser vazia.'},
+      {h:'NOT NULL', x:'A coluna é obrigatória. Sem valor, o banco recusa a linha.'},
+      {h:'UNIQUE', x:'Não deixa dois registros com o mesmo valor, como dois e-mails iguais.'},
+      {h:'DEFAULT', x:'Valor usado quando você não informa nada, como estoque 0.'},
+      {h:'CHECK', x:'Uma condição que precisa ser verdadeira, como preço maior ou igual a zero.'},
+      {h:'REFERENCES', x:'Chave estrangeira: aponta para uma linha de outra tabela. Veremos no módulo de relacionamentos.'}
+    ]},
+    {t:'h', x:'Mudando e apagando'},
+    {t:'code', file:'03_alterar.sql', x:`-- adiciona uma coluna
+ALTER TABLE produtos ADD COLUMN peso_kg NUMERIC(6, 2);
+
+-- apaga uma tabela inteira (sem volta!)
+DROP TABLE produtos;
+
+-- apaga o banco inteiro (sem volta!)
+DROP DATABASE loja_dev;`},
+    {t:'note', k:'Cuidado', warn:true, x:`<code>DROP</code> apaga estrutura <b>e</b> dados, e não existe lixeira. Só use em bancos de estudo ou depois de ter um backup.`}
+  ],
+  quiz:[
+    {q:'Complete o comando para criar um banco chamado loja:', fill:true, pre:'CREATE', post:'loja;', ok:['database'], ph:'?', e:'CREATE DATABASE nome; cria o banco.'},
+    {q:'Qual regra impede dois clientes com o mesmo e-mail?', o:['NOT NULL','DEFAULT','UNIQUE','CHECK'], a:2, e:'UNIQUE não aceita valores repetidos na coluna.'},
+    {q:'O que faz a linha  estoque INTEGER NOT NULL DEFAULT 0 ?', o:['Estoque é opcional e começa em 0','Estoque é obrigatório e, se não informado, vale 0','Estoque só aceita o número 0','Estoque é texto'], a:1, e:'NOT NULL torna obrigatório e DEFAULT 0 preenche o valor quando você não informa.'}
+  ]
+},
+{
+  id:'insert', short:'INSERT e SELECT', tag:'Consultas',
+  title:'INSERT e SELECT: guardar e perguntar',
+  lead:'Com as tabelas prontas, vamos colocar dados dentro e fazer as primeiras perguntas.',
+  blocks:[
+    {t:'h', x:'Inserindo linhas'},
+    {t:'code', file:'04_inserir.sql', x:`INSERT INTO categorias (nome)
+VALUES ('Teclados'), ('Mouses'), ('Monitores');
+
+INSERT INTO produtos (nome, preco, estoque, categoria_id)
+VALUES
+    ('Teclado Mecânico', 249.90, 15, 1),
+    ('Mouse Gamer',      129.90, 40, 2),
+    ('Monitor 24 pol',   899.00,  8, 3),
+    ('Teclado Compacto', 179.90,  0, 1);`},
+    {t:'p', x:`Repare que <code>id</code> ficou de fora: o <code>SERIAL</code> preenche sozinho. A ordem dos valores segue a ordem das colunas listadas.`},
+    {t:'h', x:'Lendo dados'},
+    {t:'code', file:'05_consultar.sql', x:`SELECT nome, preco
+FROM produtos;`},
+    {t:'table', file:'Data Output — 4 linhas', cols:['nome','preco'], rows:[['Teclado Mecânico','249.90'],['Mouse Gamer','129.90'],['Monitor 24 pol','899.00'],['Teclado Compacto','179.90']]},
+    {t:'p', x:`<code>SELECT</code> diz <b>quais colunas</b> você quer e <code>FROM</code> diz <b>de qual tabela</b>. Com <code>SELECT *</code> você pede todas as colunas, útil para explorar mas evite em sistemas reais.`},
+    {t:'h', x:'Apelidos e contas'},
+    {t:'code', file:'06_apelidos.sql', x:`SELECT
+    nome AS produto,
+    ROUND(preco * 1.10, 2) AS preco_reajustado
+FROM produtos;`},
+    {t:'table', file:'Data Output — 4 linhas', cols:['produto','preco_reajustado'], rows:[['Teclado Mecânico','274.89'],['Mouse Gamer','142.89'],['Monitor 24 pol','988.90'],['Teclado Compacto','197.89']]},
+    {t:'note', k:'Detalhe', x:`<code>AS</code> renomeia a coluna só no resultado, sem mexer na tabela. <code>ROUND(valor, 2)</code> arredonda para 2 casas decimais.`}
+  ],
+  quiz:[
+    {q:'Por que o id não aparece no INSERT de produtos?', o:['Porque o id é proibido','Porque o SERIAL preenche o id sozinho','Porque o id é sempre zero','Porque é um erro do exemplo'], a:1, e:'SERIAL gera 1, 2, 3... automaticamente.'},
+    {q:'Qual consulta traz apenas as colunas nome e preco?', o:['SELECT nome, preco FROM produtos;','SELECT produtos FROM nome, preco;','GET nome, preco IN produtos;','FROM produtos SELECT *;'], a:0, e:'A ordem é sempre SELECT (o quê) e FROM (de onde).'},
+    {q:'Para que serve o AS em  nome AS produto ?', o:['Apagar a coluna','Somar valores','Dar um apelido à coluna no resultado','Ordenar o resultado'], a:2, e:'AS cria um apelido (alias) que só existe no resultado da consulta.'}
+  ]
+},
+{
+  id:'where', short:'WHERE, ORDER BY, LIMIT', tag:'Consultas',
+  title:'Filtrando: WHERE, ORDER BY e LIMIT',
+  lead:'Ninguém quer todas as linhas. Vamos pedir só o que interessa, na ordem que interessa.',
+  blocks:[
+    {t:'code', file:'07_filtrar.sql', x:`SELECT nome, preco
+FROM produtos
+WHERE preco < 200
+ORDER BY preco DESC
+LIMIT 5;`},
+    {t:'table', file:'Data Output — 2 linhas', cols:['nome','preco'], rows:[['Teclado Compacto','179.90'],['Mouse Gamer','129.90']]},
+    {t:'p', x:`<code>WHERE</code> filtra as linhas, <code>ORDER BY</code> ordena (<code>ASC</code> crescente, <code>DESC</code> decrescente) e <code>LIMIT</code> corta a quantidade.`},
+    {t:'h', x:'Os operadores do dia a dia'},
+    {t:'table', mac:false, cols:['Operador','Significa','Exemplo'], rows:[
+      ['=  &lt;&gt;  &gt;  &lt;  &gt;=  &lt;=','Comparações (<code>&lt;&gt;</code> é "diferente")','<code>WHERE estoque &lt;&gt; 0</code>'],
+      ['AND / OR / NOT','Combinar condições','<code>WHERE preco &lt; 200 AND estoque &gt; 0</code>'],
+      ['BETWEEN','Dentro de uma faixa (inclusive)','<code>WHERE preco BETWEEN 100 AND 300</code>'],
+      ['IN','Igual a um da lista','<code>WHERE categoria_id IN (1, 2)</code>'],
+      ['LIKE / ILIKE','Padrão de texto. <code>%</code> vale por qualquer coisa. ILIKE ignora maiúsculas','<code>WHERE nome LIKE \'Teclado%\'</code>'],
+      ['IS NULL','Valor ausente','<code>WHERE descricao IS NULL</code>']
+    ]},
+    {t:'note', k:'Pegadinha clássica', warn:true, x:`<code>NULL</code> significa "desconhecido", então nada é igual a ele, nem outro NULL. Escreva <code>IS NULL</code> ou <code>IS NOT NULL</code>. <code>= NULL</code> nunca retorna nada.`},
+    {t:'code', file:'08_like.sql', x:`SELECT nome, estoque
+FROM produtos
+WHERE nome LIKE 'Teclado%'
+ORDER BY nome;`},
+    {t:'table', file:'Data Output — 2 linhas', cols:['nome','estoque'], rows:[['Teclado Compacto','0'],['Teclado Mecânico','15']]}
+  ],
+  quiz:[
+    {q:'Com os 4 produtos que inserimos, qual produto volta em  WHERE estoque = 0 ?', o:['Mouse Gamer','Teclado Mecânico','Teclado Compacto','Monitor 24 pol'], a:2, e:'Só o Teclado Compacto foi cadastrado com estoque 0.'},
+    {q:'Como procurar produtos sem descrição preenchida?', o:['WHERE descricao = NULL','WHERE descricao IS NULL','WHERE descricao = \'\'','WHERE NOT descricao'], a:1, e:'NULL só se compara com IS NULL / IS NOT NULL.'},
+    {q:'O que faz  ORDER BY preco DESC  ?', o:['Ordena do menor para o maior','Ordena do maior para o menor','Remove os preços','Descreve a tabela'], a:1, e:'DESC é decrescente: do maior para o menor.'}
+  ]
+},
+{
+  id:'update', short:'UPDATE e DELETE', tag:'Manipulação',
+  title:'UPDATE e DELETE: mexer com cuidado',
+  lead:'Alterar e apagar dados é poderoso e perigoso. Aprenda o hábito que salva carreiras.',
+  blocks:[
+    {t:'code', file:'09_alterar_dados.sql', x:`-- vendeu 1 mouse: diminui o estoque do produto 2
+UPDATE produtos
+SET estoque = estoque - 1
+WHERE id = 2;
+
+-- remove produtos desativados
+DELETE FROM produtos
+WHERE ativo = FALSE;`},
+    {t:'note', k:'Regra número 1', warn:true, x:`Sem <code>WHERE</code>, o <code>UPDATE</code> e o <code>DELETE</code> atingem <b>todas as linhas</b> da tabela. <code>UPDATE produtos SET preco = 0;</code> zera o preço de tudo.`},
+    {t:'h', x:'O hábito que protege você'},
+    {t:'ol', items:[
+      'Escreva primeiro um <code>SELECT</code> com o mesmo <code>WHERE</code> e confira quais linhas voltam.',
+      'Só então troque o SELECT por UPDATE ou DELETE, mantendo o WHERE.',
+      'Em mudanças importantes, use uma <b>transação</b> e confira antes de confirmar.'
+    ]},
+    {t:'code', file:'10_transacao.sql', x:`BEGIN;                       -- abre uma "área de teste"
+
+UPDATE produtos SET preco = 0;   -- oops, esqueci o WHERE!
+
+SELECT * FROM produtos;      -- vejo o estrago
+ROLLBACK;                    -- desfaz tudo, como se nada tivesse acontecido
+-- (se estivesse certo, usaria COMMIT; para confirmar)`},
+    {t:'note', k:'DELETE x DROP', x:`<code>DELETE</code> remove <b>linhas</b> e a tabela continua existindo. <code>DROP TABLE</code> remove a <b>tabela inteira</b>.`}
+  ],
+  quiz:[
+    {q:'O que acontece com  UPDATE produtos SET preco = 0;  ?', o:['Erro: falta o WHERE','Altera só a primeira linha','Zera o preço de todas as linhas','Nada, precisa de COMMIT'], a:2, e:'Sem WHERE, todas as linhas são atingidas.'},
+    {q:'Qual é uma boa forma de conferir o que um DELETE vai apagar?', o:['Rodar e torcer','Rodar um SELECT com o mesmo WHERE antes','Trocar DELETE por DROP','Apagar o banco e recriar'], a:1, e:'O SELECT mostra exatamente as linhas que seriam afetadas.'},
+    {q:'Qual comando desfaz as mudanças de uma transação aberta?', o:['COMMIT','BEGIN','ROLLBACK','SELECT'], a:2, e:'ROLLBACK cancela tudo que foi feito desde o BEGIN.'}
+  ]
+},
+{
+  id:'join', short:'Relacionamentos e JOIN', tag:'Relacionamentos',
+  title:'Relacionamentos e JOIN',
+  lead:'O "relacional" do banco relacional: tabelas conversando entre si por chaves.',
+  blocks:[
+    {t:'p', x:`Em vez de repetir o nome do cliente em cada pedido, guardamos o nome uma vez em <code>clientes</code> e, no pedido, só o <b>número</b> do cliente. Esse número é a <b>chave estrangeira</b> (FK): ela aponta para a chave primária (PK) de outra tabela.`},
+    {t:'code', file:'11_clientes_pedidos.sql', x:`CREATE TABLE clientes (
+    id    SERIAL PRIMARY KEY,
+    nome  VARCHAR(100) NOT NULL,
+    email VARCHAR(150) UNIQUE
+);
+
+CREATE TABLE pedidos (
+    id          SERIAL PRIMARY KEY,
+    cliente_id  INTEGER NOT NULL REFERENCES clientes (id),
+    total       NUMERIC(10, 2) NOT NULL
+);`},
+    {t:'cards', items:[
+      {h:'1 : 1', x:'Uma pessoa tem um CPF e cada CPF é de uma pessoa.'},
+      {h:'1 : N', x:'Um cliente faz vários pedidos, cada pedido é de um cliente. É o caso mais comum: a FK fica no lado "N".'},
+      {h:'N : N', x:'Alunos e disciplinas. Precisa de uma <b>tabela associativa</b> no meio, com duas FKs (ex.: <code>matriculas</code>).'}
+    ]},
+    {t:'h', x:'JOIN: juntando as tabelas na consulta'},
+    {t:'p', x:`Suponha estes dados: clientes Ana (1), Bruno (2) e Carla (3); pedidos 101 e 102 da Ana, e 103 do Bruno. A Carla ainda não comprou nada.`},
+    {t:'code', file:'12_inner_join.sql', x:`SELECT c.nome, p.id AS pedido, p.total
+FROM clientes c
+INNER JOIN pedidos p
+    ON p.cliente_id = c.id;`},
+    {t:'table', file:'INNER JOIN — só quem tem pedido', cols:['nome','pedido','total'], rows:[['Ana','101','250.00'],['Ana','102','80.00'],['Bruno','103','129.90']]},
+    {t:'code', file:'13_left_join.sql', x:`SELECT c.nome, p.id AS pedido, p.total
+FROM clientes c
+LEFT JOIN pedidos p
+    ON p.cliente_id = c.id;`},
+    {t:'table', file:'LEFT JOIN — todos os clientes', cols:['nome','pedido','total'], rows:[['Ana','101','250.00'],['Ana','102','80.00'],['Bruno','103','129.90'],['Carla','NULL','NULL']]},
+    {t:'note', k:'Como lembrar', x:`<b>INNER JOIN</b> traz só o que combina dos dois lados. <b>LEFT JOIN</b> traz tudo da tabela da esquerda (<code>FROM</code>) e completa com NULL onde não achou par. As letras <code>c</code> e <code>p</code> são apelidos de tabela, para escrever menos.`}
+  ],
+  quiz:[
+    {q:'Na tabela pedidos, a coluna cliente_id é...', o:['Chave primária','Chave estrangeira','Um tipo de dado','Um índice'], a:1, e:'Ela aponta para o id da tabela clientes: é uma chave estrangeira.'},
+    {q:'Qual JOIN mostraria a Carla mesmo sem pedidos?', o:['INNER JOIN','LEFT JOIN de clientes para pedidos','DROP JOIN','Nenhum'], a:1, e:'LEFT JOIN mantém todas as linhas da tabela da esquerda.'},
+    {q:'Alunos fazem várias disciplinas e disciplinas têm vários alunos. Como modelar?', o:['Uma coluna com lista de disciplinas no aluno','Uma tabela associativa entre alunos e disciplinas','Duas tabelas idênticas','Não é possível'], a:1, e:'Relações N:N viram uma tabela no meio, com FK para cada lado.'}
+  ]
+},
+{
+  id:'agg', short:'Agregações e GROUP BY', tag:'Análise',
+  title:'Agregações e GROUP BY: transformando linhas em respostas',
+  lead:'Quanto vendemos? Quantos pedidos por cliente? Agora o banco faz as contas por você.',
+  blocks:[
+    {t:'table', mac:false, cols:['Função','Faz'], rows:[
+      ['COUNT(*)','Conta linhas'],['SUM(col)','Soma'],['AVG(col)','Média'],['MIN(col) / MAX(col)','Menor / maior valor']
+    ]},
+    {t:'code', file:'14_group_by.sql', x:`SELECT
+    c.nome,
+    COUNT(p.id)                AS qtd_pedidos,
+    COALESCE(SUM(p.total), 0)  AS gasto
+FROM clientes c
+LEFT JOIN pedidos p ON p.cliente_id = c.id
+GROUP BY c.nome
+ORDER BY gasto DESC;`},
+    {t:'table', file:'Data Output — 3 linhas', cols:['nome','qtd_pedidos','gasto'], rows:[['Ana','2','330.00'],['Bruno','1','129.90'],['Carla','0','0']]},
+    {t:'p', x:`<code>GROUP BY</code> forma grupos (um por cliente) e as funções de agregação calculam dentro de cada grupo. <code>COALESCE(x, 0)</code> troca NULL por 0, por isso a Carla aparece com 0 e não vazia.`},
+    {t:'h', x:'WHERE filtra linhas, HAVING filtra grupos'},
+    {t:'code', file:'15_having.sql', x:`SELECT cliente_id, SUM(total) AS gasto
+FROM pedidos
+WHERE total > 50
+GROUP BY cliente_id
+HAVING SUM(total) > 200;`},
+    {t:'h', x:'A ordem em que o banco pensa'},
+    {t:'p', x:`Você escreve <code>SELECT</code> primeiro, mas o banco <b>executa</b> nesta ordem. Isso explica por que <code>WHERE</code> não enxerga o resultado de <code>SUM</code>:`},
+    {t:'flow', items:['FROM / JOIN','WHERE','GROUP BY','HAVING','SELECT','ORDER BY','LIMIT']}
+  ],
+  quiz:[
+    {q:'Qual função conta quantas linhas existem?', o:['SUM','COUNT','AVG','MAX'], a:1, e:'COUNT(*) conta linhas.'},
+    {q:'Você quer só os clientes que gastaram mais de 200 no total. Onde colocar a condição?', o:['No WHERE','No HAVING','No LIMIT','No FROM'], a:1, e:'A soma só existe depois do GROUP BY, então o filtro vai no HAVING.'},
+    {q:'Qual é o primeiro passo na ordem de execução do banco?', o:['SELECT','ORDER BY','FROM / JOIN','LIMIT'], a:2, e:'O banco primeiro descobre de onde vêm as linhas (FROM e JOIN).'}
+  ]
+},
+{
+  id:'norm', short:'Normalização', tag:'Modelagem',
+  title:'Normalização: arrumando a casa',
+  lead:'Como projetar tabelas para não repetir dados e não criar contradições.',
+  blocks:[
+    {t:'p', x:`Normalizar é organizar as tabelas seguindo regras chamadas <b>formas normais</b>. Comece olhando esta tabela problemática:`},
+    {t:'table', file:'pedido_bruto — como uma planilha', cols:['id_pedido','cliente','telefones','produtos'], rows:[['501','Ana','3199999;3188888','Mouse, Teclado']]},
+    {t:'h', x:'As três primeiras formas normais'},
+    {t:'cards', items:[
+      {h:'1FN — valores atômicos', x:'Uma célula, um valor. "3199999;3188888" e "Mouse, Teclado" são listas escondidas: viram linhas em tabelas próprias (<code>cliente_telefone</code>, <code>item_pedido</code>).'},
+      {h:'2FN — sem dependência parcial', x:'Se a chave tem duas colunas (venda + produto), o nome do produto depende só do produto. Ele sai para a tabela <code>produto</code>.'},
+      {h:'3FN — sem dependência transitiva', x:'Se o salário depende da categoria e a categoria depende do funcionário, o salário vai para uma tabela <code>categoria</code>.'}
+    ]},
+    {t:'code', file:'16_normalizado.sql', x:`-- depois da 1FN e 2FN
+CREATE TABLE pedido (
+    id_pedido  SERIAL PRIMARY KEY,
+    cliente    VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE produto (
+    cod_produto    SERIAL PRIMARY KEY,
+    nome_produto   VARCHAR(100) NOT NULL,
+    preco_produto  NUMERIC(10, 2) NOT NULL
+);
+
+CREATE TABLE item_pedido (
+    id_pedido    INTEGER REFERENCES pedido (id_pedido),
+    cod_produto  INTEGER REFERENCES produto (cod_produto),
+    qtd          INTEGER NOT NULL,
+    PRIMARY KEY (id_pedido, cod_produto)
+);`},
+    {t:'note', k:'Regra prática', x:`Cada fato deve morar em <b>um só lugar</b>. Se você precisa mudar o preço do Mouse Gamer e tem que editar em vários lugares, a modelagem ainda pode melhorar.`}
+  ],
+  quiz:[
+    {q:'Guardar "Mouse, Teclado" numa única célula fere qual forma normal?', o:['1FN','2FN','3FN','Nenhuma'], a:0, e:'A 1FN exige valores atômicos: um valor por célula.'},
+    {q:'A chave é (cod_venda, cod_produto), mas nome_produto depende só de cod_produto. Qual forma é violada?', o:['1FN','2FN','3FN','BCNF'], a:1, e:'Dependência parcial da chave composta viola a 2FN.'},
+    {q:'O salário depende da categoria, que depende do funcionário. Isso é...', o:['Dependência transitiva (3FN)','Valor não atômico (1FN)','Chave duplicada','Um tipo de JOIN'], a:0, e:'Dependência de um atributo não-chave em outro atributo não-chave: 3FN.'}
+  ]
+},
+{
+  id:'avancado', short:'Índices, transações e views', tag:'Avançado',
+  title:'Nível avançado: índices, transações e views',
+  lead:'Últimas ferramentas para deixar seu banco rápido, seguro e organizado.',
+  blocks:[
+    {t:'h', x:'Índices: o índice remissivo do livro'},
+    {t:'p', x:`Sem índice, para achar um cliente por e-mail o banco lê a tabela inteira. Com índice, vai direto ao ponto.`},
+    {t:'code', file:'17_indice.sql', x:`CREATE INDEX idx_clientes_email
+    ON clientes (email);
+
+-- descubra como o banco executa uma consulta
+EXPLAIN ANALYZE
+SELECT * FROM clientes WHERE email = 'ana@exemplo.com';`},
+    {t:'note', k:'Equilíbrio', x:`Índice acelera a leitura mas deixa a escrita um pouco mais lenta e ocupa espaço. Crie em colunas muito usadas em <code>WHERE</code> e <code>JOIN</code>, não em todas.`},
+    {t:'h', x:'Transações e ACID'},
+    {t:'p', x:`Uma transferência de dinheiro tem dois passos: tirar de uma conta e colocar em outra. Se cair a luz entre eles, o dinheiro sumiria. A transação agrupa os passos: ou tudo acontece ou nada acontece.`},
+    {t:'code', file:'18_transferencia.sql', x:`BEGIN;
+
+UPDATE contas SET saldo = saldo - 100 WHERE id = 1;
+UPDATE contas SET saldo = saldo + 100 WHERE id = 2;
+
+COMMIT;`},
+    {t:'cards', items:[
+      {h:'A — Atomicidade', x:'Tudo ou nada.'},
+      {h:'C — Consistência', x:'As regras (constraints) sempre são respeitadas.'},
+      {h:'I — Isolamento', x:'Transações simultâneas não se atrapalham.'},
+      {h:'D — Durabilidade', x:'Depois do COMMIT, o dado sobrevive a quedas.'}
+    ]},
+    {t:'h', x:'Views: consultas com nome'},
+    {t:'code', file:'19_view.sql', x:`CREATE VIEW resumo_clientes AS
+SELECT c.nome, COUNT(p.id) AS qtd_pedidos
+FROM clientes c
+LEFT JOIN pedidos p ON p.cliente_id = c.id
+GROUP BY c.nome;
+
+SELECT * FROM resumo_clientes;`},
+    {t:'h', x:'Backup: o seguro do seu banco'},
+    {t:'code', file:'terminal', nolab:true, x:`-- gera um arquivo com o banco inteiro
+pg_dump -U postgres loja_dev > backup_loja.sql
+
+-- restaura em outro banco
+psql -U postgres -d loja_novo -f backup_loja.sql`}
+  ],
+  quiz:[
+    {q:'Para que serve um índice?', o:['Apagar dados duplicados','Acelerar buscas em uma coluna','Criar backup','Proteger com senha'], a:1, e:'O índice permite achar linhas sem ler a tabela inteira.'},
+    {q:'O que significa o A de ACID (Atomicidade)?', o:['Todos os passos acontecem ou nenhum acontece','Os dados ficam sempre em ordem alfabética','Só um usuário por vez','O banco é automático'], a:0, e:'Atomicidade: a transação é indivisível, tudo ou nada.'},
+    {q:'Qual ferramenta guarda uma consulta com nome, para reutilizar como se fosse uma tabela?', o:['INDEX','VIEW','BEGIN','LIMIT'], a:1, e:'Uma VIEW é uma consulta salva que você usa como tabela.'}
+  ]
+}
+];
+
+/* ============ EXPANSÃO UNIVERSITÁRIA: extensões e módulos novos ============ */
+(function () {
+  const by = {};
+  MODS.forEach(m => { by[m.id] = m; });
+
+  /* ---------- 1. Por que existe um banco: mais teoria ---------- */
+  by.porque.blocks.push(
+    {t:'h', x:'Do dado ao conhecimento'},
+    {t:'p', x:`Um <b>dado</b> sozinho não diz nada: <code>37,5</code>. Com contexto vira <b>informação</b>: "a temperatura da Ana é 37,5 °C". Quando alguém usa a informação para decidir, nasce o <b>conhecimento</b>: "ela está com febre, é melhor procurar um médico". O banco de dados guarda dados de um jeito que a informação possa ser extraída rápido e sem erros.`},
+    {t:'flow', items:['Dado','Processamento','Informação','Decisão','Conhecimento']},
+    {t:'h', x:'As quatro operações básicas (CRUD)'},
+    {t:'table', mac:false, cols:['Operação','Em inglês','Comando SQL'], rows:[
+      ['Inserir','Create','<code>INSERT</code>'],['Consultar','Read','<code>SELECT</code>'],['Atualizar','Update','<code>UPDATE</code>'],['Remover','Delete','<code>DELETE</code>']
+    ]},
+    {t:'h', x:'Quando um SGBD vale a pena'},
+    {t:'ul', items:[
+      '<b>Menos redundância</b>: cada dado é guardado uma vez e compartilhado, em vez de copiado em vários arquivos.',
+      '<b>Mais consistência</b>: como o dado existe em um só lugar, não há versões diferentes da mesma informação.',
+      '<b>Compartilhamento</b>: várias pessoas e programas usam os mesmos dados ao mesmo tempo, com controle.',
+      '<b>Segurança</b>: cada perfil vê e altera só o que tem permissão.',
+      '<b>Integridade</b>: o banco recusa dados que quebram as regras (nota 37 quando o máximo é 10).',
+      '<b>Backup e recuperação</b>: existem rotinas para restaurar os dados depois de uma falha.',
+      '<b>Múltiplas visões</b>: os mesmos dados aparecem de formas diferentes para cada tipo de usuário.'
+    ]},
+    {t:'h', x:'Quem trabalha com bancos de dados'},
+    {t:'cards', items:[
+      {h:'DBA', x:'Administrador de banco de dados: instala, monitora o desempenho, controla acessos e cuida dos backups.'},
+      {h:'Projetista de BD', x:'Conversa com os usuários, descobre quais dados precisam ser guardados e desenha as tabelas.'},
+      {h:'Desenvolvedor', x:'Escreve os programas (Java, Python...) que consultam e alteram o banco.'},
+      {h:'Usuário final', x:'Quem usa o sistema no dia a dia, muitas vezes sem saber que existe um banco por trás.'}
+    ]}
+  );
+  by.porque.quiz.push({q:'"A temperatura da Ana é 37,5 °C" é um exemplo de...', o:['Dado','SGBD','Informação','Conhecimento'], a:2, e:'O número 37,5 é o dado. Com o contexto (de quem, em que unidade) ele vira informação. Decidir ir ao médico já é conhecimento.'});
+
+  /* ---------- 2. Tipos de bancos: história e mercado ---------- */
+  by.tipos.blocks.push(
+    {t:'h', x:'Um pouco de história: modelos de dados'},
+    {t:'cards', items:[
+      {h:'Hierárquico', x:'Dados em árvore: cada registro filho tem um único pai. Rápido para caminhos fixos, ruim quando o mesmo dado pertence a dois lugares. Exemplo clássico: o IMS da IBM.'},
+      {h:'Em rede', x:'Evolução do hierárquico: um registro pode ter vários pais, formando um grafo. Mais flexível, mas o programador precisa navegar pelos caminhos.'},
+      {h:'Relacional', x:'Tabelas ligadas por valores, sem caminhos fixos e com base matemática (álgebra relacional). Trouxe a independência entre dados e programas.'},
+      {h:'Objeto-relacional', x:'Relacional com recursos de objetos: tipos próprios, herança entre tabelas. O PostgreSQL se descreve assim.'}
+    ]},
+    {t:'h', x:'Bancos que você vai encontrar por aí'},
+    {t:'table', mac:false, cols:['SGBD','Tipo','Onde costuma aparecer'], rows:[
+      ['Oracle Database','Relacional','Grandes corporações e sistemas críticos'],
+      ['SQL Server','Relacional','Ambiente Microsoft, empresas e governo'],
+      ['MySQL / MariaDB','Relacional','Web e hospedagens compartilhadas'],
+      ['PostgreSQL','Relacional (objeto-relacional)','Web, SaaS, dados geográficos, muita variedade'],
+      ['SQLite','Relacional embutido','Aplicativos, celulares e navegadores: o banco é um arquivo'],
+      ['MongoDB','Documento (NoSQL)','Dados JSON flexíveis'],
+      ['Redis','Chave-valor em memória','Cache, sessões, filas, rankings'],
+      ['Cassandra','Colunar distribuído (NoSQL)','Volumes gigantes espalhados em muitos servidores'],
+      ['InfluxDB','Séries temporais','Métricas e sensores em ordem cronológica'],
+      ['Neo4j','Grafo','Recomendações e redes de relacionamento']
+    ]}
+  );
+  by.tipos.quiz.push({q:'Em qual modelo cada registro filho tem um único pai, formando uma árvore?', o:['Relacional','Em rede','Chave-valor','Hierárquico'], a:3, e:'No modelo hierárquico, os registros formam uma árvore de pais e filhos. O modelo em rede permitiu vários pais.'});
+
+  /* ---------- 3. NOVO: Arquitetura de um SGBD ---------- */
+  const arquitetura = {
+    id:'arquitetura', short:'Arquitetura do SGBD', tag:'Fundamentos',
+    title:'Arquitetura de um SGBD',
+    lead:'Por dentro do sistema: camadas, servidores, os três níveis de visão e onde o banco guarda a descrição de si mesmo.',
+    blocks:[
+      {t:'h', x:'Software em três camadas'},
+      {t:'p', x:`Aplicações modernas separam responsabilidades. Cada parte muda sem quebrar as outras, e a camada de dados fica protegida atrás das demais.`},
+      {t:'cards', items:[
+        {h:'Apresentação', x:'O que o usuário vê e toca: telas, formulários, botões. No seu caminho: React.'},
+        {h:'Negócio', x:'As regras do sistema: validar um pedido, calcular desconto, decidir quem pode o quê. No seu caminho: Spring Boot.'},
+        {h:'Persistência', x:'Guarda os dados de forma permanente. No seu caminho: PostgreSQL.'}
+      ]},
+      {t:'flow', items:['Usuário','React','API Spring Boot','PostgreSQL']},
+      {t:'h', x:'Onde o SGBD roda'},
+      {t:'cards', items:[
+        {h:'Centralizado', x:'Tudo em um único computador. Simples, mas limitado por uma máquina só.'},
+        {h:'Cliente-servidor', x:'O servidor guarda os dados, controla concorrência e recupera falhas; os clientes fazem pedidos pela rede. É o PostgreSQL: seu programa conecta na porta 5432.'},
+        {h:'Paralelo', x:'Vários processadores e discos trabalhando juntos para consultar volumes enormes ou atender milhares de transações por segundo.'},
+        {h:'Distribuído', x:'Vários bancos parcialmente independentes, em lugares diferentes, que compartilham um esquema e coordenam as transações.'}
+      ]},
+      {t:'note', k:'Curiosidade', x:`Nem todo banco é um servidor. O <b>SQLite</b> é uma biblioteca que grava tudo em um arquivo. O laboratório desta trilha usa o <b>PGlite</b>: o PostgreSQL compilado para rodar dentro do navegador.`},
+      {t:'h', x:'Arquitetura de três esquemas'},
+      {t:'p', x:`Para separar quem usa os dados de como eles são guardados, o banco trabalha em três níveis de abstração:`},
+      {t:'table', mac:false, cols:['Nível','Quem enxerga','O que descreve'], rows:[
+        ['Externo (visões)','Usuários e programas','Só a parte dos dados que cada grupo precisa. Em SQL: views e permissões.'],
+        ['Conceitual (lógico)','Analistas e DBA','Entidades, relacionamentos, tipos e restrições. Em SQL: as tabelas e constraints.'],
+        ['Interno (físico)','Equipe do SGBD','Arquivos, páginas em disco, índices e caminhos de acesso.']
+      ]},
+      {t:'cards', items:[
+        {h:'Independência lógica', x:'Dá para mudar o esquema conceitual (ex.: acrescentar uma coluna) sem quebrar as visões dos usuários.'},
+        {h:'Independência física', x:'Dá para mudar o armazenamento (ex.: criar um índice, mover o arquivo) sem alterar as tabelas nem os programas.'}
+      ]},
+      {t:'h', x:'Catálogo do sistema e dicionário de dados'},
+      {t:'p', x:`O banco guarda a descrição de si mesmo em tabelas especiais: os <b>metadados</b>, "dados sobre dados". Essa área se chama <b>catálogo do sistema</b>. No PostgreSQL você consulta com SQL, usando o <code>information_schema</code>:`},
+      {t:'code', file:'catalogo.sql', x:`-- lista todas as colunas do seu banco: o catálogo em ação
+SELECT table_name, column_name, data_type, is_nullable
+FROM information_schema.columns
+WHERE table_schema = 'public'
+ORDER BY table_name, ordinal_position;`},
+      {t:'p', x:`O <b>dicionário de dados</b> é a versão documentada disso, escrita para pessoas: para cada atributo, o nome, o tipo, o tamanho, se é obrigatório, se é chave e o que significa. Ele mantém o projeto compreensível meses depois.`},
+      {t:'table', mac:false, cols:['Tabela.coluna','Tipo','Obrigatório','Chave','Descrição'], rows:[
+        ['produtos.id','SERIAL','Sim','PK','Identificador único do produto'],
+        ['produtos.nome','VARCHAR(120)','Sim','','Nome comercial exibido ao cliente'],
+        ['produtos.preco','NUMERIC(10,2)','Sim','','Preço de venda em reais. Nunca negativo (CHECK)'],
+        ['produtos.categoria_id','INTEGER','Não','FK → categorias.id','Categoria do produto']
+      ]}
+    ],
+    quiz:[
+      {q:'Qual camada de uma aplicação é responsável por guardar os dados de forma permanente?', o:['Apresentação','Persistência','Negócio','Rede'], a:1, e:'A camada de persistência é a que grava e recupera dados. O banco de dados vive nela.'},
+      {q:'No PostgreSQL, quem controla concorrência e recuperação de falhas?', o:['O cliente (o navegador)','O servidor do banco','O sistema operacional do usuário','O arquivo CSV'], a:1, e:'Na arquitetura cliente-servidor, o servidor faz o trabalho pesado: acessos, transações, concorrência e recuperação.'},
+      {q:'Adicionar um índice sem precisar mexer nas tabelas nem nos programas demonstra...', o:['Independência lógica','Independência física','Redundância','Normalização'], a:1, e:'Mudou o nível interno (armazenamento) sem afetar os níveis acima: independência física de dados.'},
+      {q:'Metadados são...', o:['Dados que descrevem outros dados','Dados sigilosos','Cópias de segurança','Dados duplicados'], a:0, e:'Metadados descrevem a estrutura do banco, como nomes de tabelas, colunas e tipos. Ficam no catálogo do sistema.'}
+    ]
+  };
+
+  /* ---------- 7. NOVO: Modelo relacional e chaves ---------- */
+  const relacional = {
+    id:'relacional', short:'Modelo relacional e chaves', tag:'Modelagem',
+    title:'O modelo relacional e as chaves',
+    lead:'A teoria que sustenta as tabelas: relações, tuplas, domínios e as regras de integridade que o banco impõe.',
+    blocks:[
+      {t:'p', x:`No modelo relacional, o dado é organizado em <b>relações</b>. Na prática, cada relação é uma tabela, mas os nomes formais aparecem em provas e livros. Aprenda os dois vocabulários:`},
+      {t:'table', mac:false, cols:['Termo formal','Na prática','Exemplo'], rows:[
+        ['Relação','Tabela','<code>produtos</code>'],
+        ['Tupla','Linha (registro)','Uma linha do Mouse Gamer'],
+        ['Atributo','Coluna (campo)','<code>preco</code>'],
+        ['Domínio','Conjunto de valores permitidos','Números decimais maiores ou iguais a 0'],
+        ['Grau','Quantidade de colunas','Grau 7 se a tabela tem 7 colunas'],
+        ['Cardinalidade da relação','Quantidade de linhas','4 produtos'],
+        ['Valor nulo','Ausente ou desconhecido','<code>NULL</code>']
+      ]},
+      {t:'note', k:'Detalhe teórico', x:`Uma relação é um <b>conjunto</b>: não tem ordem entre as linhas nem linhas repetidas. Cada valor é <b>atômico</b> (indivisível). O SQL na prática deixa você quebrar essas regras, mas uma boa chave primária protege o modelo.`},
+      {t:'h', x:'A família das chaves'},
+      {t:'cards', items:[
+        {h:'Superchave', x:'Qualquer conjunto de atributos que identifica uma linha de forma única. (cpf), (cpf, nome) e (id, cpf) podem ser superchaves.'},
+        {h:'Chave candidata', x:'Superchave mínima: se tirar qualquer atributo, deixa de identificar. Uma tabela pode ter várias.'},
+        {h:'Chave primária (PK)', x:'A candidata que você escolhe como identificador oficial. Única e nunca nula.'},
+        {h:'Chave alternativa', x:'As candidatas que sobraram. Em SQL, viram colunas <code>UNIQUE</code>.'},
+        {h:'Chave estrangeira (FK)', x:'Atributo que aponta para a chave primária de outra tabela e cria o relacionamento.'},
+        {h:'Chave composta', x:'PK formada por mais de uma coluna, como (pedido_id, produto_id).'}
+      ]},
+      {t:'note', k:'Natural x substituta', x:`Uma chave <b>natural</b> vem do mundo real (CPF, e-mail) e pode mudar ou ter exceções. Uma chave <b>substituta</b> (surrogate), como o <code>SERIAL</code>, é um número sem significado criado só para identificar a linha. A maioria dos projetos usa substituta como PK e guarda a natural como <code>UNIQUE</code>.`},
+      {t:'h', x:'Integridade: as regras que o banco defende'},
+      {t:'table', mac:false, cols:['Integridade','Regra','Como o PostgreSQL impõe'], rows:[
+        ['De domínio','O valor precisa pertencer ao domínio da coluna','Tipo de dado, <code>NOT NULL</code>, <code>CHECK</code>'],
+        ['De entidade','Toda linha tem uma PK única e não nula','<code>PRIMARY KEY</code>'],
+        ['Referencial','Uma FK só aponta para uma linha que existe (ou é nula)','<code>REFERENCES</code> / <code>FOREIGN KEY</code>'],
+        ['Definida pelo usuário','Regras do negócio (ex.: saldo não pode ficar negativo)','<code>CHECK</code>, triggers']
+      ]},
+      {t:'p', x:`Teste você mesmo: abra este bloco no laboratório, com a Loja de exemplo, e rode um comando por vez. Cada um quebra de propósito uma regra diferente. Leia as mensagens de erro: elas são uma aula de integridade.`},
+      {t:'code', file:'quebrando_regras.sql', x:`-- 1) integridade de entidade: id 1 já existe
+INSERT INTO produtos (id, nome, preco) VALUES (1, 'Repetido', 10);
+
+-- 2) integridade referencial: categoria 99 não existe
+INSERT INTO produtos (nome, preco, categoria_id) VALUES ('Fantasma', 10, 99);
+
+-- 3) integridade de domínio: preço negativo
+INSERT INTO produtos (nome, preco) VALUES ('Negativo', -5);
+
+-- 4) coluna obrigatória sem valor
+INSERT INTO produtos (nome) VALUES ('Sem preço');`}
+    ],
+    quiz:[
+      {q:'Na terminologia formal, uma linha de tabela é chamada de...', o:['Atributo','Domínio','Relação','Tupla'], a:3, e:'Tupla é a linha, atributo é a coluna e relação é a tabela.'},
+      {q:'Uma tabela tem CPF e e-mail, ambos únicos. Você escolhe o CPF como PK. O e-mail é uma chave...', o:['Estrangeira','Alternativa','Composta','Primária'], a:1, e:'O e-mail é uma chave candidata que não foi escolhida como primária: chave alternativa (UNIQUE).'},
+      {q:'Inserir um pedido com cliente_id = 999, que não existe em clientes, viola qual integridade?', o:['De entidade','De domínio','Referencial','Nenhuma'], a:2, e:'A chave estrangeira aponta para um registro inexistente: integridade referencial.'},
+      {q:'Um CHECK (preco >= 0) protege qual tipo de integridade?', o:['De domínio','De entidade','Referencial','De backup'], a:0, e:'CHECK restringe os valores permitidos na coluna, isto é, o domínio.'}
+    ]
+  };
+
+  /* ---------- CREATE: mais DDL, restrições e dialetos ---------- */
+  by.create.blocks.push(
+    {t:'h', x:'Chaves compostas, nomes de restrições e ON DELETE'},
+    {t:'p', x:`Restrições também podem ser declaradas no fim da tabela e receber um nome, o que ajuda a entender mensagens de erro e a alterar depois. A cláusula <code>ON DELETE</code> diz o que fazer com as linhas filhas quando a linha pai é apagada.`},
+    {t:'code', file:'05_matriculas.sql', x:`CREATE TABLE alunos (
+    id    SERIAL PRIMARY KEY,
+    nome  VARCHAR(80) NOT NULL
+);
+
+CREATE TABLE disciplinas (
+    id    SERIAL PRIMARY KEY,
+    nome  VARCHAR(80) NOT NULL
+);
+
+-- relação N:N com chave primária composta
+CREATE TABLE matriculas (
+    aluno_id       INTEGER NOT NULL,
+    disciplina_id  INTEGER NOT NULL,
+    nota           NUMERIC(4, 2),
+    CONSTRAINT pk_matriculas PRIMARY KEY (aluno_id, disciplina_id),
+    CONSTRAINT fk_mat_aluno  FOREIGN KEY (aluno_id)
+        REFERENCES alunos (id) ON DELETE CASCADE,
+    CONSTRAINT fk_mat_disc   FOREIGN KEY (disciplina_id)
+        REFERENCES disciplinas (id) ON DELETE RESTRICT,
+    CONSTRAINT ck_nota CHECK (nota BETWEEN 0 AND 10)
+);`},
+    {t:'cards', items:[
+      {h:'ON DELETE CASCADE', x:'Apagou o pai, apaga os filhos junto. Apagar um aluno remove as matrículas dele.'},
+      {h:'ON DELETE RESTRICT', x:'Impede apagar o pai enquanto existirem filhos. Não dá para apagar uma disciplina com matrículas.'},
+      {h:'ON DELETE SET NULL', x:'Apagou o pai, as FKs dos filhos viram NULL. A coluna precisa aceitar nulo.'}
+    ]},
+    {t:'h', x:'A mesma ideia, dialetos diferentes'},
+    {t:'p', x:`A apostila da faculdade e muitos livros usam uma sintaxe genérica, com detalhes de MySQL, Oracle ou SQL Server. O PostgreSQL segue mais de perto o padrão SQL. Em prova, siga a sintaxe que o professor usa; no PostgreSQL, use a coluna da direita.`},
+    {t:'table', mac:false, cols:['Conceito','Apostila / outros bancos','PostgreSQL'], rows:[
+      ['Numeração automática','<code>AUTO_INCREMENT</code> (MySQL)','<code>SERIAL</code> ou <code>GENERATED ALWAYS AS IDENTITY</code>'],
+      ['Mudar o tipo de uma coluna','<code>ALTER TABLE t MODIFY col tipo</code>','<code>ALTER TABLE t ALTER COLUMN col TYPE tipo</code>'],
+      ['Negar permissão','<code>DENY</code> (SQL Server)','Não existe. Use <code>REVOKE</code> e roles'],
+      ['Limitar linhas','<code>TOP n</code> (SQL Server)','<code>LIMIT n</code>'],
+      ['Juntar textos','<code>CONCAT()</code> ou <code>+</code>','<code>||</code> (ou <code>CONCAT()</code>)'],
+      ['Data e hora atuais','<code>GETDATE()</code> (SQL Server)','<code>NOW()</code> ou <code>CURRENT_TIMESTAMP</code>'],
+      ['Verdadeiro/falso','<code>TINYINT(1)</code> (MySQL)','<code>BOOLEAN</code> nativo']
+    ]},
+    {t:'note', k:'Por que a apostila diz que CREATE DATABASE é DCL?', x:`Na verdade <code>CREATE DATABASE</code> é DDL (define estrutura). O que a apostila quer dizer é que só usuários com <b>permissão</b> podem executá-lo, e permissões são controladas pela DCL. No PostgreSQL, essa permissão é o atributo <code>CREATEDB</code> de um role.`}
+  );
+  by.create.quiz.push(
+    {q:'Ao apagar um aluno, você quer que as matrículas dele sumam automaticamente. Qual cláusula usar na FK?', o:['ON DELETE RESTRICT','ON DELETE CASCADE','ON UPDATE CASCADE','UNIQUE'], a:1, e:'CASCADE propaga a exclusão do pai para os filhos.'},
+    {q:'Qual é o equivalente PostgreSQL do AUTO_INCREMENT do MySQL?', o:['SERIAL / IDENTITY','TOP','DENY','MODIFY'], a:0, e:'SERIAL (ou GENERATED ... AS IDENTITY) numera automaticamente as linhas.'}
+  );
+
+  /* ---------- SINTAXE: as sublinguagens ---------- */
+  by.sintaxe.blocks.unshift(
+    {t:'h', x:'A família SQL: DDL, DML, DQL, DCL e TCL'},
+    {t:'p', x:`O SQL é uma linguagem só, mas seus comandos se organizam em grupos por finalidade. Vale decorar, porque aparece em toda prova.`},
+    {t:'table', mac:false, cols:['Grupo','Nome','Serve para','Comandos'], rows:[
+      ['DDL','Definição de dados','Criar e alterar a estrutura','<code>CREATE</code> <code>ALTER</code> <code>DROP</code> <code>TRUNCATE</code>'],
+      ['DML','Manipulação de dados','Inserir, alterar e remover linhas','<code>INSERT</code> <code>UPDATE</code> <code>DELETE</code>'],
+      ['DQL','Consulta de dados','Ler dados','<code>SELECT</code>'],
+      ['DCL','Controle de dados','Dar e tirar permissões','<code>GRANT</code> <code>REVOKE</code>'],
+      ['TCL','Controle de transações','Confirmar ou desfazer','<code>BEGIN</code> <code>COMMIT</code> <code>ROLLBACK</code>']
+    ]},
+    {t:'note', k:'Atenção em prova', x:`Alguns autores, como a apostila da faculdade, incluem o <code>SELECT</code> dentro da DML. Outros o separam como DQL. Use a classificação do seu professor.`}
+  );
+  by.sintaxe.quiz.push({q:'GRANT e REVOKE pertencem a qual grupo do SQL?', o:['DDL','DML','TCL','DCL'], a:3, e:'DCL é a linguagem de controle de dados: dar e retirar permissões.'});
+
+  /* ---------- WHERE: DISTINCT, OFFSET, precedência ---------- */
+  by.where.blocks.push(
+    {t:'h', x:'DISTINCT e paginação com OFFSET'},
+    {t:'code', file:'09_distinct.sql', x:`-- categorias que realmente têm produtos, sem repetir
+SELECT DISTINCT categoria_id
+FROM produtos
+ORDER BY categoria_id;
+
+-- paginação: pula 2 linhas e mostra as 2 seguintes
+SELECT nome
+FROM produtos
+ORDER BY id
+LIMIT 2 OFFSET 2;`},
+    {t:'table', file:'Data Output — DISTINCT', cols:['categoria_id'], rows:[['1'],['2'],['3']]},
+    {t:'table', file:'Data Output — LIMIT 2 OFFSET 2', cols:['nome'], rows:[['Monitor 24 pol'],['Teclado Compacto']]},
+    {t:'h', x:'AND vence OR: use parênteses'},
+    {t:'p', x:`O SQL avalia <code>AND</code> antes de <code>OR</code>, igual à multiplicação antes da soma. Sem parênteses, o resultado pode surpreender.`},
+    {t:'code', file:'10_precedencia.sql', x:`-- lê-se: categoria 1  OU  (categoria 2 E com estoque)
+SELECT nome, estoque
+FROM produtos
+WHERE categoria_id = 1 OR categoria_id = 2 AND estoque > 0
+ORDER BY id;
+
+-- com parênteses: (categoria 1 OU 2)  E  com estoque
+SELECT nome, estoque
+FROM produtos
+WHERE (categoria_id = 1 OR categoria_id = 2) AND estoque > 0
+ORDER BY id;`},
+    {t:'table', file:'Sem parênteses — 3 linhas', cols:['nome','estoque'], rows:[['Teclado Mecânico','15'],['Mouse Gamer','40'],['Teclado Compacto','0']]},
+    {t:'table', file:'Com parênteses — 2 linhas', cols:['nome','estoque'], rows:[['Teclado Mecânico','15'],['Mouse Gamer','40']]}
+  );
+  by.where.quiz.push({q:'Com os nossos produtos, quantas linhas retorna  WHERE categoria_id = 1 OR categoria_id = 2 AND estoque > 0 ?', o:['2','4','3','1'], a:2, e:'AND é avaliado primeiro: categoria 1 inteira (2 produtos, mesmo o de estoque 0) mais o Mouse Gamer (categoria 2 com estoque) dão 3.'});
+
+  /* ---------- 12. NOVO: Modelagem MER/DER ---------- */
+  const DER_SVG = `<svg viewBox="0 0 820 320" role="img" aria-label="Diagrama entidade-relacionamento da loja: Cliente faz Pedido, Pedido contém Produto">
+    <g class="der-l">
+      <line x1="55" y1="66" x2="55" y2="135"/><line x1="145" y1="66" x2="145" y2="135"/><line x1="100" y1="254" x2="100" y2="185"/>
+      <line x1="370" y1="66" x2="370" y2="135"/><line x1="450" y1="66" x2="450" y2="135"/>
+      <line x1="670" y1="66" x2="670" y2="135"/><line x1="750" y1="66" x2="750" y2="135"/><line x1="710" y1="254" x2="710" y2="185"/>
+      <line x1="170" y1="160" x2="205" y2="160"/><line x1="295" y1="160" x2="340" y2="160"/>
+      <line x1="480" y1="160" x2="515" y2="160"/><line x1="605" y1="160" x2="640" y2="160"/>
+      <line x1="560" y1="192" x2="560" y2="254"/>
+    </g>
+    <rect class="der-e" x="30" y="135" width="140" height="50" rx="4"/><text x="100" y="165" text-anchor="middle">CLIENTE</text>
+    <rect class="der-e" x="340" y="135" width="140" height="50" rx="4"/><text x="410" y="165" text-anchor="middle">PEDIDO</text>
+    <rect class="der-e" x="640" y="135" width="140" height="50" rx="4"/><text x="710" y="165" text-anchor="middle">PRODUTO</text>
+    <polygon class="der-r" points="250,128 295,160 250,192 205,160"/><text x="250" y="165" text-anchor="middle">faz</text>
+    <polygon class="der-r" points="560,128 605,160 560,192 515,160"/><text x="560" y="165" text-anchor="middle">contém</text>
+    <g class="der-a">
+      <ellipse cx="55" cy="50" rx="32" ry="16"/><ellipse cx="145" cy="50" rx="32" ry="16"/><ellipse cx="100" cy="270" rx="32" ry="16"/>
+      <ellipse cx="370" cy="50" rx="32" ry="16"/><ellipse cx="450" cy="50" rx="32" ry="16"/>
+      <ellipse cx="670" cy="50" rx="32" ry="16"/><ellipse cx="750" cy="50" rx="32" ry="16"/><ellipse cx="710" cy="270" rx="32" ry="16"/>
+      <ellipse cx="560" cy="270" rx="44" ry="16"/>
+    </g>
+    <text class="der-k" x="55" y="55" text-anchor="middle">id</text><text x="145" y="55" text-anchor="middle">nome</text><text x="100" y="275" text-anchor="middle">email</text>
+    <text class="der-k" x="370" y="55" text-anchor="middle">id</text><text x="450" y="55" text-anchor="middle">data</text>
+    <text class="der-k" x="670" y="55" text-anchor="middle">id</text><text x="750" y="55" text-anchor="middle">nome</text><text x="710" y="275" text-anchor="middle">preço</text>
+    <text x="560" y="275" text-anchor="middle">quantidade</text>
+    <text class="der-c" x="187" y="150" text-anchor="middle">(0,N)</text><text class="der-c" x="318" y="150" text-anchor="middle">(1,1)</text>
+    <text class="der-c" x="497" y="150" text-anchor="middle">(1,N)</text><text class="der-c" x="622" y="150" text-anchor="middle">(0,N)</text>
+  </svg>`;
+  const mer = {
+    id:'mer', short:'Modelagem MER e DER', tag:'Modelagem',
+    title:'Modelagem: MER e DER',
+    lead:'Antes de criar tabelas, desenhe. O modelo entidade-relacionamento é o mapa que evita retrabalho.',
+    blocks:[
+      {t:'p', x:`Um bom projeto de banco avança por níveis, do mais abstrato ao mais concreto:`},
+      {t:'flow', items:['Requisitos','Modelo conceitual (MER/DER)','Modelo lógico (tabelas)','Modelo físico (SQL)']},
+      {t:'p', x:`O <b>MER</b> (Modelo Entidade-Relacionamento) é a teoria: entidades, atributos, relacionamentos. O <b>DER</b> (Diagrama Entidade-Relacionamento) é o desenho desse modelo. Ele é conversado com quem pediu o sistema, então não fala de tabelas nem de tipos.`},
+      {t:'h', x:'Os blocos do modelo'},
+      {t:'cards', items:[
+        {h:'Entidade', x:'Algo do mundo real sobre o qual guardamos dados (cliente, pedido). <b>Forte</b>: existe sozinha. <b>Fraca</b>: depende de outra (item de pedido). <b>Associativa</b>: nasce de uma relação N:N.'},
+        {h:'Atributo', x:'Característica da entidade. <b>Simples</b> (nome), <b>composto</b> (endereço = rua + número), <b>multivalorado</b> (vários telefones), <b>derivado</b> (idade, calculada da data de nascimento) e <b>identificador</b> (a chave).'},
+        {h:'Relacionamento', x:'A associação entre entidades, geralmente um verbo: cliente <i>faz</i> pedido. Pode ter atributos próprios (quantidade).'},
+        {h:'Cardinalidade', x:'Quantas ocorrências participam. Máxima: 1 ou N. Mínima: 0 (opcional) ou 1 (obrigatória). Escreve-se (mín, máx).'}
+      ]},
+      {t:'raw', file:'der_loja.svg', x:DER_SVG},
+      {t:'p', x:`Como ler o desenho: um cliente faz zero ou muitos pedidos <b>(0,N)</b>; cada pedido é feito por exatamente um cliente <b>(1,1)</b>. Um pedido contém um ou mais produtos <b>(1,N)</b>; um produto pode estar em zero ou muitos pedidos <b>(0,N)</b>. Como pedido e produto são N:N, a relação <i>contém</i> vai virar uma tabela.`},
+      {t:'note', k:'Autorrelacionamento', x:`Uma entidade pode se relacionar com ela mesma. Exemplo: <b>funcionário gerencia funcionário</b>. Vira uma FK que aponta para a própria tabela (<code>gerente_id</code>).`},
+      {t:'h', x:'Do DER para as tabelas'},
+      {t:'ol', items:[
+        'Cada <b>entidade</b> vira uma tabela; cada <b>atributo simples</b> vira uma coluna; o <b>identificador</b> vira a chave primária.',
+        'Relacionamento <b>1:N</b>: a chave do lado "1" vira FK na tabela do lado "N".',
+        'Relacionamento <b>N:N</b>: cria-se uma <b>tabela associativa</b> com as duas FKs (juntas, formam a PK) e os atributos do relacionamento.',
+        'Relacionamento <b>1:1</b>: uma FK com <code>UNIQUE</code> em um dos lados (ou fundir as tabelas).',
+        'Atributo <b>multivalorado</b>: vira uma tabela própria com FK para a entidade.',
+        'Atributo <b>composto</b>: vira várias colunas. Atributo <b>derivado</b>: normalmente não se armazena, calcula-se na consulta.',
+        '<b>Autorrelacionamento</b>: FK para a própria tabela.'
+      ]},
+      {t:'p', x:`Aplicando a regra do N:N ao nosso DER, a relação <i>contém</i> vira <code>itens_pedido</code>. Rode no laboratório com a Loja de exemplo:`},
+      {t:'code', file:'11_itens_pedido.sql', x:`CREATE TABLE itens_pedido (
+    pedido_id   INTEGER REFERENCES pedidos (id),
+    produto_id  INTEGER REFERENCES produtos (id),
+    quantidade  INTEGER NOT NULL CHECK (quantidade > 0),
+    preco_unit  NUMERIC(10, 2) NOT NULL,
+    PRIMARY KEY (pedido_id, produto_id)
+);
+
+INSERT INTO itens_pedido (pedido_id, produto_id, quantidade, preco_unit) VALUES
+    (101, 1, 1, 249.90),
+    (102, 2, 1,  80.00),
+    (103, 2, 1, 129.90);
+
+SELECT p.id AS pedido, pr.nome AS produto, i.quantidade, i.preco_unit
+FROM itens_pedido i
+JOIN pedidos  p  ON p.id  = i.pedido_id
+JOIN produtos pr ON pr.id = i.produto_id
+ORDER BY p.id;`},
+      {t:'table', file:'Data Output — 3 linhas', cols:['pedido','produto','quantidade','preco_unit'], rows:[['101','Teclado Mecânico','1','249.90'],['102','Mouse Gamer','1','80.00'],['103','Mouse Gamer','1','129.90']]},
+      {t:'note', k:'Por que preco_unit está no item?', x:`O preço do produto muda com o tempo. Guardar o preço <b>no momento da compra</b> no item preserva o histórico: o pedido 102 pagou 80,00 mesmo que hoje o Mouse Gamer custe 129,90.`}
+    ],
+    quiz:[
+      {q:'Qual é a relação entre CLIENTE e PEDIDO (um cliente faz vários pedidos; cada pedido é de um cliente) e onde fica a FK?', o:['N:N, tabela associativa','1:N, FK em pedidos','1:1, FK em clientes','1:N, FK em clientes'], a:1, e:'É 1:N. A FK (cliente_id) fica no lado N, isto é, na tabela pedidos.'},
+      {q:'Alunos cursam várias disciplinas e disciplinas têm vários alunos. Para implementar em SQL você precisa de...', o:['Uma coluna com lista de disciplinas','Duas FKs em alunos','Uma tabela associativa entre as duas','Um atributo derivado'], a:2, e:'Relação N:N vira uma tabela no meio, com FK para cada lado.'},
+      {q:'A idade, calculada a partir da data de nascimento, é um atributo...', o:['Multivalorado','Composto','Derivado','Identificador'], a:2, e:'Derivado: pode ser calculado de outro atributo, então normalmente não é armazenado.'},
+      {q:'Na notação (mín, máx), o que significa (1,N)?', o:['Opcional e no máximo um','Obrigatório e no máximo um','Opcional e vários','Pelo menos um e no máximo vários'], a:3, e:'Mínimo 1 (obrigatório) e máximo N (vários).'}
+    ]
+  };
+
+  /* ---------- JOIN: tipos e autorrelacionamento ---------- */
+  by.join.blocks.push(
+    {t:'h', x:'Todos os tipos de junção'},
+    {t:'table', mac:false, cols:['Junção','Resultado'], rows:[
+      ['<code>INNER JOIN</code>','Só as linhas que combinam nos dois lados'],
+      ['<code>LEFT JOIN</code>','Tudo da esquerda; NULL onde a direita não combina'],
+      ['<code>RIGHT JOIN</code>','Tudo da direita; NULL onde a esquerda não combina'],
+      ['<code>FULL JOIN</code>','Tudo dos dois lados, combinando quando possível'],
+      ['<code>CROSS JOIN</code>','Todas as combinações possíveis (produto cartesiano), sem condição']
+    ]},
+    {t:'h', x:'Autorrelacionamento: a tabela junta com ela mesma'},
+    {t:'p', x:`Para mostrar cada funcionário com o nome do seu gerente, a mesma tabela aparece duas vezes na consulta, com apelidos diferentes: <code>f</code> para o funcionário e <code>g</code> para o gerente.`},
+    {t:'code', file:'14_self_join.sql', x:`CREATE TABLE funcionarios (
+    id          SERIAL PRIMARY KEY,
+    nome        VARCHAR(80) NOT NULL,
+    gerente_id  INTEGER REFERENCES funcionarios (id)
+);
+
+INSERT INTO funcionarios (nome, gerente_id) VALUES
+    ('Maria', NULL), ('João', 1), ('Paula', 1), ('Rui', 2);
+
+SELECT f.nome AS funcionario, g.nome AS gerente
+FROM funcionarios f
+LEFT JOIN funcionarios g ON g.id = f.gerente_id
+ORDER BY f.id;`},
+    {t:'table', file:'Data Output — 4 linhas', cols:['funcionario','gerente'], rows:[['Maria','NULL'],['João','Maria'],['Paula','Maria'],['Rui','João']]}
+  );
+  by.join.quiz.push({q:'Em um autorrelacionamento (funcionário e seu gerente), como o SQL resolve?', o:['Com dois bancos de dados','Com UNION','Com um JOIN da tabela com ela mesma, usando apelidos','Não é possível'], a:2, e:'A mesma tabela é usada duas vezes no FROM, com apelidos diferentes, ligadas pela FK.'});
+
+  /* ---------- 14. NOVO: Álgebra relacional ---------- */
+  const algebra = {
+    id:'algebra', short:'Álgebra relacional', tag:'Consultas',
+    title:'Álgebra relacional: a matemática por trás do SQL',
+    lead:'Toda consulta SQL é, no fundo, uma expressão de álgebra relacional. Entender isso deixa você pensar consultas como quem monta blocos.',
+    blocks:[
+      {t:'p', x:`A álgebra relacional é um conjunto de operações que recebem uma ou duas relações e devolvem <b>outra relação</b>. Como o resultado também é uma relação, dá para combinar operações, uma dentro da outra. O otimizador do PostgreSQL usa essa base para reescrever e acelerar as suas consultas.`},
+      {t:'table', mac:false, cols:['Operação','Símbolo','Em SQL','Faz'], rows:[
+        ['Seleção','σ (sigma)','<code>WHERE</code>','Escolhe <b>linhas</b> que satisfazem um predicado'],
+        ['Projeção','π (pi)','<code>SELECT colunas</code> (<code>DISTINCT</code>)','Escolhe <b>colunas</b>'],
+        ['Renomeação','ρ (rô)','<code>AS</code>','Dá outro nome à relação ou ao atributo'],
+        ['União','∪','<code>UNION</code>','Linhas de uma ou de outra, sem repetir'],
+        ['Diferença','−','<code>EXCEPT</code>','Linhas que estão na primeira e não na segunda'],
+        ['Interseção','∩','<code>INTERSECT</code>','Linhas que estão nas duas'],
+        ['Produto cartesiano','×','<code>CROSS JOIN</code>','Todas as combinações entre as linhas'],
+        ['Junção','⋈','<code>JOIN ... ON</code>','Produto cartesiano seguido de seleção pela condição'],
+        ['Divisão','÷','<code>NOT EXISTS</code> duplo','"Quem se relaciona com todos os..."']
+      ]},
+      {t:'h', x:'Lendo e escrevendo expressões'},
+      {t:'p', x:`<code>σ estoque = 0 (PRODUTOS)</code> lê-se: "da relação PRODUTOS, selecione as tuplas com estoque igual a 0". Para combinar: <code>π nome, preco ( σ preco &lt; 200 (PRODUTOS) )</code> primeiro filtra as linhas (σ), depois fica só com duas colunas (π). Em SQL, as duas ideias aparecem juntas no mesmo comando:`},
+      {t:'code', file:'15_sigma_pi.sql', x:`-- π nome, preco ( σ preco < 200 (PRODUTOS) )
+SELECT nome, preco
+FROM produtos
+WHERE preco < 200;`},
+      {t:'h', x:'Operações de conjuntos'},
+      {t:'p', x:`<code>UNION</code>, <code>EXCEPT</code> e <code>INTERSECT</code> só funcionam entre relações <b>compatíveis</b>: o mesmo número de colunas, na mesma ordem, com tipos parecidos.`},
+      {t:'code', file:'16_conjuntos.sql', x:`-- União: produtos esgotados OU caros
+SELECT nome FROM produtos WHERE estoque = 0
+UNION
+SELECT nome FROM produtos WHERE preco > 500
+ORDER BY nome;
+
+-- Diferença: π nome (clientes) − π nome (clientes com pedido)
+SELECT nome FROM clientes
+EXCEPT
+SELECT c.nome
+FROM clientes c
+JOIN pedidos p ON p.cliente_id = c.id;`},
+      {t:'table', file:'UNION — 2 linhas', cols:['nome'], rows:[['Monitor 24 pol'],['Teclado Compacto']]},
+      {t:'table', file:'EXCEPT — 1 linha', cols:['nome'], rows:[['Carla']]},
+      {t:'note', k:'Não é comutativa', x:`Na diferença a ordem importa: <b>A − B</b> é diferente de <b>B − A</b>. Já a união e a interseção não dependem da ordem. E <code>UNION</code> elimina duplicatas; <code>UNION ALL</code> mantém.`},
+      {t:'h', x:'Produto cartesiano: a origem do JOIN'},
+      {t:'p', x:`Se A = {1, 2} e B = {3, 5, 7}, então A × B tem <code>2 × 3 = 6</code> pares. Regra geral: <code>n(A × B) = n(A) · n(B)</code>. Ele cresce rápido: duas tabelas de 1 milhão de linhas dariam 1 trilhão de combinações. Por isso, na prática, você quase sempre usa um JOIN com condição.`},
+      {t:'code', file:'17_cartesiano.sql', x:`SELECT a.n AS a, b.n AS b
+FROM (VALUES (1), (2)) AS a(n)
+CROSS JOIN (VALUES (3), (5), (7)) AS b(n)
+ORDER BY a, b;`},
+      {t:'table', file:'CROSS JOIN — 6 linhas', cols:['a','b'], rows:[['1','3'],['1','5'],['1','7'],['2','3'],['2','5'],['2','7']]}
+    ],
+    quiz:[
+      {q:'Qual operação da álgebra relacional corresponde ao WHERE?', o:['Projeção (π)','Seleção (σ)','União (∪)','Renomeação (ρ)'], a:1, e:'Seleção escolhe linhas por um predicado. Projeção escolhe colunas.'},
+      {q:'A tabela A tem 4 linhas e a B tem 5. Quantas linhas tem A × B?', o:['9','5','20','4'], a:2, e:'n(A × B) = n(A) · n(B) = 4 · 5 = 20.'},
+      {q:'Para dois SELECTs poderem ser unidos com UNION, é preciso que...', o:['Venham da mesma tabela','Tenham o mesmo número de colunas e tipos compatíveis','Tenham o mesmo nome de coluna','Não tenham WHERE'], a:1, e:'As relações precisam ser compatíveis: mesmo grau e domínios parecidos, na mesma ordem.'},
+      {q:'Qual expressão dá os clientes que NUNCA fizeram pedido?', o:['clientes UNION pedidos','clientes INTERSECT pedidos','clientes EXCEPT (clientes com pedido)','clientes CROSS JOIN pedidos'], a:2, e:'Diferença: todos os clientes menos os que têm pedido.'}
+    ]
+  };
+
+  /* ---------- 15. AGREGAÇÕES: mais funções ---------- */
+  by.agg.blocks.push(
+    {t:'h', x:'Várias agregações de uma vez'},
+    {t:'code', file:'16_resumo.sql', x:`SELECT
+    COUNT(*)               AS produtos,
+    MIN(preco)             AS menor,
+    MAX(preco)             AS maior,
+    ROUND(AVG(preco), 2)   AS media
+FROM produtos;`},
+    {t:'table', file:'Data Output — 1 linha', cols:['produtos','menor','maior','media'], rows:[['4','129.90','899.00','364.68']]},
+    {t:'note', k:'NULL e agregações', x:`<code>COUNT(*)</code> conta linhas. <code>COUNT(coluna)</code> ignora as linhas em que a coluna é NULL, assim como <code>SUM</code>, <code>AVG</code>, <code>MIN</code> e <code>MAX</code>. E <code>COUNT(DISTINCT coluna)</code> conta valores diferentes.`}
+  );
+  by.agg.quiz.push({q:'Na tabela produtos, a coluna descricao está NULL em todas as linhas. O que retorna  SELECT COUNT(descricao) FROM produtos ?', o:['4','1','NULL','0'], a:3, e:'COUNT(coluna) ignora NULLs. Como todas são nulas, o resultado é 0.'});
+
+  /* ---------- 16. NOVO: Subconsultas, CTE, CASE e janelas ---------- */
+  const sub = {
+    id:'subconsultas', short:'Subconsultas, CTE e janelas', tag:'Consultas',
+    title:'Subconsultas, CTE, CASE e funções de janela',
+    lead:'Consultas dentro de consultas, resultados temporários com nome e rankings sem perder as linhas.',
+    blocks:[
+      {t:'h', x:'Subconsulta: um SELECT dentro de outro'},
+      {t:'p', x:`Uma subconsulta responde uma pergunta menor para a consulta maior usar. Aqui: "quais produtos custam mais que a média?"`},
+      {t:'code', file:'18_subconsulta.sql', x:`SELECT nome, preco
+FROM produtos
+WHERE preco > (SELECT AVG(preco) FROM produtos);`},
+      {t:'table', file:'Data Output — 1 linha', cols:['nome','preco'], rows:[['Monitor 24 pol','899.00']]},
+      {t:'p', x:`A média é 364,68, então só o monitor passa. Subconsultas também funcionam com <code>IN</code> (pertence a uma lista) e <code>EXISTS</code> (existe ao menos uma linha):`},
+      {t:'code', file:'19_in_exists.sql', x:`-- clientes que já fizeram pedido
+SELECT nome FROM clientes
+WHERE id IN (SELECT cliente_id FROM pedidos)
+ORDER BY nome;
+
+-- clientes que nunca fizeram pedido
+SELECT nome FROM clientes c
+WHERE NOT EXISTS (
+    SELECT 1 FROM pedidos p WHERE p.cliente_id = c.id
+);`},
+      {t:'table', file:'IN — 2 linhas', cols:['nome'], rows:[['Ana'],['Bruno']]},
+      {t:'table', file:'NOT EXISTS — 1 linha', cols:['nome'], rows:[['Carla']]},
+      {t:'h', x:'CTE: dar nome a um resultado temporário'},
+      {t:'p', x:`Com <code>WITH</code>, você escreve o resultado intermediário primeiro e o usa depois, como se fosse uma tabela. O código fica na ordem em que você pensa.`},
+      {t:'code', file:'20_cte.sql', x:`WITH gasto AS (
+    SELECT cliente_id, SUM(total) AS total_gasto
+    FROM pedidos
+    GROUP BY cliente_id
+)
+SELECT c.nome, g.total_gasto
+FROM clientes c
+JOIN gasto g ON g.cliente_id = c.id
+ORDER BY g.total_gasto DESC;`},
+      {t:'table', file:'Data Output — 2 linhas', cols:['nome','total_gasto'], rows:[['Ana','330.00'],['Bruno','129.90']]},
+      {t:'h', x:'CASE: decisões dentro da consulta'},
+      {t:'code', file:'21_case.sql', x:`SELECT
+    nome,
+    CASE
+        WHEN estoque = 0 THEN 'Esgotado'
+        WHEN estoque < 10 THEN 'Baixo'
+        ELSE 'OK'
+    END AS situacao
+FROM produtos
+ORDER BY id;`},
+      {t:'table', file:'Data Output — 4 linhas', cols:['nome','situacao'], rows:[['Teclado Mecânico','OK'],['Mouse Gamer','OK'],['Monitor 24 pol','Baixo'],['Teclado Compacto','Esgotado']]},
+      {t:'h', x:'Funções de janela: agregar sem juntar linhas'},
+      {t:'p', x:`Uma função de janela calcula algo sobre um conjunto de linhas <b>sem colapsá-las</b> como o <code>GROUP BY</code> faz. É a ferramenta dos rankings.`},
+      {t:'code', file:'22_janela.sql', x:`SELECT
+    nome,
+    preco,
+    RANK() OVER (ORDER BY preco DESC) AS posicao
+FROM produtos
+ORDER BY posicao;`},
+      {t:'table', file:'Data Output — 4 linhas', cols:['nome','preco','posicao'], rows:[['Monitor 24 pol','899.00','1'],['Teclado Mecânico','249.90','2'],['Teclado Compacto','179.90','3'],['Mouse Gamer','129.90','4']]}
+    ],
+    quiz:[
+      {q:'Qual palavra introduz uma CTE (resultado temporário com nome)?', o:['CASE','WITH','OVER','EXISTS'], a:1, e:'WITH nome AS ( ... ) define a CTE, que pode ser usada na consulta principal.'},
+      {q:'Qual a diferença central entre GROUP BY e uma função de janela?', o:['Nenhuma','A janela mantém todas as linhas; o GROUP BY as agrupa','O GROUP BY é mais novo','A janela só funciona com texto'], a:1, e:'GROUP BY colapsa em uma linha por grupo. A função de janela calcula sem perder as linhas.'},
+      {q:'O que faz  WHERE NOT EXISTS (SELECT 1 FROM pedidos p WHERE p.cliente_id = c.id) ?', o:['Traz clientes que têm pedido','Traz clientes sem nenhum pedido','Apaga pedidos','Cria um índice'], a:1, e:'NOT EXISTS mantém a linha quando a subconsulta não encontra nada: clientes sem pedidos.'}
+    ]
+  };
+
+  /* ---------- 17. NORMALIZAÇÃO: DF, BCNF, 4FN, desnormalização ---------- */
+  by.norm.blocks.push(
+    {t:'h', x:'A base de tudo: dependência funcional'},
+    {t:'p', x:`Dizemos que <b>X → Y</b> ("X determina Y") quando, se duas linhas têm o mesmo valor de X, elas necessariamente têm o mesmo valor de Y. Exemplos: <code>cpf → nome</code>; <code>cod_produto → nome_produto, preco</code>; <code>(cod_venda, cod_produto) → qtd</code>. As formas normais são regras sobre quais dependências podem existir dentro de uma tabela.`},
+    {t:'h', x:'BCNF: a forma normal de Boyce-Codd'},
+    {t:'p', x:`Uma tabela está em <b>BCNF</b> quando, para toda dependência funcional X → Y não trivial, X é uma superchave. É mais rigorosa que a 3FN: toda tabela em BCNF está em 3FN, mas nem toda em 3FN está em BCNF. Exemplo clássico, em que cada professor leciona uma única disciplina:`},
+    {t:'table', file:'ensina — está em 3FN, mas não em BCNF', cols:['aluno','disciplina','professor'], rows:[['Ana','Banco de Dados','Prof. Lima'],['Bia','Banco de Dados','Prof. Lima'],['Ana','Redes','Prof. Souza']]},
+    {t:'p', x:`Aqui <code>professor → disciplina</code>, mas professor não é chave da tabela, então viola a BCNF. Repare na redundância: "Prof. Lima leciona Banco de Dados" aparece repetido. A solução é decompor sem perder informação:`},
+    {t:'code', file:'17_bcnf.sql', x:`CREATE TABLE professor_disciplina (
+    professor   VARCHAR(80) PRIMARY KEY,
+    disciplina  VARCHAR(80) NOT NULL
+);
+
+CREATE TABLE aluno_professor (
+    aluno      VARCHAR(80) NOT NULL,
+    professor  VARCHAR(80) NOT NULL REFERENCES professor_disciplina (professor),
+    PRIMARY KEY (aluno, professor)
+);`},
+    {t:'note', k:'Cuidado ao decompor', x:`Uma boa decomposição não pode gerar linhas <b>espúrias</b> quando você junta as tabelas de novo (uma junção sem perdas). Sempre confira, juntando as partes, se volta exatamente à tabela original.`},
+    {t:'h', x:'4FN e além'},
+    {t:'p', x:`Quando um empregado tem vários idiomas <b>e</b> vários hobbies, independentes entre si, guardar tudo na mesma tabela obriga a repetir todas as combinações. Isso é uma <b>dependência multivalorada</b>, e a <b>4FN</b> manda separar em duas tabelas (empregado-idioma e empregado-hobby). A 5FN (dependências de junção) e a DKNF existem, mas são pouco usadas na prática.`},
+    {t:'h', x:'Desnormalizar de propósito'},
+    {t:'p', x:`Normalizar reduz redundância, mas pode exigir muitos JOINs. Em relatórios e sistemas muito lidos, às vezes se guarda um dado repetido ou calculado (como o <code>total</code> do pedido, que poderia ser a soma dos itens) para ganhar velocidade. Isso se chama <b>redundância controlada</b>. Regra: só duplique sabendo o motivo e mantenha a cópia sincronizada, por transação ou trigger.`}
+  );
+  by.norm.quiz.push(
+    {q:'Ler "cpf → nome" significa que...', o:['O nome determina o CPF','Duas linhas com o mesmo CPF têm o mesmo nome','O CPF é uma chave estrangeira','O nome é obrigatório'], a:1, e:'X → Y: o valor de X determina o de Y. Mesmo CPF, mesmo nome.'},
+    {q:'Uma tabela em 3FN garante estar em BCNF?', o:['Sim, sempre','Não: a BCNF é mais rigorosa','Só se tiver PK composta','Só em PostgreSQL'], a:1, e:'BCNF implica 3FN, mas o contrário não vale.'}
+  );
+
+  /* ---------- 18-20. AVANÇADO dividido: índices, transações, views ---------- */
+  const indices = {
+    id:'indices', short:'Índices e desempenho', tag:'Avançado',
+    title:'Índices e desempenho',
+    lead:'Como o banco acha uma linha entre milhões sem ler tudo, e como você enxerga o que ele está fazendo.',
+    blocks:[
+      {t:'p', x:`Sem índice, para achar um cliente por e-mail o banco lê a tabela inteira, linha por linha (<b>varredura sequencial</b>). Um <b>índice</b> é como o índice remissivo de um livro: uma estrutura auxiliar ordenada que aponta direto para o lugar certo. O tipo padrão do PostgreSQL é a <b>B-tree</b>, uma árvore balanceada que encontra qualquer valor em poucos passos, mesmo com milhões de linhas.`},
+      {t:'code', file:'18_indice.sql', x:`CREATE INDEX idx_clientes_nome
+    ON clientes (nome);
+
+-- índice único: além de acelerar, impede repetição
+CREATE UNIQUE INDEX idx_produtos_nome
+    ON produtos (nome);`},
+      {t:'h', x:'Veja o índice trabalhando com EXPLAIN'},
+      {t:'p', x:`<code>EXPLAIN</code> mostra o <b>plano de execução</b>: o caminho que o banco escolheu. Rode este bloco no laboratório. Ele cria 50 mil linhas de teste, pede o plano sem índice, cria o índice e pede o plano de novo.`},
+      {t:'code', file:'19_explain.sql', x:`CREATE TABLE teste_indice AS
+SELECT g AS id, 'cliente ' || g AS nome
+FROM generate_series(1, 50000) AS g;
+
+ANALYZE teste_indice;
+
+EXPLAIN SELECT * FROM teste_indice WHERE id = 25000;
+
+CREATE INDEX idx_teste_id ON teste_indice (id);
+
+EXPLAIN SELECT * FROM teste_indice WHERE id = 25000;`},
+      {t:'p', x:`Antes do índice o plano começa com <code>Seq Scan</code> (lê tudo). Depois, aparece <code>Index Scan</code> ou <code>Bitmap Index Scan</code> usando <code>idx_teste_id</code>. Use <code>EXPLAIN ANALYZE</code> para executar de verdade e ver o tempo real.`},
+      {t:'h', x:'Quando criar e quando evitar'},
+      {t:'cards', items:[
+        {h:'Vale a pena', x:'Colunas muito usadas em <code>WHERE</code>, em <code>JOIN</code> (as FKs!) e em <code>ORDER BY</code>, em tabelas grandes e com valores bem variados.'},
+        {h:'Evite', x:'Tabelas pequenas, colunas com poucos valores diferentes (como sexo ou ativo/inativo) e tabelas com muita escrita: cada INSERT e UPDATE também precisa atualizar os índices.'}
+      ]},
+      {t:'table', mac:false, cols:['Tipo de índice','Bom para'], rows:[
+        ['B-tree (padrão)','Igualdade, faixas (<code>&lt;</code>, <code>BETWEEN</code>) e ordenação'],
+        ['Hash','Só igualdade'],
+        ['GIN','JSONB, arrays e busca em texto'],
+        ['GiST / BRIN','Dados geográficos e colunas muito ordenadas, como datas em logs']
+      ]},
+      {t:'note', k:'Índice composto', x:`Em <code>(sobrenome, nome)</code>, a ordem importa: o índice serve para buscas por sobrenome ou por sobrenome e nome, mas não ajuda em buscas só por nome.`}
+    ],
+    quiz:[
+      {q:'Para que serve um índice?', o:['Apagar dados duplicados','Acelerar buscas em uma coluna','Criar backup','Proteger com senha'], a:1, e:'O índice permite achar linhas sem ler a tabela inteira.'},
+      {q:'Qual é o principal custo de ter muitos índices?', o:['Deixam as leituras lentas','Deixam INSERT, UPDATE e DELETE mais lentos e ocupam espaço','Impedem JOINs','Apagam dados'], a:1, e:'Toda escrita precisa atualizar também os índices.'},
+      {q:'Qual comando mostra o plano de execução de uma consulta?', o:['SHOW PLAN','EXPLAIN','DESCRIBE INDEX','PROFILE'], a:1, e:'EXPLAIN mostra como o banco pretende executar. EXPLAIN ANALYZE executa e mede.'},
+      {q:'Em qual coluna um índice traz MENOS benefício?', o:['Uma FK muito usada em JOIN','Um e-mail único','Uma coluna ativo (só true ou false) em tabela pequena','Uma data usada em ORDER BY'], a:2, e:'Poucos valores diferentes e tabela pequena: ler tudo já é barato.'}
+    ]
+  };
+
+  const transacoes = {
+    id:'transacoes', short:'Transações e concorrência', tag:'Avançado',
+    title:'Transações, ACID e concorrência',
+    lead:'Como o banco garante que dinheiro não some e que duas pessoas mexendo ao mesmo tempo não se atropelam.',
+    blocks:[
+      {t:'p', x:`Uma transferência de dinheiro tem dois passos: tirar de uma conta e colocar em outra. Se a luz cair entre eles, o dinheiro sumiria. A <b>transação</b> agrupa os passos: ou todos acontecem, ou nenhum.`},
+      {t:'code', file:'20_transferencia.sql', x:`BEGIN;
+
+UPDATE contas SET saldo = saldo - 100 WHERE id = 1;
+UPDATE contas SET saldo = saldo + 100 WHERE id = 2;
+
+COMMIT;
+
+SELECT titular, saldo FROM contas ORDER BY id;`},
+      {t:'table', file:'Data Output — 2 linhas', cols:['titular','saldo'], rows:[['Conta 1','400.00'],['Conta 2','400.00']]},
+      {t:'cards', items:[
+        {h:'A — Atomicidade', x:'Tudo ou nada.'},
+        {h:'C — Consistência', x:'O banco sai de um estado válido para outro válido; as constraints sempre são respeitadas.'},
+        {h:'I — Isolamento', x:'Transações simultâneas não enxergam o trabalho incompleto umas das outras.'},
+        {h:'D — Durabilidade', x:'Depois do COMMIT, o dado sobrevive a quedas. O PostgreSQL grava antes num log de escrita (WAL).'}
+      ]},
+      {t:'h', x:'Consistência na prática: CHECK e ROLLBACK'},
+      {t:'p', x:`Vamos proibir saldo negativo e tentar um débito impossível. O banco recusa, e o <code>ROLLBACK</code> desfaz o que já tinha sido feito dentro da transação.`},
+      {t:'code', file:'21_saldo_check.sql', x:`ALTER TABLE contas
+    ADD CONSTRAINT saldo_nao_negativo CHECK (saldo >= 0);
+
+BEGIN;
+UPDATE contas SET saldo = saldo + 1000 WHERE id = 2;
+UPDATE contas SET saldo = saldo - 1000 WHERE id = 1;  -- vai falhar
+ROLLBACK;
+
+SELECT titular, saldo FROM contas ORDER BY id;`},
+      {t:'p', x:`O segundo UPDATE falha porque a conta 1 ficaria com saldo negativo. O <code>ROLLBACK</code> desfaz também o crédito de 1000 já feito na conta 2: as duas contas voltam ao que eram. Para desfazer só uma parte, use <code>SAVEPOINT nome</code> e <code>ROLLBACK TO nome</code>.`},
+      {t:'h', x:'O que dá errado quando duas transações se misturam'},
+      {t:'cards', items:[
+        {h:'Leitura suja', x:'Você lê um dado que outra transação alterou mas ainda não confirmou. Se ela desfizer, você leu algo que nunca existiu.'},
+        {h:'Leitura não repetível', x:'Você lê a mesma linha duas vezes na transação e o valor mudou, porque outra transação confirmou uma alteração no meio.'},
+        {h:'Leitura fantasma', x:'Você repete uma consulta e aparecem linhas novas que satisfazem o filtro.'},
+        {h:'Atualização perdida', x:'Duas transações leem o mesmo saldo, calculam e gravam: a segunda sobrescreve a primeira e a mudança da primeira some.'}
+      ]},
+      {t:'h', x:'Níveis de isolamento'},
+      {t:'table', mac:false, cols:['Nível (padrão SQL)','Leitura suja','Não repetível','Fantasma'], rows:[
+        ['READ UNCOMMITTED','Possível','Possível','Possível'],
+        ['READ COMMITTED','Não','Possível','Possível'],
+        ['REPEATABLE READ','Não','Não','Possível'],
+        ['SERIALIZABLE','Não','Não','Não']
+      ]},
+      {t:'note', k:'No PostgreSQL', x:`O nível padrão é <b>READ COMMITTED</b>. Leitura suja nunca acontece: pedir READ UNCOMMITTED dá o mesmo que READ COMMITTED. O PostgreSQL usa <b>MVCC</b> (controle de concorrência multiversão): cada transação enxerga uma versão consistente dos dados, então quem lê não bloqueia quem escreve, e vice-versa.`},
+      {t:'code', file:'22_isolamento.sql', x:`BEGIN ISOLATION LEVEL SERIALIZABLE;
+SELECT SUM(saldo) FROM contas;
+COMMIT;
+
+-- travar uma linha para evitar a atualização perdida
+BEGIN;
+SELECT saldo FROM contas WHERE id = 1 FOR UPDATE;
+UPDATE contas SET saldo = saldo - 50 WHERE id = 1;
+COMMIT;`},
+      {t:'p', x:`<code>SELECT ... FOR UPDATE</code> trava a linha até o fim da transação: outra transação que tente alterá-la espera. Quando duas transações esperam uma pela outra, temos um <b>deadlock</b>; o PostgreSQL detecta, cancela uma delas e você precisa tentar de novo.`}
+    ],
+    quiz:[
+      {q:'O que garante a Atomicidade em uma transferência bancária?', o:['Os dois passos acontecem ou nenhum acontece','Só um usuário pode usar o banco','O saldo é sempre positivo','O banco tem backup'], a:0, e:'Atomicidade é tudo ou nada.'},
+      {q:'Duas transações leem o mesmo saldo (100), cada uma soma 10 e grava 110. O resultado deveria ser 120. Esse problema é...', o:['Leitura suja','Leitura fantasma','Atualização perdida','Deadlock'], a:2, e:'A segunda gravação sobrescreveu a primeira: atualização perdida. FOR UPDATE ou SERIALIZABLE evitam.'},
+      {q:'Qual é o nível de isolamento padrão do PostgreSQL?', o:['READ UNCOMMITTED','READ COMMITTED','REPEATABLE READ','SERIALIZABLE'], a:1, e:'READ COMMITTED é o padrão: cada comando vê os dados já confirmados.'},
+      {q:'Qual comando desfaz tudo o que foi feito desde o BEGIN?', o:['COMMIT','SAVEPOINT','ROLLBACK','FOR UPDATE'], a:2, e:'ROLLBACK cancela a transação inteira.'}
+    ]
+  };
+
+  const views = {
+    id:'views', short:'Views, funções e triggers', tag:'Avançado',
+    title:'Views, funções e triggers',
+    lead:'Dar nome a consultas, guardar lógica dentro do banco e reagir automaticamente a mudanças.',
+    blocks:[
+      {t:'h', x:'View: uma consulta com nome'},
+      {t:'p', x:`Uma <b>view</b> é uma consulta salva que se usa como se fosse uma tabela. Ela não guarda dados: executa a consulta toda vez. Serve para simplificar consultas repetidas e para <b>esconder colunas</b> (a visão externa do modelo de três esquemas).`},
+      {t:'code', file:'23_view.sql', x:`CREATE VIEW produtos_disponiveis AS
+SELECT id, nome, preco
+FROM produtos
+WHERE estoque > 0 AND ativo;
+
+SELECT * FROM produtos_disponiveis ORDER BY id;`},
+      {t:'table', file:'Data Output — 3 linhas', cols:['id','nome','preco'], rows:[['1','Teclado Mecânico','249.90'],['2','Mouse Gamer','129.90'],['3','Monitor 24 pol','899.00']]},
+      {t:'note', k:'View materializada', x:`Uma <code>MATERIALIZED VIEW</code> guarda o resultado no disco, e você o atualiza com <code>REFRESH MATERIALIZED VIEW</code>. É mais rápida para relatórios pesados, mas pode ficar desatualizada.`},
+      {t:'h', x:'Função: lógica guardada no banco'},
+      {t:'code', file:'24_funcao.sql', x:`CREATE OR REPLACE FUNCTION valor_com_desconto(valor NUMERIC, pct NUMERIC)
+RETURNS NUMERIC AS $$
+BEGIN
+    RETURN ROUND(valor * (1 - pct / 100), 2);
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT nome, preco, valor_com_desconto(preco, 10) AS com_desconto
+FROM produtos
+ORDER BY id;`},
+      {t:'table', file:'Data Output — 4 linhas', cols:['nome','preco','com_desconto'], rows:[['Teclado Mecânico','249.90','224.91'],['Mouse Gamer','129.90','116.91'],['Monitor 24 pol','899.00','809.10'],['Teclado Compacto','179.90','161.91']]},
+      {t:'p', x:`<code>plpgsql</code> é a linguagem procedural do PostgreSQL: tem variáveis, <code>IF</code>, laços e tratamento de erro. Além de funções, existem <b>procedures</b> (chamadas com <code>CALL</code>, podem controlar transações).`},
+      {t:'h', x:'Trigger: reagir automaticamente'},
+      {t:'p', x:`Um <b>trigger</b> dispara uma função quando acontece um <code>INSERT</code>, <code>UPDATE</code> ou <code>DELETE</code>. Um uso clássico é a <b>auditoria</b>: registrar quem mudou o preço, quando, de quanto para quanto.`},
+      {t:'code', file:'25_trigger.sql', x:`CREATE TABLE log_precos (
+    id            SERIAL PRIMARY KEY,
+    produto_id    INTEGER,
+    preco_antigo  NUMERIC(10, 2),
+    preco_novo    NUMERIC(10, 2),
+    alterado_em   TIMESTAMP DEFAULT NOW()
+);
+
+CREATE OR REPLACE FUNCTION registrar_preco() RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.preco <> OLD.preco THEN
+        INSERT INTO log_precos (produto_id, preco_antigo, preco_novo)
+        VALUES (OLD.id, OLD.preco, NEW.preco);
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_preco
+AFTER UPDATE ON produtos
+FOR EACH ROW EXECUTE FUNCTION registrar_preco();
+
+UPDATE produtos SET preco = 139.90 WHERE id = 2;
+
+SELECT produto_id, preco_antigo, preco_novo FROM log_precos;`},
+      {t:'table', file:'Data Output — 1 linha', cols:['produto_id','preco_antigo','preco_novo'], rows:[['2','129.90','139.90']]},
+      {t:'note', k:'Use com moderação', warn:true, x:`Triggers rodam "escondidos": quem lê o <code>UPDATE</code> não vê o efeito. Muita lógica de negócio dentro do banco também dificulta testes e versionamento. Use para auditoria e regras de integridade, e deixe as regras de negócio para a aplicação.`}
+    ],
+    quiz:[
+      {q:'Uma view guarda os dados em disco?', o:['Sim, uma cópia completa','Não: guarda a consulta e a executa a cada uso','Só se for temporária','Sim, mas só as chaves'], a:1, e:'A view comum é uma consulta salva. Só a MATERIALIZED VIEW guarda o resultado.'},
+      {q:'Qual é um uso clássico de trigger?', o:['Criar tabelas','Auditoria: registrar mudanças automaticamente','Instalar o PostgreSQL','Fazer backup'], a:1, e:'Triggers reagem a INSERT/UPDATE/DELETE, ótimo para logs de auditoria.'},
+      {q:'Como uma view ajuda na segurança?', o:['Criptografa a tabela','Mostra só as colunas e linhas que o usuário pode ver','Apaga dados sensíveis','Impede JOINs'], a:1, e:'Você dá permissão na view e não na tabela: o usuário só enxerga o que a view mostra.'}
+    ]
+  };
+
+  /* ---------- 21. NOVO: Segurança, DCL e backup ---------- */
+  const seguranca = {
+    id:'seguranca', short:'Segurança e permissões', tag:'Administração',
+    title:'Segurança, permissões (DCL) e backup',
+    lead:'Quem pode fazer o quê, como um ataque de SQL Injection funciona e como não perder tudo.',
+    blocks:[
+      {t:'h', x:'Autenticação, autorização, auditoria'},
+      {t:'cards', items:[
+        {h:'Autenticação', x:'Quem é você? Usuário e senha, certificados.'},
+        {h:'Autorização', x:'O que você pode fazer? Permissões sobre tabelas e comandos.'},
+        {h:'Auditoria', x:'O que você fez? Logs e triggers que registram as mudanças.'}
+      ]},
+      {t:'h', x:'DCL no PostgreSQL: roles, GRANT e REVOKE'},
+      {t:'p', x:`No PostgreSQL, usuários e grupos são <b>roles</b>. Você cria o role, dá permissões com <code>GRANT</code> e retira com <code>REVOKE</code>. Siga o <b>princípio do menor privilégio</b>: cada um recebe só o necessário para o seu trabalho.`},
+      {t:'code', file:'26_permissoes.sql', x:`-- para repetir o exercício: DROP ROLE IF EXISTS analista;
+CREATE ROLE analista LOGIN PASSWORD 'troque_esta_senha';
+
+GRANT SELECT ON produtos, categorias TO analista;
+GRANT INSERT, UPDATE ON pedidos TO analista;
+
+REVOKE UPDATE ON pedidos FROM analista;`},
+      {t:'note', k:'Sobre o DENY', x:`A apostila cita o <code>DENY</code>, que existe no SQL Server. O PostgreSQL não tem: quem não recebeu <code>GRANT</code> não tem acesso, e o <code>REVOKE</code> retira o que foi concedido.`},
+      {t:'h', x:'SQL Injection: o ataque mais clássico'},
+      {t:'p', x:`Acontece quando a aplicação monta o SQL <b>juntando texto digitado pelo usuário</b>. Se o usuário digitar <code>' OR '1'='1</code> num campo de nome, a condição vira sempre verdadeira e o banco devolve tudo:`},
+      {t:'code', file:'27_injection.sql', x:`-- código ERRADO da aplicação (concatena o que o usuário digitou):
+--   "SELECT * FROM clientes WHERE nome = '" + entrada + "'"
+
+-- se entrada = ' OR '1'='1  o SQL enviado ao banco vira:
+SELECT * FROM clientes WHERE nome = '' OR '1'='1';`},
+      {t:'p', x:`A defesa é usar <b>consultas parametrizadas</b> (<code>PreparedStatement</code> em Java, parâmetros no psycopg do Python, ORMs como JPA), que enviam o comando e os valores separados, de modo que o valor nunca vira código.`},
+      {t:'h', x:'Outros cuidados essenciais'},
+      {t:'ul', items:[
+        '<b>Senhas</b> de usuários do seu sistema nunca ficam em texto: guarde apenas um hash forte (bcrypt ou Argon2).',
+        '<b>Dados pessoais</b> pedem cuidado legal: no Brasil, a LGPD regula coleta e uso. Guarde só o necessário.',
+        '<b>Conexão criptografada</b> (SSL/TLS) entre a aplicação e o banco.',
+        '<b>Views e roles</b> para expor só as colunas necessárias a cada perfil.',
+        'Nunca use o superusuário <code>postgres</code> na aplicação: crie um role com privilégios mínimos.'
+      ]},
+      {t:'h', x:'Backup: o seguro do seu banco'},
+      {t:'code', file:'terminal', nolab:true, x:`-- gera um arquivo com o banco inteiro
+pg_dump -U postgres loja_dev > backup_loja.sql
+
+-- restaura em outro banco
+psql -U postgres -d loja_novo -f backup_loja.sql`},
+      {t:'p', x:`Uma regra popular é a <b>3-2-1</b>: três cópias dos dados, em dois tipos de mídia diferentes, com uma cópia fora do local. E o backup só vale se você já testou restaurar.`}
+    ],
+    quiz:[
+      {q:'Qual comando retira uma permissão que foi concedida?', o:['DROP','DENY','REVOKE','ROLLBACK'], a:2, e:'REVOKE retira. O DENY existe no SQL Server, mas não no PostgreSQL.'},
+      {q:'Qual é a melhor defesa contra SQL Injection?', o:['Usar aspas duplas','Consultas parametrizadas','Deixar o banco sem senha','Usar só letras minúsculas'], a:1, e:'Enviar o comando e os valores separados impede que texto do usuário vire código SQL.'},
+      {q:'O princípio do menor privilégio diz que...', o:['Todos devem ser administradores','Cada usuário recebe apenas as permissões de que precisa','Só o DBA acessa o banco','Nenhum usuário tem senha'], a:1, e:'Permissões mínimas reduzem o estrago de erros e ataques.'},
+      {q:'Na regra 3-2-1 de backup, o "1" significa...', o:['Um usuário','Uma cópia fora do local','Um banco','Uma senha'], a:1, e:'3 cópias, 2 mídias diferentes, 1 cópia em outro local.'}
+    ]
+  };
+
+  /* ---------- 22. NOVO: Projeto final ---------- */
+  const projeto = {
+    id:'projeto', short:'Projeto final', tag:'Projeto',
+    title:'Projeto final: da ideia ao banco',
+    lead:'Juntar tudo: partir de um problema em português e chegar a um banco modelado, normalizado, populado e consultado.',
+    blocks:[
+      {t:'p', x:`Todo projeto de banco segue o mesmo caminho. Use esta lista como checklist em qualquer trabalho da faculdade ou do emprego:`},
+      {t:'table', mac:false, cols:['Etapa','O que fazer','Entrega'], rows:[
+        ['1. Requisitos','Conversar com quem vai usar. Que perguntas o sistema precisa responder?','Lista de requisitos'],
+        ['2. Modelo conceitual','Identificar entidades, atributos, relacionamentos e cardinalidades','DER'],
+        ['3. Modelo lógico','Mapear o DER para tabelas, PKs e FKs','Esquema relacional'],
+        ['4. Normalização','Chegar à 3FN (ou BCNF) e justificar qualquer redundância','Esquema revisado'],
+        ['5. Dicionário de dados','Documentar cada coluna: tipo, obrigatoriedade, regras','Dicionário'],
+        ['6. Modelo físico','Escrever o DDL com tipos, constraints e índices','Script <code>.sql</code>'],
+        ['7. Carga de dados','Popular com dados de teste realistas','INSERTs'],
+        ['8. Consultas','Responder as perguntas do passo 1 com SQL','Consultas e resultados'],
+        ['9. Segurança e backup','Roles com menor privilégio e rotina de backup','Permissões e plano']
+      ]},
+      {t:'h', x:'Estudo de caso: biblioteca universitária'},
+      {t:'p', x:`<b>Requisitos:</b> a biblioteca tem livros; cada livro pode ter vários exemplares físicos. Alunos fazem empréstimos de exemplares, com data de retirada e de devolução. A bibliotecária quer saber quais exemplares estão emprestados, quais empréstimos estão atrasados e quais livros são mais emprestados.`},
+      {t:'p', x:`<b>Entidades:</b> LIVRO, EXEMPLAR (entidade fraca: só existe por causa de um livro), ALUNO, EMPRÉSTIMO (associativa entre aluno e exemplar). <b>Relações:</b> LIVRO 1:N EXEMPLAR; ALUNO 1:N EMPRÉSTIMO; EXEMPLAR 1:N EMPRÉSTIMO. Rode no laboratório com o <b>Banco vazio</b>:`},
+      {t:'code', file:'biblioteca_ddl.sql', x:`CREATE TABLE livros (
+    id      SERIAL PRIMARY KEY,
+    titulo  VARCHAR(150) NOT NULL,
+    autor   VARCHAR(100) NOT NULL,
+    isbn    VARCHAR(20) UNIQUE
+);
+
+CREATE TABLE exemplares (
+    id        SERIAL PRIMARY KEY,
+    livro_id  INTEGER NOT NULL REFERENCES livros (id),
+    codigo    VARCHAR(20) NOT NULL UNIQUE
+);
+
+CREATE TABLE alunos (
+    id         SERIAL PRIMARY KEY,
+    nome       VARCHAR(100) NOT NULL,
+    matricula  VARCHAR(20) NOT NULL UNIQUE
+);
+
+CREATE TABLE emprestimos (
+    id            SERIAL PRIMARY KEY,
+    aluno_id      INTEGER NOT NULL REFERENCES alunos (id),
+    exemplar_id   INTEGER NOT NULL REFERENCES exemplares (id),
+    retirada      DATE NOT NULL DEFAULT CURRENT_DATE,
+    prazo         DATE NOT NULL,
+    devolucao     DATE,
+    CHECK (prazo >= retirada)
+);
+
+CREATE INDEX idx_emprestimos_exemplar ON emprestimos (exemplar_id);`},
+      {t:'code', file:'biblioteca_dados.sql', x:`INSERT INTO livros (titulo, autor, isbn) VALUES
+    ('Sistemas de Banco de Dados', 'Silberschatz', '978-0000000001'),
+    ('Projeto de Banco de Dados', 'Heuser', '978-0000000002');
+
+INSERT INTO exemplares (livro_id, codigo) VALUES (1, 'E-001'), (1, 'E-002'), (2, 'E-003');
+
+INSERT INTO alunos (nome, matricula) VALUES ('Ana', '2026001'), ('Bruno', '2026002');
+
+INSERT INTO emprestimos (aluno_id, exemplar_id, retirada, prazo, devolucao) VALUES
+    (1, 1, '2026-08-01', '2026-08-15', '2026-08-14'),
+    (1, 3, '2026-08-20', '2026-09-03', NULL),
+    (2, 1, '2026-09-01', '2026-09-15', NULL);`},
+      {t:'code', file:'biblioteca_consultas.sql', x:`-- exemplares emprestados agora (sem devolução)
+SELECT a.nome, l.titulo, e.codigo, em.prazo
+FROM emprestimos em
+JOIN alunos a      ON a.id = em.aluno_id
+JOIN exemplares e  ON e.id = em.exemplar_id
+JOIN livros l      ON l.id = e.livro_id
+WHERE em.devolucao IS NULL
+ORDER BY em.prazo;
+
+-- livros mais emprestados
+SELECT l.titulo, COUNT(*) AS emprestimos
+FROM emprestimos em
+JOIN exemplares e ON e.id = em.exemplar_id
+JOIN livros l     ON l.id = e.livro_id
+GROUP BY l.titulo
+ORDER BY emprestimos DESC;`},
+      {t:'note', k:'Sua vez', x:`Escolha um sistema que você conheça de verdade (almoxarifado, agenda de clínica, controle de medições, campeonato) e percorra as 9 etapas. Anote o DER, escreva o SQL e teste as consultas no laboratório. Esse projeto vira um item de portfólio.`}
+    ],
+    quiz:[
+      {q:'Na biblioteca, por que EXEMPLAR é considerada uma entidade fraca?', o:['Porque tem poucos atributos','Porque só existe por causa de um livro','Porque não tem chave','Porque é opcional'], a:1, e:'Um exemplar depende de um livro para existir: entidade fraca.'},
+      {q:'Qual é a ordem correta das etapas de um projeto de banco?', o:['DDL, DER, requisitos, normalização','Requisitos, DER, tabelas, normalização, DDL','Normalização, DDL, requisitos, DER','DER, DDL, requisitos, tabelas'], a:1, e:'Do abstrato ao concreto: requisitos, modelo conceitual, lógico, normalização e só então o SQL.'},
+      {q:'A tabela emprestimos liga alunos a exemplares. Que papel ela cumpre?', o:['Entidade forte independente','Tabela associativa de uma relação N:N','Dicionário de dados','View'], a:1, e:'Um aluno pega vários exemplares e um exemplar é pego por vários alunos ao longo do tempo: N:N resolvido por uma tabela associativa.'},
+      {q:'Qual consulta acha os empréstimos ainda em aberto?', o:['WHERE devolucao = NULL','WHERE devolucao IS NULL','WHERE devolucao > 0','WHERE NOT devolucao'], a:1, e:'NULL só se testa com IS NULL.'}
+    ]
+  };
+
+  /* ---------- reordenar a trilha ---------- */
+  const order = [
+    by.porque, by.tipos, arquitetura, by.interface, by.sintaxe, by.tiposdados, relacional, by.create,
+    by.insert, by.where, by.update, mer, by.join, algebra, by.agg, sub, by.norm,
+    indices, transacoes, views, seguranca, projeto
+  ];
+  MODS.length = 0;
+  order.forEach(m => MODS.push(m));
+})();
+
+/* ============ MOTOR ============ */
+const N = MODS.length;
+const KEY = 'trilha-postgresql-v2';
+const $ = (s, r = document) => r.querySelector(s);
+const view = $('#view');
+const MAXXP = MODS.reduce((a, m) => a + m.quiz.length * 100 + 150, 0);
+
+let S = { done: {}, xp: 0, first: 0, total: 0, lab: {} };
+const LABCODE = [];
+try { const r = localStorage.getItem(KEY); if (r) S = Object.assign(S, JSON.parse(r)); } catch (e) {}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+
+const doneCount = () => MODS.filter(m => S.done[m.id]).length;
+const allDone = () => doneCount() === N;
+const unlocked = i => i === 0 || !!S.done[MODS[i - 1].id];
+const nextIdx = () => { const i = MODS.findIndex(m => !S.done[m.id]); return i < 0 ? N : i; };
+
+let cur = 'home'; // 'home' | number | 'trophy'
+
+/* ---- realce de sintaxe SQL ---- */
+const KW = new Set('CREATE DATABASE TABLE SELECT FROM WHERE INSERT INTO VALUES UPDATE SET DELETE DROP ALTER ADD COLUMN PRIMARY KEY NOT NULL UNIQUE DEFAULT CHECK REFERENCES AND OR IN BETWEEN LIKE ILIKE IS AS ORDER BY GROUP HAVING LIMIT OFFSET JOIN INNER LEFT RIGHT ON DESC ASC BEGIN COMMIT ROLLBACK INDEX VIEW EXPLAIN ANALYZE TRUE FALSE WITH EXISTS CASE WHEN THEN ELSE END OVER PARTITION UNION EXCEPT INTERSECT CROSS FULL OUTER DISTINCT GRANT REVOKE TRIGGER FUNCTION RETURNS RETURN LANGUAGE ROLE LOGIN PASSWORD CASCADE FOR EACH ROW EXECUTE PROCEDURE AFTER BEFORE TO USING ALL ANY SAVEPOINT START TRANSACTION ISOLATION LEVEL'.split(' '));
+const TY = new Set('INTEGER INT SERIAL BIGINT NUMERIC VARCHAR TEXT BOOLEAN DATE TIMESTAMP UUID JSONB CHAR'.split(' '));
+const FN = new Set('COUNT SUM AVG MIN MAX ROUND COALESCE NOW ROW_NUMBER RANK LAG LEAD'.split(' '));
+const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+function hl(src) {
+  const re = /(--[^\n]*)|('(?:[^']|'')*')|(\\[a-zA-Z]+)|\b(\d+(?:\.\d+)?)\b|\b([A-Za-z_][A-Za-z0-9_]*)\b/g;
+  let out = '', last = 0, m;
+  while ((m = re.exec(src))) {
+    out += esc(src.slice(last, m.index));
+    last = re.lastIndex;
+    if (m[1]) out += `<span class="cm">${esc(m[1])}</span>`;
+    else if (m[2]) out += `<span class="s">${esc(m[2])}</span>`;
+    else if (m[3]) out += `<span class="kw">${esc(m[3])}</span>`;
+    else if (m[4]) out += `<span class="n">${m[4]}</span>`;
+    else {
+      const u = m[5].toUpperCase();
+      out += KW.has(u) ? `<span class="kw">${m[5]}</span>` : TY.has(u) ? `<span class="t">${m[5]}</span>` : FN.has(u) ? `<span class="f">${m[5]}</span>` : esc(m[5]);
+    }
+  }
+  return out + esc(src.slice(last));
+}
+const sqlHtml = src => `<pre class="sql">${hl(src).split('\n').map(l => `<span class="l">${l || ' '}</span>`).join('')}</pre>`;
+
+/* ---- moldura MacBook ---- */
+function mac(title, inner, extra = '') {
+  return `<figure class="mac"><div class="mac-lid"><div class="mac-screen"><div class="win-bar"><i></i><i></i><i></i><span class="win-title">${title}</span>${extra}</div><div class="win-body">${inner}</div></div></div><div class="mac-base"></div></figure>`;
+}
+
+/* ---- blocos de conteúdo ---- */
+function block(b) {
+  switch (b.t) {
+    case 'h': return `<h2>${b.x}</h2>`;
+    case 'p': return `<p>${b.x}</p>`;
+    case 'note': return `<div class="note${b.warn ? ' warn' : ''}"><b class="k">${b.k}</b><p>${b.x}</p></div>`;
+    case 'cards': return `<div class="cards">${b.items.map(c => `<div class="card"><h3>${c.h}</h3><p>${c.x}</p></div>`).join('')}</div>`;
+    case 'ul': return `<ul class="tick">${b.items.map(x => `<li>${x}</li>`).join('')}</ul>`;
+    case 'ol': return `<ol class="steps">${b.items.map(x => `<li><span>${x}</span></li>`).join('')}</ol>`;
+    case 'flow': return `<div class="flow">${b.items.map((x, i) => (i ? '<i>→</i>' : '') + `<span${x === 'SELECT' ? ' class="a"' : ''}>${x}</span>`).join('')}</div>`;
+    case 'code': { let ex = ''; if (!b.nolab) { LABCODE.push(b.x); ex = `<button type="button" class="runbtn" data-lab="${LABCODE.length - 1}">Abrir no laboratório ▸</button>`; } return mac(b.file, sqlHtml(b.x), ex); }
+    case 'table': {
+      if (b.mac === false) return `<div class="tbl"><table><thead><tr>${b.cols.map(c => `<th>${c}</th>`).join('')}</tr></thead><tbody>${b.rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+      const t = `<table class="res"><thead><tr>${b.cols.map(c => `<th>${c}</th>`).join('')}</tr></thead><tbody>${b.rows.map(r => `<tr>${r.map(c => c === 'NULL' ? '<td class="null">NULL</td>' : `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+      return mac(b.file, t);
+    }
+    case 'raw': return mac(b.file, `<div class="der">${b.x}</div>`);
+    case 'gui': return guiHtml();
+    case 'syntax': return syntaxHtml();
+  }
+  return '';
+}
+
+/* ---- tela pgAdmin interativa ---- */
+const GTYPES = ['SERIAL', 'INTEGER', 'VARCHAR(100)', 'TEXT', 'NUMERIC(10,2)', 'BOOLEAN', 'DATE', 'TIMESTAMP'];
+function guiHtml() {
+  const inner = `<div class="gui" data-gui>
+    <aside class="tree">
+      <div>▾ Servers</div><div class="l1">▾ PostgreSQL</div><div class="l2">▾ Databases</div><div class="l3">▾ loja_dev</div>
+      <div class="l4">▾ Schemas</div><div class="l5">▾ public</div><div class="l5">&nbsp;&nbsp;▾ Tables</div><div class="l5 hi" data-tree>&nbsp;&nbsp;&nbsp;&nbsp;alunos</div>
+    </aside>
+    <section class="pane">
+      <div class="tabs"><button type="button" data-tab="v" class="on">Modo visual</button><button type="button" data-tab="s">Código SQL</button></div>
+      <div data-pane="v">
+        <label class="fl">Nome da tabela<input type="text" data-name value="alunos" maxlength="30" style="margin-top:6px"></label>
+        <div class="crow h"><span>Coluna</span><span>Tipo</span><span class="ck">PK</span><span class="ck">Obrig.</span><span></span></div>
+        <div data-cols></div>
+        <button type="button" class="addc" data-add>+ Adicionar coluna</button>
+      </div>
+      <div data-pane="s" hidden><div data-sql></div></div>
+      <p class="gnote">Cada mudança na tela reescreve o comando SQL. Veja na aba Código SQL.</p>
+    </section>
+  </div>`;
+  return mac('pgAdmin 4 — localhost:5432', inner);
+}
+function initGui(root) {
+  const g = root.querySelector('[data-gui]'); if (!g) return;
+  const cols = [
+    { n: 'id', t: 'SERIAL', pk: true, nn: true },
+    { n: 'nome', t: 'VARCHAR(100)', pk: false, nn: true },
+    { n: 'email', t: 'VARCHAR(100)', pk: false, nn: false }
+  ];
+  const nameIn = g.querySelector('[data-name]'), list = g.querySelector('[data-cols]'), sqlBox = g.querySelector('[data-sql]'), tree = g.querySelector('[data-tree]');
+  const slug = s => (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, '');
+  function gen() {
+    const tn = slug(nameIn.value) || 'minha_tabela';
+    tree.innerHTML = '&nbsp;&nbsp;&nbsp;&nbsp;' + tn;
+    const rows = cols.map(c => {
+      const n = slug(c.n) || 'coluna';
+      return `    ${n} ${c.t}${c.pk ? ' PRIMARY KEY' : c.nn ? ' NOT NULL' : ''}`;
+    });
+    sqlBox.innerHTML = sqlHtml(`CREATE TABLE ${tn} (\n${rows.join(',\n')}\n);`);
+  }
+  function draw() {
+    list.innerHTML = cols.map((c, i) => `<div class="crow" data-i="${i}">
+      <input type="text" data-f="n" value="${esc(c.n)}" aria-label="Nome da coluna ${i + 1}" maxlength="30">
+      <select data-f="t" aria-label="Tipo da coluna ${i + 1}">${GTYPES.map(t => `<option${t === c.t ? ' selected' : ''}>${t}</option>`).join('')}</select>
+      <span class="ck"><input type="checkbox" data-f="pk" aria-label="Chave primária"${c.pk ? ' checked' : ''}></span>
+      <span class="ck"><input type="checkbox" data-f="nn" aria-label="Obrigatória"${c.nn ? ' checked' : ''}></span>
+      <button type="button" class="x" data-del aria-label="Remover coluna">×</button></div>`).join('');
+  }
+  g.addEventListener('input', e => {
+    if (e.target === nameIn) return gen();
+    const row = e.target.closest('.crow'); if (!row) return;
+    const c = cols[+row.dataset.i], f = e.target.dataset.f;
+    c[f] = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    gen();
+  });
+  g.addEventListener('click', e => {
+    const tab = e.target.closest('[data-tab]');
+    if (tab) {
+      g.querySelectorAll('[data-tab]').forEach(b => b.classList.toggle('on', b === tab));
+      g.querySelector('[data-pane="v"]').hidden = tab.dataset.tab !== 'v';
+      g.querySelector('[data-pane="s"]').hidden = tab.dataset.tab !== 's';
+    }
+    if (e.target.closest('[data-add]') && cols.length < 8) { cols.push({ n: 'nova_coluna', t: 'VARCHAR(100)', pk: false, nn: false }); draw(); gen(); }
+    if (e.target.closest('[data-del]') && cols.length > 1) { cols.splice(+e.target.closest('.crow').dataset.i, 1); draw(); gen(); }
+  });
+  draw(); gen();
+}
+
+/* ---- aba bagunçado x organizado ---- */
+const MESSY = `select nome,preco,estoque from produtos where preco>100 and estoque>0 and categoria_id in(1,2) order by preco desc limit 10;`;
+const CLEAN = `-- produtos caros e disponíveis, do mais caro ao mais barato
+SELECT
+    nome,
+    preco,
+    estoque
+FROM produtos
+WHERE preco > 100
+    AND estoque > 0
+    AND categoria_id IN (1, 2)
+ORDER BY preco DESC
+LIMIT 10;`;
+function syntaxHtml() {
+  return `<div data-sx><div class="sx-tabs"><button type="button" class="on" data-sx-tab="m">Bagunçado</button><button type="button" data-sx-tab="c">Organizado</button></div>
+  ${mac('consulta.sql', `<div data-sx-p="m">${sqlHtml(MESSY)}</div><div data-sx-p="c" hidden>${sqlHtml(CLEAN)}</div>`)}</div>`;
+}
+function initSyntax(root) {
+  const s = root.querySelector('[data-sx]'); if (!s) return;
+  s.addEventListener('click', e => {
+    const t = e.target.closest('[data-sx-tab]'); if (!t) return;
+    s.querySelectorAll('[data-sx-tab]').forEach(b => b.classList.toggle('on', b === t));
+    s.querySelectorAll('[data-sx-p]').forEach(p => p.hidden = p.dataset.sxP !== t.dataset.sxTab);
+  });
+}
+
+/* ---- mapa da trilha ---- */
+function renderMap() {
+  const ni = nextIdx();
+  let h = `<button class="node${cur === 'home' ? ' cur' : ''}" data-go="home"><span class="c">◆</span><span class="t2">Início</span></button><button class="node${cur === 'lab' ? ' cur' : ''}" data-go="lab"><span class="c">&gt;_</span><span class="t2">Laboratório SQL</span></button>`;
+  MODS.forEach((m, i) => {
+    const d = !!S.done[m.id], ul = unlocked(i), sel = cur === i;
+    h += `<button class="node${d ? ' done' : ''}${i === ni ? ' cur' : ''}${!ul ? ' lock' : ''}${sel ? ' sel' : ''}" ${ul ? `data-go="${i}"` : 'disabled'} aria-label="Módulo ${i + 1}: ${m.short}"${sel ? ' aria-current="step"' : ''}><span class="c">${d ? '✓' : i + 1}</span><span class="t2">${m.short}</span></button>`;
+  });
+  h += `<button class="node trophy${allDone() ? ' done cur' : ' lock'}${cur === 'trophy' ? ' sel' : ''}" ${allDone() ? 'data-go="trophy"' : 'disabled'} aria-label="Troféu"><span class="c">★</span><span class="t2">Troféu final</span></button>`;
+  $('#map').innerHTML = h;
+  $('#xp').textContent = S.xp;
+  $('#pct').textContent = `${doneCount()}/${N}`;
+  $('#barfill').style.width = (doneCount() / N * 100) + '%';
+}
+
+/* ---- telas ---- */
+const HERO_CODE = `CREATE DATABASE trilha_pg;
+
+CREATE TABLE alunos (
+    id    SERIAL PRIMARY KEY,
+    nome  VARCHAR(80) NOT NULL,
+    xp    INTEGER DEFAULT 0
+);
+
+-- no fim da trilha: um troféu`;
+let typer = null;
+function renderHome() {
+  const started = doneCount() > 0, ni = nextIdx();
+  view.innerHTML = `<section class="hero">
+    <div>
+      <p class="eyebrow">Trilha para iniciantes</p>
+      <h1>Do primeiro <em>CREATE</em> até o troféu.</h1>
+      <p class="lead" style="margin-top:14px">Aprenda banco de dados com PostgreSQL passo a passo: por que os bancos existem, como usar a interface, escrever SQL, modelar tabelas e chegar ao nível avançado.</p>
+      <div class="row">
+        <button class="btn alt" data-go="${allDone() ? 'trophy' : ni}">${allDone() ? 'Ver meu troféu' : started ? 'Continuar do módulo ' + (ni + 1) : 'Começar a trilha'}</button>
+        <button class="btn" data-go="lab">Abrir o laboratório SQL</button>
+      </div>
+      <div class="facts"><div><b>${N}</b>módulos</div><div><b>${MODS.reduce((a, m) => a + m.quiz.length, 0)}</b>desafios</div><div><b>${MAXXP}</b>XP possíveis</div><div><b>1</b>troféu</div></div>
+    </div>
+    ${mac('trilha.sql — PostgreSQL', `<div id="heroCode"></div>`)}
+    <div class="how">
+      <div><b>Leia</b><span>Cada módulo explica uma ideia, sem pressa e com exemplos reais de uma loja.</span></div>
+      <div><b>Veja na tela</b><span>Os comandos aparecem no notebook, com o resultado que o PostgreSQL devolveria.</span></div>
+      <div><b>Vença o desafio</b><span>Perguntas ao fim de cada módulo. Acertou de primeira? Mais XP. Passou de fase, abriu a próxima.</span></div>
+    </div>
+  </section>
+  ${pixCard()}`;
+  const box = $('#heroCode');
+  const still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (still) { box.innerHTML = sqlHtml(HERO_CODE); return; }
+  let n = 0;
+  clearInterval(typer);
+  box.innerHTML = sqlHtml(' ');
+  typer = setInterval(() => {
+    n += 2;
+    if (n >= HERO_CODE.length) { n = HERO_CODE.length; clearInterval(typer); }
+    if (!box.isConnected) return clearInterval(typer);
+    box.innerHTML = sqlHtml(HERO_CODE.slice(0, n));
+  }, 28);
+}
+
+function renderModule(i) {
+  const m = MODS[i];
+  LABCODE.length = 0;
+  view.innerHTML = `<article>
+    <p class="eyebrow">Módulo ${i + 1} de ${N} · ${m.tag}</p>
+    <h1>${m.title}</h1>
+    <p class="lead" style="margin-top:14px">${m.lead}</p>
+    ${m.blocks.map(block).join('')}
+    <section class="quiz" id="quiz"><p class="eyebrow">Desafio do módulo</p></section>
+  </article>`;
+  initGui(view); initSyntax(view);
+  const qz = $('#quiz');
+  if (S.done[m.id]) {
+    const last = i === N - 1;
+    qz.insertAdjacentHTML('beforeend', `<div class="qdone"><p><b>Módulo concluído.</b> Você já passou por aqui e o XP foi contabilizado.</p>${last ? (allDone() ? '<button class="btn alt" data-go="trophy">Ver troféu</button>' : '') : `<button class="btn" data-go="${i + 1}">Próximo módulo</button>`}</div>`);
+  } else runQuiz(i, qz);
+}
+
+/* ---- desafio ---- */
+function runQuiz(mi, host) {
+  const m = MODS[mi], Q = m.quiz;
+  let qi = 0, tries = 0, gained = 0;
+  const box = document.createElement('div'); box.className = 'qbox'; host.appendChild(box);
+  const norm = s => s.trim().toLowerCase().replace(/\s+/g, ' ');
+
+  function draw() {
+    const q = Q[qi]; tries = 0;
+    let body;
+    if (q.fill) {
+      body = `<div class="fillrow"><span>${esc(q.pre)}</span><input type="text" id="fillin" placeholder="${q.ph || '?'}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Sua resposta"><span>${esc(q.post)}</span></div><div class="qact"><button class="btn" id="fillgo">Verificar</button></div>`;
+    } else {
+      body = `<div class="opts">${q.o.map((o, k) => `<button class="opt" data-k="${k}"><b>${'ABCD'[k]}</b><span>${esc(o)}</span></button>`).join('')}</div>`;
+    }
+    box.innerHTML = `<div class="qtop"><span>Pergunta ${qi + 1} de ${Q.length}</span><span>+${gained} XP</span></div><div class="qq">${esc(q.q)}</div>${body}<div id="fb"></div>`;
+    if (q.fill) { const inp = $('#fillin'); inp.focus({ preventScroll: true }); inp.addEventListener('keydown', e => { if (e.key === 'Enter') check(); }); $('#fillgo').onclick = check; }
+    else box.querySelectorAll('.opt').forEach(b => b.onclick = () => pick(+b.dataset.k, b));
+  }
+  function right() {
+    const q = Q[qi], pts = tries === 0 ? 100 : 40;
+    S.xp += pts; gained += pts; S.total++; if (tries === 0) S.first++; save(); renderMap();
+    $('.qtop span:last-child', box).textContent = `+${gained} XP`;
+    box.querySelectorAll('.opt').forEach(b => b.disabled = true);
+    const inp = $('#fillin'); if (inp) { inp.disabled = true; $('#fillgo').hidden = true; }
+    const lastQ = qi === Q.length - 1;
+    $('#fb').innerHTML = `<div class="fb good"><b>Certo! +${pts} XP.</b> ${q.e}</div><div class="qact"><button class="btn${lastQ ? ' alt' : ''}" id="nx">${lastQ ? 'Concluir módulo (+150 XP)' : 'Próxima pergunta'}</button></div>`;
+    $('#nx').focus({ preventScroll: true });
+    $('#nx').onclick = () => { if (!lastQ) { qi++; draw(); } else finish(); };
+  }
+  function wrong() {
+    tries++;
+    $('#fb').innerHTML = `<div class="fb bad"><b>Ainda não.</b> Releia o módulo e tente de novo. Acertar agora vale menos XP, mas vale muito de aprendizado.</div>`;
+  }
+  function pick(k, btn) {
+    if (k === Q[qi].a) { btn.classList.add('ok'); right(); }
+    else { btn.classList.add('no'); btn.disabled = true; wrong(); }
+  }
+  function check() {
+    const q = Q[qi], v = norm($('#fillin').value);
+    if (q.ok.some(x => norm(x) === v)) right(); else wrong();
+  }
+  function finish() {
+    S.done[m.id] = true; S.xp += 150; save();
+    if (mi === N - 1 && allDone()) go('trophy'); else go(mi === N - 1 ? 'home' : mi + 1);
+  }
+  draw();
+}
+
+/* ---- troféu ---- */
+function trophySvg() {
+  return `<svg viewBox="0 0 240 260" role="img" aria-label="Troféu dourado">
+  <defs>
+    <linearGradient id="tg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd479"/><stop offset=".5" stop-color="#ff8a3d"/><stop offset="1" stop-color="#ff6b1f"/></linearGradient>
+    <linearGradient id="tp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9b4dff"/><stop offset="1" stop-color="#4a1d99"/></linearGradient>
+  </defs>
+  <path d="M64 56 H40 C40 96 54 116 82 122" fill="none" stroke="url(#tg)" stroke-width="10" stroke-linecap="round"/>
+  <path d="M176 56 H200 C200 96 186 116 158 122" fill="none" stroke="url(#tg)" stroke-width="10" stroke-linecap="round"/>
+  <path d="M62 30 H178 V88 C178 130 152 152 120 152 C88 152 62 130 62 88 Z" fill="url(#tg)"/>
+  <path d="M78 40 H92 V92 C92 118 104 132 118 138 C96 134 78 116 78 88 Z" fill="#fff" opacity=".28"/>
+  <rect x="106" y="150" width="28" height="36" fill="url(#tg)"/>
+  <rect x="80" y="186" width="80" height="16" rx="4" fill="url(#tp)"/>
+  <rect x="64" y="202" width="112" height="24" rx="6" fill="url(#tp)"/>
+  <text x="120" y="219" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" font-weight="700" fill="#ffd479">SELECT *</text>
+  <ellipse cx="120" cy="90" rx="26" ry="9" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="3"/>
+  <path d="M94 90 V112 C94 118 106 122 120 122 C134 122 146 118 146 112 V90" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="3"/>
+  <path d="M94 101 C94 107 106 111 120 111 C134 111 146 107 146 101" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="3"/>
+  </svg>`;
+}
+function renderTrophy() {
+  const pct = Math.round(S.xp / MAXXP * 100);
+  const rank = S.xp >= MAXXP * .9 ? 'DBA Lendário' : S.xp >= MAXXP * .75 ? 'DBA Pleno' : 'DBA Júnior';
+  view.innerHTML = `<section class="trophy-wrap">
+    ${trophySvg()}
+    <p class="eyebrow" style="margin-top:14px">Trilha concluída</p>
+    <h1>Você virou gente de banco de dados.</h1>
+    <span class="rank">${rank}</span>
+    <p class="lead">Você percorreu ${N} módulos, de "por que existe um banco" até modelagem, álgebra relacional, índices, transações, views e segurança. Agora é praticar em projetos reais.</p>
+    <div class="tstats"><div><b>${S.xp}</b><span>XP de ${MAXXP}</span></div><div><b>${S.first}</b><span>acertos de primeira</span></div><div><b>${pct}%</b><span>aproveitamento</span></div><div><b>${Object.keys(S.lab || {}).length}/${MISSIONS.length}</b><span>missões práticas</span></div></div>
+    <div class="row" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><button class="btn" data-go="home">Voltar ao início</button><button class="btn ghost" data-go="0">Revisar do módulo 1</button></div>
+  </section>
+  <h2 style="text-align:center">Gostou da trilha?</h2>
+  ${pixCard()}
+  <h2 style="text-align:center">O que vem depois</h2>
+  <div class="cards">
+    <div class="card"><h3>Pratique de verdade</h3><p>Instale o PostgreSQL e recrie a loja do zero: categorias, produtos, clientes e pedidos.</p></div>
+    <div class="card"><h3>Conecte com uma linguagem</h3><p>Ligue seu banco a Java (Spring + JPA) ou Python (FastAPI) e guarde dados de um app.</p></div>
+    <div class="card"><h3>Projeto próprio</h3><p>Modele um sistema que você conhece bem: estoque, agenda, medição. Normalize e consulte.</p></div>
+  </div>`;
+  confetti();
+}
+function confetti() {
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const old = $('canvas.conf'); if (old) old.remove();
+  const c = document.createElement('canvas'); c.className = 'conf'; document.body.appendChild(c);
+  const x = c.getContext('2d'); c.width = innerWidth; c.height = innerHeight;
+  const cols = ['#9b4dff', '#ff6b1f', '#ffd479', '#c9a2ff', '#ffa36b'];
+  const ps = Array.from({ length: 140 }, () => ({ x: Math.random() * c.width, y: -20 - Math.random() * c.height * .6, w: 6 + Math.random() * 6, h: 8 + Math.random() * 8, vy: 2 + Math.random() * 3.5, vx: -1.5 + Math.random() * 3, r: Math.random() * 6, vr: -.2 + Math.random() * .4, c: cols[(Math.random() * cols.length) | 0] }));
+  let f = 0;
+  (function tick() {
+    x.clearRect(0, 0, c.width, c.height);
+    ps.forEach(p => { p.x += p.vx; p.y += p.vy; p.r += p.vr; x.save(); x.translate(p.x, p.y); x.rotate(p.r); x.fillStyle = p.c; x.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); x.restore(); });
+    if (++f < 260 && c.isConnected) requestAnimationFrame(tick); else c.remove();
+  })();
+}
+
+
+/* ---- contribua (Pix) ---- */
+const PIX = 'bce1f476-88b0-4951-9433-40fc22d98de5';
+function pixCard() {
+  return `<div class="pixbox"><div class="pixt"><b>Contribua com o projeto</b><span>Esta trilha é gratuita. Se ela te ajudou e você quiser, uma contribuição voluntária via Pix ajuda a continuar o desenvolvimento. Sem obrigação nenhuma.</span></div>
+  <div class="pixrow"><span class="pixlbl">Chave aleatória (Pix)</span><code class="pixkey" id="pixkey">${PIX}</code><button type="button" class="btn sm" data-copy="pix">Copiar chave</button></div></div>`;
+}
+function renderSupport() {
+  view.innerHTML = `<article><p class="eyebrow">Contribua</p><h1>Ajude a trilha a continuar crescendo</h1>
+  <p class="lead" style="margin-top:14px">Este material é feito por um estudante, com carinho e sem cobrar nada. Sua contribuição paga o tempo de desenvolvimento de novos módulos, exercícios e melhorias.</p>
+  ${pixCard()}
+  <div class="note"><b class="k">Como contribuir</b><p>Abra o app do seu banco, escolha Pix, depois "Pix com chave", cole a chave acima e digite o valor que quiser. Confira o destinatário antes de confirmar. Qualquer valor ajuda, e a trilha continua aberta para todos, contribuindo ou não.</p></div>
+  <div class="row" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:18px"><button class="btn" data-go="home">Voltar ao início</button></div></article>`;
+}
+async function copyPix(btn) {
+  let ok = false;
+  try { await navigator.clipboard.writeText(PIX); ok = true; } catch (e) {}
+  if (!ok) { try { const t = document.createElement('textarea'); t.value = PIX; t.style.position = 'fixed'; t.style.opacity = '0'; document.body.appendChild(t); t.select(); ok = document.execCommand('copy'); t.remove(); } catch (e) {} }
+  const old = btn.textContent; btn.textContent = ok ? 'Chave copiada ✓' : 'Selecione e copie a chave'; setTimeout(() => btn.textContent = old, 2200);
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-copy]'); if (b) copyPix(b); });
+
+/* ---- navegação ---- */
+function go(v) {
+  const c0 = $('canvas.conf'); if (c0 && v !== 'trophy') c0.remove();
+  if (typeof v === 'number' && (v < 0 || v >= N || !unlocked(v))) v = 'home';
+  if (v === 'trophy' && !allDone()) v = 'home';
+  cur = v;
+  renderMap();
+  if (v === 'home') renderHome(); else if (v === 'trophy') renderTrophy(); else if (v === 'lab') renderLab(); else if (v === 'apoie') renderSupport(); else renderModule(v);
+  window.scrollTo({ top: 0 });
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-go]'); if (!b || b.disabled) return;
+  const v = b.dataset.go; go(['home','trophy','lab','apoie'].includes(v) ? v : +v);
+});
+let armed = false;
+$('#reset').addEventListener('click', e => {
+  if (!armed) { armed = true; e.target.textContent = 'Clique de novo para apagar o progresso'; setTimeout(() => { armed = false; e.target.textContent = 'Recomeçar do zero'; }, 3500); return; }
+  S = { done: {}, xp: 0, first: 0, total: 0, lab: {} }; save(); armed = false; e.target.textContent = 'Recomeçar do zero'; go('home');
+});
+
+/* ============ LABORATÓRIO SQL: PostgreSQL de verdade no navegador (PGlite) ============ */
+const PG_URL = window.PGLITE_URL || 'https://cdn.jsdelivr.net/npm/@electric-sql/pglite@0.5.8/dist/index.js';
+const LAB = { db: null, loading: null, dataset: 'loja', mission: null, code: '-- Escreva seu SQL aqui e aperte Ctrl+Enter\nSELECT * FROM produtos;', busy: false };
+
+const SEED_LOJA = `
+CREATE TABLE categorias (
+    id    SERIAL PRIMARY KEY,
+    nome  VARCHAR(60) NOT NULL UNIQUE
+);
+CREATE TABLE produtos (
+    id            SERIAL PRIMARY KEY,
+    nome          VARCHAR(120) NOT NULL,
+    descricao     TEXT,
+    preco         NUMERIC(10, 2) NOT NULL CHECK (preco >= 0),
+    estoque       INTEGER NOT NULL DEFAULT 0,
+    ativo         BOOLEAN DEFAULT TRUE,
+    criado_em     TIMESTAMP DEFAULT NOW(),
+    categoria_id  INTEGER REFERENCES categorias (id)
+);
+CREATE TABLE clientes (
+    id     SERIAL PRIMARY KEY,
+    nome   VARCHAR(100) NOT NULL,
+    email  VARCHAR(150) UNIQUE
+);
+CREATE TABLE pedidos (
+    id          SERIAL PRIMARY KEY,
+    cliente_id  INTEGER NOT NULL REFERENCES clientes (id),
+    total       NUMERIC(10, 2) NOT NULL
+);
+CREATE TABLE contas (
+    id       SERIAL PRIMARY KEY,
+    titular  VARCHAR(80) NOT NULL,
+    saldo    NUMERIC(10, 2) NOT NULL
+);
+INSERT INTO categorias (nome) VALUES ('Teclados'), ('Mouses'), ('Monitores');
+INSERT INTO produtos (nome, preco, estoque, categoria_id) VALUES
+    ('Teclado Mecânico', 249.90, 15, 1),
+    ('Mouse Gamer',      129.90, 40, 2),
+    ('Monitor 24 pol',   899.00,  8, 3),
+    ('Teclado Compacto', 179.90,  0, 1);
+INSERT INTO clientes (nome, email) VALUES
+    ('Ana',   'ana@exemplo.com'),
+    ('Bruno', 'bruno@exemplo.com'),
+    ('Carla', 'carla@exemplo.com');
+INSERT INTO pedidos (id, cliente_id, total) VALUES (101, 1, 250.00), (102, 1, 80.00), (103, 2, 129.90);
+INSERT INTO contas (titular, saldo) VALUES ('Conta 1', 500.00), ('Conta 2', 300.00);
+`;
+
+async function labInit() {
+  if (LAB.db) return LAB.db;
+  if (!LAB.loading) {
+    LAB.loading = (async () => {
+      const { PGlite } = await import(PG_URL);
+      const db = new PGlite();
+      await db.waitReady;
+      await resetDataset(db, 'loja');
+      LAB.db = db;
+      return db;
+    })();
+    LAB.loading.catch(() => { LAB.loading = null; });
+  }
+  return LAB.loading;
+}
+async function resetDataset(db, ds) {
+  try { await db.exec('ROLLBACK'); } catch (e) {}
+  await db.exec('DROP SCHEMA public CASCADE; CREATE SCHEMA public;');
+  try { await db.exec('DROP ROLE IF EXISTS analista'); } catch (e) {}
+  if (ds === 'loja') await db.exec(SEED_LOJA);
+  LAB.dataset = ds;
+}
+
+/* ---- formatação de valores ---- */
+function fmt(v) {
+  if (v === null || v === undefined) return 'NULL';
+  if (v instanceof Date) return v.toISOString().replace('T', ' ').slice(0, 19);
+  if (typeof v === 'boolean') return v ? 'true' : 'false';
+  if (typeof v === 'object') return JSON.stringify(v);
+  return String(v);
+}
+
+/* ---- dicas em português para erros comuns ---- */
+function hintFor(msg) {
+  let m;
+  if ((m = msg.match(/relation "(.+?)" does not exist/))) return `A tabela "${m[1]}" não existe. Digite \\dt para listar as tabelas disponíveis, ou confira se você já rodou o CREATE TABLE.`;
+  if ((m = msg.match(/column "(.+?)" (?:of relation "(.+?)" )?does not exist/))) return `A coluna "${m[1]}" não existe${m[2] ? ' em ' + m[2] : ''}. Use \\d nome_da_tabela para ver as colunas.`;
+  if ((m = msg.match(/syntax error at or near "(.*?)"/))) return `Erro de sintaxe perto de "${m[1]}". Procure uma vírgula faltando ou sobrando, parêntese aberto, aspas sem fechar ou palavra digitada errada.`;
+  if (/syntax error at end of input/.test(msg)) return 'O comando terminou antes da hora: falta fechar um parêntese ou completar uma cláusula.';
+  if ((m = msg.match(/null value in column "(.+?)".*not-null/))) return `A coluna "${m[1]}" é obrigatória (NOT NULL). Informe um valor para ela.`;
+  if (/duplicate key value/.test(msg)) return 'Esse valor já existe em uma coluna PRIMARY KEY ou UNIQUE. Use outro valor.';
+  if (/violates foreign key constraint/.test(msg)) return 'Chave estrangeira: o registro apontado não existe, ou ainda está sendo usado por outra tabela.';
+  if (/violates check constraint/.test(msg)) return 'Um valor quebrou a regra CHECK da tabela (por exemplo, preço negativo).';
+  if (/already exists/.test(msg)) return 'Esse nome já existe. Escolha outro nome ou apague o antigo com DROP. Dica: o botão "Banco vazio" recomeça do zero.';
+  if (/invalid input syntax/.test(msg)) return 'O valor não combina com o tipo da coluna (por exemplo, texto onde se esperava número).';
+  if (/current transaction is aborted/.test(msg)) return 'Você tem uma transação com erro aberta. Rode ROLLBACK; para desfazê-la e continuar.';
+  if (/must appear in the GROUP BY/.test(msg)) return 'Toda coluna do SELECT que não está dentro de COUNT/SUM/AVG precisa estar no GROUP BY.';
+  if (/ambiguous/.test(msg)) return 'O nome da coluna existe em mais de uma tabela. Diga de qual: tabela.coluna.';
+  return '';
+}
+
+/* ---- executa texto do aluno: comandos psql + SQL ---- */
+async function runSql(db, text) {
+  const out = [];
+  const isEmpty = s => s.replace(/--.*$/gm, '').trim() === '';
+  let sqlText = text;
+  if (/\b(create|drop)\s+database\b/i.test(sqlText.replace(/--.*$/gm, ''))) {
+    out.push({ kind: 'info', msg: 'CREATE DATABASE e DROP DATABASE não rodam aqui: o laboratório já é um banco pronto para uso. Em um servidor real, esse comando cria (ou apaga) um banco inteiro.' });
+    sqlText = sqlText.replace(/^(?!\s*--).*\b(create|drop)\s+database\b[^;]*;?/gim, '');
+  }
+  const lines = sqlText.split('\n');
+  let buf = [];
+  const flush = async () => {
+    const chunk = buf.join('\n'); buf = [];
+    if (isEmpty(chunk)) return true;
+    try {
+      const res = await db.exec(chunk, { rowMode: 'array' });
+      res.forEach(r => {
+        if (r.fields && r.fields.length) out.push({ kind: 'table', cols: r.fields.map(f => f.name), rows: r.rows });
+        else out.push({ kind: 'ok', n: r.affectedRows || 0 });
+      });
+      return true;
+    } catch (e) { out.push({ kind: 'err', msg: String(e.message || e) }); return false; }
+  };
+  for (const line of lines) {
+    if (/^\s*\\/.test(line)) {
+      if (!(await flush())) return out;
+      const [cmd, arg] = line.trim().split(/\s+/);
+      try {
+        if (cmd === '\\dt') { const r = await db.query(`SELECT tablename AS tabela, tableowner AS dono FROM pg_tables WHERE schemaname = 'public' ORDER BY 1`, [], { rowMode: 'array' }); out.push({ kind: 'table', cols: ['tabela', 'dono'], rows: r.rows, empty: 'Nenhuma tabela ainda. Crie uma com CREATE TABLE.' }); }
+        else if (cmd === '\\d' && arg) { const r = await db.query(`SELECT column_name AS coluna, data_type AS tipo, is_nullable AS aceita_nulo, column_default AS padrao FROM information_schema.columns WHERE table_schema = 'public' AND table_name = $1 ORDER BY ordinal_position`, [arg.replace(/;$/, '').toLowerCase()], { rowMode: 'array' }); out.push({ kind: 'table', cols: ['coluna', 'tipo', 'aceita_nulo', 'padrao'], rows: r.rows, empty: `A tabela "${arg}" não existe.` }); }
+        else if (cmd === '\\l') out.push({ kind: 'table', cols: ['nome', 'dono', 'codificação'], rows: [['loja_dev', 'postgres', 'UTF8']] });
+        else if (cmd === '\\c') out.push({ kind: 'info', msg: 'Você já está conectado ao banco do laboratório (loja_dev).' });
+        else if (cmd === '\\q') out.push({ kind: 'info', msg: 'No laboratório não é preciso sair: é só fechar a aba quando terminar.' });
+        else out.push({ kind: 'err', msg: `Comando psql "${cmd}" não suportado no laboratório. Disponíveis: \\dt, \\d tabela, \\l.` });
+      } catch (e) { out.push({ kind: 'err', msg: String(e.message || e) }); return out; }
+    } else buf.push(line);
+  }
+  await flush();
+  return out;
+}
+
+function outHtml(blocks, ms) {
+  if (!blocks.length) return `<div class="out-info">Nada para executar. Escreva um comando SQL e aperte Executar.</div>`;
+  let h = '';
+  blocks.forEach(b => {
+    if (b.kind === 'table') {
+      h += `<div class="out-scroll"><table class="res"><thead><tr>${b.cols.map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${b.rows.map(r => `<tr>${r.map(v => v === null || v === undefined ? '<td class="null">NULL</td>' : `<td>${esc(fmt(v))}</td>`).join('')}</tr>`).join('')}</tbody></table></div><div class="res-foot">${b.rows.length === 1 ? '1 linha' : b.rows.length + ' linhas'}${!b.rows.length && b.empty ? ' · ' + esc(b.empty) : ''}</div>`;
+    } else if (b.kind === 'ok') {
+      h += `<div class="out-ok">Comando executado com sucesso${b.n ? ' · ' + b.n + (b.n === 1 ? ' linha afetada' : ' linhas afetadas') : ''}.</div>`;
+    } else if (b.kind === 'info') {
+      h += `<div class="out-info">${esc(b.msg)}</div>`;
+    } else if (b.kind === 'err') {
+      const hint = hintFor(b.msg);
+      h += `<div class="out-err"><code class="raw">ERRO: ${esc(b.msg)}</code>${hint ? `<p>${esc(hint)}</p>` : ''}</div>`;
+    }
+  });
+  return h + (ms != null ? `<div class="res-foot">${ms} ms · PostgreSQL rodando no seu navegador</div>` : '');
+}
+
+/* ---- missões práticas ---- */
+const MISSIONS = [
+  { id: 'm1', title: 'Só o que tem estoque', ds: 'loja', kind: 'select', ordered: true,
+    brief: 'Liste o <code>nome</code> e o <code>preco</code> dos produtos com estoque maior que zero, do mais barato para o mais caro.',
+    hint: 'Use WHERE para filtrar o estoque e ORDER BY para ordenar.',
+    solution: 'SELECT nome, preco FROM produtos WHERE estoque > 0 ORDER BY preco' },
+  { id: 'm2', title: 'Caçando teclados', ds: 'loja', kind: 'select',
+    brief: 'Mostre só a coluna <code>nome</code> dos produtos cujo nome começa com "Teclado".',
+    hint: 'LIKE com o coringa % depois da palavra.',
+    solution: `SELECT nome FROM produtos WHERE nome LIKE 'Teclado%'` },
+  { id: 'm3', title: 'Construa a tabela alunos', ds: 'vazio', kind: 'state',
+    brief: 'No banco vazio, crie a tabela <code>alunos</code> com: <code>id</code> (SERIAL, chave primária), <code>nome</code> (VARCHAR(80), obrigatório) e <code>xp</code> (INTEGER, com valor padrão 0).',
+    hint: 'Veja o módulo 6. Lembre de PRIMARY KEY, NOT NULL e DEFAULT.',
+    verify: `SELECT column_name, data_type, is_nullable FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'alunos' ORDER BY ordinal_position`,
+    expect: [['id', 'integer', 'NO'], ['nome', 'character varying', 'NO'], ['xp', 'integer', 'YES']] },
+  { id: 'm4', title: 'Vendeu um mouse', ds: 'loja', kind: 'state',
+    brief: 'Diminua em 1 o estoque do produto "Mouse Gamer". Cuidado: só ele pode mudar!',
+    hint: 'UPDATE ... SET estoque = estoque - 1 WHERE ... Sem WHERE você altera todos.',
+    verify: 'SELECT nome, estoque FROM produtos ORDER BY id',
+    expect: [['Teclado Mecânico', '15'], ['Mouse Gamer', '39'], ['Monitor 24 pol', '8'], ['Teclado Compacto', '0']] },
+  { id: 'm5', title: 'Nova categoria', ds: 'loja', kind: 'state',
+    brief: 'Cadastre a categoria "Headsets" na tabela <code>categorias</code>.',
+    hint: 'INSERT INTO categorias (nome) VALUES (...). O id se preenche sozinho.',
+    verify: 'SELECT nome FROM categorias ORDER BY id',
+    expect: [['Teclados'], ['Mouses'], ['Monitores'], ['Headsets']] },
+  { id: 'm6', title: 'Quem comprou o quê', ds: 'loja', kind: 'select', ordered: true,
+    brief: 'Liste o <code>nome</code> do cliente e o <code>total</code> de cada pedido (só clientes que têm pedido), ordenado pelo id do pedido.',
+    hint: 'INNER JOIN entre clientes e pedidos usando cliente_id = id.',
+    solution: 'SELECT c.nome, p.total FROM clientes c INNER JOIN pedidos p ON p.cliente_id = c.id ORDER BY p.id' },
+  { id: 'm7', title: 'Produtos por categoria', ds: 'loja', kind: 'select',
+    brief: 'Mostre o nome de cada categoria e quantos produtos ela tem, inclusive categorias sem produtos.',
+    hint: 'LEFT JOIN de categorias para produtos, COUNT(p.id) e GROUP BY.',
+    solution: 'SELECT c.nome, COUNT(p.id) FROM categorias c LEFT JOIN produtos p ON p.categoria_id = c.id GROUP BY c.nome' },
+  { id: 'm8', title: 'Clientes de peso', ds: 'loja', kind: 'select',
+    brief: 'Mostre o nome e o total gasto (soma dos pedidos) dos clientes que gastaram mais de 200.',
+    hint: 'JOIN, SUM, GROUP BY e o filtro do total vai no HAVING.',
+    solution: 'SELECT c.nome, SUM(p.total) FROM clientes c JOIN pedidos p ON p.cliente_id = c.id GROUP BY c.nome HAVING SUM(p.total) > 200' },
+  { id: 'm9', title: 'Quem nunca comprou', ds: 'loja', kind: 'select',
+    brief: 'Liste o <code>nome</code> dos clientes que não fizeram nenhum pedido. Use EXCEPT, NOT EXISTS ou LEFT JOIN.',
+    hint: 'Compare os ids de clientes com os cliente_id de pedidos.',
+    solution: 'SELECT nome FROM clientes WHERE id NOT IN (SELECT cliente_id FROM pedidos)' },
+  { id: 'm10', title: 'Acima da média', ds: 'loja', kind: 'select',
+    brief: 'Mostre o <code>nome</code> dos produtos com preço acima da média de todos os preços (subconsulta).',
+    hint: 'WHERE preco > (SELECT AVG(preco) FROM produtos).',
+    solution: 'SELECT nome FROM produtos WHERE preco > (SELECT AVG(preco) FROM produtos)' },
+  { id: 'm11', title: 'Crie uma view', ds: 'loja', kind: 'state',
+    brief: 'Crie a view <code>v_estoque_baixo</code> com o <code>nome</code> dos produtos com estoque menor que 10.',
+    hint: 'CREATE VIEW nome AS SELECT ... WHERE estoque < 10.',
+    verify: 'SELECT nome FROM v_estoque_baixo ORDER BY nome',
+    expect: [['Monitor 24 pol'], ['Teclado Compacto']] },
+  { id: 'm12', title: 'Acelere a busca', ds: 'loja', kind: 'state',
+    brief: 'Crie um índice chamado <code>idx_clientes_nome</code> na coluna <code>nome</code> da tabela <code>clientes</code>.',
+    hint: 'CREATE INDEX nome ON tabela (coluna).',
+    verify: `SELECT indexname FROM pg_indexes WHERE schemaname = 'public' AND indexname = 'idx_clientes_nome'`,
+    expect: [['idx_clientes_nome']] }
+];
+
+async function verifyMission(m) {
+  const db = await labInit();
+  await resetDataset(db, m.ds);
+  const blocks = await runSql(db, $('#labsql').value);
+  const bad = blocks.find(b => b.kind === 'err');
+  if (bad) return { ok: false, msg: 'Sua consulta deu erro. Leia a mensagem acima, corrija e verifique de novo.', blocks };
+  let got, exp;
+  if (m.kind === 'select') {
+    const tabs = blocks.filter(b => b.kind === 'table');
+    if (!tabs.length) return { ok: false, msg: 'Não apareceu nenhuma tabela de resultado. Falta um SELECT?', blocks };
+    got = tabs[tabs.length - 1];
+    const r = await db.query(m.solution, [], { rowMode: 'array' });
+    exp = { cols: r.fields.map(f => f.name), rows: r.rows };
+    if (got.cols.length !== exp.cols.length) return { ok: false, msg: `Seu resultado tem ${got.cols.length} coluna(s) e o esperado tem ${exp.cols.length}. Releia o enunciado.`, blocks };
+  } else {
+    const r = await db.query(m.verify, [], { rowMode: 'array' });
+    got = { rows: r.rows }; exp = { rows: m.expect };
+  }
+  let a = got.rows.map(r => JSON.stringify(r.map(fmt))), b = exp.rows.map(r => JSON.stringify(r.map(fmt)));
+  if (m.kind === 'select' && got.rows.length !== exp.rows.length) return { ok: false, msg: `Seu resultado tem ${got.rows.length} linha(s) e o esperado tem ${exp.rows.length}. Confira os filtros.`, blocks };
+  if (!m.ordered && m.kind === 'select') { a = a.slice().sort(); b = b.slice().sort(); }
+  const same = a.length === b.length && a.every((x, i) => x === b[i]);
+  if (!same) return { ok: false, msg: m.kind === 'select' ? 'As linhas não batem com o esperado. Confira os valores, os filtros' + (m.ordered ? ' e a ordem.' : '.') : 'O estado final do banco não é o esperado. Releia o enunciado e confira se só o necessário mudou.', blocks };
+  return { ok: true, blocks };
+}
+
+/* ---- tela do laboratório ---- */
+function renderLab() {
+  const done = Object.keys(S.lab || {}).length;
+  view.innerHTML = `<article>
+    <p class="eyebrow">Laboratório</p>
+    <h1>Laboratório SQL</h1>
+    <p class="lead" style="margin-top:14px">Um PostgreSQL de verdade rodando dentro do seu navegador. Escreva, execute, erre e tente de novo: nada aqui estraga nada.</p>
+    <div class="labbar">
+      <div class="seg" role="group" aria-label="Banco de dados">
+        <button type="button" data-ds="loja" class="${LAB.dataset === 'loja' ? 'on' : ''}">Loja de exemplo</button>
+        <button type="button" data-ds="vazio" class="${LAB.dataset === 'vazio' ? 'on' : ''}">Banco vazio</button>
+      </div>
+      <span class="labstat" id="labstat">Carregando o PostgreSQL... (só na primeira vez)</span>
+    </div>
+    <div class="chips" id="labtables" aria-label="Tabelas do banco"></div>
+    ${mac('editor.sql', `<textarea id="labsql" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Editor de SQL"></textarea><div class="labact"><button type="button" class="btn sm alt" id="labrun">Executar ▸ <small>Ctrl+Enter</small></button><button type="button" class="btn sm ghost" id="labclear">Limpar</button><span class="labtip">Tab insere 4 espaços de indentação.</span></div>`)}
+    ${mac('Data Output', `<div id="labout"><div class="out-info">Rode um comando para ver o resultado aqui. Experimente <code>\\dt</code> para listar as tabelas.</div></div>`)}
+    <h2>Missões práticas <span class="cnt">${done}/${MISSIONS.length}</span></h2>
+    <p>Cada missão prepara o banco para você. Escreva o SQL no editor e clique em Verificar: o laboratório roda seu código e confere o resultado.</p>
+    <div class="cards" id="missions"></div>
+    <div id="mpanel"></div>
+  </article>`;
+  const ta = $('#labsql'); ta.value = LAB.code;
+  ta.addEventListener('input', () => { LAB.code = ta.value; });
+  ta.addEventListener('keydown', e => {
+    if (e.key === 'Tab' && !e.shiftKey) { e.preventDefault(); const s = ta.selectionStart; ta.setRangeText('    ', s, ta.selectionEnd, 'end'); LAB.code = ta.value; }
+    else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); execLab(); }
+  });
+  $('#labrun').onclick = execLab;
+  $('#labclear').onclick = () => { ta.value = ''; LAB.code = ''; ta.focus(); };
+  view.querySelectorAll('[data-ds]').forEach(b => b.onclick = async () => {
+    const st = $('#labstat'); st.textContent = 'Preparando banco...';
+    try { const db = await labInit(); await resetDataset(db, b.dataset.ds); LAB.mission = null; renderMissions(); markDs(); await refreshTables(); st.textContent = b.dataset.ds === 'loja' ? 'Pronto: loja de exemplo carregada.' : 'Pronto: banco vazio. Crie suas tabelas.'; $('#labout').innerHTML = '<div class="out-info">Banco reiniciado.</div>'; }
+    catch (e) { st.textContent = 'Erro ao preparar o banco.'; }
+  });
+  renderMissions();
+  labInit().then(async () => {
+    if (!$('#labstat')) return;
+    $('#labstat').textContent = 'PostgreSQL pronto. Rodando no seu navegador.';
+    await refreshTables();
+  }).catch(e => {
+    const st = $('#labstat'); if (!st) return;
+    st.innerHTML = 'Não foi possível carregar o motor do PostgreSQL. Ele precisa de internet e de uma página hospedada (GitHub Pages, Vercel ou um arquivo aberto no navegador). Não funciona dentro do preview do Claude.';
+    st.classList.add('bad');
+  });
+}
+function markDs() { view.querySelectorAll('[data-ds]').forEach(b => b.classList.toggle('on', b.dataset.ds === LAB.dataset)); }
+async function refreshTables() {
+  const box = $('#labtables'); if (!box || !LAB.db) return;
+  try {
+    const r = await LAB.db.query(`SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY 1`, [], { rowMode: 'array' });
+    const v = await LAB.db.query(`SELECT viewname FROM pg_views WHERE schemaname = 'public' ORDER BY 1`, [], { rowMode: 'array' });
+    const names = r.rows.map(x => x[0]).concat(v.rows.map(x => x[0]));
+    box.innerHTML = names.length ? '<span class="chips-l">Tabelas:</span>' + names.map(n => `<button type="button" class="chip" data-tab-sel="${esc(n)}">${esc(n)}</button>`).join('') : '<span class="chips-l">Nenhuma tabela ainda.</span>';
+  } catch (e) {}
+}
+async function execLab() {
+  if (LAB.busy) return; LAB.busy = true;
+  const outBox = $('#labout'), btn = $('#labrun');
+  btn.disabled = true; outBox.innerHTML = '<div class="out-info">Executando...</div>';
+  try {
+    const db = await labInit(); const t = performance.now();
+    const blocks = await runSql(db, $('#labsql').value);
+    if ($('#labout')) { $('#labout').innerHTML = outHtml(blocks, Math.round(performance.now() - t)); await refreshTables(); }
+  } catch (e) { if ($('#labout')) $('#labout').innerHTML = `<div class="out-err"><code class="raw">${esc(String(e.message || e))}</code></div>`; }
+  LAB.busy = false; if ($('#labrun')) $('#labrun').disabled = false;
+}
+function renderMissions() {
+  const box = $('#missions'); if (!box) return;
+  box.innerHTML = MISSIONS.map((m, i) => `<div class="card${S.lab[m.id] ? ' done' : ''}${LAB.mission === m.id ? ' sel' : ''}"><h3>${i + 1}. ${m.title}${S.lab[m.id] ? ' <span class="ok-b">concluída</span>' : ''}</h3><p>${m.brief}</p><button type="button" class="btn sm ghost" data-m="${m.id}">${LAB.mission === m.id ? 'Missão atual' : 'Escolher missão'}</button></div>`).join('');
+  const pn = $('#mpanel');
+  const m = MISSIONS.find(x => x.id === LAB.mission);
+  if (!m) { pn.innerHTML = ''; return; }
+  pn.innerHTML = `<div class="qbox" style="margin-top:8px"><div class="qtop"><span>Missão: ${m.title}</span><span>banco: ${m.ds === 'loja' ? 'loja de exemplo' : 'vazio'}</span></div><div class="qq" style="font-size:1.05rem;font-weight:500;font-family:var(--f-body)">${m.brief}</div><details><summary>Preciso de uma dica</summary><p style="margin-top:8px">${m.hint}</p></details><div class="qact"><button type="button" class="btn alt" id="mverify">Verificar missão</button></div><div id="mfb"></div></div>`;
+  $('#mverify').onclick = async () => {
+    const fb = $('#mfb'); fb.innerHTML = '<div class="fb">Conferindo...</div>';
+    try {
+      const r = await verifyMission(m);
+      $('#labout').innerHTML = outHtml(r.blocks);
+      if (r.ok) { const first = !S.lab[m.id]; S.lab[m.id] = true; save(); fb.innerHTML = `<div class="fb good"><b>Missão cumprida!</b> Seu SQL produziu exatamente o resultado esperado.</div>`; if (first) { renderMissions(); const c = view.querySelector('.cnt'); if (c) c.textContent = Object.keys(S.lab).length + '/' + MISSIONS.length; $('#mfb').innerHTML = `<div class="fb good"><b>Missão cumprida!</b> Seu SQL produziu exatamente o resultado esperado.</div>`; } }
+      else fb.innerHTML = `<div class="fb bad"><b>Ainda não.</b> ${r.msg}</div>`;
+      markDs(); await refreshTables();
+    } catch (e) { fb.innerHTML = `<div class="fb bad">Não foi possível verificar agora: ${esc(String(e.message || e))}</div>`; }
+  };
+}
+
+/* ---- eventos globais do laboratório ---- */
+document.addEventListener('click', e => {
+  const r = e.target.closest('[data-lab]');
+  if (r) { LAB.code = LABCODE[+r.dataset.lab] || ''; go('lab'); return; }
+  const m = e.target.closest('[data-m]');
+  if (m) {
+    LAB.mission = m.dataset.m; const mm = MISSIONS.find(x => x.id === LAB.mission);
+    LAB.code = `-- Missão: ${mm.title}\n-- (banco: ${mm.ds === 'loja' ? 'loja de exemplo' : 'vazio'})\n\n`;
+    const ta = $('#labsql'); ta.value = LAB.code;
+    labInit().then(db => resetDataset(db, mm.ds)).then(() => { markDs(); return refreshTables(); }).catch(() => {});
+    renderMissions(); ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length);
+    return;
+  }
+  const t = e.target.closest('[data-tab-sel]');
+  if (t) { const ta = $('#labsql'); ta.value = `SELECT * FROM ${t.dataset.tabSel};`; LAB.code = ta.value; execLab(); }
+});
+window.__t = { runSql, resetDataset, fmt, go: v => go(v), MODS, get S() { return S; }, LAB, MISSIONS, execLab, labInit };
+
+go('home');
+
+</script><a href="index.html" style="position:fixed;left:10px;bottom:10px;z-index:9999;background:#151225;color:#ece9f8;border:1px solid #9b4dff;border-radius:999px;padding:8px 14px;font:700 13px system-ui;text-decoration:none">◂ Mapa</a></body></html>

@@ -1,0 +1,131 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Viajante do Tempo — protótipo 3D</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Instrument+Sans:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{--bg:#0a0912;--panel:#151225;--panel2:#1b1731;--line:#2c2647;--text:#ece9f8;--muted:#9b94b8;--p:#9b4dff;--ps:#c9a2ff;--o:#ff6b1f;--os:#ffa36b;--gold:#ffd479;--cy:#5ee7ff}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:"Instrument Sans",system-ui,sans-serif;overflow:hidden;touch-action:none}
+#gl{position:fixed;inset:0;width:100%;height:100%;display:block}
+.hud{position:fixed;left:0;right:0;top:0;padding:max(12px,env(safe-area-inset-top)) 14px 0;display:flex;justify-content:space-between;align-items:center;z-index:5;pointer-events:none}
+.brand{font-family:Syne,sans-serif;font-weight:800;font-size:1rem}.brand i{display:inline-block;width:9px;height:9px;border-radius:50%;background:linear-gradient(135deg,var(--cy),var(--p));margin-right:7px}
+.pill{pointer-events:auto;background:rgba(21,18,37,.8);border:1px solid var(--cy);color:var(--cy);border-radius:99px;padding:8px 14px;font:700 .72rem "JetBrains Mono",monospace;min-height:40px;cursor:pointer;backdrop-filter:blur(6px)}
+.pill.on{border-color:var(--good,#3ee0a1);color:#3ee0a1}
+.dlg{position:fixed;left:0;right:0;bottom:0;padding:14px 14px max(16px,env(safe-area-inset-bottom));z-index:6;max-width:520px;margin:0 auto}
+.bub{background:rgba(21,18,37,.92);border:1px solid var(--line);border-radius:18px;padding:12px 14px;backdrop-filter:blur(8px);animation:in .4s}
+@keyframes in{from{opacity:0;transform:translateY(10px)}}
+.who{font:700 .68rem "JetBrains Mono",monospace;color:var(--cy);margin-bottom:4px}.bub p{margin:0 0 8px;font-size:.92rem;line-height:1.45}.bub p:last-of-type{margin-bottom:0}
+.row{display:flex;gap:8px;margin-top:10px}.row input{flex:1;min-width:0;background:var(--bg);border:1px solid var(--p);border-radius:12px;color:var(--text);padding:12px;font:16px "Instrument Sans",sans-serif}
+.btn{background:linear-gradient(135deg,var(--p),#7a2fe0);color:#fff;border:0;border-radius:12px;padding:12px 16px;font:700 .88rem "Instrument Sans",sans-serif;min-height:44px;cursor:pointer}.btn.cy{background:linear-gradient(135deg,#2bb8d6,#5b5cf0);width:100%;margin-top:10px}
+.foot{position:fixed;left:0;right:0;bottom:2px;text-align:center;font-size:.66rem;color:var(--muted);z-index:4;pointer-events:none}.foot a{pointer-events:auto;color:var(--muted);text-decoration:underline;cursor:pointer}
+.hint{position:fixed;left:0;right:0;top:64px;text-align:center;font:600 .72rem "JetBrains Mono",monospace;color:var(--muted);z-index:4;pointer-events:none;opacity:0;transition:opacity .6s}.hint.show{opacity:1}
+.mb{position:fixed;inset:0;background:rgba(5,4,10,.75);z-index:20;display:none;align-items:flex-end;justify-content:center}.mb.open{display:flex}
+.sheet{width:100%;max-width:520px;background:#0f0d20;border-top:2px solid var(--cy);border-radius:22px 22px 0 0;padding:16px 16px max(18px,env(safe-area-inset-bottom));text-align:center;max-height:96%;overflow:auto}
+.qr{width:150px;height:150px;background:#fff;border-radius:12px;padding:6px;margin:8px auto}.qr svg{width:100%;height:100%;display:block;shape-rendering:crispEdges}
+.key{font:.7rem "JetBrains Mono",monospace;color:var(--os);background:var(--bg);border-radius:8px;padding:8px;word-break:break-all;margin:8px 0}.small{font-size:.72rem;color:var(--muted);margin:8px 0 0}
+.sec{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:11px;min-height:44px;font:700 .8rem "Instrument Sans",sans-serif;width:100%;margin-top:6px;cursor:pointer}.btn.gold{background:linear-gradient(135deg,#ffb23f,var(--o));width:100%}
+.thx{font-family:Syne,sans-serif;font-size:1.1rem;margin:0}.thx2{color:var(--muted);font-size:.82rem;margin:4px 0 6px}
+#nogl{position:fixed;inset:0;display:none;place-items:center;text-align:center;padding:30px;color:var(--muted);z-index:3}
+</style></head><body>
+<canvas id="gl"></canvas><div id="nogl">Seu aparelho não conseguiu abrir o modo 3D. No app real, a linha do tempo continua funcionando em versão simples, sem efeitos.</div>
+<div class="hud"><div class="brand"><i></i>Viajante do Tempo</div><button class="pill" id="tilt">Ativar movimento</button></div>
+<div class="hint" id="hint">Incline o celular ou arraste para olhar em volta</div>
+<div class="dlg" id="dlg"></div>
+<div class="foot">Gratuito para todos. Quer ajudar? <a id="col">colabore com o projeto</a></div>
+<div class="mb" id="mb"><div class="sheet"><p class="thx">Obrigado por contribuir!</p><p class="thx2">Isso ajuda a aumentar o código e ajuda todo mundo.</p><div class="qr"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51 51" class="segno"><path fill="#fff" d="M0 0h51v51h-51z"/><path class="qrline" stroke="#0a0912" d="M1 1.5h7m1 0h1m2 0h1m1 0h3m6 0h6m1 0h2m1 0h3m1 0h1m3 0h1m1 0h7m-49 1h1m5 0h1m1 0h3m2 0h2m2 0h1m2 0h1m3 0h1m2 0h1m1 0h1m2 0h3m1 0h5m1 0h1m5 0h1m-49 1h1m1 0h3m1 0h1m1 0h1m1 0h1m5 0h1m2 0h1m1 0h1m1 0h1m1 0h1m1 0h2m1 0h1m1 0h2m1 0h1m1 0h1m1 0h2m1 0h1m1 0h3m1 0h1m-49 1h1m1 0h3m1 0h1m3 0h2m1 0h1m4 0h5m1 0h1m2 0h2m3 0h1m1 0h1m1 0h1m2 0h1m2 0h1m1 0h3m1 0h1m-49 1h1m1 0h3m1 0h1m1 0h5m1 0h1m1 0h3m1 0h8m1 0h5m1 0h3m4 0h1m1 0h3m1 0h1m-49 1h1m5 0h1m2 0h1m2 0h1m1 0h2m3 0h1m2 0h1m3 0h4m2 0h2m1 0h1m1 0h2m3 0h1m5 0h1m-49 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-39 1h1m2 0h3m3 0h4m3 0h1m1 0h1m1 0h1m3 0h2m1 0h1m-38 1h1m2 0h7m1 0h2m2 0h2m1 0h2m2 0h5m1 0h2m1 0h1m2 0h1m1 0h2m1 0h3m2 0h1m1 0h3m-49 1h2m2 0h2m2 0h4m1 0h2m1 0h2m1 0h2m1 0h1m1 0h3m3 0h1m1 0h1m1 0h1m1 0h1m1 0h3m1 0h1m1 0h1m1 0h1m-46 1h2m1 0h1m1 0h4m1 0h1m1 0h1m2 0h1m1 0h1m1 0h1m1 0h3m1 0h1m4 0h2m1 0h1m1 0h2m1 0h1m4 0h2m2 0h1m-49 1h2m1 0h1m5 0h1m1 0h3m7 0h4m3 0h4m2 0h1m5 0h5m1 0h2m-48 1h2m1 0h1m1 0h2m4 0h2m2 0h1m2 0h5m1 0h1m3 0h1m1 0h1m1 0h5m5 0h3m2 0h2m-49 1h3m4 0h2m3 0h1m3 0h2m4 0h1m1 0h3m1 0h1m1 0h2m3 0h4m3 0h6m-48 1h2m2 0h1m1 0h1m1 0h3m1 0h11m1 0h1m1 0h1m2 0h1m1 0h1m3 0h2m1 0h4m1 0h1m2 0h1m1 0h1m-49 1h1m2 0h3m1 0h1m1 0h2m2 0h1m1 0h1m1 0h1m1 0h1m1 0h3m2 0h2m2 0h2m1 0h2m1 0h1m1 0h1m1 0h4m1 0h2m1 0h1m-49 1h1m1 0h1m1 0h3m1 0h1m2 0h1m2 0h3m4 0h1m1 0h5m1 0h2m1 0h3m1 0h3m1 0h3m1 0h2m1 0h2m-47 1h1m2 0h1m1 0h1m1 0h2m2 0h2m2 0h1m5 0h3m3 0h2m3 0h1m2 0h1m2 0h3m1 0h1m1 0h3m-49 1h1m2 0h4m2 0h1m2 0h1m1 0h1m1 0h3m1 0h1m1 0h1m1 0h1m1 0h2m3 0h2m3 0h1m1 0h1m1 0h1m3 0h3m1 0h1m-46 1h3m2 0h1m1 0h2m1 0h1m2 0h6m1 0h5m1 0h1m5 0h1m1 0h4m1 0h1m4 0h1m-48 1h1m1 0h1m3 0h2m1 0h2m2 0h5m2 0h1m1 0h3m1 0h1m1 0h1m2 0h1m1 0h2m1 0h1m5 0h2m3 0h1m-48 1h1m1 0h1m2 0h1m1 0h2m2 0h1m3 0h1m4 0h1m5 0h2m1 0h4m1 0h3m1 0h1m1 0h1m1 0h1m1 0h1m1 0h2m-47 1h1m1 0h6m1 0h4m1 0h1m1 0h11m1 0h4m1 0h1m1 0h2m1 0h6m1 0h3m-49 1h1m3 0h1m3 0h2m1 0h1m1 0h1m2 0h4m2 0h1m3 0h1m2 0h6m3 0h1m1 0h1m3 0h4m-48 1h1m3 0h1m1 0h1m1 0h3m1 0h1m1 0h1m1 0h2m3 0h2m1 0h1m1 0h1m1 0h1m2 0h2m1 0h7m1 0h1m1 0h2m1 0h2m-49 1h2m2 0h1m3 0h3m2 0h2m1 0h1m2 0h4m3 0h1m3 0h1m1 0h1m2 0h2m1 0h1m1 0h1m3 0h2m-45 1h1m2 0h6m1 0h3m2 0h1m5 0h7m2 0h2m2 0h1m1 0h2m1 0h9m-49 1h1m1 0h3m3 0h2m1 0h2m2 0h3m2 0h4m1 0h1m6 0h1m1 0h2m5 0h1m2 0h1m1 0h1m-44 1h2m1 0h3m2 0h1m3 0h2m1 0h1m1 0h1m1 0h1m3 0h2m2 0h14m2 0h1m1 0h1m-48 1h1m1 0h1m3 0h5m1 0h1m4 0h1m4 0h4m3 0h1m2 0h3m4 0h3m2 0h2m-47 1h2m1 0h1m1 0h3m2 0h4m1 0h1m1 0h1m1 0h3m1 0h2m1 0h1m1 0h3m1 0h3m1 0h1m4 0h3m2 0h3m-48 1h1m2 0h2m6 0h2m1 0h2m2 0h2m1 0h5m1 0h1m1 0h1m5 0h1m1 0h2m1 0h1m2 0h2m1 0h2m-48 1h1m1 0h4m1 0h3m1 0h1m2 0h2m1 0h2m2 0h1m2 0h1m1 0h3m1 0h1m1 0h1m1 0h3m1 0h1m2 0h1m1 0h1m1 0h3m-48 1h2m4 0h4m1 0h2m1 0h2m1 0h3m1 0h1m1 0h1m5 0h2m2 0h1m2 0h4m1 0h1m1 0h1m1 0h1m1 0h1m-49 1h3m1 0h1m1 0h3m3 0h4m2 0h1m1 0h3m3 0h4m1 0h2m1 0h1m3 0h2m1 0h2m1 0h2m2 0h1m-49 1h1m1 0h4m1 0h1m1 0h1m2 0h1m2 0h1m1 0h3m1 0h2m2 0h4m1 0h3m1 0h1m4 0h2m5 0h1m-46 1h1m1 0h2m1 0h5m1 0h1m1 0h1m2 0h1m3 0h3m2 0h1m1 0h1m2 0h6m1 0h3m1 0h2m4 0h1m-48 1h1m1 0h2m4 0h5m2 0h1m1 0h3m2 0h3m1 0h1m1 0h3m5 0h5m2 0h2m1 0h1m-47 1h1m3 0h2m1 0h2m4 0h1m2 0h2m3 0h1m5 0h1m1 0h2m3 0h2m1 0h2m2 0h1m3 0h1m1 0h1m-48 1h3m3 0h1m2 0h1m1 0h1m1 0h1m3 0h3m3 0h1m1 0h2m1 0h1m1 0h1m2 0h1m3 0h4m2 0h1m1 0h3m-49 1h3m3 0h1m2 0h1m1 0h2m3 0h1m1 0h2m2 0h6m2 0h1m1 0h1m2 0h2m2 0h6m1 0h1m1 0h1m-41 1h1m1 0h3m3 0h2m4 0h1m3 0h1m1 0h4m2 0h3m2 0h2m3 0h1m1 0h1m-47 1h7m1 0h1m1 0h1m1 0h3m1 0h7m1 0h1m1 0h1m1 0h1m4 0h1m1 0h2m2 0h2m1 0h1m1 0h5m-49 1h1m5 0h1m1 0h2m4 0h1m3 0h3m1 0h1m3 0h2m1 0h2m4 0h1m1 0h1m2 0h1m3 0h1m2 0h1m-48 1h1m1 0h3m1 0h1m1 0h1m3 0h3m1 0h1m1 0h2m2 0h5m1 0h2m1 0h1m1 0h1m2 0h2m1 0h6m3 0h1m-49 1h1m1 0h3m1 0h1m1 0h5m1 0h1m2 0h1m2 0h1m5 0h2m1 0h6m3 0h1m1 0h4m2 0h3m-49 1h1m1 0h3m1 0h1m2 0h4m1 0h3m1 0h1m2 0h1m1 0h2m1 0h1m1 0h1m1 0h1m1 0h1m2 0h3m4 0h1m1 0h1m1 0h2m-48 1h1m5 0h1m3 0h2m1 0h4m2 0h1m1 0h1m1 0h1m5 0h1m1 0h2m1 0h3m1 0h1m1 0h3m1 0h1m1 0h3m-49 1h7m1 0h1m1 0h2m3 0h1m1 0h2m1 0h1m1 0h3m2 0h3m1 0h4m1 0h1m1 0h2m3 0h2m3 0h1"/></svg></div><div class="small">Pix para <b style="color:#ece9f8">Gustavo Costa Gomes</b>. Confira o nome no app do banco.</div><div class="key">bce1f476-88b0-4951-9433-40fc22d98de5</div><button class="btn gold" data-copy="key">Copiar chave Pix</button><button class="sec" data-copy="pay">Copiar “Pix copia e cola”</button><button class="sec" id="mc">Fechar</button><p class="small">Colaboração voluntária. Todas as eras continuam abertas, sempre.</p></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const KEY='bce1f476-88b0-4951-9433-40fc22d98de5',PAY='00020101021126580014BR.GOV.BCB.PIX0136bce1f476-88b0-4951-9433-40fc22d98de55204000053039865802BR5919GUSTAVO COSTA GOMES6008IPATINGA62070503***630408BF';
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $=id=>document.getElementById(id);
+let renderer;try{renderer=new THREE.WebGLRenderer({canvas:$('gl'),antialias:true,alpha:false,powerPreference:'high-performance'})}catch(e){$('nogl').style.display='grid'}
+if(renderer){
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setClearColor(0x0a0912);
+const scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0x0a0912,.02);
+const cam=new THREE.PerspectiveCamera(70,1,.1,400);scene.add(cam);
+/* luzes */
+scene.add(new THREE.AmbientLight(0x8877cc,.7));const pl=new THREE.PointLight(0x5ee7ff,1.6,30);cam.add(pl);pl.position.set(1.5,1.5,1);const pl2=new THREE.PointLight(0xff6b1f,1.2,30);cam.add(pl2);pl2.position.set(-2,-1,-1);
+/* túnel */
+const LEN=230,N=150,rings=[];
+for(let i=0;i<N;i++){const t=i/N;const c=new THREE.Color().setHSL(.52+(.83-.52)*Math.min(1,t*1.6)-(t>.62?(t-.62)*.9:0),.9,.6);
+ const m=new THREE.Mesh(new THREE.TorusGeometry(7+Math.sin(i*.4)*.4,.05,8,64),new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:.75}));m.position.z=-i*(LEN/N);m.rotation.z=i*.15;scene.add(m);rings.push(m)}
+/* partículas */
+const PN=still?250:900,pg=new THREE.BufferGeometry(),pp=new Float32Array(PN*3);
+for(let i=0;i<PN;i++){const a=Math.random()*6.283,r=1.5+Math.random()*5.5;pp[i*3]=Math.cos(a)*r;pp[i*3+1]=Math.sin(a)*r;pp[i*3+2]=-Math.random()*LEN}
+pg.setAttribute('position',new THREE.BufferAttribute(pp,3));scene.add(new THREE.Points(pg,new THREE.PointsMaterial({color:0xc9a2ff,size:.09,transparent:true,opacity:.9})));
+/* portais de eras */
+function label(txt,sub,col){const c=document.createElement('canvas');c.width=768;c.height=256;const x=c.getContext('2d');x.fillStyle='rgba(15,13,32,.9)';x.strokeStyle=col;x.lineWidth=6;x.beginPath();x.roundRect?x.roundRect(6,6,756,244,28):x.rect(6,6,756,244);x.fill();x.stroke();
+ x.fillStyle=col;x.font='700 34px monospace';x.fillText(sub,40,80);x.fillStyle='#ece9f8';x.font='800 58px sans-serif';x.fillText(txt,40,160);x.fillStyle='#9b94b8';x.font='30px sans-serif';x.fillText('toque para entrar',40,214);
+ const t=new THREE.CanvasTexture(c);const m=new THREE.Mesh(new THREE.PlaneGeometry(6,2),new THREE.MeshBasicMaterial({map:t,transparent:true}));return m}
+const ERAS=[['Era dos Dados','1963 → hoje','#5ee7ff',-40],['Era da Lógica','ERA 2','#9b4dff',-85],['Era das Linguagens','ERA 3','#c9a2ff',-130],['Código Compartilhado','ERA 4','#ffa36b',-175],['Era das Nuvens','ERA 5','#ff6b1f',-220]];
+ERAS.forEach(e=>{const m=label(e[0],e[1],e[2]);m.position.set(0,.6,e[3]);scene.add(m);e.push(m)});
+/* Sintaxe: um mini terminal flutuante (janela estilo notebook) */
+const H=new THREE.Group();cam.add(H);H.position.set(0,-.2,-3.7);
+const FC=document.createElement('canvas');FC.width=512;FC.height=384;const fx=FC.getContext('2d');const FT=new THREE.CanvasTexture(FC);
+const body=new THREE.Mesh(new THREE.BoxGeometry(2.5,1.9,.2),new THREE.MeshStandardMaterial({color:0x151225,metalness:.4,roughness:.4,emissive:0x1b1731}));H.add(body);
+const edge=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(2.5,1.9,.2)),new THREE.LineBasicMaterial({color:0x9b4dff}));H.add(edge);
+const scr=new THREE.Mesh(new THREE.PlaneGeometry(2.3,1.72),new THREE.MeshBasicMaterial({map:FT}));scr.position.z=.11;H.add(scr);
+function glyph(ch,col){const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');x.fillStyle=col;x.font='700 110px monospace';x.textAlign='center';x.textBaseline='middle';x.fillText(ch,64,70);const m=new THREE.Mesh(new THREE.PlaneGeometry(.7,.7),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),transparent:true}));return m}
+const bl=glyph('{','#ff6b1f'),br=glyph('}','#ff6b1f'),sc=glyph(';','#5ee7ff');bl.position.set(-1.5,.1,.1);br.position.set(1.5,.1,.1);sc.position.set(1.1,1.15,.2);sc.scale.setScalar(.6);H.add(bl,br,sc);
+const LINES=['> compilando a linha do tempo...','> ola, viajante do tempo_','> procurando rastros do Eco...','> tudo certo. quase._'];
+function drawFace(t,mood){fx.fillStyle='#0d0b18';fx.fillRect(0,0,512,384);
+ fx.fillStyle='#151225';fx.fillRect(0,0,512,44);['#ff5f57','#febc2e','#28c840'].forEach((c,i)=>{fx.fillStyle=c;fx.beginPath();fx.arc(30+i*28,22,8,0,7);fx.fill()});
+ fx.fillStyle='#9b94b8';fx.font='600 20px monospace';fx.fillText('sintaxe.sh',150,29);
+ const blink=(Math.floor(t/1000)%4===3)&&(t%1000<140);const eh=blink?6:(mood?54:74);
+ fx.fillStyle='#5ee7ff';fx.shadowColor='#5ee7ff';fx.shadowBlur=22;
+ [150,362].forEach(x=>{fx.beginPath();fx.roundRect?fx.roundRect(x-34,150-eh/2,68,eh,20):fx.rect(x-34,150-eh/2,68,eh);fx.fill()});
+ fx.shadowBlur=0;fx.strokeStyle='#ff6b1f';fx.lineWidth=9;fx.lineCap='round';fx.beginPath();fx.moveTo(206,238);fx.quadraticCurveTo(256,274,306,238);fx.stroke();
+ const L=LINES[Math.floor(t/3200)%LINES.length];const n=Math.min(L.length,Math.floor((t%3200)/70));const cur=Math.floor(t/450)%2?'█':' ';
+ fx.fillStyle='#8be9b0';fx.font='600 24px monospace';fx.fillText(L.slice(0,n)+cur,26,340);FT.needsUpdate=true}
+H.scale.setScalar(.95);
+/* controle */
+let mode='idle',tz=0,zNow=0,warpT=0,speed=0,yaw=0,pitch=0,ty=0,tp=0,gyro=false,dragY=0,drag=null;
+function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);cam.aspect=w/h;cam.fov=w/h<.8?82:70;cam.updateProjectionMatrix();H.position.set(0,w/h<.8?-.2:-.35,w/h<.8?-3.9:-3.6)}
+addEventListener('resize',resize);resize();
+function setTilt(g,b){ // gamma: esq/dir, beta: frente/trás
+ ty=Math.max(-1,Math.min(1,g/30));tp=Math.max(-1,Math.min(1,(b-45)/30))}
+function onOri(e){if(e.gamma==null)return;gyro=true;setTilt(e.gamma,e.beta)}
+$('tilt').onclick=async()=>{
+ try{if(typeof DeviceOrientationEvent!=='undefined'&&DeviceOrientationEvent.requestPermission){const r=await DeviceOrientationEvent.requestPermission();if(r!=='granted'){$('tilt').textContent='Movimento negado';return}}
+ addEventListener('deviceorientation',onOri);$('tilt').textContent='Movimento ativo';$('tilt').classList.add('on');showHint()}catch(e){$('tilt').textContent='Sem giroscópio'}};
+function showHint(){$('hint').classList.add('show');setTimeout(()=>$('hint').classList.remove('show'),4500)}
+addEventListener('mousemove',e=>{if(gyro||drag)return;ty=(e.clientX/innerWidth-.5)*2;tp=(e.clientY/innerHeight-.5)*2});
+const cv=$('gl');
+cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,z:tz}});
+addEventListener('pointermove',e=>{if(!drag)return;const dy=e.clientY-drag.y;if(mode==='arrived'){tz=Math.max(-215,Math.min(0,drag.z+dy*.15))}if(!gyro){ty=(e.clientX-drag.x)/200;}});
+addEventListener('pointerup',()=>drag=null);
+addEventListener('wheel',e=>{if(mode==='arrived')tz=Math.max(-215,Math.min(0,tz-e.deltaY*.05))},{passive:true});
+/* toque numa era */
+const ray=new THREE.Raycaster(),v2=new THREE.Vector2();
+cv.addEventListener('click',e=>{if(mode!=='arrived')return;v2.set(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1);ray.setFromCamera(v2,cam);const hit=ray.intersectObjects(ERAS.map(x=>x[4]))[0];if(hit){const e2=ERAS.find(x=>x[4]===hit.object);toast(e2)}});
+function toast(e){$('dlg').innerHTML='<div class="bub"><div class="who">SINTAXE</div><p><b>'+e[0]+'</b></p><p>'+(e[0]==='Era dos Dados'?'Tudo começa com um foguete e uma lista de peças. Vamos ao primeiro salto?':'Essa era ainda está sendo escrita. Volte em breve!')+'</p>'+(e[0]==='Era dos Dados'?'<button class="btn cy">Entrar na Era dos Dados ▸ (aqui abre o salto 1)</button>':'')+'</div>'}
+/* loop */
+let last=performance.now();
+function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;
+ if(mode==='warp'){warpT+=dt;const k=Math.min(1,warpT/(still?.01:3));const ez=1-Math.pow(1-k,3);zNow=tz*ez;cam.fov=(innerWidth/innerHeight<.8?82:70)+ (k<1?Math.sin(k*Math.PI)*45:0);cam.updateProjectionMatrix();if(k>=1){mode='arrived';showArrival()}}
+ else if(mode==='arrived'){zNow+=(tz-zNow)*Math.min(1,dt*4)}
+ else{zNow=-Math.sin(now/2500)*.6}
+ cam.position.z=zNow;
+ yaw+=(ty*.25-yaw)*Math.min(1,dt*5);pitch+=(tp*.18-pitch)*Math.min(1,dt*5);cam.rotation.set(-pitch,-yaw,0);
+ cam.position.x+=(ty*.8-cam.position.x)*Math.min(1,dt*4);cam.position.y+=(-tp*.5-cam.position.y)*Math.min(1,dt*4);
+ rings.forEach((r,i)=>{r.rotation.z+=dt*.15*(i%2?1:-1)});
+ if(!still){const p=pg.attributes.position;for(let i=0;i<PN;i++){p.array[i*3+2]+=dt*(mode==='warp'?60:3);if(p.array[i*3+2]>cam.position.z+2)p.array[i*3+2]-=LEN}p.needsUpdate=true}
+ // Sintaxe: flutua, reage à inclinação e "fala"
+ drawFace(now,mode==='warp');H.rotation.y=Math.sin(now/1800)*.25+ty*.7;H.rotation.x=tp*.4+Math.sin(now/2300)*.05;H.rotation.z=-ty*.15;H.position.y=-.2+Math.sin(now/900)*.06;
+ bl.position.y=.1+Math.sin(now/700)*.08;br.position.y=.1+Math.cos(now/650)*.08;sc.position.y=1.1+Math.sin(now/500)*.06;
+ renderer.render(scene,cam);requestAnimationFrame(frame)}
+requestAnimationFrame(frame);
+/* diálogo */
+const d=$('dlg');let NAME='Viajante';
+function bub(html,extra){d.innerHTML='<div class="bub"><div class="who">SINTAXE</div>'+html+'</div>'+(extra||'')}
+function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function step0(){bub('<p>Compilando... pronto! Olá, viajante do tempo.</p><p><b>Qual é o seu nome?</b></p><div class="row"><input id="nm" maxlength="20" placeholder="Digite seu nome" autocomplete="off"><button class="btn" id="ok">Enviar</button></div>');
+ const go=()=>{NAME=($('nm').value.trim()||'Viajante');step1()};$('ok').onclick=go;$('nm').addEventListener('keydown',e=>{if(e.key==='Enter')go()})}
+function step1(){bub('<p>Prazer, <b>'+esc(NAME)+'</b>. Eu sou a <b>Sintaxe</b>, a guia da Linha do Tempo.</p><p>Ela rachou. Alguém deixou um <b>Eco</b> pelo caminho: uma cópia com defeito de você, fazendo gambiarras em cada era.</p>','<button class="btn cy" id="n1" style="margin:10px 14px 0;width:calc(100% - 28px)">E o que eu faço?</button>');$('n1').onclick=step2}
+function step2(){bub('<p>Você viaja até cada era, entende o problema que as pessoas tinham e conserta o rastro do Eco. Cada acerto vira um cristal.</p><p>Começamos em <b>1963</b>: um foguete, uma lista de peças e a primeira dor de cabeça dos dados.</p>','<button class="btn cy" id="n2" style="margin:10px 14px 0;width:calc(100% - 28px)">Saltar para 1963 ⚡</button>');$('n2').onclick=warp}
+function warp(){d.innerHTML='';tz=-27;mode='warp';warpT=0;if(!still)pl.intensity=3}
+function showArrival(){pl.intensity=1.6;bub('<p><b>1963 · Era dos Dados.</b> Chegamos, '+esc(NAME)+'!</p><p>Arraste para cima e para baixo para andar pelo túnel. Toque em uma era para entrar.</p>');showHint()}
+step0();
+window.__g={get mode(){return mode},get z(){return cam.position.z},setTilt};
+}
+/* colabore */
+$('col').onclick=()=>$('mb').classList.add('open');$('mc').onclick=()=>$('mb').classList.remove('open');$('mb').onclick=e=>{if(e.target.id==='mb')$('mb').classList.remove('open')};
+document.querySelectorAll('[data-copy]').forEach(b=>b.onclick=async()=>{const t=b.dataset.copy==='key'?KEY:PAY;let ok=false;try{await navigator.clipboard.writeText(t);ok=true}catch(e){}const o=b.textContent;b.textContent=ok?'Copiado ✓':'Selecione e copie';setTimeout(()=>b.textContent=o,1800)});
+</script></body></html>

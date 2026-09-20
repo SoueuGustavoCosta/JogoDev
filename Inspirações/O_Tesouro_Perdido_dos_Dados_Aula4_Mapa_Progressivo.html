@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>O Tesouro Perdido dos Dados</title>
+<style>
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#07101f,#0b1630);color:#fff}
+.wrap{max-width:1200px;margin:auto;padding:20px}
+.card{background:#12203a;border:1px solid #2a4268;border-radius:20px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.grid{display:grid;grid-template-columns:1fr 350px;gap:16px}
+h1{font-size:50px;margin:0 0 10px}.sub{color:#b8c3de;line-height:1.5}
+.btn{border:0;border-radius:12px;padding:13px 18px;font-weight:800;cursor:pointer;background:linear-gradient(135deg,#6d7cff,#9a5cff);color:#fff}
+.hidden{display:none}
+.mission{background:#0b1630;border:1px solid #2a4268;border-radius:14px;padding:12px;margin:10px 0}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.pill{background:#0b1630;border:1px solid #2a4268;border-radius:999px;padding:7px 10px;color:#b8c3de;font-size:13px}
+.progress{height:12px;background:#0b1630;border-radius:99px;overflow:hidden}
+.progress>div{height:100%;width:0;background:linear-gradient(90deg,#47d79a,#6d7cff)}
+.question{font-size:26px;font-weight:800;margin:16px 0 10px}
+.scenario{background:#0b1630;border:1px solid #2a4268;border-radius:14px;padding:12px;color:#dce4ff;line-height:1.45}
+.answers{display:grid;gap:9px;margin-top:12px}
+.answer{width:100%;text-align:left;padding:12px;border-radius:12px;border:1px solid #2a4268;background:#172846;color:#fff;font-weight:700;cursor:pointer}
+.answer.good{background:#153e34;border-color:#47d79a}.answer.bad{background:#47212a;border-color:#ff6d7d}
+.feedback{margin-top:12px;padding:12px;border-radius:12px;font-weight:700}.feedback.good{background:#153e34}.feedback.bad{background:#47212a}
+.der{position:relative;height:280px;background:#0b1630;border:1px solid #2a4268;border-radius:16px;margin-top:12px;overflow:hidden}
+.entity,.attr,.rel{position:absolute;display:flex;align-items:center;justify-content:center;opacity:.18;transition:.3s}
+.entity{width:100px;height:48px;border:2px solid #44d7ff;border-radius:8px;background:#13213b}
+.attr{width:84px;height:40px;border:2px solid #47d79a;border-radius:50%;background:#13213b;font-size:13px}
+.rel{width:66px;height:66px;border:2px solid #ffd166;background:#3a2d13;transform:rotate(45deg)}
+.rel span{transform:rotate(-45deg)}
+.visible{opacity:1!important}
+.keyrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.key{font-size:12px;background:#382f17;border:1px solid #7c692d;border-radius:999px;padding:6px 8px;color:#ffe59e}
+.log{margin-top:12px;background:#020713;border-radius:12px;padding:10px;height:220px;overflow:auto;font:12px Consolas,monospace}
+.ok{color:#89f0b8}.badlog{color:#ff9aa6}.info{color:#8bdfff}
+table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid #39547f;padding:8px;text-align:left}th{background:#172846}
+.final{text-align:center}.chest{font-size:90px}
+
+.bankmap{display:grid;gap:6px;margin-top:10px}
+.map-node{display:flex;align-items:center;gap:10px;padding:10px 11px;border-radius:14px;border:1px solid #2a4268;background:#0b1630;opacity:.18;filter:grayscale(1);transition:.35s ease}
+.map-node small{display:block;color:#9eaccb;margin-top:2px}.map-icon{font-size:24px;min-width:30px;text-align:center}
+.map-link{text-align:center;color:#48698f;font-size:20px;line-height:1;opacity:.18;transition:.35s ease}
+.map-node.active{opacity:1;filter:none;border-color:#44d7ff;box-shadow:0 0 0 1px rgba(68,215,255,.2),0 0 25px rgba(68,215,255,.18);background:linear-gradient(90deg,rgba(68,215,255,.12),rgba(109,124,255,.08))}
+.map-node.done{opacity:1;filter:none;border-color:#47d79a;box-shadow:0 0 20px rgba(71,215,154,.13)}
+.map-link.active{opacity:1;color:#44d7ff;text-shadow:0 0 12px #44d7ff}.map-link.done{opacity:1;color:#47d79a}
+.treasure-node.active,.treasure-node.done{border-color:#ffd166!important;box-shadow:0 0 28px rgba(255,209,102,.22)!important;background:linear-gradient(90deg,rgba(255,209,102,.14),rgba(109,124,255,.08))!important}
+.panel-lock{margin-top:12px;padding:10px 12px;border-radius:12px;text-align:center;background:#251f12;border:1px solid #69592b;color:#ffe29a;font-weight:800}
+.panel-final{margin-top:12px;padding:12px;border-radius:14px;background:#0b1630;border:1px solid #47d79a}.panel-title{font-weight:900;color:#a9f5cf;margin-bottom:10px}
+.panel-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.panel-grid>div{background:#13213b;border:1px solid #2a4268;border-radius:10px;padding:9px}.panel-grid span{display:block;font-size:11px;color:#aebbd7;text-transform:uppercase}.panel-grid b{font-size:22px}.panel-message{margin-top:10px;color:#dce4ff;font-size:13px;line-height:1.4}
+
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h2>🗺️ O Tesouro Perdido dos Dados</h2>
+    <div class="pill">Aula 4 • MER/DER</div>
+  </div>
+
+  <div class="grid">
+    <main class="card">
+      <section id="start">
+        <div class="pill" style="display:inline-block">🕵️ Caso MER-404</div>
+        <h1>O DBA sumiu.<br>O banco ficou.</h1>
+        <p class="sub">Um antigo DBA desapareceu e deixou um banco mal documentado. O tesouro só será encontrado por quem entender o modelo.</p>
+        <div class="mission"><b>🗺️ Missão 1 — O Mapa Quebrado</b><br><small>Entidade, atributo e relacionamento.</small></div>
+        <div class="mission"><b>🔑 Missão 2 — A Câmara das Cardinalidades</b><br><small>1:1, 1:N, N:N e autorrelacionamento.</small></div>
+        <div class="mission"><b>🧰 Missão 3 — O Cofre da Integridade</b><br><small>Domínio, NULL, chave duplicada e FK inválida.</small></div>
+        <button class="btn" onclick="startGame()">Entrar no banco abandonado 🚪</button>
+      </section>
+
+      <section id="game" class="hidden">
+        <div class="top">
+          <div style="flex:1" class="progress"><div id="bar"></div></div>
+          <div style="margin-left:10px"><b>⭐ <span id="score">0</span></b></div>
+          <div style="margin-left:10px;color:#ffd166"><b>🔑 <span id="keys">0</span>/4</b></div>
+        </div>
+        <div class="pill" id="missionLabel"></div>
+        <div class="question" id="question"></div>
+        <div class="scenario" id="scenario"></div>
+        <div id="tableArea"></div>
+        <div class="answers" id="answers"></div>
+        <div id="feedback" class="feedback hidden"></div>
+      </section>
+
+      <section id="final" class="hidden final">
+        <div class="chest">🧰✨</div>
+        <div class="pill" style="display:inline-block">TESOURO LOCALIZADO</div>
+        <h1>O Cofre dos Dados</h1>
+        <p class="sub" id="finalText"></p>
+        <table>
+          <thead><tr><th>id</th><th>codigo</th><th>mensagem</th></tr></thead>
+          <tbody><tr><td>1</td><td>MER-1N-NN-FK</td><td>Parabéns, você modelou antes de destruir produção.</td></tr></tbody>
+        </table>
+        <br>
+        <button class="btn" onclick="restart()">Jogar novamente</button>
+      </section>
+    </main>
+
+    <aside class="card">
+      <h3>🧩 Mapa do Banco</h3>
+      <p style="color:#b8c3de;font-size:13px;line-height:1.4;margin-top:-4px">
+        O caminho do banco vai sendo iluminado conforme você avança. Complete as três missões para liberar o painel final.
+      </p>
+
+      <div class="bankmap">
+        <div class="map-node" id="mapStart"><div class="map-icon">🧍</div><div><b>CLIENTE</b><small>entidade inicial</small></div></div>
+        <div class="map-link" id="mapLink1">↓</div>
+        <div class="map-node" id="mapAttr"><div class="map-icon">🏷️</div><div><b>ATRIBUTOS</b><small>nome • cpf • email</small></div></div>
+        <div class="map-link" id="mapLink2">↓</div>
+        <div class="map-node" id="mapRel"><div class="map-icon">🔗</div><div><b>RELACIONAMENTO</b><small>CLIENTE faz PEDIDO</small></div></div>
+        <div class="map-link" id="mapLink3">↓</div>
+        <div class="map-node" id="mapCard"><div class="map-icon">🔢</div><div><b>CARDINALIDADES</b><small>1:1 • 1:N • N:N • AUTO</small></div></div>
+        <div class="map-link" id="mapLink4">↓</div>
+        <div class="map-node" id="mapIntegrity"><div class="map-icon">🛡️</div><div><b>INTEGRIDADE</b><small>domínio • NULL • PK • FK</small></div></div>
+        <div class="map-link" id="mapLink5">↓</div>
+        <div class="map-node treasure-node" id="mapPanel"><div class="map-icon">🧰</div><div><b>PAINEL / COFRE</b><small>bloqueado até o fim</small></div></div>
+      </div>
+
+      <h3 style="margin-top:16px">🧩 DER revelado</h3>
+      <div class="der">
+        <div class="entity" id="cliente" style="left:20px;top:110px">CLIENTE</div>
+        <div class="attr" id="nome" style="left:25px;top:25px">nome</div>
+        <div class="attr" id="cpf" style="left:25px;top:210px">cpf</div>
+        <div class="rel" id="faz" style="left:138px;top:100px"><span>FAZ</span></div>
+        <div class="entity" id="pedido" style="left:240px;top:110px">PEDIDO</div>
+      </div>
+      <div class="keyrow">
+        <span class="key" id="k1">1:1 ❔</span>
+        <span class="key" id="k2">1:N ❔</span>
+        <span class="key" id="k3">N:N ❔</span>
+        <span class="key" id="k4">AUTO ❔</span>
+      </div>
+
+      <div id="panelLock" class="panel-lock">🔒 Painel final bloqueado</div>
+      <div id="panelFinal" class="panel-final hidden">
+        <div class="panel-title">📊 Painel liberado</div>
+        <div class="panel-grid">
+          <div><span>Entidades</span><b>2</b></div>
+          <div><span>Relacionamentos</span><b>1</b></div>
+          <div><span>Cardinalidades</span><b>4</b></div>
+          <div><span>Falhas corrigidas</span><b>4</b></div>
+        </div>
+        <div class="panel-message"><b>Status:</b> modelo validado e cofre liberado.</div>
+      </div>
+      <div class="log" id="log"></div>
+    </aside>
+  </div>
+</div>
+
+<script>
+const steps = [
+{m:1,q:'No sistema de uma loja, CLIENTE deve ser classificado como o quê?',s:'O banco precisa armazenar nome, CPF e e-mail de cada cliente.',o:['Atributo','Entidade','Relacionamento','Cardinalidade','Domínio'],c:1,e:'CLIENTE é uma ENTIDADE.',reveal:['cliente'],log:'Entidade CLIENTE encontrada no mapa.'},
+{m:1,q:'Na entidade CLIENTE, o campo nome representa...',s:'CLIENTE possui nome, CPF e e-mail.',o:['Relacionamento','Entidade','Atributo','Chave estrangeira','Cardinalidade'],c:2,e:'nome é um ATRIBUTO.',reveal:['nome','cpf'],log:'Atributos nome e cpf revelados.'},
+{m:1,q:'CLIENTE faz PEDIDO. “FAZ” representa...',s:'Um cliente pode realizar pedidos.',o:['Entidade','Atributo','Relacionamento','Domínio','NULL'],c:2,e:'FAZ é um RELACIONAMENTO.',reveal:['faz','pedido'],log:'Relacionamento CLIENTE—FAZ—PEDIDO reconstruído.'},
+
+{m:2,q:'PESSOA ↔ CPF representa qual cardinalidade?',s:'Uma pessoa possui um CPF e cada CPF identifica uma pessoa.',o:['1:1','1:N','N:1','N:N','Autorrelacionamento'],c:0,e:'É 1:1.',key:1,log:'Chave 1: cardinalidade 1:1.'},
+{m:2,q:'Um CLIENTE pode fazer vários PEDIDOS; cada pedido pertence a um cliente. Qual cardinalidade?',s:'Ana fez 6 pedidos.',o:['1:1','1:N','N:N','Autorrelacionamento','Nenhuma'],c:1,e:'CLIENTE 1:N PEDIDO.',key:2,log:'Chave 2: cardinalidade 1:N.'},
+{m:2,q:'ALUNO cursa várias DISCIPLINAS e cada disciplina possui vários ALUNOS. Isso é...',s:'Os mesmos alunos cursam várias disciplinas.',o:['1:1','1:N','N:1','N:N','Autorrelacionamento'],c:3,e:'É N:N.',key:3,log:'Chave 3: cardinalidade N:N.'},
+{m:2,q:'FUNCIONÁRIO gerencia outro FUNCIONÁRIO. Que tipo de relação aparece?',s:'Maria é funcionária e gerente de João, que também é funcionário.',o:['1:1','N:N','Autorrelacionamento','Atributo composto','Domínio'],c:2,e:'É AUTORRELACIONAMENTO.',key:4,log:'Chave 4: autorrelacionamento.'},
+
+{m:3,q:'Qual registro viola uma restrição de DOMÍNIO?',s:'A nota deve estar entre 0 e 10.',table:[['id','nome','nota'],['1','Ana','8.5'],['2','João','37'],['3','Maria','9.0']],o:['Ana','João','Maria','Todos','Nenhum'],c:1,e:'João tem nota 37, fora do domínio.',log:'Domínio corrigido: nota 37 bloqueada.'},
+{m:3,q:'O campo nome é obrigatório. Qual registro viola a regra de NULL?',s:'Tabela CLIENTE.',table:[['id','nome','email'],['10','Carlos','c@x.com'],['11','NULL','m@y.com'],['12','Bianca','b@z.com']],o:['id 10','id 11','id 12','Todos','Nenhum'],c:1,e:'id 11 tem nome NULL indevido.',log:'NULL indevido corrigido.'},
+{m:3,q:'Qual problema aparece nesta chave primária?',s:'Tabela PRODUTO.',table:[['id_produto','nome'],['5','Mouse'],['6','Teclado'],['5','Monitor']],o:['NULL indevido','FK inexistente','Chave duplicada','Domínio incorreto','Cardinalidade'],c:2,e:'A PK id_produto=5 está duplicada.',log:'Chave duplicada encontrada.'},
+{m:3,q:'Qual pedido viola a integridade referencial?',s:'CLIENTES existentes: 1=Ana, 2=João.',table:[['id_pedido','cliente_id','valor'],['100','1','50'],['101','2','80'],['102','7','120']],o:['Pedido 100','Pedido 101','Pedido 102','Todos','Nenhum'],c:2,e:'Pedido 102 aponta para cliente 7, inexistente.',log:'FK órfã encontrada e corrigida.'}
+];
+
+let idx=0,score=0,keyCount=0,locked=false;
+
+function log(msg,cls='info'){
+ const l=document.getElementById('log');
+ l.innerHTML += `<div class="${cls}">› ${msg}</div>`;
+ l.scrollTop=l.scrollHeight;
+}
+function resetMap(){
+ ['mapStart','mapAttr','mapRel','mapCard','mapIntegrity','mapPanel'].forEach(id=>{const el=document.getElementById(id);el.classList.remove('active','done')});
+ ['mapLink1','mapLink2','mapLink3','mapLink4','mapLink5'].forEach(id=>{const el=document.getElementById(id);el.classList.remove('active','done')});
+ document.getElementById('panelFinal').classList.add('hidden');
+ document.getElementById('panelLock').classList.remove('hidden');
+}
+function illuminateMap(stepIndex){
+ const stage = stepIndex<=0?0:stepIndex<=1?1:stepIndex<=2?2:stepIndex<=6?3:4;
+ const stages=[
+  ['mapStart'],
+  ['mapStart','mapLink1','mapAttr'],
+  ['mapStart','mapLink1','mapAttr','mapLink2','mapRel'],
+  ['mapStart','mapLink1','mapAttr','mapLink2','mapRel','mapLink3','mapCard'],
+  ['mapStart','mapLink1','mapAttr','mapLink2','mapRel','mapLink3','mapCard','mapLink4','mapIntegrity']
+ ];
+ ['mapStart','mapAttr','mapRel','mapCard','mapIntegrity','mapPanel','mapLink1','mapLink2','mapLink3','mapLink4','mapLink5'].forEach(id=>{const el=document.getElementById(id);el.classList.remove('active')});
+ const current=stages[stage];
+ current.forEach(id=>{const el=document.getElementById(id);el.classList.add('done')});
+ const last=document.getElementById(current[current.length-1]);last.classList.remove('done');last.classList.add('active');
+}
+function unlockPanel(){
+ ['mapStart','mapAttr','mapRel','mapCard','mapIntegrity','mapPanel','mapLink1','mapLink2','mapLink3','mapLink4','mapLink5'].forEach(id=>{const el=document.getElementById(id);el.classList.remove('active');el.classList.add('done')});
+ document.getElementById('mapPanel').classList.add('active');
+ document.getElementById('panelLock').classList.add('hidden');
+ document.getElementById('panelFinal').classList.remove('hidden');
+}
+
+function tableHtml(rows){
+ if(!rows)return '';
+ let h='<table><thead><tr>';
+ rows[0].forEach(x=>h+=`<th>${x}</th>`);
+ h+='</tr></thead><tbody>';
+ rows.slice(1).forEach(r=>{h+='<tr>';r.forEach(x=>h+=`<td>${x}</td>`);h+='</tr>'});
+ return h+'</tbody></table>';
+}
+function startGame(){
+ idx=0;score=0;keyCount=0;
+ document.getElementById('start').classList.add('hidden');
+ document.getElementById('final').classList.add('hidden');
+ document.getElementById('game').classList.remove('hidden');
+ document.querySelectorAll('.der .entity,.der .attr,.der .rel').forEach(x=>x.classList.remove('visible'));
+ ['k1','k2','k3','k4'].forEach((k,i)=>document.getElementById(k).textContent=`${['1:1','1:N','N:N','AUTO'][i]} ❔`);
+ document.getElementById('log').innerHTML='';
+ resetMap();
+ illuminateMap(0);
+ log('Conexão com o banco abandonado estabelecida.','info');
+ log('Mapa do banco energizado: entidade inicial detectada.','info');
+ render();
+}
+function render(){
+ locked=false;
+ const s=steps[idx];
+ illuminateMap(idx);
+ document.getElementById('bar').style.width=(idx/steps.length*100)+'%';
+ document.getElementById('score').textContent=score;
+ document.getElementById('keys').textContent=keyCount;
+ document.getElementById('missionLabel').textContent=`Missão ${s.m} • Etapa ${idx+1}/${steps.length}`;
+ document.getElementById('question').textContent=s.q;
+ document.getElementById('scenario').textContent=s.s;
+ document.getElementById('tableArea').innerHTML=tableHtml(s.table);
+ const a=document.getElementById('answers');a.innerHTML='';
+ s.o.forEach((op,i)=>{
+  const b=document.createElement('button');
+  b.className='answer';
+  b.innerHTML=`<b>${String.fromCharCode(65+i)}.</b> ${op}`;
+  b.onclick=()=>answer(i);
+  a.appendChild(b);
+ });
+ const f=document.getElementById('feedback');f.className='feedback hidden';f.textContent='';
+ log(`Missão ${s.m}: aguardando decisão...`,'info');
+}
+function answer(choice){
+ if(locked)return;locked=true;
+ const s=steps[idx];
+ [...document.querySelectorAll('.answer')].forEach((b,i)=>{
+  b.disabled=true;
+  if(i===s.c)b.classList.add('good');
+  if(i===choice && i!==s.c)b.classList.add('bad');
+ });
+ const f=document.getElementById('feedback');
+ if(choice===s.c){
+  score+=100;f.className='feedback good';f.textContent='✅ '+s.e+' +100 pontos.';
+  if(s.reveal)s.reveal.forEach(id=>document.getElementById(id).classList.add('visible'));
+  if(s.key){keyCount++;document.getElementById('k'+s.key).textContent=['','1:1 ✅','1:N ✅','N:N ✅','AUTO ✅'][s.key]}
+  log(s.log,'ok');
+  if(idx===2) log('Setor RELACIONAMENTO desbloqueado no mapa.','ok');
+  if(idx===6) log('Câmara das CARDINALIDADES completamente iluminada.','ok');
+  if(idx===10) log('Todas as regras de INTEGRIDADE foram validadas.','ok');
+ } else {
+  score=Math.max(0,score-20);f.className='feedback bad';f.textContent='❌ '+s.e+' -20 pontos.';
+  log('Pista incorreta. O DBA fantasma riu em hexadecimal.','badlog');
+ }
+ document.getElementById('score').textContent=score;
+ document.getElementById('keys').textContent=keyCount;
+ document.getElementById('bar').style.width=((idx+1)/steps.length*100)+'%';
+ setTimeout(()=>{idx++; if(idx>=steps.length)finish(); else render();},1300);
+}
+function finish(){
+ document.getElementById('game').classList.add('hidden');
+ document.getElementById('final').classList.remove('hidden');
+ document.getElementById('finalText').innerHTML=`Pontuação final: <b>${score}</b>. Você reconstruiu o DER, coletou <b>${keyCount}/4</b> chaves e corrigiu as falhas de integridade.`;
+ unlockPanel();
+ log('MAPA COMPLETO: caminho até o painel final iluminado.','ok');
+ log('COFRE desbloqueado. Registro final localizado.','ok');
+}
+function restart(){
+ document.getElementById('final').classList.add('hidden');
+ document.getElementById('start').classList.remove('hidden');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQL Rescue — Aula 6</title>
+<style>
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#07101e,#0c1730);color:#fff}
+.wrap{max-width:1280px;margin:auto;padding:18px}
+.card{background:#13203a;border:1px solid #2f4d78;border-radius:20px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.hidden{display:none}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.brand{font-size:22px;font-weight:900}
+.pill{padding:7px 10px;border-radius:999px;background:#0b1730;border:1px solid #2f4d78;color:#aebbd5;font-size:13px}
+h1{font-size:50px;margin:8px 0 14px;line-height:1}
+.sub{color:#aebbd5;line-height:1.5;font-size:17px}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
+.mascot{min-height:380px;border-radius:16px;background:#0b1730;border:1px solid #2f4d78;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.emoji{font-size:110px}.bubble{background:#fff;color:#15223d;padding:12px 14px;border-radius:15px;font-weight:800;max-width:320px;text-align:center}
+.mission{background:#0b1730;border:1px solid #2f4d78;border-radius:14px;padding:12px;margin:9px 0}
+.btn{border:0;border-radius:12px;padding:12px 16px;font-weight:800;cursor:pointer}
+.primary{background:linear-gradient(135deg,#6d7cff,#9a5cff);color:#fff}
+.ghost{background:#1a2a47;color:#fff;border:1px solid #36547f}
+.gamegrid{display:grid;grid-template-columns:1fr 380px;gap:16px}
+.gamehead{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;margin-bottom:14px}
+.progress{height:11px;background:#0b1730;border-radius:99px;overflow:hidden}
+.progress>div{height:100%;width:0;background:linear-gradient(90deg,#43d59c,#6d7cff)}
+.case{background:#0b1730;border:1px solid #2f4d78;border-radius:15px;padding:13px}
+.editor{margin-top:12px;background:#020713;border:1px solid #294870;border-radius:14px;overflow:hidden}
+.editorbar{padding:8px 10px;background:#0b1730;border-bottom:1px solid #294870;color:#9ba9c7;font-size:12px}
+textarea{width:100%;min-height:150px;border:0;outline:0;resize:vertical;background:#020713;color:#9fe9ff;padding:14px;font:15px/1.5 Consolas,monospace}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.feedback{margin-top:10px;padding:12px;border-radius:12px;font-weight:700}
+.good{background:#153e34;color:#c8f6df}.bad{background:#47212a;color:#ffd2d8}
+.side{background:#0f1b31;border:1px solid #2f4d78;border-radius:16px;padding:13px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:9px}th,td{border:1px solid #35527d;padding:7px;text-align:left}th{background:#172a49}
+.console{margin-top:12px;background:#020713;border-radius:12px;padding:10px;height:190px;overflow:auto;font:12px/1.45 Consolas,monospace}
+.ok{color:#89f0bc}.err{color:#ff9dab}.info{color:#8bdfff}
+.cheat{margin-top:12px;background:#0b1730;border:1px solid #2f4d78;border-radius:12px;padding:10px}
+.cheat code{display:block;color:#9fe9ff;font-size:12px;margin:4px 0}
+.final{text-align:center}.big{font-size:90px}
+@media(max-width:950px){.hero,.gamegrid{grid-template-columns:1fr}}
+
+.hintbox{margin-top:10px;padding:12px 14px;border-radius:13px;background:#14213a;border:1px solid #36547f;color:#e5ebff;line-height:1.45}
+.hintbox b{color:#ffd166}
+.perfectbox{margin:18px auto 0;max-width:760px;padding:16px;border-radius:16px;background:linear-gradient(135deg,rgba(67,213,156,.16),rgba(109,124,255,.14));border:1px solid #43d59c}
+.perfectbox h3{margin:0 0 8px;color:#bff5dc}
+.perfectbadge{display:inline-block;padding:8px 12px;border-radius:999px;background:#153e34;border:1px solid #43d59c;color:#c8f6df;font-weight:900}
+.explaincode{margin-top:8px;background:#020713;border:1px solid #294870;border-radius:12px;padding:10px;font:13px/1.45 Consolas,monospace;color:#9fe9ff;text-align:left}
+
+.gameoverbox{margin-top:14px;padding:16px;border-radius:16px;background:linear-gradient(135deg,rgba(255,107,125,.18),rgba(255,209,102,.12));border:1px solid #ff6b7d}
+.gameoverbox h3{margin:0 0 8px;color:#ffd6dc}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="top"><div class="brand">⌨️ SQL Rescue — Aula 6</div><div class="pill">DDL • DML • SELECT • INSERT • UPDATE • DELETE</div></div>
+<main class="card">
+
+<section id="start">
+<div class="hero">
+<div>
+<div class="pill" style="display:inline-block">🚨 INCIDENTE EM PRODUÇÃO</div>
+<h1>O banco está vivo.<br>Por enquanto.</h1>
+<p class="sub">Você entrou no plantão de uma empresa fictícia. Cada chamado só pode ser resolvido digitando o comando SQL correto. Aqui não existe botão para chutar: existe terminal.</p>
+<div class="mission"><b>🏗️ Missão 1 — Construa sem demolir</b><br><small>CREATE TABLE e tipos de dados.</small></div>
+<div class="mission"><b>📥 Missão 2 — Faça os dados entrarem</b><br><small>INSERT e SELECT.</small></div>
+<div class="mission"><b>🔎 Missão 3 — Ache o que o chefe pediu</b><br><small>WHERE, ORDER BY, SUM e AVG.</small></div>
+<div class="mission"><b>🔥 Missão 4 — Produção não é laboratório</b><br><small>UPDATE e DELETE com WHERE.</small></div>
+<button class="btn primary" onclick="startGame()">Assumir o plantão SQL ☕</button>
+</div>
+<div class="mascot"><div class="emoji">🤖🗄️</div><div class="bubble">“Sou o QueryBot. DELETE sem WHERE vira ocorrência.”</div></div>
+</div>
+</section>
+
+<section id="game" class="hidden">
+<div class="gamegrid">
+<div>
+<div class="gamehead"><div class="progress"><div id="bar"></div></div><div>⭐ <b id="score">0</b></div><div style="color:#ffd166">☕ <b id="life">3</b></div></div>
+<div class="case"><h3 id="title"></h3><p id="desc"></p></div>
+<div class="editor"><div class="editorbar">sql-rescue.sql</div><textarea id="sqlInput" spellcheck="false" placeholder="Digite seu SQL aqui..."></textarea></div>
+<div class="actions">
+<button class="btn primary" onclick="runSQL()">Executar ▶</button>
+<button class="btn ghost" onclick="hint()">Pedir dica (-25)</button>
+<button class="btn ghost" onclick="document.getElementById('sqlInput').value=''">Limpar</button>
+<button class="btn ghost" onclick="restart()">Reiniciar jogo ↺</button>
+</div>
+<div id="feedback" class="feedback hidden"></div><div id="hintBox" class="hintbox hidden"></div>
+</div>
+
+<aside class="side">
+<h3>📊 Estado atual do banco</h3>
+<div id="dbView"></div>
+<div class="cheat"><b>🧠 Cola autorizada</b>
+<code>CREATE TABLE nome (...);</code>
+<code>INSERT INTO tabela (...) VALUES (...);</code>
+<code>SELECT ... FROM ... WHERE ...;</code>
+<code>UPDATE tabela SET ... WHERE ...;</code>
+<code>DELETE FROM tabela WHERE ...;</code>
+</div>
+<div id="console" class="console"></div>
+</aside>
+</div>
+</section>
+
+<section id="final" class="hidden final">
+<div class="big">🏆💾</div>
+<div class="pill" style="display:inline-block">PRODUÇÃO SOBREVIVEU</div>
+<h1>Você saiu do plantão com o banco inteiro.</h1>
+<p class="sub" id="finalText"></p>
+<div id="gameOverBox" class="gameoverbox hidden">
+  <h3>💀 GAME OVER</h3>
+  <p id="gameOverText">Você ficou sem opções para continuar.</p>
+</div>
+<div id="perfectBox" class="perfectbox hidden">
+  <div class="perfectbadge">🏆 PERFECT SQL</div>
+  <h3>Desafio especial concluído!</h3>
+  <p>Você terminou o jogo sem errar e sem pedir dicas.</p>
+  <p><b>Tire um print desta tela e envie ao professor para ganhar +5 pontos.</b></p>
+</div>
+<button class="btn primary" onclick="restart()">Repetir plantão</button>
+</section>
+
+</main>
+</div>
+
+<script>
+let db={funcionarios:[
+{id:1,nome:'Ana',cargo:'Analista',salario:4500},
+{id:2,nome:'Bruno',cargo:'DBA',salario:7000},
+{id:3,nome:'Carla',cargo:'Dev',salario:5200}
+]};
+
+const missions=[
+{
+ title:'🏗️ Chamado 1 — Crie a tabela PROJETOS',
+ desc:'Crie PROJETOS com id INTEGER PRIMARY KEY, nome VARCHAR(100) e ativo BOOLEAN.',
+ validate:s=>{let q=n(s);return /create table projetos\s*\(/i.test(q)&&/id integer/i.test(q)&&/primary key/i.test(q)&&/nome varchar\s*\(\s*100\s*\)/i.test(q)&&/ativo boolean/i.test(q)},
+ apply:()=>db.projetos=[],
+ hints:[
+  'Você precisa de um comando DDL que cria uma nova tabela.',
+  'A estrutura começa com CREATE TABLE projetos (...) e dentro dos parênteses entram as três colunas.',
+  `CREATE TABLE projetos (
+    id INTEGER PRIMARY KEY,
+    nome VARCHAR(100),
+    ativo BOOLEAN
+);
+Explicação:
+• CREATE TABLE projetos → cria a tabela.
+• id INTEGER PRIMARY KEY → id inteiro e chave primária.
+• nome VARCHAR(100) → texto de até 100 caracteres.
+• ativo BOOLEAN → verdadeiro/falso.`
+ ],
+ success:'Tabela criada sem explosões.'
+},
+{
+ title:'📥 Chamado 2 — Insira o primeiro projeto',
+ desc:"Insira id=1, nome='DB Quest', ativo=TRUE em PROJETOS.",
+ validate:s=>{let q=n(s);return /insert into projetos/i.test(q)&&/values\s*\(\s*1\s*,\s*['"]db quest['"]\s*,\s*true\s*\)/i.test(q)},
+ apply:()=>db.projetos.push({id:1,nome:'DB Quest',ativo:true}),
+ hints:[
+  'Use o comando DML responsável por inserir um novo registro.',
+  "Comece com INSERT INTO projetos (...) VALUES (...).",
+  `INSERT INTO projetos (id, nome, ativo)
+VALUES (1, 'DB Quest', TRUE);
+Explicação:
+• INSERT INTO projetos → escolhe a tabela.
+• (id, nome, ativo) → define as colunas.
+• VALUES (...) → informa os valores na mesma ordem.`
+ ],
+ success:'INSERT concluído.'
+},
+{
+ title:'🔎 Chamado 3 — Encontre o DBA',
+ desc:"Consulte todos os campos de FUNCIONARIOS apenas para cargo='DBA'.",
+ validate:s=>{let q=n(s);return /select\s+\*\s+from\s+funcionarios/i.test(q)&&/where\s+cargo\s*=\s*['"]dba['"]/i.test(q)},
+ apply:()=>{},
+ hints:[
+  'Você precisa consultar todos os campos e depois filtrar por cargo.',
+  "Use SELECT * FROM funcionarios e complete com WHERE cargo='DBA'.",
+  `SELECT *
+FROM funcionarios
+WHERE cargo = 'DBA';
+Explicação:
+• SELECT * → retorna todas as colunas.
+• FROM funcionarios → define a tabela.
+• WHERE cargo='DBA' → filtra apenas o DBA.`
+ ],
+ success:'DBA localizado.'
+},
+{
+ title:'📊 Chamado 4 — Some os salários',
+ desc:'Use SUM para calcular a soma de salario em FUNCIONARIOS.',
+ validate:s=>/select\s+sum\s*\(\s*salario\s*\)\s+from\s+funcionarios/i.test(n(s)),
+ apply:()=>{},
+ hints:[
+  'A função agregada correta é SUM.',
+  'Use SELECT SUM(salario) e depois informe a tabela.',
+  `SELECT SUM(salario)
+FROM funcionarios;
+Explicação:
+• SUM(salario) → soma os valores da coluna salario.
+• FROM funcionarios → define onde os dados serão lidos.`
+ ],
+ success:'Financeiro agora quer um dashboard.'
+},
+{
+ title:'📈 Chamado 5 — Média salarial',
+ desc:'Use AVG para calcular a média de salario.',
+ validate:s=>/select\s+avg\s*\(\s*salario\s*\)\s+from\s+funcionarios/i.test(n(s)),
+ apply:()=>{},
+ hints:[
+  'A função de média em SQL é AVG.',
+  'Use SELECT AVG(salario) FROM ...',
+  `SELECT AVG(salario)
+FROM funcionarios;
+Explicação:
+• AVG(salario) → calcula a média da coluna.
+• FROM funcionarios → indica a origem dos dados.`
+ ],
+ success:'Média calculada.'
+},
+{
+ title:'⬇️ Chamado 6 — Ordene os salários',
+ desc:'Liste todos os funcionários do maior salário para o menor.',
+ validate:s=>{let q=n(s);return /select\s+\*\s+from\s+funcionarios/i.test(q)&&/order by\s+salario\s+desc/i.test(q)},
+ apply:()=>{},
+ hints:[
+  'Você precisa consultar tudo e ordenar de forma decrescente.',
+  'A palavra-chave é ORDER BY, e maior→menor usa DESC.',
+  `SELECT *
+FROM funcionarios
+ORDER BY salario DESC;
+Explicação:
+• SELECT * → traz todas as colunas.
+• ORDER BY salario → ordena pela coluna salario.
+• DESC → do maior para o menor.`
+ ],
+ success:'Ranking montado. Melhor não mandar no grupo geral.'
+},
+{
+ title:'🛠️ Chamado 7 — Atualize Ana',
+ desc:'Atualize o salário da Ana para 5000 usando WHERE id=1.',
+ validate:s=>{let q=n(s);return /update\s+funcionarios\s+set\s+salario\s*=\s*5000/i.test(q)&&/where\s+id\s*=\s*1/i.test(q)},
+ apply:()=>db.funcionarios.find(x=>x.id===1).salario=5000,
+ hints:[
+  'Você precisa alterar um registro existente, não inserir outro.',
+  'Use UPDATE funcionarios SET salario=5000 e filtre pelo id.',
+  `UPDATE funcionarios
+SET salario = 5000
+WHERE id = 1;
+Explicação:
+• UPDATE funcionarios → escolhe a tabela.
+• SET salario=5000 → define o novo valor.
+• WHERE id=1 → altera somente Ana.`
+ ],
+ success:'Só Ana foi alterada. O WHERE salvou o orçamento.'
+},
+{
+ title:'🔥 Chamado 8 — DELETE com responsabilidade',
+ desc:'Remova apenas Carla, id=3. Sem WHERE, o comando será bloqueado.',
+ danger:s=>/delete\s+from\s+funcionarios\s*;?$/i.test(n(s))&&!/where/i.test(n(s)),
+ validate:s=>{let q=n(s);return /delete\s+from\s+funcionarios/i.test(q)&&/where\s+id\s*=\s*3/i.test(q)},
+ apply:()=>db.funcionarios=db.funcionarios.filter(x=>x.id!==3),
+ hints:[
+  'Você precisa excluir um registro, mas deve limitar qual linha será removida.',
+  'Use DELETE FROM funcionarios e complete com WHERE id=3.',
+  `DELETE FROM funcionarios
+WHERE id = 3;
+Explicação:
+• DELETE FROM funcionarios → indica a tabela.
+• WHERE id=3 → remove apenas Carla.
+• Sem WHERE, todas as linhas poderiam ser excluídas.`
+ ],
+ success:'DELETE cirúrgico. O restante da empresa continua empregado.'
+}
+];
+
+let i=0,score=0,life=3,hintsUsed=0,errorsMade=0,currentHintLevel=0;
+function n(s){return s.replace(/\s+/g,' ').trim()}
+function startGame(){i=0;score=0;life=3;hintsUsed=0;errorsMade=0;currentHintLevel=0;db={funcionarios:[{id:1,nome:'Ana',cargo:'Analista',salario:4500},{id:2,nome:'Bruno',cargo:'DBA',salario:7000},{id:3,nome:'Carla',cargo:'Dev',salario:5200}]};document.getElementById('start').classList.add('hidden');document.getElementById('final').classList.add('hidden');document.getElementById('game').classList.remove('hidden');document.getElementById('console').innerHTML='';log('Plantão iniciado.','info');render()}
+function render(){let m=missions[i];currentHintLevel=0;document.getElementById('bar').style.width=(i/missions.length*100)+'%';document.getElementById('score').textContent=score;document.getElementById('life').textContent=life;document.getElementById('title').textContent=m.title;document.getElementById('desc').textContent=m.desc;document.getElementById('sqlInput').value='';document.getElementById('feedback').className='feedback hidden';document.getElementById('hintBox').className='hintbox hidden';document.getElementById('hintBox').innerHTML='';renderDb();log('Chamado '+(i+1)+' aguardando SQL...','info')}
+function renderDb(){let h='<b>FUNCIONARIOS</b><table><tr><th>id</th><th>nome</th><th>cargo</th><th>salário</th></tr>';db.funcionarios.forEach(r=>h+=`<tr><td>${r.id}</td><td>${r.nome}</td><td>${r.cargo}</td><td>${r.salario}</td></tr>`);h+='</table>';if(db.projetos){h+='<br><b>PROJETOS</b><table><tr><th>id</th><th>nome</th><th>ativo</th></tr>';db.projetos.forEach(r=>h+=`<tr><td>${r.id}</td><td>${r.nome}</td><td>${r.ativo}</td></tr>`);h+='</table>'}document.getElementById('dbView').innerHTML=h}
+function runSQL(){let sql=document.getElementById('sqlInput').value.trim(),m=missions[i];if(!sql){errorsMade++;fail('Digite um SQL.');return}if(m.danger&&m.danger(sql)){
+ errorsMade++;
+ life--;
+ score=Math.max(0,score-100);
+ document.getElementById('life').textContent=life;
+ document.getElementById('score').textContent=score;
+ fail('🚨 DELETE sem WHERE bloqueado. -100 pontos.');
+ log('DELETE sem WHERE bloqueado.','err');
+ if(life<=0){
+   gameOver('Seus 3 cafés acabaram depois de uma tentativa perigosa de DELETE sem WHERE.');
+   return;
+ }
+ return
+}if(m.validate(sql)){score+=200;m.apply();document.getElementById('feedback').className='feedback good';document.getElementById('feedback').textContent='✅ '+m.success+' +200 pontos.';log('Executado: '+n(sql),'ok');renderDb();document.getElementById('score').textContent=score;document.getElementById('bar').style.width=((i+1)/missions.length*100)+'%';setTimeout(()=>{i++;if(i>=missions.length)finish();else render()},1300)}else{errorsMade++;life--;score=Math.max(0,score-40);document.getElementById('life').textContent=life;document.getElementById('score').textContent=score;fail('❌ Sintaxe ou lógica não atende ao chamado. -40 pontos.');log('SQL rejeitado: '+n(sql),'err');if(life<=0)setTimeout(restart,1500)}}
+function hint(){
+ const m=missions[i];
+ if(currentHintLevel>=3){
+  gameOver('Você usou todas as 3 dicas desta etapa e não há mais ajuda disponível.');
+  return;
+ }
+ currentHintLevel++;
+ hintsUsed++;
+ score=Math.max(0,score-25);
+ document.getElementById('score').textContent=score;
+ const box=document.getElementById('hintBox');
+ box.className='hintbox';
+ if(currentHintLevel===1){
+  box.innerHTML=`<b>💡 Dica 1/3 — Conceito</b><br>${escapeHtml(m.hints[0])}<br><small>-25 pontos</small>`;
+ }else if(currentHintLevel===2){
+  box.innerHTML=`<b>🧩 Dica 2/3 — Parte da solução</b><br>${escapeHtml(m.hints[1])}<br><small>-25 pontos</small>`;
+ }else{
+  const full=m.hints[2];
+  const parts=full.split('Explicação:');
+  box.innerHTML=`<b>🧠 Dica 3/3 — Solução completa</b>
+  <div class="explaincode">${escapeHtml(parts[0].trim()).replace(/\n/g,'<br>')}</div>
+  <b>Explicação:</b><br>${escapeHtml((parts[1]||'').trim()).replace(/\n/g,'<br>')}
+  <br><small>-25 pontos</small>`;
+ }
+ log(`Dica ${currentHintLevel}/3 utilizada no chamado ${i+1}.`,'info');
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function fail(msg){document.getElementById('feedback').className='feedback bad';document.getElementById('feedback').textContent=msg}
+function log(msg,cls){let c=document.getElementById('console');c.innerHTML+=`<div class="${cls}">› ${msg}</div>`;c.scrollTop=c.scrollHeight}
+function finish(){
+ document.getElementById('game').classList.add('hidden');
+ document.getElementById('final').classList.remove('hidden');
+ document.getElementById('gameOverBox').classList.add('hidden');
+ const perfect=errorsMade===0&&hintsUsed===0&&life===3;
+ document.getElementById('finalText').innerHTML=`Pontuação final: <b>${score}</b>. Você executou CREATE, INSERT, SELECT, SUM, AVG, ORDER BY, UPDATE e DELETE sem derrubar produção.<br><small>Dicas usadas: ${hintsUsed} • Erros: ${errorsMade} • Cafés restantes: ${life}/3</small>`;
+ const pb=document.getElementById('perfectBox');
+ if(perfect){pb.classList.remove('hidden')}else{pb.classList.add('hidden')}
+}
+function gameOver(message){
+ document.getElementById('game').classList.add('hidden');
+ document.getElementById('final').classList.remove('hidden');
+ document.getElementById('perfectBox').classList.add('hidden');
+ document.getElementById('gameOverBox').classList.remove('hidden');
+ document.getElementById('gameOverText').innerHTML = message + `<br><br><b>Pontuação até aqui:</b> ${score}<br><small>Dicas usadas: ${hintsUsed} • Erros: ${errorsMade} • Cafés restantes: ${life}/3</small>`;
+ document.getElementById('finalText').innerHTML=`O plantão terminou antes do fim do jogo. Você pode reiniciar e tentar novamente com mais estratégia.`;
+ log('GAME OVER: '+message,'err');
+}
+function restart(){
+ document.getElementById('game').classList.add('hidden');
+ document.getElementById('final').classList.add('hidden');
+ document.getElementById('perfectBox').classList.add('hidden');
+ document.getElementById('gameOverBox').classList.add('hidden');
+ document.getElementById('start').classList.remove('hidden');
+}
+</script>
+</body>
+</html>
