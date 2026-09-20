@@ -78,5 +78,5 @@ export type Trail = {
   accent: string;
   modules: Module[];
   missions?: Mission[];
-  lab?: 'sql' | null;
+  lab?: 'sql' | 'git' | null;
 };

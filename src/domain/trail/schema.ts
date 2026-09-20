@@ -99,5 +99,5 @@ export const trailSchema = z.object({
   accent: z.string().regex(/^#[0-9a-fA-F]{6}$/),
   modules: z.array(moduleSchema).min(1),
   missions: z.array(missionSchema).optional(),
-  lab: z.enum(['sql']).nullable().optional(),
+  lab: z.enum(['sql', 'git']).nullable().optional(),
 });
