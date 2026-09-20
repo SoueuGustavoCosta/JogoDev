@@ -98,7 +98,7 @@
   position: absolute;
   left: 12px;
   right: 12px;
-  bottom: calc(76px + env(safe-area-inset-bottom));
+  bottom: calc(92px + env(safe-area-inset-bottom));
   z-index: 4;
   max-width: 400px;
   pointer-events: none;
@@ -122,7 +122,7 @@
 .zoom {
   position: absolute;
   right: 12px;
-  bottom: calc(84px + env(safe-area-inset-bottom));
+  bottom: calc(100px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -211,17 +211,6 @@
   }
 }
 
-@media (min-width: 900px) {
-  .root {
-    left: 210px;
-  }
-  .say {
-    bottom: 24px;
-  }
-  .zoom {
-    bottom: 24px;
-  }
-}
 
 /* conteúdo dos cartões (bottom sheet) */
 .sheetBody h2 {

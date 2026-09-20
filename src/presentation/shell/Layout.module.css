@@ -63,42 +63,9 @@
   padding: 14px 16px 24px;
 }
 
-.nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: calc(64px + env(safe-area-inset-bottom));
-  padding-bottom: env(safe-area-inset-bottom);
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  background: #0d0b18;
-  border-top: 1px solid var(--color-line);
-  z-index: 50;
-}
-
-.navLink {
-  background: none;
-  border: 0;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  min-height: var(--touch-target);
-  color: var(--color-muted);
-  text-decoration: none;
-  font: 600 0.66rem var(--font-body);
-}
-
-.navLinkActive {
-  color: var(--color-purple-soft);
-}
-
 .footer {
   text-align: center;
-  padding: 20px 16px calc(90px + env(safe-area-inset-bottom));
+  padding: 20px 16px calc(100px + env(safe-area-inset-bottom));
   font-size: 0.78rem;
   color: var(--color-muted);
 }
@@ -114,36 +81,51 @@
   opacity: 0.8;
 }
 
-@media (min-width: 900px) {
-  .root {
-    flex-direction: row;
-  }
-  .nav {
-    position: sticky;
-    top: 0;
-    height: 100dvh;
-    width: 210px;
-    grid-template-columns: 1fr;
-    align-content: start;
-    gap: 6px;
-    padding: 24px 12px;
-    border-top: none;
-    border-right: 1px solid var(--color-line);
-  }
-  .navLink {
-    flex-direction: row;
-    justify-content: flex-start;
-    gap: 12px;
-    padding: 10px 14px;
-    font-size: 0.95rem;
-    border-radius: var(--radius-md);
-  }
-  .navLinkActive {
-    background: rgba(155, 77, 255, 0.14);
-  }
-  .footer {
-    padding-bottom: 24px;
-  }
+
+.nav {
+  position: fixed;
+  left: 50%;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  width: min(440px, calc(100% - 24px));
+  height: 64px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 6px;
+  gap: 4px;
+  background: rgba(13, 11, 24, 0.82);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--color-line);
+  border-radius: 22px;
+  box-shadow: 0 10px 40px -10px rgba(155, 77, 255, 0.55), 0 0 0 1px rgba(94, 231, 255, 0.06) inset;
+  z-index: 50;
+}
+
+.navLink {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border-radius: 16px;
+  min-height: var(--touch-target);
+  color: var(--color-muted);
+  text-decoration: none;
+  font: 600 0.66rem var(--font-body);
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.navLink:hover {
+  color: var(--color-text);
+}
+
+.navLinkActive {
+  color: var(--color-cyan);
+  background: rgba(94, 231, 255, 0.1);
+  box-shadow: 0 0 18px -4px rgba(94, 231, 255, 0.6);
 }
 
 .more {
