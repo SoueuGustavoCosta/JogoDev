@@ -54,7 +54,7 @@ export function QuizRunner({
   return (
     <div className={styles.wrap}>
       <p className={styles.progress}>
-        Paradoxo {index + 1} de {quiz.length}
+        Pergunta {index + 1} de {quiz.length}
       </p>
       <p className={styles.question}>{item.q}</p>
 

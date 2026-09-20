@@ -8,4 +8,9 @@ export default defineConfig({
       '@': '/src',
     },
   },
+  optimizeDeps: {
+    // O pré-bundle do esbuild quebra os assets .data/.wasm do PGlite (Postgres em
+    // WebAssembly): o dev server passa a servir HTML no lugar do binário.
+    exclude: ['@electric-sql/pglite'],
+  },
 });

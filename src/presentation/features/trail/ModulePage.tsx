@@ -53,9 +53,11 @@ export function ModulePage() {
         <QuizRunner trailId={trail.id} moduleId={module.id} quiz={module.quiz} onFinished={handleFinished} />
       ) : (
         <div style={{ marginTop: 24, textAlign: 'center' }}>
-          <p>🔮 Módulo concluído! +150 XP</p>
+          <p>
+            <strong>Módulo concluído.</strong> Você já passou por aqui e o XP foi contabilizado.
+          </p>
           <Button onClick={goNext}>
-            {trail.modules[moduleIndex + 1] ? 'Saltar para o próximo módulo' : 'Voltar para a ilha'}
+            {trail.modules[moduleIndex + 1] ? 'Próximo módulo' : 'Voltar para a ilha'}
           </Button>
         </div>
       )}

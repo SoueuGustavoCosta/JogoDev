@@ -14,5 +14,9 @@ export default defineConfig({
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
     testTimeout: 30000,
     hookTimeout: 30000,
+    // Vários testes sobem uma instância real do PGlite (Postgres em WebAssembly).
+    // Rodar arquivos de teste em paralelo derruba os workers por contenção de
+    // memória/WASM; sequencial é mais lento mas estável.
+    fileParallelism: false,
   },
 });

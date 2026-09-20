@@ -113,11 +113,11 @@ export function LabPage() {
     setOutput(blocks);
   }
 
-  async function switchDataset(ds: SqlDataset) {
+  async function switchDataset(ds: SqlDataset, options: { keepMission?: boolean } = {}) {
     setStatus('Preparando banco...');
     await resetLabDataset({ engine: sqlEngine }, ds);
     setDataset(ds);
-    setSelectedMission(null);
+    if (!options.keepMission) setSelectedMission(null);
     setOutput([]);
     setStatus(ds === 'loja' ? 'Pronto: loja de exemplo carregada.' : 'Pronto: banco vazio. Crie suas tabelas.');
   }
@@ -139,7 +139,7 @@ export function LabPage() {
     setSelectedMission(mission);
     setMissionFeedback(null);
     setSql(`-- Missão: ${mission.title}\n-- (banco: ${mission.ds === 'loja' ? 'loja de exemplo' : 'vazio'})\n\n`);
-    switchDataset(mission.ds);
+    switchDataset(mission.ds, { keepMission: true });
   }
 
   async function verify() {
