@@ -55,3 +55,25 @@ describe('conteúdo da Era "Código Compartilhado" (git-github)', () => {
     }
   });
 });
+
+describe('boss fight da Era da Bifurcação (O Bifurcador)', () => {
+  it('tem o formato sequence com as 4 rodadas do protótipo', () => {
+    const bossFight = gitGithubTrail.bossFight;
+    expect(bossFight).toBeDefined();
+    expect(bossFight?.bossName).toBe('O Bifurcador');
+    expect(bossFight?.mode).toBe('sequence');
+    expect(bossFight?.rounds).toHaveLength(4);
+    expect(bossFight?.intro.length).toBeGreaterThanOrEqual(2);
+    expect(bossFight?.badgeId).toBe('guardiao-do-versionamento');
+  });
+
+  it('cada passo de cada rodada é uma fonte de regex válida', () => {
+    const rounds = gitGithubTrail.bossFight?.mode === 'sequence' ? gitGithubTrail.bossFight.rounds : [];
+    expect(rounds.length).toBeGreaterThan(0);
+    for (const round of rounds) {
+      for (const pattern of round.steps) {
+        expect(() => new RegExp(pattern)).not.toThrow();
+      }
+    }
+  });
+});

@@ -17,4 +17,50 @@ export const gitGithubTrail: Trail = {
   ],
   modules: gitGithubModules,
   lab: 'git',
+  bossFight: {
+    bossName: 'O Bifurcador',
+    tagline: 'CONFLITO CRÍTICO',
+    intro: [
+      'Chegamos ao fim da Era da Bifurcação. Um espectro chamado <b>O Bifurcador</b> vive dentro de um conflito de merge que nunca termina.',
+      "É outro rastro do Eco: ele tentou resolver tudo clicando num botão mágico de 'resolver automaticamente' e só piorou tudo. Aqui, só comando de verdade resolve.",
+      'Quatro rodadas: começar, ramificar, resolver o conflito, publicar. Bora fechar essa era com uma linha do tempo limpa?',
+    ],
+    lifeLabel: '💾',
+    mode: 'sequence',
+    rounds: [
+      {
+        title: 'Rodada 1 — Comece do zero',
+        description: 'Inicialize o repositório, adicione os arquivos e faça o primeiro commit.',
+        talk: 'Todo repositório começa assim: vazio, esperando um histórico.',
+        hint: 'git init  →  git add .  →  git commit -m "primeiro commit"',
+        steps: ['git\\s+init', 'git\\s+add', 'git\\s+commit\\s+-m'],
+      },
+      {
+        title: 'Rodada 2 — Ramifique sem medo',
+        description: 'Crie uma branch nova, mude pra ela e depois mescle de volta na principal.',
+        talk: 'Ramos que nunca se encontram não servem de nada. Mescle.',
+        hint: 'git branch nova-feature  →  git checkout nova-feature  →  git checkout main  →  git merge nova-feature',
+        steps: ['git\\s+(branch|checkout\\s+-b|switch\\s+-c)', 'git\\s+(checkout|switch)', 'git\\s+merge'],
+      },
+      {
+        title: 'Rodada 3 — Resolva o conflito',
+        description:
+          'Depois de editar o arquivo conflitante, marque como resolvido e finalize o merge com um commit.',
+        talk: 'Duas versões, um só arquivo. Escolha o que sobrevive.',
+        hint: 'git add arquivo-conflitante  →  git commit -m "resolve conflito de merge"',
+        steps: ['git\\s+add', 'git\\s+commit'],
+      },
+      {
+        title: 'Rodada 4 — Suba pro mundo',
+        description: 'Conecte o repositório local a um remoto e envie o histórico atualizado.',
+        talk: 'De nada adianta se ficar só na sua máquina.',
+        hint: 'git remote add origin <url>  →  git push -u origin main',
+        steps: ['git\\s+remote\\s+add', 'git\\s+push'],
+      },
+    ],
+    badgeId: 'guardiao-do-versionamento',
+    badgeTitle: 'Guardião do Versionamento',
+    badgeDescription:
+      'Concedida a quem sabe começar, ramificar, resolver conflitos e publicar um repositório sem perder histórico pelo caminho.',
+  },
 };

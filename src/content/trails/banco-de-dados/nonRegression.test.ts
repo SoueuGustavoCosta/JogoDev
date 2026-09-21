@@ -67,6 +67,28 @@ describe('conteúdo da Era dos Dados (migração do protótipo)', () => {
   });
 });
 
+describe('boss fight da Era dos Dados (O Auditor)', () => {
+  it('tem o formato single-shot com as 3 rodadas do protótipo', () => {
+    const bossFight = bancoDeDadosTrail.bossFight;
+    expect(bossFight).toBeDefined();
+    expect(bossFight?.bossName).toBe('O Auditor');
+    expect(bossFight?.mode).toBe('single-shot');
+    expect(bossFight?.rounds).toHaveLength(3);
+    expect(bossFight?.intro.length).toBeGreaterThanOrEqual(2);
+    expect(bossFight?.badgeId).toBe('guardiao-banco-de-dados');
+  });
+
+  it('cada padrão de cada rodada é uma fonte de regex válida', () => {
+    const rounds = bancoDeDadosTrail.bossFight?.mode === 'single-shot' ? bancoDeDadosTrail.bossFight.rounds : [];
+    expect(rounds.length).toBeGreaterThan(0);
+    for (const round of rounds) {
+      for (const pattern of round.check) {
+        expect(() => new RegExp(pattern)).not.toThrow();
+      }
+    }
+  });
+});
+
 describe('blocos de código da Era dos Dados executam no PGlite', () => {
   const SEEDED_TABLES = ['categorias', 'produtos', 'clientes', 'pedidos', 'contas'];
 
