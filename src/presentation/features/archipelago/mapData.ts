@@ -50,7 +50,7 @@ export const ERAS: MapEra[] = [
     name: 'Era da Lógica',
     x: 520,
     y: 340,
-    color: '#3ee0a1',
+    color: '#2dff8a',
     icon: 'log',
     status: 'ativo',
     years: 'ERA 2',

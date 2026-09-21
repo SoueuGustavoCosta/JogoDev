@@ -1,6 +1,7 @@
 import type { Badge } from '@/domain/badges';
 import { BADGE_TRAIL_TO_TRAIL_ID } from '@/content/badges/catalog';
 import { trailRegistry } from '@/content/registry';
+import { Badge3D } from './Badge3D';
 import styles from './BadgeMedal.module.css';
 
 export type BadgeMedalState = 'earned' | 'locked-path' | 'locked-unassigned' | 'soon';
@@ -36,11 +37,14 @@ export function BadgeMedal({
   earned,
   size = 96,
   showCaption = true,
+  spin = false,
 }: {
   badge: Badge;
   earned: boolean;
   size?: number;
   showCaption?: boolean;
+  /** Gira sozinha em loop (tela de vitória, coroa da coleção) — desligado por padrão e sempre com `prefers-reduced-motion`. */
+  spin?: boolean;
 }) {
   const state = badgeMedalState(badge, earned);
   const locked = state !== 'earned';
@@ -48,14 +52,13 @@ export function BadgeMedal({
 
   return (
     <div className={`${styles.medal} ${locked ? styles.locked : ''}`}>
-      <span className={styles.imgWrap} style={{ width: size, height: size }}>
-        <img
-          className={styles.img}
-          src={`/badges/${badge.file}`}
-          alt={locked ? `${badge.name} (bloqueada)` : badge.name}
-          width={size}
-          height={size}
-          loading="lazy"
+      <span className={styles.imgWrap}>
+        <Badge3D
+          file={badge.file}
+          label={locked ? `${badge.name} (bloqueada)` : badge.name}
+          size={size}
+          locked={locked}
+          spin={spin && !locked}
         />
         {badge.crown && state === 'earned' ? <span className={styles.crownRing} aria-hidden="true" /> : null}
       </span>

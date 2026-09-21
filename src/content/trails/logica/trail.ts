@@ -14,7 +14,7 @@ export const logicaTrail: Trail = {
   title: 'Ilha da Lógica',
   tagline: 'A ilha que nasce primeiro: antes de qualquer linguagem, existe a lógica.',
   symbol: 'logic-diamond',
-  accent: '#3ee0a1',
+  accent: '#2dff8a',
   eyebrow: 'Era 2 · Era da Lógica',
   intro: [
     'Viajante, esta é a <b>Era da Lógica</b> — a que nasce antes de todas as outras. Aqui não tem linguagem nenhuma ainda: só a ideia de resolver um problema em passos, na ordem certa.',
