@@ -1,0 +1,128 @@
+import type { Module } from '@/domain/trail/types';
+
+/**
+ * Migrado de Ilha_da_Logica_PHP_1.html (módulo "arrays" — "Arrays e matrizes").
+ * Os widgets "Endereços da matriz" (WID.matrix) e "Ordenação por seleção" (WID.sortviz)
+ * viram placeholders `gui`.
+ */
+export const modArrays: Module = {
+  id: 'arrays',
+  short: 'Arrays e matrizes',
+  title: 'Arrays, matrizes, ordenação e busca',
+  lead: 'Guardar vários valores sob um único nome. Este é o segredo do tabuleiro.',
+  level: 'Intermediário',
+  blocks: [
+    {
+      t: 'say',
+      x: 'Farol 7. Imagine um prédio: o nome do prédio é a variável e cada apartamento tem um número. Para achar quem mora em algum lugar, você diz o nome e o número. Isso é um array.',
+    },
+    { t: 'h', x: 'Vetores: uma fila de caixinhas' },
+    {
+      t: 'p',
+      x: 'Um <b>array</b> é um conjunto de posições de memória, todas sob um único nome, acessadas por um <b>índice</b>. Atenção ao que a apostila destaca: <b>o índice começa em zero</b>. Um array com 3 elementos tem as posições 0, 1 e 2.',
+    },
+    {
+      t: 'code',
+      file: 'array.php',
+      lang: 'php',
+      nolab: true,
+      x: '<?php\n$cursos = ["Informática", "Sistemas", "Redes"];\n\necho $cursos[0];        // Informática  (a primeira posição é 0)\necho count($cursos);    // 3            (quantos elementos)\n$cursos[] = "IA";       // acrescenta no fim\nforeach ($cursos as $curso) {\n    echo "Curso: $curso <br>";\n}\n?>',
+    },
+    {
+      t: 'note',
+      k: 'Array associativo',
+      x: "No PHP o \"índice\" pode ser um texto: <code>$aluno = [\"nome\" => \"Ana\", \"idade\" => 20];</code> e depois <code>echo $aluno[\"nome\"];</code>. As sessões do Jogo da Velha funcionam assim: <code>$_SESSION['vitoria']</code>.",
+    },
+    { t: 'h', x: 'Matrizes: linhas e colunas' },
+    {
+      t: 'p',
+      x: 'Uma <b>matriz</b> é um array de arrays: uma tabela com linhas e colunas. A apostila declara <code>int valores[3][4];</code> em C: 3 linhas e 4 colunas (12 posições). Em PHP: <code>$m[linha][coluna]</code>. Clique nas casas e veja o endereço de cada uma:',
+    },
+    { t: 'gui' },
+    {
+      t: 'code',
+      file: 'matriz.php',
+      lang: 'php',
+      nolab: true,
+      x: "<?php\n$m = [\n    [1, 2, 3],\n    [4, 5, 6],\n    [7, 8, 9]\n];\necho $m[1][2];   // 6  (linha 1, coluna 2)\n\n// o tabuleiro do jogo da velha nasce assim:\n$jv = array_fill(0, 3, array_fill(0, 3, '0'));\n?>",
+    },
+    { t: 'h', x: 'Ordenação por seleção' },
+    {
+      t: 'p',
+      x: 'A apostila apresenta este método: encontre o <b>menor</b> elemento do conjunto e troque com o primeiro; depois repita com o resto, até o fim. Use o botão para ver o exemplo da apostila, <code>5 - 2 - 1 - 4 - 3</code>:',
+    },
+    { t: 'gui' },
+    {
+      t: 'code',
+      file: 'ordenacao.php',
+      lang: 'php',
+      nolab: true,
+      x: '<?php\n$v = [5, 2, 1, 4, 3];\n$n = count($v);\nfor ($i = 0; $i < $n - 1; $i++) {\n    $menor = $i;                        // supõe que o menor é o da posição i\n    for ($j = $i + 1; $j < $n; $j++) {\n        if ($v[$j] < $v[$menor]) {\n            $menor = $j;                // achou um menor\n        }\n    }\n    $aux = $v[$i];                      // troca de lugar\n    $v[$i] = $v[$menor];\n    $v[$menor] = $aux;\n}\n?>',
+    },
+    { t: 'h', x: 'Busca sequencial' },
+    { t: 'p', x: 'Procurar um elemento? O jeito mais simples é olhar um por um, do começo até achar ou acabar a lista.' },
+    {
+      t: 'code',
+      file: 'busca.php',
+      lang: 'php',
+      nolab: true,
+      x: '<?php\n$conjunto = [3, 6, 8, 1, 2, 9, 10, 4, 7, 5];\n$encontrar = 4;\nforeach ($conjunto as $posicao => $valor) {\n    if ($valor == $encontrar) {                 // dois iguais: comparação!\n        echo "Achei $encontrar na posição $posicao";\n    }\n}\n?>',
+    },
+    {
+      t: 'note',
+      k: 'Caça ao bug',
+      warn: true,
+      x: 'No exemplo de busca da apostila (em C) aparece <code>if (encontrar = conjunto[i])</code>, com <b>um só</b> sinal de igual. Isso é atribuição, não comparação! O certo é <code>==</code>. Quando for copiar um exemplo, teste antes: até livros escapam do Bug.',
+    },
+  ],
+  quiz: [
+    {
+      q: 'Dado $cursos = ["Informática", "Sistemas", "Redes"]; o que mostra  echo $cursos[0]; ?',
+      options: ['Sistemas', 'Informática', 'Redes', 'Erro'],
+      answer: 1,
+      explain: 'O primeiro elemento fica na posição 0.',
+    },
+    {
+      q: 'Em um array de 10 posições, qual é o último índice?',
+      fill: true,
+      pre: 'Último índice:',
+      post: '',
+      accept: ['9'],
+      placeholder: '?',
+      explain: 'Os índices vão de 0 a 9.',
+    },
+    {
+      q: 'Dado $m = [[1,2,3],[4,5,6],[7,8,9]]; qual é o valor de $m[1][2] ?',
+      fill: true,
+      pre: '$m[1][2] =',
+      post: '',
+      accept: ['6'],
+      placeholder: '?',
+      explain: 'Linha 1 (a segunda) e coluna 2 (a terceira): 6.',
+    },
+    {
+      q: 'A declaração int valores[3][4]; cria quantas posições?',
+      fill: true,
+      pre: 'Posições:',
+      post: '',
+      accept: ['12'],
+      placeholder: '?',
+      explain: '3 linhas x 4 colunas = 12.',
+    },
+    {
+      q: 'Qual função do PHP conta quantos elementos há em um array?',
+      fill: true,
+      pre: '',
+      post: '($cursos)',
+      accept: ['count', 'sizeof'],
+      placeholder: '?',
+      explain: '<code>count($cursos)</code> devolve o número de elementos.',
+    },
+    {
+      q: 'Como funciona a busca sequencial?',
+      options: ['Divide a lista ao meio a cada passo', 'Percorre os elementos um a um até achar', 'Ordena e depois procura', 'Sorteia posições'],
+      answer: 1,
+      explain: 'Sequencial é exatamente isso: do primeiro ao último, olhando cada um.',
+    },
+  ],
+};

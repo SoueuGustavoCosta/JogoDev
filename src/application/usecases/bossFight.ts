@@ -1,5 +1,6 @@
 import { createEmptyProgress, getOrCreateTrailProgress } from '@/domain/progress';
 import type { AnalyticsPort, LeaderboardPort, ProgressRepository } from '../ports';
+import { awardBadge } from './badges';
 
 /**
  * Marca a insígnia do chefe de fase como conquistada em `TrailProgress.bossDefeated`,
@@ -24,7 +25,7 @@ export function winBossFight(
     // Sincronização silenciosa: upsertPlayer de novo aqui não custa nada se o chefe
     // for a primeira sincronização da sessão (nenhum módulo/missão sincronizou antes).
     void deps.leaderboard.upsertPlayer(params.traveler.uuid, params.traveler.name);
-    void deps.leaderboard.syncBadge(params.traveler.uuid, params.badgeId);
+    awardBadge(deps, { badgeId: params.badgeId, traveler: params.traveler });
   }
 
   deps.analytics.track('boss_fight_won', { island: params.trailId });

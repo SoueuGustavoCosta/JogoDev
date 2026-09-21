@@ -5,13 +5,17 @@ import {
   isTrailCompleted,
 } from '@/domain/progress';
 import type { Trail } from '@/domain/trail';
+import type { Badge } from '@/domain/badges';
 import type { AnalyticsPort, LeaderboardPort, ProgressRepository } from '../ports';
+import { awardBadgesForModule } from './badges';
 
 export type CompleteModuleParams = {
   trail: Trail;
   moduleId: string;
   /** Viajante atual, para sincronizar silenciosamente com o Hall dos Viajantes. */
   traveler: { uuid: string; name: string };
+  /** Catálogo compartilhado de insígnias (ver domain/badges), para conceder as ligadas a este módulo. */
+  badgeCatalog?: Badge[];
 };
 
 export type CompleteModuleResult = {
@@ -49,6 +53,12 @@ export function completeModule(
   // fluxo do aluno (a porta garante que essas chamadas não lançam).
   void deps.leaderboard.upsertPlayer(params.traveler.uuid, params.traveler.name);
   void deps.leaderboard.syncProgress(params.traveler.uuid, params.trail.id, params.moduleId);
+  awardBadgesForModule(deps, {
+    catalog: params.badgeCatalog ?? [],
+    trailId: params.trail.id,
+    moduleId: params.moduleId,
+    traveler: params.traveler,
+  });
 
   const trailCompleted = isTrailCompleted(params.trail, nextTrailProgress);
   if (trailCompleted && !nextTrailProgress.trophyAwarded) {

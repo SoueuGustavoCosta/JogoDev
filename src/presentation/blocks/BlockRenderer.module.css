@@ -275,6 +275,85 @@
   display: block;
 }
 
+.say {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin: 18px 0;
+  max-width: 72ch;
+}
+
+.sayBubble {
+  background: var(--color-panel);
+  border: 1px solid var(--color-line);
+  border-radius: 4px 14px 14px 14px;
+  padding: 10px 14px;
+}
+
+.sayWho {
+  display: block;
+  font: 500 0.7rem var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-orange);
+  margin-bottom: 2px;
+}
+
+.sayBubble p {
+  margin: 0;
+}
+
+.timeline {
+  position: relative;
+  margin: 18px 0 26px;
+  padding-left: 22px;
+  max-width: 72ch;
+  border-left: 2px solid var(--color-line);
+}
+
+.timelineItem {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.timelineItem::before {
+  content: '';
+  position: absolute;
+  left: -29px;
+  top: 6px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-bg);
+  border: 2px solid var(--color-cyan);
+  box-shadow: 0 0 10px var(--color-cyan);
+}
+
+.timelineYear {
+  font: 0.85rem var(--font-mono);
+  color: var(--color-cyan);
+  letter-spacing: 0.06em;
+}
+
+.timelineItem h3 {
+  margin: 2px 0 4px;
+  font-size: 1.1rem;
+}
+
+.timelineItem p {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+
+.outLine {
+  padding: 12px 16px;
+  font-family: var(--font-mono);
+  font-size: 0.86rem;
+  color: var(--color-good);
+  white-space: pre-wrap;
+}
+
 .placeholder {
   border: 1px dashed var(--color-line);
   border-radius: var(--radius-md);

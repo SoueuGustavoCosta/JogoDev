@@ -7,4 +7,4 @@ export * from './Toast';
 export * from './Icons';
 export * from './Sintaxe';
 export * from './Confetti';
-export * from './Badges';
+export * from './BadgeMedal';

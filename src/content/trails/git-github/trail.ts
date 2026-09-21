@@ -58,7 +58,7 @@ export const gitGithubTrail: Trail = {
         steps: ['git\\s+remote\\s+add', 'git\\s+push'],
       },
     ],
-    badgeId: 'guardiao-do-versionamento',
+    badgeId: 'git-mestre',
     badgeTitle: 'Guardião do Versionamento',
     badgeDescription:
       'Concedida a quem sabe começar, ramificar, resolver conflitos e publicar um repositório sem perder histórico pelo caminho.',

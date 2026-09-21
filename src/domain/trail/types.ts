@@ -26,12 +26,18 @@ export type Block =
   | { t: 'cards'; items: { h: string; x: string }[] }
   | { t: 'ul'; items: string[] }
   | { t: 'ol'; items: string[] }
-  | { t: 'code'; file: string; x: string; nolab?: boolean; expectError?: boolean }
+  | { t: 'code'; file: string; x: string; nolab?: boolean; expectError?: boolean; lang?: string }
   | { t: 'table'; cols: string[]; rows: string[][]; file?: string; mac?: boolean }
   | { t: 'flow'; items: string[] }
   | { t: 'raw'; file: string; x: string }
   | { t: 'gui' }
-  | { t: 'syntax' };
+  | { t: 'syntax' }
+  /** Fala embutida da Senhorita Sintaxe dentro de uma lição; `{name}` vira o nome do viajante (ver domain/prologue). */
+  | { t: 'say'; x: string }
+  /** Linha do tempo de fatos históricos datados, com fonte já embutida no texto. */
+  | { t: 'timeline'; items: { y: string; h: string; x: string }[] }
+  /** Saída de programa (o que apareceu na tela), sem realce de sintaxe — distinto de `code`. */
+  | { t: 'out'; file: string; x: string };
 
 export type ModuleLevel = 'Base' | 'Intermediário' | 'Avançado';
 

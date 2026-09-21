@@ -20,7 +20,8 @@ import {
 import { isTrailCompleted } from '@/domain/progress';
 import type { BossFight, Trail } from '@/domain/trail';
 import { getTrailById } from '@/content/registry';
-import { Button, NotebookFrame, ProgressBar, TrailBadge } from '@/presentation/design-system';
+import { Button, NotebookFrame, ProgressBar, BadgeMedal } from '@/presentation/design-system';
+import { getBadgeById } from '@/content/badges/catalog';
 import { useServices } from '@/presentation/app/ServicesContext';
 import { hasSeenTrailIntro, TrailIntroDialogue } from '@/presentation/features/trail';
 import styles from './BossFightPage.module.css';
@@ -242,7 +243,7 @@ function BossFightArena({
       <h1>{bossFight.bossName}</h1>
 
       {phase === 'start' ? (
-        <StartScreen trail={trail} bossFight={bossFight} alreadyDefeated={alreadyDefeated} onStart={start} />
+        <StartScreen bossFight={bossFight} alreadyDefeated={alreadyDefeated} onStart={start} />
       ) : null}
 
       {phase === 'fight' && meta ? (
@@ -353,7 +354,10 @@ function BossFightArena({
             Pontuação final: {state.score} pontos, com {state.lives} {bossFight.lifeLabel} restantes.
           </p>
           <div className={styles.badgeCard}>
-            <TrailBadge trailId={trail.id} size={140} />
+            {(() => {
+              const badge = getBadgeById(bossFight.badgeId);
+              return badge ? <BadgeMedal badge={badge} earned size={140} showCaption={false} /> : null;
+            })()}
             <h3>Insígnia conquistada: {bossFight.badgeTitle}</h3>
             <p>{bossFight.badgeDescription}</p>
           </div>
@@ -388,12 +392,10 @@ function BossFightArena({
 }
 
 function StartScreen({
-  trail,
   bossFight,
   alreadyDefeated,
   onStart,
 }: {
-  trail: Trail;
   bossFight: BossFight;
   alreadyDefeated: boolean;
   onStart: () => void;
@@ -419,7 +421,10 @@ function StartScreen({
         ) : null}
       </div>
       <div className={styles.mascot}>
-        <TrailBadge trailId={trail.id} size={140} />
+        {(() => {
+          const badge = getBadgeById(bossFight.badgeId);
+          return badge ? <BadgeMedal badge={badge} earned={alreadyDefeated} size={140} showCaption={false} /> : null;
+        })()}
         <p className={styles.bubble}>{bossFight.rounds[0]?.talk}</p>
       </div>
     </div>

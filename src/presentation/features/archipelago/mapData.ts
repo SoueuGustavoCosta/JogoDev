@@ -50,10 +50,11 @@ export const ERAS: MapEra[] = [
     name: 'Era da Lógica',
     x: 520,
     y: 340,
-    color: '#9b4dff',
+    color: '#3ee0a1',
     icon: 'log',
-    status: 'novo',
+    status: 'ativo',
     years: 'ERA 2',
+    trailId: 'logica',
     description: 'Como pensar um problema passo a passo: variáveis, condições, laços e funções.',
   },
   {
