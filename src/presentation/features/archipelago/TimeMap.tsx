@@ -13,10 +13,10 @@ import {
   type MapCharacter,
   type MapEra,
 } from './mapData';
+import styles from './TimeMap.module.css';
 
 /** Só mostra no mapa as eras que já têm ilha jogável (trilha registrada). As demais ficam ocultas até existirem. */
 const VISIBLE_ERAS = ERAS.filter((e) => e.status === 'ativo');
-import styles from './TimeMap.module.css';
 
 type Cam = { x: number; y: number; k: number };
 type Sheet =
