@@ -1,5 +1,5 @@
 import { createEmptyProgress } from '@/domain/progress';
-import type { ProgressRepository } from '../ports';
+import type { LeaderboardPort, ProgressRepository } from '../ports';
 
 const DEFAULT_NAME = 'Viajante';
 const MAX_NAME_LENGTH = 20;
@@ -43,4 +43,32 @@ export function getOrCreateTravelerUuid(deps: { repository: ProgressRepository }
   const uuid = crypto.randomUUID();
   deps.repository.save({ ...progress, travelerUuid: uuid });
   return uuid;
+}
+
+/**
+ * Resolve a identidade real do viajante via login anônimo do Supabase Auth e a
+ * grava em `Progress.travelerUuid`, para que `getOrCreateTravelerUuid` (síncrono,
+ * chamado de muitos lugares) passe a devolver o `auth.uid()` real assim que possível.
+ *
+ * Desenhado para nunca bloquear o jogo: é a única ponta assíncrona desta troca de
+ * identidade. Chame uma vez por sessão do app (ver `Layout.tsx`), sem aguardar o
+ * resultado antes de liberar a tela — antes da primeira resolução (ou se ela nunca
+ * chegar a acontecer: rede fora do ar, login anônimo ainda desligado no painel do
+ * Supabase, projeto pausado), `getOrCreateTravelerUuid` continua funcionando com o
+ * uuid local de sempre (gerado na hora, se for a primeira vez). Falha silenciosa:
+ * nunca lança, nunca mostra erro ao aluno.
+ */
+export async function bootstrapTravelerIdentity(deps: {
+  repository: ProgressRepository;
+  leaderboard: LeaderboardPort;
+}): Promise<void> {
+  try {
+    const authUid = await deps.leaderboard.ensureSignedIn();
+    if (!authUid) return;
+    const progress = deps.repository.load() ?? createEmptyProgress();
+    if (progress.travelerUuid === authUid) return;
+    deps.repository.save({ ...progress, travelerUuid: authUid });
+  } catch {
+    // Falha silenciosa: o jogo continua com o uuid local (gerado sob demanda).
+  }
 }

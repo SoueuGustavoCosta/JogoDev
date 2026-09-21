@@ -74,4 +74,16 @@ export interface LeaderboardPort {
   restoreProgress(nome: string, codigo: string): Promise<{ uuid: string; progress: unknown } | null>;
   /** Salva a bio curta do viajante (upsert por uuid). Falha silenciosa: nunca deve quebrar o jogo. */
   saveBio(uuid: string, bio: string): Promise<void>;
+  /**
+   * Garante uma sessão do Supabase Auth (login anônimo, `signInAnonymously`) e devolve
+   * o `auth.uid()` real da sessão, reaproveitando a sessão já existente quando houver
+   * (o cliente supabase-js persiste/renova o token sozinho). `null` em qualquer falha
+   * (rede fora do ar, "Allow anonymous sign-ins" ainda desligado no painel, projeto
+   * pausado etc.) — nunca lança. Este é o novo identificador do viajante (ver
+   * `bootstrapTravelerIdentity`, em `application/usecases/traveler.ts`), que aos poucos
+   * substitui o uuid gerado localmente por `crypto.randomUUID()`; a política de RLS
+   * continua `using (true)` por enquanto (etapa deliberadamente separada), então isto é
+   * puramente aditivo.
+   */
+  ensureSignedIn(): Promise<string | null>;
 }

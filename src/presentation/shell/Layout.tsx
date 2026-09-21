@@ -1,6 +1,13 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { backupProgress, checkInDaily, getPresence, getProfileSummary, sendHeartbeat } from '@/application/usecases';
+import {
+  backupProgress,
+  bootstrapTravelerIdentity,
+  checkInDaily,
+  getPresence,
+  getProfileSummary,
+  sendHeartbeat,
+} from '@/application/usecases';
 import type { ProfileSummary } from '@/application/usecases';
 import type { OnlinePlayer } from '@/application/ports';
 import { trailRegistry } from '@/content/registry';
@@ -46,25 +53,41 @@ export function Layout() {
     [progressRepository, location.pathname],
   );
 
-  // Check-in diário (uma vez por sessão do app) + batimento de presença (uma vez já,
-  // depois a cada ~90s), que também carrega o backup silencioso do progresso completo
-  // (ver `backupProgress`). Fica aqui porque Layout é o elemento de rota pai — persiste
+  // Identidade (login anônimo do Supabase, ver `bootstrapTravelerIdentity`) + check-in
+  // diário (uma vez por sessão do app) + batimento de presença (uma vez já, depois a
+  // cada ~90s), que também carrega o backup silencioso do progresso completo (ver
+  // `backupProgress`). Fica aqui porque Layout é o elemento de rota pai — persiste
   // durante toda a navegação, só remonta se o app inteiro recarregar.
   useEffect(() => {
-    checkInDaily({ repository: progressRepository, leaderboard });
+    let cancelled = false;
 
     const refreshPresence = () => {
       sendHeartbeat({ repository: progressRepository, leaderboard });
       backupProgress({ repository: progressRepository, leaderboard });
       getPresence({ leaderboard })
-        .then(setOnlinePlayers)
+        .then((players) => {
+          if (!cancelled) setOnlinePlayers(players);
+        })
         .catch(() => {
           // Leitura pode falhar (rede fora do ar, projeto pausado): mantém a lista anterior.
         });
     };
-    refreshPresence();
+
+    // Aguarda a identidade real (ou a falha silenciosa dela) antes do primeiro check-in/
+    // batimento, para que já usem o `auth.uid()` assim que possível nesta sessão — sem
+    // travar a tela: nada aqui é aguardado por fora deste efeito, e o app já é 100%
+    // navegável enquanto isto roda em segundo plano.
+    bootstrapTravelerIdentity({ repository: progressRepository, leaderboard }).finally(() => {
+      if (cancelled) return;
+      checkInDaily({ repository: progressRepository, leaderboard });
+      refreshPresence();
+    });
+
     const id = window.setInterval(refreshPresence, HEARTBEAT_INTERVAL_MS);
-    return () => window.clearInterval(id);
+    return () => {
+      cancelled = true;
+      window.clearInterval(id);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
