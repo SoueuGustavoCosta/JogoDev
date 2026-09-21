@@ -16,6 +16,7 @@ export type AnalyticsEventName =
   | 'pix_qr_shown'
   | 'progress_exported'
   | 'progress_imported'
+  | 'recovery_code_generated'
   | 'install_prompt_shown'
   | 'boss_fight_started'
   | 'boss_fight_won'
