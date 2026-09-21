@@ -2,6 +2,7 @@ import type { Module } from '@/domain/trail/types';
 
 /**
  * Migrado de legacy/Trilha_PostgreSQL_com_Laboratorio.html (módulo "Sintaxe e indentação").
+ * O bloco `{ t: 'syntax' }` renderiza o SqlStyleCompareWidget (compacto x formatado).
  */
 export const modSintaxe: Module = {
   id: "sintaxe",

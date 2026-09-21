@@ -2,6 +2,7 @@ import type { Module } from '@/domain/trail/types';
 
 /**
  * Migrado de legacy/Trilha_PostgreSQL_com_Laboratorio.html (módulo "Conhecendo a interface").
+ * O widget de montar tabela virou o jogo `criar-tabela` (CreateTableBuilderWidget).
  */
 export const modInterface: Module = {
   id: "interface",
@@ -15,7 +16,7 @@ export const modInterface: Module = {
     { t: 'h', x: "Duas portas para o mesmo lugar" },
     { t: 'cards', items: [{"h":"Modo visual","x":"Você clica com o botão direito em Tables, escolhe Create, preenche formulários e salva. Ótimo para explorar e para os primeiros dias."},{"h":"Modo código","x":"Você abre a Query Tool (ou o psql), escreve comandos SQL e executa. É o que se usa no trabalho de verdade."}] },
     { t: 'p', x: "O segredo é que os dois fazem a <b>mesma coisa</b>. Cada clique no pgAdmin vira um comando SQL por baixo dos panos. Teste na tela abaixo: monte uma tabela no modo visual e depois olhe a aba <b>Código SQL</b>." },
-    { t: 'gui' },
+    { t: 'gui', widget: 'criar-tabela' },
     { t: 'note', k: "Dica", x: "No pgAdmin real, toda janela de criação tem uma aba <b>SQL</b> que mostra o comando gerado. É uma das melhores formas de aprender SQL: faça por cliques e leia o código que apareceu." },
     { t: 'h', x: "Por que quem trabalha na área prefere código?" },
     { t: 'ul', items: ["<b>Repetível</b>: o mesmo script cria o banco igual em qualquer computador.","<b>Versionável</b>: você guarda o script no Git e vê quem mudou o quê.","<b>Portátil</b>: funciona em servidores sem interface gráfica."] },
@@ -43,6 +44,7 @@ export const modInterface: Module = {
       accept: ["\\dt"],
       placeholder: "\\?",
       explain: "\\dt (de \"display tables\") lista as tabelas.",
+      hint: "Está na lista de atalhos do psql, logo acima: começa com barra invertida.",
     }
   ],
 };

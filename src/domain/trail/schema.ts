@@ -5,6 +5,7 @@ const quizMultipleChoiceSchema = z.object({
   options: z.array(z.string().min(1)).min(2),
   answer: z.number().int().nonnegative(),
   explain: z.string().min(1),
+  hint: z.string().min(1).optional(),
 });
 
 const quizFillSchema = z.object({
@@ -15,6 +16,7 @@ const quizFillSchema = z.object({
   accept: z.array(z.string().min(1)).min(1),
   placeholder: z.string().optional(),
   explain: z.string().min(1),
+  hint: z.string().min(1).optional(),
 });
 
 export const quizItemSchema = z.union([quizFillSchema, quizMultipleChoiceSchema]);

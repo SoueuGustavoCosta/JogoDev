@@ -2,7 +2,7 @@ import type { Module } from '@/domain/trail/types';
 
 /**
  * Migrado de Ilha_da_Logica_PHP_1.html (módulo "web" — "PHP na web: $_GET e $_SESSION").
- * O widget "Um clique, uma requisição" (WID.http) vira um placeholder `gui`.
+ * O widget "Um clique, uma requisição" virou o jogo `requisicao-http` (HttpRequestWidget).
  */
 export const modWeb: Module = {
   id: 'web',
@@ -34,7 +34,7 @@ export const modWeb: Module = {
       ],
     },
     { t: 'p', x: 'Clique em "Próximo passo" para seguir um clique em uma casa do tabuleiro:' },
-    { t: 'gui' },
+    { t: 'gui', widget: 'requisicao-http' },
     { t: 'h', x: 'Onde ficam os dados que o navegador envia?' },
     {
       t: 'table',
@@ -110,6 +110,7 @@ export const modWeb: Module = {
       accept: ['session_start'],
       placeholder: '?',
       explain: '<code>session_start()</code> precisa vir antes de qualquer saída.',
+      hint: 'Está comentado como "liga a sessão" no session.php lá em cima.',
     },
     {
       q: 'Na URL  jogo.php?acao=jogar&l=1&c=2  os valores chegam ao PHP em qual superglobal?',

@@ -2,7 +2,7 @@ import type { Module } from '@/domain/trail/types';
 
 /**
  * Migrado de Ilha_da_Logica_PHP_1.html (módulo "loops" — "Laços de repetição").
- * O widget "Monte o seu laço for" (WID.loopviz) vira um placeholder `gui`.
+ * O widget "Monte o seu laço for" virou o jogo `laco-for` (ForLoopBuilderWidget).
  */
 export const modLoops: Module = {
   id: 'loops',
@@ -65,7 +65,7 @@ export const modLoops: Module = {
     },
     { t: 'h', x: 'Laboratório de laços' },
     { t: 'p', x: 'Monte um laço e veja as voltas. Tente inverter o passo (use -1 com fim maior que o início) para ver o que é um laço infinito.' },
-    { t: 'gui' },
+    { t: 'gui', widget: 'laco-for' },
     { t: 'h', x: 'Laço dentro de laço: percorrendo o tabuleiro' },
     {
       t: 'p',
@@ -118,6 +118,7 @@ export const modLoops: Module = {
       accept: ['$i++', '++$i', '$i+=1', '$i=$i+1'],
       placeholder: '?',
       explain: '<code>$i++</code> soma 1 a cada volta, até o teste <code>$i &lt; 3</code> falhar.',
+      hint: 'É a terceira peça do laço: o que muda a variável a cada volta. Olhe o for.php lá em cima.',
     },
     {
       q: 'Qual laço garante executar o corpo pelo menos uma vez?',

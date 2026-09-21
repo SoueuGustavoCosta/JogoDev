@@ -4,10 +4,31 @@ import { interpolate } from '@/domain/prologue';
 import { NotebookFrame, SintaxeFace } from '@/presentation/design-system';
 import { highlightSql } from './highlight';
 import { TicTacToeStudyWidget } from './TicTacToeStudyWidget';
+import { GuessTheLanguageWidget } from './GuessTheLanguageWidget';
+import { GuessTypeWidget } from './GuessTypeWidget';
+import { DecisionPathWidget } from './DecisionPathWidget';
+import { TruthTableWidget } from './TruthTableWidget';
+import { ForLoopBuilderWidget } from './ForLoopBuilderWidget';
+import { MatrixAddressWidget } from './MatrixAddressWidget';
+import { SelectionSortWidget } from './SelectionSortWidget';
+import { ByRefWidget } from './ByRefWidget';
+import { HttpRequestWidget } from './HttpRequestWidget';
+import { CreateTableBuilderWidget } from './CreateTableBuilderWidget';
+import { SqlStyleCompareWidget } from './SqlStyleCompareWidget';
 import styles from './BlockRenderer.module.css';
 
 const GUI_WIDGETS: Record<string, () => ReactElement> = {
   'jogo-da-velha': TicTacToeStudyWidget,
+  'qual-linguagem': GuessTheLanguageWidget,
+  'qual-tipo': GuessTypeWidget,
+  'qual-caminho': DecisionPathWidget,
+  'tabela-verdade': TruthTableWidget,
+  'laco-for': ForLoopBuilderWidget,
+  'matriz-enderecos': MatrixAddressWidget,
+  'ordenacao-selecao': SelectionSortWidget,
+  'por-referencia': ByRefWidget,
+  'requisicao-http': HttpRequestWidget,
+  'criar-tabela': CreateTableBuilderWidget,
 };
 
 /** Conteúdo é autoral (vive em src/content), nunca dado do usuário: seguro para innerHTML. */
@@ -51,7 +72,9 @@ export function BlockRenderer({
         <div className={styles.cards}>
           {block.items.map((item, i) => (
             <div key={i} className={styles.card}>
-              <h3>{item.h}</h3>
+              <h3>
+                <Html html={item.h} />
+              </h3>
               <p>
                 <Html html={item.x} />
               </p>
@@ -173,11 +196,7 @@ export function BlockRenderer({
     }
 
     case 'syntax':
-      return (
-        <div className={styles.placeholder}>
-          Widget interativo em construção — o conteúdo da lição continua completo nos blocos ao redor.
-        </div>
-      );
+      return <SqlStyleCompareWidget />;
 
     case 'say':
       return (

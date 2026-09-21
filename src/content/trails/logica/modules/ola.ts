@@ -2,8 +2,8 @@ import type { Module } from '@/domain/trail/types';
 
 /**
  * Migrado de Ilha_da_Logica_PHP_1.html (módulo "ola" — "Olá, Mundo! em 4 linguagens").
- * O widget interativo "Olá, Mundo lado a lado" (WID.hello) vira um placeholder `gui`: a
- * tabela comparativa logo abaixo já cobre o mesmo conteúdo de forma estática.
+ * O widget "Olá, Mundo lado a lado" virou o jogo `qual-linguagem` (GuessTheLanguageWidget):
+ * o viajante tenta reconhecer cada linguagem pelo código antes de ver a tabela comparativa.
  */
 export const modOla: Module = {
   id: 'ola',
@@ -18,20 +18,17 @@ export const modOla: Module = {
     },
     { t: 'h', x: 'De onde vem o "Hello, World"?' },
     {
-      t: 'p',
-      x: 'O exemplo mais antigo documentado está no tutorial da <b>linguagem B</b>, escrito por <b>Brian Kernighan</b> em <b>1972</b>, nos Bell Labs. O exemplo anterior do tutorial só imprimia "hi!". Depois veio "hello, world", uma saudação um pouco maior, que na linguagem B precisava ser montada com várias constantes de caractere (a linguagem tinha limite de quatro caracteres por constante).',
-    },
-    {
-      t: 'p',
-      x: 'Em 1974, Kernighan repetiu o exemplo no memorando "Programming in C: A Tutorial", e em <b>1978</b> o livro <b>"The C Programming Language"</b> (Kernighan e Ritchie) o transformou em tradição: <code>printf("hello, world\\n");</code>. O "Jargon File" cita uma origem ainda mais antiga, na linguagem BCPL, em 1967, mas sem exemplo documentado.',
+      t: 'say',
+      x: 'Em 1972, Brian Kernighan testou um tutorial nos Bell Labs. Antes, o exemplo só dizia "hi!" — ele trocou por "hello, world". Em 1978, o livro que escreveu sobre a linguagem C virou best-seller entre programadores, e a frase pegou de vez. Desde então, é o primeiro programa de praticamente todo mundo.',
     },
     {
       t: 'note',
-      k: 'Por quê?',
-      x: 'O "Hello, World" é o menor programa que prova três coisas de uma vez: você escreveu código, a ferramenta entendeu e o resultado apareceu. É um <b>teste de sanidade</b> do ambiente. Se ele falha, o problema é a instalação, não a sua lógica. Curiosidade: "hello, world" já era um bordão do radialista William B. Williams, de Nova York, nos anos 1950.',
+      k: 'Curiosidade',
+      x: 'O "Hello, World" é o menor programa que prova três coisas de uma vez: você escreveu código, a ferramenta entendeu e o resultado apareceu. Se ele falha, o problema é a instalação, não a sua lógica. E "hello, world" já era bordão de um radialista de Nova York nos anos 1950, bem antes da programação existir.',
     },
     { t: 'h', x: 'A mesma frase, quatro linguagens' },
-    { t: 'gui' },
+    { t: 'p', x: 'Antes de olhar a tabela: dá para reconhecer cada linguagem só pelo jeito de escrever?' },
+    { t: 'gui', widget: 'qual-linguagem' },
     { t: 'h', x: 'Comparando as quatro' },
     {
       t: 'table',
@@ -55,8 +52,14 @@ export const modOla: Module = {
         ['Tipos', 'Dinâmica (<code>$x = 5;</code>)', 'Dinâmica (<code>x = 5</code>)', 'Estática (<code>int x = 5;</code>)', 'Estática (<code>int x = 5;</code>)'],
         ['Fim de comando', '<code>;</code>', 'quebra de linha', '<code>;</code>', '<code>;</code>'],
         ['Blocos', '<code>{ }</code>', 'indentação', '<code>{ }</code>', '<code>{ }</code>'],
+        ['Ponto de entrada', 'roda direto, sem função de partida', 'roda direto, sem função de partida', 'função <code>main</code>', 'função <code>main</code>'],
         ['Muito usada em', 'Sites e back-end web', 'Dados, IA, automação', 'Android e sistemas corporativos', 'Sistemas operacionais e embarcados'],
       ],
+    },
+    {
+      t: 'note',
+      k: 'Repare no jogo',
+      x: 'Viu o <code>main</code> nos códigos de Java e C, ali em cima? Não é acaso: as duas exigem uma função chamada <code>main</code> como porta de entrada — é por ela que o programa começa a rodar. PHP e Python não têm essa exigência: o código roda direto, de cima para baixo.',
     },
     {
       t: 'note',
