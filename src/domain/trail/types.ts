@@ -8,6 +8,8 @@ export type QuizItem =
       options: string[];
       answer: number;
       explain: string;
+      /** Dica opcional para perguntas mais difíceis. Some cedo, aparece após o 1º erro e fica automática a partir do 3º. */
+      hint?: string;
     }
   | {
       q: string;
@@ -17,6 +19,8 @@ export type QuizItem =
       accept: string[];
       placeholder?: string;
       explain: string;
+      /** Dica opcional para perguntas mais difíceis. Some cedo, aparece após o 1º erro e fica automática a partir do 3º. */
+      hint?: string;
     };
 
 export type Block =

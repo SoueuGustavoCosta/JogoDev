@@ -24,10 +24,13 @@ export function QuizRunner({
   const [wrong, setWrong] = useState<number[]>([]);
   const [fillValue, setFillValue] = useState('');
   const [fillWrong, setFillWrong] = useState(false);
+  const [fillTries, setFillTries] = useState(0);
+  const [hintRevealed, setHintRevealed] = useState(false);
   const [solved, setSolved] = useState<number | 'fill' | null>(null);
 
   const item = quiz[index];
   const isFill = 'fill' in item;
+  const attempts = isFill ? fillTries : wrong.length;
 
   function submit(answer: QuizAnswer, choiceIndex?: number) {
     const result = answerQuiz(
@@ -41,6 +44,7 @@ export function QuizRunner({
       setWrong((w) => [...w, choiceIndex]);
     } else {
       setFillWrong(true);
+      setFillTries((t) => t + 1);
     }
   }
 
@@ -50,6 +54,8 @@ export function QuizRunner({
       setWrong([]);
       setFillValue('');
       setFillWrong(false);
+      setFillTries(0);
+      setHintRevealed(false);
       setSolved(null);
     } else {
       onFinished();
@@ -57,6 +63,9 @@ export function QuizRunner({
   }
 
   const isSolved = solved !== null;
+  // A partir da 3ª tentativa (2 erros), a dica aparece sozinha; antes disso, quem quiser pode pedir.
+  const hintForced = attempts >= 2;
+  const showHint = !isSolved && !!item.hint && (hintRevealed || hintForced);
 
   return (
     <section className={styles.quiz} aria-label="Paradoxo do salto">
@@ -123,6 +132,18 @@ export function QuizRunner({
             <div className={`${styles.fb} ${styles.bad}`} role="status">
               Ainda não, tente outra opção.
             </div>
+          ) : null
+        ) : null}
+
+        {!isSolved && item.hint ? (
+          showHint ? (
+            <div className={styles.hintBox} role="status">
+              <b>💡 Dica:</b> {item.hint}
+            </div>
+          ) : attempts >= 1 ? (
+            <button type="button" className={styles.hintBtn} onClick={() => setHintRevealed(true)}>
+              💡 Ver dica
+            </button>
           ) : null
         ) : null}
 

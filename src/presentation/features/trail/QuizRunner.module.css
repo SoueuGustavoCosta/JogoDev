@@ -144,6 +144,32 @@
   border: 1px solid rgba(255, 93, 122, 0.4);
 }
 
+.hintBox {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 0.94rem;
+  background: rgba(255, 212, 121, 0.1);
+  border: 1px solid rgba(255, 212, 121, 0.4);
+  color: var(--color-text);
+}
+
+.hintBtn {
+  margin-top: 14px;
+  min-height: var(--touch-target);
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px dashed var(--color-gold);
+  background: transparent;
+  color: var(--color-gold);
+  font: 600 0.86rem var(--font-body);
+  cursor: pointer;
+}
+
+.hintBtn:hover {
+  background: rgba(255, 212, 121, 0.08);
+}
+
 .act {
   margin-top: 16px;
   display: flex;
