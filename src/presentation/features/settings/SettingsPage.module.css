@@ -1,0 +1,98 @@
+.section {
+  margin-bottom: 22px;
+}
+
+.section h2 {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+  margin: 0 0 8px;
+}
+
+.hint {
+  margin: 0 0 10px;
+  font-size: 0.86rem;
+  color: var(--color-muted);
+}
+
+.warn {
+  margin: 0 0 10px;
+  font-size: 0.86rem;
+  color: var(--color-bad);
+}
+
+.idCard {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-panel);
+}
+
+.idField {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.idLabel {
+  font: 0.68rem var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+}
+
+.idValue {
+  font: 600 0.98rem var(--font-mono);
+}
+
+.idActions {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.field {
+  width: 100%;
+  font-size: 16px;
+  padding: 9px 11px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-line);
+  background: var(--color-bg);
+  color: var(--color-text);
+  margin-bottom: 8px;
+}
+
+.code {
+  font-family: var(--font-mono);
+}
+
+.message {
+  margin: 8px 0 0;
+  font-size: 0.86rem;
+}
+
+.link {
+  color: var(--color-cyan);
+}
+
+.muted {
+  background: none;
+  border: 0;
+  color: var(--color-muted);
+  cursor: pointer;
+  text-decoration: underline;
+  font: inherit;
+  padding: 0;
+}

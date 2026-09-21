@@ -1,11 +1,20 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { exportProgress, generateAndSaveRecoveryCode, getMyBadges, importProgress, restoreProgress } from '@/application/usecases';
+import {
+  exportProgress,
+  generateAndSaveRecoveryCode,
+  getCachedRecoveryCode,
+  getMyBadges,
+  getTraveler,
+  importProgress,
+  restoreProgress,
+} from '@/application/usecases';
 import { badgeCatalog } from '@/content/badges/catalog';
 import { SUPPORT_COPY } from '@/domain/support';
-import { BadgeMedal, Button } from '@/presentation/design-system';
+import { Button } from '@/presentation/design-system';
 import { SupportModal } from '@/presentation/features/support';
 import { useServices } from '@/presentation/app/ServicesContext';
+import styles from './SettingsPage.module.css';
 
 export function SettingsPage() {
   const { progressRepository, leaderboard, analytics, generateRecoveryCode } = useServices();
@@ -13,16 +22,16 @@ export function SettingsPage() {
   const [importText, setImportText] = useState('');
   const [importMessage, setImportMessage] = useState<string | null>(null);
   const [supportOpen, setSupportOpen] = useState(false);
-  const [recoveryCode, setRecoveryCode] = useState('');
+  const [recoveryCode, setRecoveryCode] = useState(() => getCachedRecoveryCode({ repository: progressRepository }));
   const [generatingCode, setGeneratingCode] = useState(false);
   const [restoreName, setRestoreName] = useState('');
   const [restoreCode, setRestoreCode] = useState('');
   const [restoreMessage, setRestoreMessage] = useState<string | null>(null);
   const [restoring, setRestoring] = useState(false);
 
+  const name = getTraveler({ repository: progressRepository }).name;
   const earned = getMyBadges({ repository: progressRepository });
   const earnedCount = Object.keys(earned).length;
-  const recentBadges = badgeCatalog.filter((b) => earned[b.id]).slice(0, 6);
 
   function handleExport() {
     const code = exportProgress({ repository: progressRepository });
@@ -33,7 +42,7 @@ export function SettingsPage() {
   function handleImport() {
     const result = importProgress({ repository: progressRepository }, { data: importText.trim() });
     if (result.ok) {
-      setImportMessage('Progresso importado com sucesso! Atualize a página para ver.');
+      setImportMessage('Importado! Atualize a página para ver.');
       analytics.track('progress_imported');
     } else {
       setImportMessage(result.reason);
@@ -60,11 +69,7 @@ export function SettingsPage() {
         { repository: progressRepository, leaderboard },
         { nome: restoreName, codigo: restoreCode },
       );
-      if (result.ok) {
-        setRestoreMessage('Progresso recuperado com sucesso! Atualize a página para ver.');
-      } else {
-        setRestoreMessage(result.reason);
-      }
+      setRestoreMessage(result.ok ? 'Recuperado! Atualize a página para ver.' : result.reason);
     } finally {
       setRestoring(false);
     }
@@ -72,96 +77,78 @@ export function SettingsPage() {
 
   return (
     <div>
-      <h1>Configurações</h1>
+      <h1>Viajante</h1>
 
-      <section style={{ marginBottom: 32 }}>
-        <h2>Insígnias</h2>
-        <p>
-          {earnedCount} de {badgeCatalog.length} conquistadas, entre todas as ilhas do arquipélago.
-        </p>
-        {recentBadges.length ? (
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 12 }}>
-            {recentBadges.map((badge) => (
-              <BadgeMedal key={badge.id} badge={badge} earned size={72} showCaption={false} />
-            ))}
+      <section className={styles.section}>
+        <div className={styles.idCard}>
+          <div className={styles.idField}>
+            <span className={styles.idLabel}>Nome</span>
+            <span className={styles.idValue}>{name}</span>
           </div>
-        ) : null}
-        <p style={{ marginTop: 12 }}>
-          <Link to="/insignias">Ver o passaporte completo ▸</Link>
+          <div className={styles.idField}>
+            <span className={styles.idLabel}>Código de recuperação</span>
+            <span className={`${styles.idValue} ${styles.code}`}>{recoveryCode ?? '— ainda não gerado —'}</span>
+          </div>
+          <div className={styles.idActions}>
+            <Button size="sm" variant="ghost" onClick={handleGenerateRecoveryCode} disabled={generatingCode}>
+              {generatingCode ? '...' : recoveryCode ? 'Gerar outro' : 'Gerar código'}
+            </Button>
+          </div>
+        </div>
+        <p className={styles.hint}>
+          O código só aparece pra você, aqui neste aparelho. É o que prova que um progresso é seu ao recuperar em
+          outro lugar — sem ele, seu nome sozinho (que é público no Hall) não basta.
+        </p>
+        <p className={styles.hint}>
+          {earnedCount}/{badgeCatalog.length} insígnias ·{' '}
+          <Link className={styles.link} to="/insignias">
+            ver passaporte ▸
+          </Link>{' '}
+          ·{' '}
+          <Link className={styles.link} to="/prologo">
+            trocar de nome ▸
+          </Link>
         </p>
       </section>
 
-      <section style={{ marginBottom: 32 }}>
-        <h2>Exportar progresso</h2>
-        <p>Copie este código e guarde: ele permite continuar de outro aparelho ou depois de limpar o navegador.</p>
-        <Button onClick={handleExport}>Gerar código</Button>
+      <section className={styles.section}>
+        <h2>Backup por código</h2>
+        <div className={styles.row}>
+          <Button size="sm" onClick={handleExport}>
+            Copiar meu progresso
+          </Button>
+        </div>
         {exported ? (
           <textarea
             readOnly
             value={exported}
-            style={{ width: '100%', minHeight: 100, marginTop: 12, fontFamily: 'var(--font-mono)' }}
+            className={`${styles.field} ${styles.code}`}
+            style={{ minHeight: 64, marginTop: 8 }}
             onFocus={(e) => e.currentTarget.select()}
           />
         ) : null}
-      </section>
-
-      <section style={{ marginBottom: 32 }}>
-        <h2>Importar progresso</h2>
         <textarea
           value={importText}
           onChange={(e) => setImportText(e.target.value)}
-          placeholder="Cole aqui o código exportado"
-          style={{ width: '100%', minHeight: 100, fontFamily: 'var(--font-mono)' }}
+          placeholder="Colar um código de backup aqui"
+          className={`${styles.field} ${styles.code}`}
+          style={{ minHeight: 64, marginTop: 10 }}
         />
-        <div style={{ marginTop: 12 }}>
-          <Button onClick={handleImport} disabled={!importText.trim()}>
-            Importar
-          </Button>
-        </div>
-        {importMessage ? <p>{importMessage}</p> : null}
-      </section>
-
-      <section style={{ marginBottom: 32 }}>
-        <h2>Código de recuperação</h2>
-        <p>
-          Seu nome aparece no Hall dos Viajantes, então sozinho ele não é suficiente pra provar que o progresso é
-          seu — esse código extra resolve isso. Gere um código e guarde-o: ele é pedido junto com o nome para
-          restaurar o progresso em outro aparelho.
-        </p>
-        <Button onClick={handleGenerateRecoveryCode} disabled={generatingCode}>
-          {generatingCode ? 'Gerando...' : 'Gerar código de recuperação'}
+        <Button size="sm" variant="ghost" onClick={handleImport} disabled={!importText.trim()}>
+          Importar
         </Button>
-        {recoveryCode ? (
-          <>
-            <p style={{ color: 'var(--color-error, #ff5d7a)', marginTop: 12 }}>
-              Guarde este código agora, ele não aparece de novo.
-            </p>
-            <textarea
-              readOnly
-              value={recoveryCode}
-              style={{ width: '100%', minHeight: 48, fontFamily: 'var(--font-mono)', fontSize: 16 }}
-              onFocus={(e) => e.currentTarget.select()}
-            />
-          </>
-        ) : null}
+        {importMessage ? <p className={styles.message}>{importMessage}</p> : null}
       </section>
 
-      <section style={{ marginBottom: 32 }}>
-        <h2>Recuperar progresso de outro aparelho</h2>
-        <p>
-          Já jogou antes com outro nome, neste ou em outro aparelho? Digite o nome usado na época e o código de
-          recuperação gerado naquele momento para trazer aquele progresso de volta.
-        </p>
-        <p style={{ color: 'var(--color-error, #ff5d7a)' }}>
-          Atenção: isso substitui o progresso salvo neste navegador agora. Se você tem algo aqui que ainda não
-          exportou, exporte antes de continuar.
-        </p>
+      <section className={styles.section}>
+        <h2>Recuperar pelo nome</h2>
+        <p className={styles.warn}>Substitui o progresso deste navegador. Exporte antes se ainda não guardou nada.</p>
         <input
           type="text"
           value={restoreName}
           onChange={(e) => setRestoreName(e.target.value)}
           placeholder="Nome do viajante"
-          style={{ width: '100%', fontSize: 16, padding: '10px 12px', marginBottom: 12 }}
+          className={styles.field}
         />
         <input
           type="text"
@@ -171,27 +158,18 @@ export function SettingsPage() {
           autoCapitalize="off"
           autoCorrect="off"
           spellCheck={false}
-          style={{ width: '100%', fontSize: 16, padding: '10px 12px', marginBottom: 12, fontFamily: 'var(--font-mono)' }}
+          className={`${styles.field} ${styles.code}`}
         />
-        <div>
-          <Button onClick={handleRestore} disabled={!restoreName.trim() || !restoreCode.trim() || restoring}>
-            {restoring ? 'Buscando...' : 'Recuperar progresso'}
-          </Button>
-        </div>
-        {restoreMessage ? <p>{restoreMessage}</p> : null}
+        <Button size="sm" variant="ghost" onClick={handleRestore} disabled={!restoreName.trim() || !restoreCode.trim() || restoring}>
+          {restoring ? 'Buscando...' : 'Recuperar'}
+        </Button>
+        {restoreMessage ? <p className={styles.message}>{restoreMessage}</p> : null}
       </section>
 
-      <section>
-        <h2>Sobre o projeto</h2>
-        <p>
-          <button
-            type="button"
-            onClick={() => setSupportOpen(true)}
-            style={{ background: 'none', border: 'none', color: 'var(--color-muted)', cursor: 'pointer', textDecoration: 'underline' }}
-          >
-            {SUPPORT_COPY.footerLinkLabel}
-          </button>
-        </p>
+      <section className={styles.section}>
+        <button type="button" className={styles.muted} onClick={() => setSupportOpen(true)}>
+          {SUPPORT_COPY.footerLinkLabel}
+        </button>
       </section>
 
       {supportOpen ? <SupportModal onClose={() => setSupportOpen(false)} /> : null}

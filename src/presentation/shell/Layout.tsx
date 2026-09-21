@@ -111,46 +111,25 @@ export function Layout() {
       {moreOpen ? (
         <Modal title="Mais" onClose={() => setMoreOpen(false)}>
           <div className={styles.more}>
-            <section className={styles.moreSection}>
-              <h3>Perfil</h3>
-              <Link to="/configuracoes" onClick={() => setMoreOpen(false)}>
-                Exportar / importar meu progresso
-              </Link>
-              <Link to="/prologo" onClick={() => setMoreOpen(false)}>
-                Refazer o prólogo / trocar meu nome
-              </Link>
-              <Link to="/insignias" onClick={() => setMoreOpen(false)}>
-                Meu passaporte de insígnias
-              </Link>
-            </section>
-
-            <section className={styles.moreSection}>
-              <h3>Comunidade</h3>
-              <Link to="/hall" onClick={() => setMoreOpen(false)}>
-                Hall dos Viajantes
-              </Link>
-            </section>
-
-            <section className={styles.moreSection}>
-              <h3>Projeto</h3>
-              <Link to="/privacidade" onClick={() => setMoreOpen(false)}>
-                Privacidade
-              </Link>
-              <p>
-                Se o mapa te ajudou e você quiser colaborar,{' '}
-                <button
-                  type="button"
-                  className={styles.footerLink}
-                  onClick={() => {
-                    setMoreOpen(false);
-                    setSupportOpen(true);
-                  }}
-                >
-                  {SUPPORT_COPY.footerLinkLabel.toLowerCase()}
-                </button>
-                .
-              </p>
-            </section>
+            <Link to="/insignias" onClick={() => setMoreOpen(false)}>
+              Passaporte de insígnias
+            </Link>
+            <Link to="/hall" onClick={() => setMoreOpen(false)}>
+              Hall dos Viajantes
+            </Link>
+            <Link to="/privacidade" onClick={() => setMoreOpen(false)}>
+              Privacidade
+            </Link>
+            <button
+              type="button"
+              className={styles.footerLink}
+              onClick={() => {
+                setMoreOpen(false);
+                setSupportOpen(true);
+              }}
+            >
+              {SUPPORT_COPY.footerLinkLabel}
+            </button>
           </div>
         </Modal>
       ) : null}

@@ -47,6 +47,13 @@ export type Progress = {
   streakCurrent?: number;
   streakBest?: number;
   ultimoDiaAtivo?: string;
+  /**
+   * Cache local do código de recuperação (o Supabase só guarda o hash, nunca o texto puro
+   * — ver `supabase/schema.sql`). Guardado aqui pra a tela do Viajante poder mostrar o
+   * código de novo a qualquer momento neste aparelho, sem o susto de "só aparece uma vez".
+   * Campo novo e opcional: progresso salvo antes dele continua válido sem migração.
+   */
+  recoveryCode?: string;
 };
 
 export type ExplorationMode = 'sequential' | 'free';
