@@ -1,0 +1,91 @@
+.badge {
+  --s: 96px;
+  display: inline-block;
+  width: var(--s);
+  height: var(--s);
+  perspective: 700px;
+  position: relative;
+  vertical-align: middle;
+}
+
+.inner {
+  position: absolute;
+  inset: 0;
+  display: block;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.18s ease-out;
+}
+
+.badge i {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: var(--img) center / contain no-repeat;
+  transform: translateZ(calc(var(--z) * var(--s) / 150));
+}
+
+.layerEmboss {
+  filter: brightness(0.42) saturate(1.15);
+}
+
+.layerShadow {
+  filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.55));
+}
+
+.layerShine {
+  background: radial-gradient(circle at var(--mx, 50%) var(--my, 25%), rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0) 52%);
+  -webkit-mask-image: var(--img);
+  mask-image: var(--img);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  mix-blend-mode: soft-light;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.badge:hover .layerShine {
+  opacity: 1;
+}
+
+.locked {
+  filter: grayscale(1) brightness(0.32) contrast(1.15);
+  opacity: 0.8;
+}
+
+.locked .layerShine {
+  display: none;
+}
+
+@keyframes badge3d-showroom {
+  0%,
+  100% {
+    transform: rotateY(-14deg) rotateX(4deg);
+  }
+  50% {
+    transform: rotateY(14deg) rotateX(-4deg);
+  }
+}
+
+.spin .inner {
+  animation: badge3d-showroom 6s ease-in-out infinite;
+  transition: none;
+}
+
+.spin .layerShine {
+  opacity: 0.9;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inner {
+    transform: rotateY(-14deg) rotateX(4deg);
+  }
+
+  .spin .inner {
+    animation: none;
+  }
+}
