@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { exportProgress, importProgress } from '@/application/usecases';
+import { Link } from 'react-router-dom';
+import { exportProgress, getMyBadges, importProgress } from '@/application/usecases';
+import { badgeCatalog } from '@/content/badges/catalog';
 import { SUPPORT_COPY } from '@/domain/support';
-import { Button } from '@/presentation/design-system';
+import { BadgeMedal, Button } from '@/presentation/design-system';
 import { SupportModal } from '@/presentation/features/support';
 import { useServices } from '@/presentation/app/ServicesContext';
 
@@ -11,6 +13,10 @@ export function SettingsPage() {
   const [importText, setImportText] = useState('');
   const [importMessage, setImportMessage] = useState<string | null>(null);
   const [supportOpen, setSupportOpen] = useState(false);
+
+  const earned = getMyBadges({ repository: progressRepository });
+  const earnedCount = Object.keys(earned).length;
+  const recentBadges = badgeCatalog.filter((b) => earned[b.id]).slice(0, 6);
 
   function handleExport() {
     const code = exportProgress({ repository: progressRepository });
@@ -31,6 +37,23 @@ export function SettingsPage() {
   return (
     <div>
       <h1>Configurações</h1>
+
+      <section style={{ marginBottom: 32 }}>
+        <h2>Insígnias</h2>
+        <p>
+          {earnedCount} de {badgeCatalog.length} conquistadas, entre todas as ilhas do arquipélago.
+        </p>
+        {recentBadges.length ? (
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 12 }}>
+            {recentBadges.map((badge) => (
+              <BadgeMedal key={badge.id} badge={badge} earned size={72} showCaption={false} />
+            ))}
+          </div>
+        ) : null}
+        <p style={{ marginTop: 12 }}>
+          <Link to="/insignias">Ver o passaporte completo ▸</Link>
+        </p>
+      </section>
 
       <section style={{ marginBottom: 32 }}>
         <h2>Exportar progresso</h2>
