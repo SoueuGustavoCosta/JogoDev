@@ -53,7 +53,9 @@ export function BlockRenderer({
         <div className={styles.cards}>
           {block.items.map((item, i) => (
             <div key={i} className={styles.card}>
-              <h3>{item.h}</h3>
+              <h3>
+                <Html html={item.h} />
+              </h3>
               <p>
                 <Html html={item.x} />
               </p>
