@@ -97,7 +97,7 @@ export class SupabaseLeaderboard implements LeaderboardPort {
   async listHallOfTravelers(): Promise<HallOfTravelersEntry[]> {
     const client = await this.ensureClient();
     const [jogadoresRes, insigniasRes] = await Promise.all([
-      client.from('jogadores').select('uuid,nome,criado_em').order('criado_em', { ascending: true }),
+      client.from('jogadores').select('uuid,nome,criado_em,bio').order('criado_em', { ascending: true }),
       client.from('insignias').select('uuid,nome_insignia').order('conquistada_em', { ascending: true }),
     ]);
     if (jogadoresRes.error) throw new Error(jogadoresRes.error.message);
@@ -115,6 +115,7 @@ export class SupabaseLeaderboard implements LeaderboardPort {
       nome: String(row.nome),
       criadoEm: String(row.criado_em),
       insignias: badgesByUuid.get(String(row.uuid)) ?? [],
+      bio: row.bio ? String(row.bio) : null,
     }));
   }
 
@@ -246,5 +247,15 @@ export class SupabaseLeaderboard implements LeaderboardPort {
     const row = data?.[0];
     if (!row || row.progresso == null) return null;
     return { uuid: String(row.uuid), progress: row.progresso };
+  }
+
+  async saveBio(uuid: string, bio: string): Promise<void> {
+    try {
+      const client = await this.ensureClient();
+      const { error } = await client.from('jogadores').upsert({ uuid, bio }, { onConflict: 'uuid' });
+      if (error && import.meta.env.DEV) console.warn('[SupabaseLeaderboard] saveBio falhou:', error.message);
+    } catch (e) {
+      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] saveBio falhou:', e);
+    }
   }
 }

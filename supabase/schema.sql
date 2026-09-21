@@ -27,6 +27,11 @@ alter table public.jogadores
 alter table public.jogadores
   add column if not exists progresso_completo jsonb;
 
+-- resumo curto e público sobre o viajante ("Estou cursando Ciência da Computação..."),
+-- mostrado no Hall dos Viajantes junto com o nome e as insígnias. Coberto pelas mesmas
+-- políticas públicas de `jogadores` (leitura/upsert/update), como `nome`/`foto_url`.
+alter table public.jogadores add column if not exists bio text;
+
 -- bucket de storage "avatars": público pra leitura, aceita só imagem, limite de 60KB
 -- (o cliente já manda redimensionado a ~128x128px/50KB, a margem é só segurança)
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)

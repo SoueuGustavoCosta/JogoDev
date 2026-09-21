@@ -52,6 +52,7 @@ class StubLeaderboard implements LeaderboardPort {
     if (!entry || entry.codigo !== codigo) return null;
     return { uuid: entry.uuid, progress: entry.progress };
   }
+  async saveBio(): Promise<void> {}
 }
 
 describe('backupProgress', () => {
