@@ -62,7 +62,6 @@ export function TimeMap({
   const stars = useMemo(buildStars, []);
   const svgRef = useRef<SVGSVGElement>(null);
   const miniRef = useRef<HTMLCanvasElement>(null);
-  const pathRefs = useRef<Record<string, SVGPathElement | null>>({});
   const cam = useRef<Cam>({ x: 0, y: 0, k: 1 });
   const size = useRef({ w: 360, h: 640 });
   const moved = useRef(false);
@@ -94,18 +93,6 @@ export function TimeMap({
       if (k) cam.current.k = k;
       cam.current.x = w / 2 - x * cam.current.k;
       cam.current.y = h * 0.42 - y * cam.current.k;
-      clamp();
-      redraw();
-    },
-    [clamp],
-  );
-
-  const follow = useCallback(
-    (x: number, y: number) => {
-      const { w, h } = size.current;
-      const c = cam.current;
-      c.x += (w / 2 - x * c.k - c.x) * 0.15;
-      c.y += (h * 0.42 - y * c.k - c.y) * 0.15;
       clamp();
       redraw();
     },
@@ -288,56 +275,13 @@ export function TimeMap({
     },
   });
 
-  // --- viagem do marcador pelo caminho luminoso ---
-  const travel = (to: MapEra) =>
-    new Promise<void>((resolve) => {
-      const from = atRef.current;
-      if (from.id === to.id) return resolve();
-      const back = pathRefs.current[from.id];
-      const forth = pathRefs.current[to.id];
-      if (!back || !forth) return resolve();
-      const segs = [
-        { p: back, rev: true },
-        { p: forth, rev: false },
-      ];
-      const total = segs.reduce((sum, s) => sum + s.p.getTotalLength(), 0);
-      const dur = reducedMotion() ? 10 : Math.min(3200, 900 + total * 3);
-      const t0 = performance.now();
-      const frame = (now: number) => {
-        const k = Math.min(1, (now - t0) / dur);
-        const eased = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
-        let dist = eased * total;
-        let pt = { x: from.x, y: from.y };
-        for (const s of segs) {
-          const len = s.p.getTotalLength();
-          if (dist <= len) {
-            pt = s.p.getPointAtLength(s.rev ? len - dist : dist);
-            break;
-          }
-          dist -= len;
-          pt = s.p.getPointAtLength(s.rev ? 0 : len);
-        }
-        setMe({ x: pt.x, y: pt.y });
-        follow(pt.x, pt.y);
-        if (k < 1 && mounted.current) requestAnimationFrame(frame);
-        else {
-          atRef.current = to;
-          resolve();
-        }
-      };
-      requestAnimationFrame(frame);
-    });
-
-  const goTo = async (era: MapEra) => {
+  // Entra direto na era ao tocar "Viajar até aqui": sem o marcador andando pelo caminho
+  // luminoso até lá (decisão do autor) — só centraliza o mapa nela e segue pro portal.
+  const goTo = (era: MapEra) => {
     setSheet(null);
-    setSay(
-      <>
-        <b>SINTAXE</b> · Viajando para {era.name}...
-      </>,
-    );
-    centerOn(atRef.current.x, atRef.current.y);
-    await travel(era);
-    if (!mounted.current) return;
+    atRef.current = era;
+    setMe({ x: era.x, y: era.y });
+    centerOn(era.x, era.y);
     if (era.trailId) {
       setSay(
         <>
@@ -399,9 +343,6 @@ export function TimeMap({
               <g key={e.id}>
                 <path d={d} fill="none" stroke="#2c2647" strokeWidth={10} strokeLinecap="round" opacity={fog ? 0.4 : 1} />
                 <path
-                  ref={(el) => {
-                    pathRefs.current[e.id] = el;
-                  }}
                   d={d}
                   fill="none"
                   stroke={e.color}
