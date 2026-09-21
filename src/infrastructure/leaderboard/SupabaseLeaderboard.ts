@@ -26,6 +26,7 @@ type SupabaseClientLike = {
     updateUser(attrs: { email?: string; password?: string }): Promise<AuthUserResult>;
     signUp(params: { email: string; password: string }): Promise<AuthUserResult>;
     signInWithPassword(params: { email: string; password: string }): Promise<AuthUserResult>;
+    resetPasswordForEmail(email: string, opts?: { redirectTo?: string }): Promise<{ error: { message: string } | null }>;
   };
   from(table: string): {
     upsert(values: Record<string, unknown>, opts?: { onConflict: string }): Promise<{ error: { message: string } | null }>;
@@ -50,11 +51,11 @@ type SupabaseClientLike = {
  * Carregado só sob demanda (dynamic import), nunca no bundle inicial — mesmo
  * padrão de `PgliteEngine`. O cliente é criado uma única vez e reaproveitado.
  *
- * RESSALVA (ver `supabase/schema.sql`): as políticas de RLS ainda são `using (true)`,
- * então estas escritas ainda não provam, no banco, que o uuid pertence a quem está
- * escrevendo — `ensureSignedIn()` (login anônimo do Supabase Auth) já dá um `auth.uid()`
- * real para cada viajante, mas apertar o RLS para `auth.uid() = uuid` é uma etapa
- * seguinte deliberadamente separada (não faça isso sem o autor pedir).
+ * As políticas de RLS exigem `auth.uid() = uuid` pra gravar (ver `supabase/schema.sql`):
+ * uma escrita só grava de verdade quando `ensureSignedIn()` já resolveu uma sessão real
+ * (anônima ou por telefone+senha) para aquele mesmo uuid. Sem sessão, a escrita falha
+ * silenciosamente (capturada no try/catch de cada método) — o jogo continua funcionando
+ * só sem sincronizar.
  */
 export class SupabaseLeaderboard implements LeaderboardPort {
   private client: SupabaseClientLike | null = null;
@@ -309,7 +310,7 @@ export class SupabaseLeaderboard implements LeaderboardPort {
    * (`auth.uid() = uuid`, checado dentro da função). É por isso que o `signInWithPassword`
    * precisa vir antes: só depois dele a sessão passa a ser desse uuid.
    */
-  private async signInWithSyntheticEmail(email: string, password: string): Promise<SavePhoneResult> {
+  private async signInWithAccountEmail(email: string, password: string): Promise<SavePhoneResult> {
     try {
       const client = await this.ensureClient();
       const { data, error } = await client.auth.signInWithPassword({ email, password });
@@ -319,27 +320,30 @@ export class SupabaseLeaderboard implements LeaderboardPort {
       const { data: progresso } = await client.rpc<unknown>('meu_progresso', {});
       return { ok: true, uid: data.user.id, restoredProgress: progresso ?? null };
     } catch (e) {
-      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] signInWithSyntheticEmail falhou:', e);
+      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] signInWithAccountEmail falhou:', e);
       return { ok: false, reason: SupabaseLeaderboard.GENERIC_ERROR_REASON };
     }
   }
 
   /**
-   * "Salvar progresso" (ver LeaderboardPort): promove a sessão atual (anônima) para uma
-   * conta permanente de telefone+senha via e-mail sintético. Sem SMS, sem e-mail de
-   * verdade — exige "Confirm email" desligado no painel do Supabase (ver `config/auth.ts`).
+   * "Salvar progresso"/"Entrar" (ver LeaderboardPort): promove a sessão atual (anônima)
+   * para uma conta permanente de telefone+senha. `accountEmail` é o e-mail informado
+   * (quando houver) ou um e-mail sintético derivado só do telefone — em qualquer um dos
+   * casos, é essa mesma combinação que precisa ser informada de novo pra entrar depois
+   * (ver doc do método na porta). Sem SMS, sem e-mail de verdade obrigatório — exige
+   * "Confirm email" desligado no painel do Supabase (ver `config/auth.ts`).
    */
-  async saveProgressWithPhone(phone: string, password: string): Promise<SavePhoneResult> {
-    const email = syntheticEmailForPhone(phone, PHONE_AUTH_EMAIL_DOMAIN);
+  async saveProgressWithPhone(phone: string, password: string, email?: string): Promise<SavePhoneResult> {
+    const accountEmail = email?.trim() || syntheticEmailForPhone(phone, PHONE_AUTH_EMAIL_DOMAIN);
     try {
       const client = await this.ensureClient();
       const { data: sessionData } = await client.auth.getSession();
 
       if (sessionData.session) {
-        const { data, error } = await client.auth.updateUser({ email, password });
+        const { data, error } = await client.auth.updateUser({ email: accountEmail, password });
         if (!error && data.user) return { ok: true, uid: data.user.id, restoredProgress: null };
         if (error && SupabaseLeaderboard.looksLikeAlreadyRegistered(error.message)) {
-          return this.signInWithSyntheticEmail(email, password);
+          return this.signInWithAccountEmail(accountEmail, password);
         }
         if (error) {
           if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] saveProgressWithPhone (updateUser) falhou:', error.message);
@@ -348,10 +352,10 @@ export class SupabaseLeaderboard implements LeaderboardPort {
       }
 
       // Sem sessão (raro: bootstrap anônimo ainda não rodou/falhou): cria a conta direto.
-      const { data, error } = await client.auth.signUp({ email, password });
+      const { data, error } = await client.auth.signUp({ email: accountEmail, password });
       if (error) {
         if (SupabaseLeaderboard.looksLikeAlreadyRegistered(error.message)) {
-          return this.signInWithSyntheticEmail(email, password);
+          return this.signInWithAccountEmail(accountEmail, password);
         }
         if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] saveProgressWithPhone (signUp) falhou:', error.message);
         return { ok: false, reason: SupabaseLeaderboard.GENERIC_ERROR_REASON };
@@ -361,6 +365,42 @@ export class SupabaseLeaderboard implements LeaderboardPort {
     } catch (e) {
       if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] saveProgressWithPhone falhou:', e);
       return { ok: false, reason: SupabaseLeaderboard.GENERIC_ERROR_REASON };
+    }
+  }
+
+  /**
+   * Só funciona pra contas que informaram um e-mail de verdade no cadastro (ver
+   * `saveProgressWithPhone`) — o Supabase nunca revela se o e-mail existe ou não (sempre
+   * devolve sucesso quando a chamada em si funcionou), então nem tentamos adivinhar aqui.
+   */
+  async requestPasswordReset(email: string): Promise<{ ok: true } | { ok: false; reason: string }> {
+    try {
+      const client = await this.ensureClient();
+      const redirectTo = typeof window !== 'undefined' ? `${window.location.origin}/redefinir-senha` : undefined;
+      const { error } = await client.auth.resetPasswordForEmail(email, { redirectTo });
+      if (error) {
+        if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] requestPasswordReset falhou:', error.message);
+        return { ok: false, reason: SupabaseLeaderboard.GENERIC_ERROR_REASON };
+      }
+      return { ok: true };
+    } catch (e) {
+      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] requestPasswordReset falhou:', e);
+      return { ok: false, reason: SupabaseLeaderboard.GENERIC_ERROR_REASON };
+    }
+  }
+
+  /** Só funciona logo depois de abrir o link do e-mail de `requestPasswordReset`. */
+  async updatePassword(newPassword: string): Promise<{ ok: true } | { ok: false; reason: string }> {
+    try {
+      const client = await this.ensureClient();
+      const { error } = await client.auth.updateUser({ password: newPassword });
+      if (error) {
+        return { ok: false, reason: 'Não foi possível salvar a nova senha. O link pode ter expirado — peça um novo.' };
+      }
+      return { ok: true };
+    } catch (e) {
+      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] updatePassword falhou:', e);
+      return { ok: false, reason: 'Não foi possível salvar a nova senha. O link pode ter expirado — peça um novo.' };
     }
   }
 }

@@ -8,7 +8,7 @@ import type {
   ProgressRepository,
   SavePhoneResult,
 } from '../ports';
-import { hasPhoneLinked, saveProgressWithPhone } from './phoneAuth';
+import { hasPhoneLinked, requestPasswordReset, saveProgressWithPhone, updatePassword } from './phoneAuth';
 
 class Memory implements ProgressRepository {
   data: Progress | null = null;
@@ -25,7 +25,10 @@ class Memory implements ProgressRepository {
 
 class StubLeaderboard implements LeaderboardPort {
   nextResult: SavePhoneResult = { ok: false, reason: 'não configurado' };
-  savedPhoneCalls: { phone: string; password: string }[] = [];
+  savedPhoneCalls: { phone: string; password: string; email?: string }[] = [];
+  nextSimpleResult: { ok: true } | { ok: false; reason: string } = { ok: false, reason: 'não configurado' };
+  resetRequests: string[] = [];
+  passwordUpdates: string[] = [];
 
   async upsertPlayer(): Promise<void> {}
   async syncProgress(): Promise<void> {}
@@ -53,9 +56,17 @@ class StubLeaderboard implements LeaderboardPort {
   async ensureSignedIn(): Promise<string | null> {
     return 'uuid-anonimo';
   }
-  async saveProgressWithPhone(phone: string, password: string): Promise<SavePhoneResult> {
-    this.savedPhoneCalls.push({ phone, password });
+  async saveProgressWithPhone(phone: string, password: string, email?: string): Promise<SavePhoneResult> {
+    this.savedPhoneCalls.push({ phone, password, email });
     return this.nextResult;
+  }
+  async requestPasswordReset(email: string): Promise<{ ok: true } | { ok: false; reason: string }> {
+    this.resetRequests.push(email);
+    return this.nextSimpleResult;
+  }
+  async updatePassword(newPassword: string): Promise<{ ok: true } | { ok: false; reason: string }> {
+    this.passwordUpdates.push(newPassword);
+    return this.nextSimpleResult;
   }
 }
 
@@ -128,5 +139,65 @@ describe('hasPhoneLinked', () => {
     const repository = new Memory();
     repository.save({ version: 1, trails: {}, phoneLinked: true });
     expect(hasPhoneLinked({ repository })).toBe(true);
+  });
+});
+
+describe('saveProgressWithPhone com e-mail opcional', () => {
+  it('recusa e-mail com formato inválido sem chamar a porta', async () => {
+    const repository = new Memory();
+    const leaderboard = new StubLeaderboard();
+    const result = await saveProgressWithPhone(
+      { repository, leaderboard },
+      { phone: '31999999999', password: 'senha123', email: 'não-é-email' },
+    );
+    expect(result).toEqual({ ok: false, reason: 'Digite um e-mail válido, ou deixe em branco.' });
+    expect(leaderboard.savedPhoneCalls).toHaveLength(0);
+  });
+
+  it('repassa o e-mail pra porta quando informado', async () => {
+    const repository = new Memory();
+    const leaderboard = new StubLeaderboard();
+    leaderboard.nextResult = { ok: true, uid: 'uuid-novo', restoredProgress: null };
+
+    await saveProgressWithPhone(
+      { repository, leaderboard },
+      { phone: '31999999999', password: 'senha123', email: 'ana@example.com' },
+    );
+
+    expect(leaderboard.savedPhoneCalls).toEqual([{ phone: '31999999999', password: 'senha123', email: 'ana@example.com' }]);
+  });
+});
+
+describe('requestPasswordReset', () => {
+  it('recusa e-mail inválido sem chamar a porta', async () => {
+    const leaderboard = new StubLeaderboard();
+    const result = await requestPasswordReset({ leaderboard }, { email: 'invalido' });
+    expect(result).toEqual({ ok: false, reason: 'Digite um e-mail válido.' });
+    expect(leaderboard.resetRequests).toHaveLength(0);
+  });
+
+  it('repassa o e-mail válido pra porta', async () => {
+    const leaderboard = new StubLeaderboard();
+    leaderboard.nextSimpleResult = { ok: true };
+    const result = await requestPasswordReset({ leaderboard }, { email: 'ana@example.com' });
+    expect(result).toEqual({ ok: true });
+    expect(leaderboard.resetRequests).toEqual(['ana@example.com']);
+  });
+});
+
+describe('updatePassword', () => {
+  it('recusa senha curta sem chamar a porta', async () => {
+    const leaderboard = new StubLeaderboard();
+    const result = await updatePassword({ leaderboard }, { password: '123' });
+    expect(result.ok).toBe(false);
+    expect(leaderboard.passwordUpdates).toHaveLength(0);
+  });
+
+  it('repassa a senha válida pra porta', async () => {
+    const leaderboard = new StubLeaderboard();
+    leaderboard.nextSimpleResult = { ok: true };
+    const result = await updatePassword({ leaderboard }, { password: 'senha123' });
+    expect(result).toEqual({ ok: true });
+    expect(leaderboard.passwordUpdates).toEqual(['senha123']);
   });
 });
