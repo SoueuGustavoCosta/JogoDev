@@ -52,8 +52,14 @@ export const modOla: Module = {
         ['Tipos', 'Dinâmica (<code>$x = 5;</code>)', 'Dinâmica (<code>x = 5</code>)', 'Estática (<code>int x = 5;</code>)', 'Estática (<code>int x = 5;</code>)'],
         ['Fim de comando', '<code>;</code>', 'quebra de linha', '<code>;</code>', '<code>;</code>'],
         ['Blocos', '<code>{ }</code>', 'indentação', '<code>{ }</code>', '<code>{ }</code>'],
+        ['Ponto de entrada', 'roda direto, sem função de partida', 'roda direto, sem função de partida', 'função <code>main</code>', 'função <code>main</code>'],
         ['Muito usada em', 'Sites e back-end web', 'Dados, IA, automação', 'Android e sistemas corporativos', 'Sistemas operacionais e embarcados'],
       ],
+    },
+    {
+      t: 'note',
+      k: 'Repare no jogo',
+      x: 'Viu o <code>main</code> nos códigos de Java e C, ali em cima? Não é acaso: as duas exigem uma função chamada <code>main</code> como porta de entrada — é por ela que o programa começa a rodar. PHP e Python não têm essa exigência: o código roda direto, de cima para baixo.',
     },
     {
       t: 'note',
