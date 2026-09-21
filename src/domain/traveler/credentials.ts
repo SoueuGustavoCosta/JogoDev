@@ -25,3 +25,8 @@ export function isValidPassword(password: string): boolean {
 export function syntheticEmailForPhone(digitsOnlyPhone: string, emailDomain: string): string {
   return `tel-${digitsOnlyPhone}@${emailDomain}`;
 }
+
+/** Checagem simples de formato (não confirma que o endereço existe de verdade). */
+export function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}

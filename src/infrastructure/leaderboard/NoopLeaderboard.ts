@@ -61,7 +61,15 @@ export class NoopLeaderboard implements LeaderboardPort {
     return null;
   }
 
-  async saveProgressWithPhone(_phone: string, _password: string): Promise<SavePhoneResult> {
+  async saveProgressWithPhone(_phone: string, _password: string, _email?: string): Promise<SavePhoneResult> {
+    return { ok: false, reason: 'Indisponível em desenvolvimento.' };
+  }
+
+  async requestPasswordReset(_email: string): Promise<{ ok: true } | { ok: false; reason: string }> {
+    return { ok: false, reason: 'Indisponível em desenvolvimento.' };
+  }
+
+  async updatePassword(_newPassword: string): Promise<{ ok: true } | { ok: false; reason: string }> {
     return { ok: false, reason: 'Indisponível em desenvolvimento.' };
   }
 }

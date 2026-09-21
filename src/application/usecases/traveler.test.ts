@@ -50,6 +50,12 @@ class StubLeaderboard implements LeaderboardPort {
   async saveProgressWithPhone(): Promise<SavePhoneResult> {
     return { ok: false, reason: 'não usado neste teste' };
   }
+  async requestPasswordReset(): Promise<{ ok: true } | { ok: false; reason: string }> {
+    return { ok: false, reason: 'não usado neste teste' };
+  }
+  async updatePassword(): Promise<{ ok: true } | { ok: false; reason: string }> {
+    return { ok: false, reason: 'não usado neste teste' };
+  }
 }
 
 describe('traveler', () => {

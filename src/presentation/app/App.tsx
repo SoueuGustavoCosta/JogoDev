@@ -26,6 +26,9 @@ const PrivacyPage = lazy(() =>
   import('@/presentation/features/settings').then((m) => ({ default: m.PrivacyPage })),
 );
 const HallPage = lazy(() => import('@/presentation/features/hall').then((m) => ({ default: m.HallPage })));
+const ResetPasswordPage = lazy(() =>
+  import('@/presentation/features/reset-password').then((m) => ({ default: m.ResetPasswordPage })),
+);
 
 function AppRoutes() {
   return (
@@ -42,6 +45,7 @@ function AppRoutes() {
           <Route path="configuracoes" element={<SettingsPage />} />
           <Route path="privacidade" element={<PrivacyPage />} />
           <Route path="hall" element={<HallPage />} />
+          <Route path="redefinir-senha" element={<ResetPasswordPage />} />
           <Route path="prologo" element={<PrologueScreen />} />
         </Route>
       </Routes>

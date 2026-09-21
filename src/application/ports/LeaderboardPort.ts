@@ -91,20 +91,44 @@ export interface LeaderboardPort {
    * (rede fora do ar, "Allow anonymous sign-ins" ainda desligado no painel, projeto
    * pausado etc.) — nunca lança. Este é o novo identificador do viajante (ver
    * `bootstrapTravelerIdentity`, em `application/usecases/traveler.ts`), que aos poucos
-   * substitui o uuid gerado localmente por `crypto.randomUUID()`; a política de RLS
-   * continua `using (true)` por enquanto (etapa deliberadamente separada), então isto é
-   * puramente aditivo.
+   * substitui o uuid gerado localmente por `crypto.randomUUID()`; a partir dela o RLS
+   * já exige `auth.uid() = uuid` pra gravar (ver `supabase/schema.sql`), então essa troca
+   * de identidade deixou de ser só aditiva: escritas sem sessão simplesmente não gravam
+   * mais (falha silenciosa, o jogo continua funcionando só sem sincronizar).
    */
   ensureSignedIn(): Promise<string | null>;
   /**
-   * "Salvar progresso": promove a sessão atual (anônima, ver `ensureSignedIn`) para uma
-   * conta permanente de telefone+senha (e-mail sintético, ver `domain/traveler/credentials`),
-   * sem SMS nem e-mail de verdade. Se o telefone já tiver conta, tenta entrar com a senha
-   * informada em vez de criar outra — nesse caso devolve `restoredProgress` com o backup
-   * salvo daquela conta, para quem chama adotar localmente (mesmo espírito de
-   * `restoreProgress`, mas iniciado pelo telefone+senha em vez do nome+código).
+   * "Salvar progresso"/"Entrar": promove a sessão atual (anônima, ver `ensureSignedIn`)
+   * para uma conta permanente de telefone+senha, sem SMS nem confirmação por e-mail. O
+   * `email` é opcional — quando informado, vira o e-mail de verdade da conta (permite
+   * "esqueci a senha" de verdade, ver `requestPasswordReset`); quando omitido, usa um
+   * e-mail sintético derivado só do telefone (ver `domain/traveler/credentials`), e nesse
+   * caso não há como recuperar a senha se for esquecida.
+   *
+   * Se a combinação telefone+e-mail (ou só telefone, se não informou e-mail) já tiver
+   * conta, tenta entrar com a senha informada em vez de criar outra — nesse caso devolve
+   * `restoredProgress` com o backup salvo daquela conta, para quem chama adotar localmente
+   * (mesmo espírito de `restoreProgress`, mas iniciado pelo telefone+senha em vez do
+   * nome+código). Por isso a mesma caixa serve tanto pra criar quanto pra entrar: quem
+   * volta com o mesmo telefone/e-mail+senha simplesmente entra na conta que já existe.
    * Falha com motivo em português pronto para mostrar na tela (telefone inválido, senha
    * não confere etc.) — nunca lança.
    */
-  saveProgressWithPhone(phone: string, password: string): Promise<SavePhoneResult>;
+  saveProgressWithPhone(phone: string, password: string, email?: string): Promise<SavePhoneResult>;
+  /**
+   * Pede ao Supabase Auth pra mandar um e-mail de redefinição de senha (link pro app,
+   * rota `/redefinir-senha`). Só funciona pra contas que informaram um e-mail de verdade
+   * no cadastro (ver `saveProgressWithPhone`) — contas só com e-mail sintético não têm
+   * como receber nada. Devolve sempre `{ ok: true }` quando a chamada em si funcionou,
+   * mesmo que o e-mail não exista: é assim que o próprio Supabase evita revelar se uma
+   * conta existe ou não. `{ ok: false }` só por falha de rede/serviço.
+   */
+  requestPasswordReset(email: string): Promise<{ ok: true } | { ok: false; reason: string }>;
+  /**
+   * Define uma nova senha pra sessão atual — só funciona logo depois de abrir o link do
+   * e-mail de `requestPasswordReset` (o Supabase troca a URL por uma sessão temporária de
+   * redefinição). Fora desse contexto, ou se o link já expirou, falha com um motivo
+   * pronto pra mostrar.
+   */
+  updatePassword(newPassword: string): Promise<{ ok: true } | { ok: false; reason: string }>;
 }

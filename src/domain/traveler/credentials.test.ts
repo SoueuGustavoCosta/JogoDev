@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isValidPassword, normalizePhone, syntheticEmailForPhone } from './credentials';
+import { isValidEmail, isValidPassword, normalizePhone, syntheticEmailForPhone } from './credentials';
 
 describe('normalizePhone', () => {
   it('aceita telefone formatado com DDD (11 dígitos)', () => {
@@ -38,5 +38,23 @@ describe('syntheticEmailForPhone', () => {
     expect(syntheticEmailForPhone('31999999999', 'viajante.jogodev.app')).toBe(
       'tel-31999999999@viajante.jogodev.app',
     );
+  });
+});
+
+describe('isValidEmail', () => {
+  it('aceita um e-mail com formato válido', () => {
+    expect(isValidEmail('gustavo@example.com')).toBe(true);
+  });
+
+  it('recusa texto sem @', () => {
+    expect(isValidEmail('gustavo.example.com')).toBe(false);
+  });
+
+  it('recusa e-mail sem domínio', () => {
+    expect(isValidEmail('gustavo@')).toBe(false);
+  });
+
+  it('recusa vazio', () => {
+    expect(isValidEmail('')).toBe(false);
   });
 });
