@@ -6,7 +6,7 @@ import type { OnlinePlayer } from '@/application/ports';
 import { trailRegistry } from '@/content/registry';
 import { badgeCatalog } from '@/content/badges/catalog';
 import { SUPPORT_COPY } from '@/domain/support';
-import { MapIcon, Modal, MoreIcon, TravelerIcon } from '@/presentation/design-system';
+import { HallIcon, MapIcon, TravelerIcon } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
 import { SupportModal } from '@/presentation/features/support';
 import { ProfileHeader } from './ProfileHeader';
@@ -33,7 +33,6 @@ function NavItem({ to, label, icon, end }: { to: string; label: string; icon: Re
 export function Layout() {
   const { progressRepository, leaderboard } = useServices();
   const location = useLocation();
-  const [moreOpen, setMoreOpen] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
   const [onlinePlayers, setOnlinePlayers] = useState<OnlinePlayer[]>([]);
 
@@ -79,10 +78,7 @@ export function Layout() {
       <nav className={styles.nav} aria-label="Navegação principal">
         <NavItem to="/" end label="Mapa" icon={<MapIcon />} />
         <NavItem to="/configuracoes" label="Viajante" icon={<TravelerIcon />} />
-        <button type="button" className={styles.navLink} onClick={() => setMoreOpen(true)}>
-          <MoreIcon />
-          <span>Mais</span>
-        </button>
+        <NavItem to="/hall" label="Hall dos Viajantes" icon={<HallIcon />} />
       </nav>
 
       {isMap ? (
@@ -104,35 +100,14 @@ export function Layout() {
             <button type="button" className={styles.footerLink} onClick={() => setSupportOpen(true)}>
               {SUPPORT_COPY.footerLinkLabel}
             </button>
+            {' · '}
+            <Link className={styles.footerLink} to="/privacidade">
+              Privacidade
+            </Link>
           </footer>
         </div>
       )}
 
-      {moreOpen ? (
-        <Modal title="Mais" onClose={() => setMoreOpen(false)}>
-          <div className={styles.more}>
-            <Link to="/insignias" onClick={() => setMoreOpen(false)}>
-              Passaporte de insígnias
-            </Link>
-            <Link to="/hall" onClick={() => setMoreOpen(false)}>
-              Hall dos Viajantes
-            </Link>
-            <Link to="/privacidade" onClick={() => setMoreOpen(false)}>
-              Privacidade
-            </Link>
-            <button
-              type="button"
-              className={styles.footerLink}
-              onClick={() => {
-                setMoreOpen(false);
-                setSupportOpen(true);
-              }}
-            >
-              {SUPPORT_COPY.footerLinkLabel}
-            </button>
-          </div>
-        </Modal>
-      ) : null}
       {supportOpen ? <SupportModal onClose={() => setSupportOpen(false)} /> : null}
     </div>
   );

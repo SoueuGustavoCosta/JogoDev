@@ -26,7 +26,6 @@ const PrivacyPage = lazy(() =>
   import('@/presentation/features/settings').then((m) => ({ default: m.PrivacyPage })),
 );
 const HallPage = lazy(() => import('@/presentation/features/hall').then((m) => ({ default: m.HallPage })));
-const BadgesPage = lazy(() => import('@/presentation/features/badges').then((m) => ({ default: m.BadgesPage })));
 
 function AppRoutes() {
   return (
@@ -43,7 +42,6 @@ function AppRoutes() {
           <Route path="configuracoes" element={<SettingsPage />} />
           <Route path="privacidade" element={<PrivacyPage />} />
           <Route path="hall" element={<HallPage />} />
-          <Route path="insignias" element={<BadgesPage />} />
           <Route path="prologo" element={<PrologueScreen />} />
         </Route>
       </Routes>

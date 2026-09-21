@@ -39,7 +39,7 @@ export function TrailShell() {
           <span className={styles.label}>Início da era</span>
         </Link>
         {trailBadges.length ? (
-          <Link to="/insignias" className={styles.node}>
+          <Link to="/configuracoes" className={styles.node}>
             <span className={styles.dot}>★</span>
             <span className={styles.label}>
               Coleção de insígnias ({badgesEarnedCount}/{trailBadges.length})

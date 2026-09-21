@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { Progress } from '@/domain/progress';
 import type { LeaderboardPort, OnlinePlayer, PlayerProfile, HallOfTravelersEntry } from '../ports';
 import type { ProgressRepository } from '../ports';
-import { backupProgress, generateAndSaveRecoveryCode, restoreProgress } from './presence';
+import { backupProgress, BIO_MAX_LENGTH, generateAndSaveRecoveryCode, getCachedBio, restoreProgress, saveBio } from './presence';
 
 class Memory implements ProgressRepository {
   data: Progress | null = null;
@@ -51,6 +51,10 @@ class StubLeaderboard implements LeaderboardPort {
     const entry = this.byName[nome.toLowerCase()];
     if (!entry || entry.codigo !== codigo) return null;
     return { uuid: entry.uuid, progress: entry.progress };
+  }
+  savedBios: { uuid: string; bio: string }[] = [];
+  async saveBio(uuid: string, bio: string): Promise<void> {
+    this.savedBios.push({ uuid, bio });
   }
 }
 
@@ -141,5 +145,48 @@ describe('restoreProgress', () => {
 
     expect(result).toEqual({ ok: true });
     expect(repository.load()).toEqual({ ...remoteProgress, travelerUuid: 'uuid-remoto' });
+  });
+});
+
+describe('saveBio', () => {
+  it('salva a bio local e sincroniza com o Supabase sob o uuid do viajante', () => {
+    const repository = new Memory();
+    const leaderboard = new StubLeaderboard();
+
+    const saved = saveBio({ repository, leaderboard }, { bio: 'Estudante de Ciência da Computação, 5º período.' });
+
+    expect(saved).toBe('Estudante de Ciência da Computação, 5º período.');
+    expect(repository.load()?.bio).toBe('Estudante de Ciência da Computação, 5º período.');
+    expect(leaderboard.savedBios).toHaveLength(1);
+    expect(leaderboard.savedBios[0].bio).toBe('Estudante de Ciência da Computação, 5º período.');
+    expect(typeof leaderboard.savedBios[0].uuid).toBe('string');
+  });
+
+  it('corta espaços nas pontas', () => {
+    const repository = new Memory();
+    const leaderboard = new StubLeaderboard();
+    const saved = saveBio({ repository, leaderboard }, { bio: '   olá   ' });
+    expect(saved).toBe('olá');
+  });
+
+  it('trunca em BIO_MAX_LENGTH caracteres', () => {
+    const repository = new Memory();
+    const leaderboard = new StubLeaderboard();
+    const long = 'a'.repeat(BIO_MAX_LENGTH + 40);
+    const saved = saveBio({ repository, leaderboard }, { bio: long });
+    expect(saved).toHaveLength(BIO_MAX_LENGTH);
+  });
+});
+
+describe('getCachedBio', () => {
+  it('devolve string vazia quando ainda não há bio salva', () => {
+    const repository = new Memory();
+    expect(getCachedBio({ repository })).toBe('');
+  });
+
+  it('devolve a bio salva', () => {
+    const repository = new Memory();
+    repository.save({ version: 1, trails: {}, bio: 'Oi' });
+    expect(getCachedBio({ repository })).toBe('Oi');
   });
 });

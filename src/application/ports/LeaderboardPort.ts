@@ -2,6 +2,7 @@ export type HallOfTravelersEntry = {
   nome: string;
   criadoEm: string;
   insignias: string[];
+  bio: string | null;
 };
 
 /** Perfil público do jogador (tabela `jogadores`), usado no cabeçalho do viajante. */
@@ -71,4 +72,6 @@ export interface LeaderboardPort {
    * Leitura normal: pode rejeitar.
    */
   restoreProgress(nome: string, codigo: string): Promise<{ uuid: string; progress: unknown } | null>;
+  /** Salva a bio curta do viajante (upsert por uuid). Falha silenciosa: nunca deve quebrar o jogo. */
+  saveBio(uuid: string, bio: string): Promise<void>;
 }

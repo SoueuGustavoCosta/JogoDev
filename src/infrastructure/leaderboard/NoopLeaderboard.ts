@@ -52,4 +52,8 @@ export class NoopLeaderboard implements LeaderboardPort {
   async restoreProgress(_nome: string, _codigo: string): Promise<{ uuid: string; progress: unknown } | null> {
     return null;
   }
+
+  async saveBio(_uuid: string, _bio: string): Promise<void> {
+    // Intencionalmente vazio.
+  }
 }

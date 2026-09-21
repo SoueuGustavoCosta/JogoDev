@@ -54,6 +54,13 @@ export type Progress = {
    * Campo novo e opcional: progresso salvo antes dele continua válido sem migração.
    */
   recoveryCode?: string;
+  /**
+   * Resumo curto e público sobre o viajante ("Estou cursando Ciência da Computação..."),
+   * mostrado no Hall dos Viajantes. Cache local do que foi sincronizado com o Supabase
+   * (ver `saveBio`). Campo novo e opcional: progresso salvo antes dele continua válido
+   * sem migração (chave simplesmente ausente).
+   */
+  bio?: string;
 };
 
 export type ExplorationMode = 'sequential' | 'free';
