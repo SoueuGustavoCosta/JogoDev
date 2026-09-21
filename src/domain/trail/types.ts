@@ -1,3 +1,5 @@
+import type { BossFight } from '../bossFight/types';
+
 export type SymbolId = string;
 
 export type QuizItem =
@@ -70,51 +72,9 @@ export type Mission =
       expect: string[][];
     };
 
-export type BossRound = {
-  title: string;
-  description: string;
-  /** Fala do chefe ao entrar nesta rodada. */
-  talk: string;
-  hint: string;
-  /** Fontes de regex (case-insensitive); TODAS precisam casar no texto do aluno. */
-  check: string[];
-};
-
-export type BossSequence = {
-  title: string;
-  description: string;
-  talk: string;
-  hint: string;
-  /** Uma fonte de regex por passo, testada em ordem contra cada comando digitado. */
-  steps: string[];
-};
-
-/** Chefe de fase que fecha uma era, desbloqueado só depois do troféu da trilha. */
-export type BossFight =
-  | {
-      bossName: string;
-      tagline: string;
-      /** Conversa da Senhorita Sintaxe antes de liberar o combate (mesmo formato de `Trail.intro`). */
-      intro: string[];
-      /** Glifo do contador de vidas (ex.: "☕", "💾"). */
-      lifeLabel: string;
-      mode: 'single-shot';
-      rounds: BossRound[];
-      badgeId: string;
-      badgeTitle: string;
-      badgeDescription: string;
-    }
-  | {
-      bossName: string;
-      tagline: string;
-      intro: string[];
-      lifeLabel: string;
-      mode: 'sequence';
-      rounds: BossSequence[];
-      badgeId: string;
-      badgeTitle: string;
-      badgeDescription: string;
-    };
+// Os tipos do chefe de fase vivem em domain/bossFight (motor puro, compartilhado entre
+// eras); aqui só reexportamos para quem só conhece domain/trail.
+export type { BossFight, BossRound, BossSequence } from '../bossFight/types';
 
 export type Trail = {
   id: string;

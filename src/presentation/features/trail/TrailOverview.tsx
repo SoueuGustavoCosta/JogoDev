@@ -33,6 +33,7 @@ export function TrailOverview() {
   const firstOpen = trail.modules.find((m) => !trailProgress?.modules[m.id]?.completed);
   const started = xp > 0 || Object.keys(trailProgress?.modules ?? {}).length > 0;
   const trophy = Boolean(trailProgress?.trophyAwarded);
+  const bossDefeated = Boolean(trailProgress?.bossDefeated);
   const quizCount = trail.modules.reduce((sum, m) => sum + m.quiz.length, 0);
 
   return (
@@ -51,6 +52,7 @@ export function TrailOverview() {
           firstOpen={firstOpen}
           started={started}
           trophy={trophy}
+          bossDefeated={bossDefeated}
           quizCount={quizCount}
           supportOpen={supportOpen}
           setSupportOpen={setSupportOpen}
@@ -65,6 +67,7 @@ function TrailOverviewBody({
   firstOpen,
   started,
   trophy,
+  bossDefeated,
   quizCount,
   supportOpen,
   setSupportOpen,
@@ -73,6 +76,7 @@ function TrailOverviewBody({
   firstOpen: Module | undefined;
   started: boolean;
   trophy: boolean;
+  bossDefeated: boolean;
   quizCount: number;
   supportOpen: boolean;
   setSupportOpen: (open: boolean) => void;
@@ -134,6 +138,15 @@ function TrailOverviewBody({
               {SUPPORT_COPY.footerLinkLabel}
             </button>
           </p>
+          {trail.bossFight ? (
+            bossDefeated ? (
+              <p className={styles.lead}>🛡️ Insígnia conquistada: {trail.bossFight.badgeTitle}.</p>
+            ) : (
+              <Link to={`/trilhas/${trail.id}/chefe`} className={styles.ghost}>
+                Enfrentar {trail.bossFight.bossName} ▸
+              </Link>
+            )
+          ) : null}
         </div>
       ) : null}
 
