@@ -1,14 +1,33 @@
-import type { HallOfTravelersEntry, LeaderboardPort } from '@/application/ports';
+import type { HallOfTravelersEntry, LeaderboardPort, OnlinePlayer, PlayerProfile } from '@/application/ports';
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from '@/config/supabase';
+
+type SelectResult = {
+  data: Record<string, unknown>[] | null;
+  error: { message: string } | null;
+};
+
+type SelectQuery = {
+  order(column: string, opts?: { ascending: boolean }): Promise<SelectResult>;
+  eq(column: string, value: unknown): {
+    maybeSingle(): Promise<{ data: Record<string, unknown> | null; error: { message: string } | null }>;
+  };
+  gte(column: string, value: string): Promise<SelectResult>;
+};
 
 type SupabaseClientLike = {
   from(table: string): {
     upsert(values: Record<string, unknown>, opts?: { onConflict: string }): Promise<{ error: { message: string } | null }>;
-    select(columns: string): {
-      order(column: string, opts?: { ascending: boolean }): Promise<{
-        data: Record<string, unknown>[] | null;
-        error: { message: string } | null;
-      }>;
+    update(values: Record<string, unknown>): { eq(column: string, value: unknown): Promise<{ error: { message: string } | null }> };
+    select(columns: string): SelectQuery;
+  };
+  storage: {
+    from(bucket: string): {
+      upload(
+        path: string,
+        blob: Blob,
+        opts?: { upsert?: boolean; contentType?: string },
+      ): Promise<{ error: { message: string } | null }>;
+      getPublicUrl(path: string): { data: { publicUrl: string } };
     };
   };
 };
@@ -95,6 +114,104 @@ export class SupabaseLeaderboard implements LeaderboardPort {
       nome: String(row.nome),
       criadoEm: String(row.criado_em),
       insignias: badgesByUuid.get(String(row.uuid)) ?? [],
+    }));
+  }
+
+  async getPlayer(uuid: string): Promise<PlayerProfile | null> {
+    try {
+      const client = await this.ensureClient();
+      const { data, error } = await client
+        .from('jogadores')
+        .select('nome,foto_url,sequencia_atual,sequencia_recorde,ultimo_dia_ativo')
+        .eq('uuid', uuid)
+        .maybeSingle();
+      if (error || !data) {
+        if (error && import.meta.env.DEV) console.warn('[SupabaseLeaderboard] getPlayer falhou:', error.message);
+        return null;
+      }
+      return {
+        nome: String(data.nome),
+        fotoUrl: data.foto_url ? String(data.foto_url) : null,
+        sequenciaAtual: Number(data.sequencia_atual ?? 0),
+        sequenciaRecorde: Number(data.sequencia_recorde ?? 0),
+        ultimoDiaAtivo: data.ultimo_dia_ativo ? String(data.ultimo_dia_ativo) : null,
+      };
+    } catch (e) {
+      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] getPlayer falhou:', e);
+      return null;
+    }
+  }
+
+  async checkIn(
+    uuid: string,
+    params: { nome: string; sequenciaAtual: number; sequenciaRecorde: number; ultimoDiaAtivo: string },
+  ): Promise<void> {
+    try {
+      const client = await this.ensureClient();
+      const { error } = await client.from('jogadores').upsert(
+        {
+          uuid,
+          nome: params.nome,
+          sequencia_atual: params.sequenciaAtual,
+          sequencia_recorde: params.sequenciaRecorde,
+          ultimo_dia_ativo: params.ultimoDiaAtivo,
+          ultima_atividade: new Date().toISOString(),
+        },
+        { onConflict: 'uuid' },
+      );
+      if (error && import.meta.env.DEV) console.warn('[SupabaseLeaderboard] checkIn falhou:', error.message);
+    } catch (e) {
+      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] checkIn falhou:', e);
+    }
+  }
+
+  async heartbeat(uuid: string): Promise<void> {
+    try {
+      const client = await this.ensureClient();
+      const { error } = await client
+        .from('jogadores')
+        .update({ ultima_atividade: new Date().toISOString() })
+        .eq('uuid', uuid);
+      if (error && import.meta.env.DEV) console.warn('[SupabaseLeaderboard] heartbeat falhou:', error.message);
+    } catch (e) {
+      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] heartbeat falhou:', e);
+    }
+  }
+
+  async uploadAvatar(uuid: string, blob: Blob): Promise<string | null> {
+    try {
+      const client = await this.ensureClient();
+      const path = `${uuid}.webp`;
+      const { error } = await client.storage
+        .from('avatars')
+        .upload(path, blob, { upsert: true, contentType: blob.type || 'image/webp' });
+      if (error) {
+        if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] uploadAvatar falhou:', error.message);
+        return null;
+      }
+      const { data } = client.storage.from('avatars').getPublicUrl(path);
+      const url = data.publicUrl ? `${data.publicUrl}?v=${Date.now()}` : null;
+      if (url) {
+        // Guarda a URL pública também em `jogadores`, para leituras futuras (getPlayer)
+        // não dependerem de recalcular o caminho no Storage.
+        await client.from('jogadores').upsert({ uuid, foto_url: url }, { onConflict: 'uuid' });
+      }
+      return url;
+    } catch (e) {
+      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] uploadAvatar falhou:', e);
+      return null;
+    }
+  }
+
+  async listOnlinePlayers(sinceMinutes = 5): Promise<OnlinePlayer[]> {
+    const client = await this.ensureClient();
+    const since = new Date(Date.now() - sinceMinutes * 60 * 1000).toISOString();
+    const { data, error } = await client.from('jogadores').select('uuid,nome,foto_url').gte('ultima_atividade', since);
+    if (error) throw new Error(error.message);
+    return (data ?? []).map((row) => ({
+      uuid: String(row.uuid),
+      nome: String(row.nome),
+      fotoUrl: row.foto_url ? String(row.foto_url) : null,
     }));
   }
 }

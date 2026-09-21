@@ -9,6 +9,27 @@ create table public.jogadores (
   criado_em timestamptz not null default now()
 );
 
+-- nome único (case-insensitive) — já era pedido do autor há uma mensagem: "nenhum nome pode
+-- ser igual ao outro". O histórico do jogador nunca depende do nome, sempre do uuid.
+create unique index if not exists jogadores_nome_unique_ci on public.jogadores (lower(nome));
+
+alter table public.jogadores
+  add column if not exists foto_url text,
+  add column if not exists ultima_atividade timestamptz,
+  add column if not exists sequencia_atual integer not null default 0,
+  add column if not exists sequencia_recorde integer not null default 0,
+  add column if not exists ultimo_dia_ativo date;
+
+-- bucket de storage "avatars": público pra leitura, aceita só imagem, limite de 60KB
+-- (o cliente já manda redimensionado a ~128x128px/50KB, a margem é só segurança)
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('avatars', 'avatars', true, 61440, array['image/webp', 'image/jpeg', 'image/png'])
+on conflict (id) do update set public = excluded.public, file_size_limit = excluded.file_size_limit, allowed_mime_types = excluded.allowed_mime_types;
+
+create policy "avatars: leitura publica" on storage.objects for select using (bucket_id = 'avatars');
+create policy "avatars: upload publico" on storage.objects for insert with check (bucket_id = 'avatars');
+create policy "avatars: update publico" on storage.objects for update using (bucket_id = 'avatars') with check (bucket_id = 'avatars');
+
 create table public.progresso (
   uuid uuid not null references public.jogadores (uuid) on delete cascade,
   era text not null,

@@ -1,4 +1,4 @@
-import type { HallOfTravelersEntry, LeaderboardPort } from '@/application/ports';
+import type { HallOfTravelersEntry, LeaderboardPort, OnlinePlayer, PlayerProfile } from '@/application/ports';
 
 /** Usado em testes e em desenvolvimento: não envia nada a lugar nenhum. */
 export class NoopLeaderboard implements LeaderboardPort {
@@ -15,6 +15,29 @@ export class NoopLeaderboard implements LeaderboardPort {
   }
 
   async listHallOfTravelers(): Promise<HallOfTravelersEntry[]> {
+    return [];
+  }
+
+  async getPlayer(_uuid: string): Promise<PlayerProfile | null> {
+    return null;
+  }
+
+  async checkIn(
+    _uuid: string,
+    _params: { nome: string; sequenciaAtual: number; sequenciaRecorde: number; ultimoDiaAtivo: string },
+  ): Promise<void> {
+    // Intencionalmente vazio.
+  }
+
+  async heartbeat(_uuid: string): Promise<void> {
+    // Intencionalmente vazio.
+  }
+
+  async uploadAvatar(_uuid: string, _blob: Blob): Promise<string | null> {
+    return null;
+  }
+
+  async listOnlinePlayers(_sinceMinutes?: number): Promise<OnlinePlayer[]> {
     return [];
   }
 }

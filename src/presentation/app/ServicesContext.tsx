@@ -2,7 +2,7 @@ import { createContext, useContext, useMemo, type ReactNode } from 'react';
 import type { AnalyticsPort, ClipboardPort, LeaderboardPort, ProgressRepository, SqlEnginePort } from '@/application/ports';
 import { LocalStorageProgressRepository } from '@/infrastructure/storage';
 import { NoopAnalytics, VercelAnalytics } from '@/infrastructure/analytics';
-import { NoopLeaderboard, SupabaseLeaderboard } from '@/infrastructure/leaderboard';
+import { NoopLeaderboard, resizeAvatarImage, SupabaseLeaderboard } from '@/infrastructure/leaderboard';
 import { PgliteEngine } from '@/infrastructure/sql';
 import { NavigatorClipboard } from '@/infrastructure/clipboard';
 
@@ -12,6 +12,13 @@ export type Services = {
   sqlEngine: SqlEnginePort;
   clipboard: ClipboardPort;
   leaderboard: LeaderboardPort;
+  /**
+   * Redimensiona a foto do avatar no navegador (canvas), antes do upload. Não é uma
+   * porta (não tem adaptador alternativo) — só passa por aqui porque `presentation/`
+   * fora de `presentation/app` não pode importar `infrastructure/` diretamente
+   * (regra de fronteiras do CLAUDE.md, seção 3).
+   */
+  resizeAvatarImage: typeof resizeAvatarImage;
 };
 
 const ServicesContext = createContext<Services | null>(null);
@@ -30,6 +37,7 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
       // Só em produção: em dev, escritas reais poluiriam o Hall dos Viajantes com
       // dados de teste (mesma lógica do analytics acima).
       leaderboard: import.meta.env.PROD ? new SupabaseLeaderboard() : new NoopLeaderboard(),
+      resizeAvatarImage,
     }),
     [],
   );

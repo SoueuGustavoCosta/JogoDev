@@ -9,3 +9,4 @@ export * from './hall';
 export * from './importProgress';
 export * from './lab';
 export * from './traveler';
+export * from './presence';
