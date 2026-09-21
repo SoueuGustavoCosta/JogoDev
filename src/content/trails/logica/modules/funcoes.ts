@@ -2,7 +2,7 @@ import type { Module } from '@/domain/trail/types';
 
 /**
  * Migrado de Ilha_da_Logica_PHP_1.html (módulo "funcoes" — "Funções e escopo").
- * O widget "Por valor ou por referência?" (WID.byref) vira um placeholder `gui`.
+ * O widget "Por valor ou por referência?" virou o jogo `por-referencia` (ByRefWidget).
  */
 export const modFuncoes: Module = {
   id: 'funcoes',
@@ -49,7 +49,7 @@ export const modFuncoes: Module = {
       t: 'p',
       x: 'Por padrão a função recebe uma <b>cópia</b> do valor: mudar dentro não muda fora. Com o símbolo <code>&amp;</code>, a função recebe a <b>variável original</b> e altera direto na memória. Rode as duas versões:',
     },
-    { t: 'gui' },
+    { t: 'gui', widget: 'por-referencia' },
     { t: 'h', x: 'As funções do Jogo da Velha' },
     {
       t: 'table',
@@ -92,6 +92,7 @@ export const modFuncoes: Module = {
       accept: ['&'],
       placeholder: '?',
       explain: 'Com <code>&amp;$x</code> a função altera a variável original.',
+      hint: 'É o mesmo símbolo que apareceu na aba "Por referência" do jogo ali em cima.',
     },
     {
       q: 'Uma variável criada dentro de uma função é...',
@@ -107,6 +108,7 @@ export const modFuncoes: Module = {
       accept: ['3500'],
       placeholder: '?',
       explain: 'Por referência, a função alterou a variável de fora: 3000 + 500 = 3500.',
+      hint: 'O <code>&amp;$valor</code> na função significa que ela mexe direto na variável de fora, não numa cópia.',
     },
     {
       q: 'Em PHP, uma função consegue usar uma constante definida fora dela?',

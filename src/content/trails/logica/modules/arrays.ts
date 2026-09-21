@@ -2,8 +2,8 @@ import type { Module } from '@/domain/trail/types';
 
 /**
  * Migrado de Ilha_da_Logica_PHP_1.html (módulo "arrays" — "Arrays e matrizes").
- * Os widgets "Endereços da matriz" (WID.matrix) e "Ordenação por seleção" (WID.sortviz)
- * viram placeholders `gui`.
+ * Os widgets "Endereços da matriz" e "Ordenação por seleção" viraram os jogos
+ * `matriz-enderecos` (MatrixAddressWidget) e `ordenacao-selecao` (SelectionSortWidget).
  */
 export const modArrays: Module = {
   id: 'arrays',
@@ -38,7 +38,7 @@ export const modArrays: Module = {
       t: 'p',
       x: 'Uma <b>matriz</b> é um array de arrays: uma tabela com linhas e colunas. A apostila declara <code>int valores[3][4];</code> em C: 3 linhas e 4 colunas (12 posições). Em PHP: <code>$m[linha][coluna]</code>. Clique nas casas e veja o endereço de cada uma:',
     },
-    { t: 'gui' },
+    { t: 'gui', widget: 'matriz-enderecos' },
     {
       t: 'code',
       file: 'matriz.php',
@@ -51,7 +51,7 @@ export const modArrays: Module = {
       t: 'p',
       x: 'A apostila apresenta este método: encontre o <b>menor</b> elemento do conjunto e troque com o primeiro; depois repita com o resto, até o fim. Use o botão para ver o exemplo da apostila, <code>5 - 2 - 1 - 4 - 3</code>:',
     },
-    { t: 'gui' },
+    { t: 'gui', widget: 'ordenacao-selecao' },
     {
       t: 'code',
       file: 'ordenacao.php',
@@ -117,6 +117,7 @@ export const modArrays: Module = {
       accept: ['count', 'sizeof'],
       placeholder: '?',
       explain: '<code>count($cursos)</code> devolve o número de elementos.',
+      hint: 'Apareceu no código lá em cima, junto do array $cursos — é o nome em inglês de "contar".',
     },
     {
       q: 'Como funciona a busca sequencial?',

@@ -2,7 +2,7 @@ import type { Module } from '@/domain/trail/types';
 
 /**
  * Migrado de Ilha_da_Logica_PHP_1.html (módulo "operadores").
- * O widget "Tabela-verdade ao vivo" (WID.truth) vira um placeholder `gui`.
+ * O widget "Tabela-verdade ao vivo" virou o jogo `tabela-verdade` (TruthTableWidget).
  */
 export const modOperadores: Module = {
   id: 'operadores',
@@ -65,7 +65,7 @@ export const modOperadores: Module = {
         ['NÃO', '<code>!</code>', 'Inverte: verdadeiro vira falso e vice-versa'],
       ],
     },
-    { t: 'gui' },
+    { t: 'gui', widget: 'tabela-verdade' },
     { t: 'h', x: 'Atalhos de atribuição' },
     {
       t: 'code',

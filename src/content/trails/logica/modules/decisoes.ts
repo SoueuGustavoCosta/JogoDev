@@ -2,7 +2,7 @@ import type { Module } from '@/domain/trail/types';
 
 /**
  * Migrado de Ilha_da_Logica_PHP_1.html (módulo "decisoes" — "Decisões: if, else, switch").
- * O widget "Qual caminho o PHP escolhe?" (WID.grade) vira um placeholder `gui`.
+ * O widget "Qual caminho o PHP escolhe?" virou o jogo `qual-caminho` (DecisionPathWidget).
  */
 export const modDecisoes: Module = {
   id: 'decisoes',
@@ -28,7 +28,7 @@ export const modDecisoes: Module = {
       x: '<?php\n$media = 7.5;\n\nif ($media >= 7) {\n    echo "Aprovado!";\n} elseif ($media >= 5) {\n    echo "Recuperação.";\n} else {\n    echo "Reprovado.";\n}\n?>',
     },
     { t: 'p', x: 'Mexa no controle e veja qual caminho o PHP escolhe. As linhas acesas são as que realmente executam.' },
-    { t: 'gui' },
+    { t: 'gui', widget: 'qual-caminho' },
     {
       t: 'note',
       k: 'Fique atento',
