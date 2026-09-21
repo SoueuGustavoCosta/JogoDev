@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Progress } from '@/domain/progress';
-import type { HallOfTravelersEntry, LeaderboardPort, OnlinePlayer, PlayerProfile, ProgressRepository } from '../ports';
+import type { HallOfTravelersEntry, LeaderboardPort, OnlinePlayer, PlayerProfile, ProgressRepository, SavePhoneResult } from '../ports';
 import { bootstrapTravelerIdentity, completePrologue, getOrCreateTravelerUuid, getTraveler, markPrologueSkipped } from './traveler';
 
 class Memory implements ProgressRepository {
@@ -46,6 +46,9 @@ class StubLeaderboard implements LeaderboardPort {
   async ensureSignedIn(): Promise<string | null> {
     if (this.ensureSignedInError) throw new Error('rede fora do ar');
     return this.signedInUid;
+  }
+  async saveProgressWithPhone(): Promise<SavePhoneResult> {
+    return { ok: false, reason: 'não usado neste teste' };
   }
 }
 

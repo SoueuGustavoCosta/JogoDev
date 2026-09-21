@@ -1,0 +1,132 @@
+import { describe, expect, it } from 'vitest';
+import type { Progress } from '@/domain/progress';
+import type {
+  HallOfTravelersEntry,
+  LeaderboardPort,
+  OnlinePlayer,
+  PlayerProfile,
+  ProgressRepository,
+  SavePhoneResult,
+} from '../ports';
+import { hasPhoneLinked, saveProgressWithPhone } from './phoneAuth';
+
+class Memory implements ProgressRepository {
+  data: Progress | null = null;
+  load() {
+    return this.data;
+  }
+  save(p: Progress) {
+    this.data = p;
+  }
+  clear() {
+    this.data = null;
+  }
+}
+
+class StubLeaderboard implements LeaderboardPort {
+  nextResult: SavePhoneResult = { ok: false, reason: 'não configurado' };
+  savedPhoneCalls: { phone: string; password: string }[] = [];
+
+  async upsertPlayer(): Promise<void> {}
+  async syncProgress(): Promise<void> {}
+  async syncBadge(): Promise<void> {}
+  async listHallOfTravelers(): Promise<HallOfTravelersEntry[]> {
+    return [];
+  }
+  async getPlayer(): Promise<PlayerProfile | null> {
+    return null;
+  }
+  async checkIn(): Promise<void> {}
+  async heartbeat(): Promise<void> {}
+  async uploadAvatar(): Promise<string | null> {
+    return null;
+  }
+  async listOnlinePlayers(): Promise<OnlinePlayer[]> {
+    return [];
+  }
+  async backupProgress(): Promise<void> {}
+  async setRecoveryCode(): Promise<void> {}
+  async restoreProgress(): Promise<{ uuid: string; progress: unknown } | null> {
+    return null;
+  }
+  async saveBio(): Promise<void> {}
+  async ensureSignedIn(): Promise<string | null> {
+    return 'uuid-anonimo';
+  }
+  async saveProgressWithPhone(phone: string, password: string): Promise<SavePhoneResult> {
+    this.savedPhoneCalls.push({ phone, password });
+    return this.nextResult;
+  }
+}
+
+describe('saveProgressWithPhone', () => {
+  it('recusa telefone inválido sem chamar a porta', async () => {
+    const repository = new Memory();
+    const leaderboard = new StubLeaderboard();
+    const result = await saveProgressWithPhone({ repository, leaderboard }, { phone: '123', password: '123456' });
+    expect(result).toEqual({ ok: false, reason: 'Digite um telefone válido, com DDD.' });
+    expect(leaderboard.savedPhoneCalls).toHaveLength(0);
+  });
+
+  it('recusa senha curta sem chamar a porta', async () => {
+    const repository = new Memory();
+    const leaderboard = new StubLeaderboard();
+    const result = await saveProgressWithPhone({ repository, leaderboard }, { phone: '31999999999', password: '123' });
+    expect(result.ok).toBe(false);
+    expect(leaderboard.savedPhoneCalls).toHaveLength(0);
+  });
+
+  it('cadastro novo: mantém o progresso local e marca phoneLinked', async () => {
+    const repository = new Memory();
+    repository.save({ version: 1, trails: {}, travelerName: 'Ana', travelerUuid: 'uuid-local' });
+    const leaderboard = new StubLeaderboard();
+    leaderboard.nextResult = { ok: true, uid: 'uuid-novo', restoredProgress: null };
+
+    const result = await saveProgressWithPhone(
+      { repository, leaderboard },
+      { phone: '(31) 99999-9999', password: 'senha123' },
+    );
+
+    expect(result).toEqual({ ok: true });
+    expect(leaderboard.savedPhoneCalls).toEqual([{ phone: '31999999999', password: 'senha123' }]);
+    expect(repository.load()).toMatchObject({ travelerName: 'Ana', travelerUuid: 'uuid-novo', phoneLinked: true });
+  });
+
+  it('conta já existente: adota o progresso restaurado', async () => {
+    const repository = new Memory();
+    repository.save({ version: 1, trails: {}, travelerName: 'Local' });
+    const leaderboard = new StubLeaderboard();
+    const remoteProgress: Progress = { version: 1, trails: {}, travelerName: 'Remoto' };
+    leaderboard.nextResult = { ok: true, uid: 'uuid-remoto', restoredProgress: remoteProgress };
+
+    const result = await saveProgressWithPhone({ repository, leaderboard }, { phone: '31999999999', password: 'senha123' });
+
+    expect(result).toEqual({ ok: true });
+    expect(repository.load()).toEqual({ ...remoteProgress, travelerUuid: 'uuid-remoto', phoneLinked: true });
+  });
+
+  it('devolve o motivo de erro da porta sem mexer no progresso local', async () => {
+    const repository = new Memory();
+    repository.save({ version: 1, trails: {}, travelerName: 'Ana' });
+    const leaderboard = new StubLeaderboard();
+    leaderboard.nextResult = { ok: false, reason: 'Telefone já cadastrado, mas a senha não confere.' };
+
+    const result = await saveProgressWithPhone({ repository, leaderboard }, { phone: '31999999999', password: 'senha123' });
+
+    expect(result).toEqual({ ok: false, reason: 'Telefone já cadastrado, mas a senha não confere.' });
+    expect(repository.load()).toMatchObject({ travelerName: 'Ana' });
+  });
+});
+
+describe('hasPhoneLinked', () => {
+  it('devolve false quando ainda não vinculou', () => {
+    const repository = new Memory();
+    expect(hasPhoneLinked({ repository })).toBe(false);
+  });
+
+  it('devolve true depois de vinculado', () => {
+    const repository = new Memory();
+    repository.save({ version: 1, trails: {}, phoneLinked: true });
+    expect(hasPhoneLinked({ repository })).toBe(true);
+  });
+});

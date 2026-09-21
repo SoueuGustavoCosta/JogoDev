@@ -42,6 +42,7 @@ export function SupportModal({ onClose }: { onClose: () => void }) {
         🚀
       </div>
       <h2 className={styles.title}>Colabore com o projeto</h2>
+      <p className={styles.developer}>{SUPPORT_COPY.developerBlurb}</p>
       <p className={styles.thanks}>{SUPPORT_COPY.modalThanks}</p>
 
       {qrDataUrl ? (

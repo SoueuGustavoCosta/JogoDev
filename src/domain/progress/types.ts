@@ -61,6 +61,13 @@ export type Progress = {
    * sem migração (chave simplesmente ausente).
    */
   bio?: string;
+  /**
+   * Marca que o viajante já vinculou telefone+senha (ver `saveProgressWithPhone`), para
+   * a caixa flutuante "Salvar progresso" não aparecer de novo neste aparelho depois
+   * disso. Campo novo e opcional: progresso salvo antes dele continua válido sem
+   * migração (chave simplesmente ausente, tratada como "ainda não vinculou").
+   */
+  phoneLinked?: boolean;
 };
 
 export type ExplorationMode = 'sequential' | 'free';

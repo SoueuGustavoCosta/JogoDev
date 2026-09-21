@@ -119,3 +119,10 @@ revoke all on function public.definir_codigo_recuperacao(uuid, text) from public
 revoke all on function public.restaurar_progresso(text, text) from public;
 grant execute on function public.definir_codigo_recuperacao(uuid, text) to anon;
 grant execute on function public.restaurar_progresso(text, text) to anon;
+
+-- "Salvar progresso" (telefone+senha, ver `application/usecases/phoneAuth.ts`): usa o
+-- provedor padrão de e-mail/senha do Supabase Auth, sem nenhuma tabela nova — o telefone
+-- vira um e-mail sintético só internamente (`tel-<dígitos>@<domínio>`, ver `config/auth.ts`).
+-- REQUISITO no painel (Authentication → Providers → Email): desligar "Confirm email".
+-- Sem isso nenhum cadastro completa, porque nenhum e-mail de confirmação de verdade é
+-- enviado para esses endereços sintéticos.

@@ -18,6 +18,16 @@ export type PlayerProfile = {
 export type OnlinePlayer = { uuid: string; nome: string; fotoUrl: string | null };
 
 /**
+ * Resultado de `saveProgressWithPhone`. `restoredProgress` só vem preenchido quando o
+ * telefone já tinha conta (a senha bateu e o método entrou nela em vez de criar uma
+ * nova): é o `Progress` (tipado como `unknown` pelo mesmo motivo de `backupProgress`)
+ * salvo lá da última vez, pra quem chama restaurar localmente.
+ */
+export type SavePhoneResult =
+  | { ok: true; uid: string; restoredProgress: unknown | null }
+  | { ok: false; reason: string };
+
+/**
  * Porta do "Hall dos Viajantes": sincronização silenciosa do progresso público
  * (sem login) com o Supabase. As escritas nunca devem lançar nem travar o
  * jogo — cada implementação captura seus próprios erros internamente (rede fora
@@ -86,4 +96,15 @@ export interface LeaderboardPort {
    * puramente aditivo.
    */
   ensureSignedIn(): Promise<string | null>;
+  /**
+   * "Salvar progresso": promove a sessão atual (anônima, ver `ensureSignedIn`) para uma
+   * conta permanente de telefone+senha (e-mail sintético, ver `domain/traveler/credentials`),
+   * sem SMS nem e-mail de verdade. Se o telefone já tiver conta, tenta entrar com a senha
+   * informada em vez de criar outra — nesse caso devolve `restoredProgress` com o backup
+   * salvo daquela conta, para quem chama adotar localmente (mesmo espírito de
+   * `restoreProgress`, mas iniciado pelo telefone+senha em vez do nome+código).
+   * Falha com motivo em português pronto para mostrar na tela (telefone inválido, senha
+   * não confere etc.) — nunca lança.
+   */
+  saveProgressWithPhone(phone: string, password: string): Promise<SavePhoneResult>;
 }

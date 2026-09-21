@@ -8,4 +8,6 @@ export const SUPPORT_COPY = {
   modalVoluntary: 'Contribuição voluntária. A trilha continua aberta para todos.',
   copyPixCopiaECola: 'Pix copia e cola',
   trophyInvite: 'Se a trilha te ajudou e você quiser colaborar, o Pix está aqui.',
+  /** Quem está por trás do jogo, mostrado no modal de contribuição (seção 9 do CLAUDE.md). */
+  developerBlurb: 'Feito e mantido por Gustavo, estudante de Ciência da Computação na UniÚnica.',
 } as const;

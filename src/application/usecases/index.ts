@@ -10,3 +10,4 @@ export * from './importProgress';
 export * from './lab';
 export * from './traveler';
 export * from './presence';
+export * from './phoneAuth';
