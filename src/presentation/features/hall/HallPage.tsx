@@ -1,19 +1,10 @@
 import { useEffect, useState } from 'react';
 import { getHallOfTravelers } from '@/application/usecases';
 import type { HallOfTravelersEntry } from '@/application/ports';
-import { TrailBadge } from '@/presentation/design-system';
+import { BadgeMedal } from '@/presentation/design-system';
+import { getBadgeById } from '@/content/badges/catalog';
 import { useServices } from '@/presentation/app/ServicesContext';
 import styles from './HallPage.module.css';
-
-/**
- * Mapa das insígnias conhecidas (`badgeId` do chefe de fase, ver `content/trails/*`)
- * para o `trailId` que `TrailBadge` sabe desenhar, e para um título curto de exibição.
- * Uma insígnia futura sem entrada aqui ainda aparece, só sem o desenho (texto simples).
- */
-const BADGE_INFO: Record<string, { trailId: string; title: string }> = {
-  'guardiao-banco-de-dados': { trailId: 'banco-de-dados', title: 'Guardião do Banco de Dados' },
-  'guardiao-do-versionamento': { trailId: 'git-github', title: 'Guardião do Versionamento' },
-};
 
 type LoadState = { status: 'loading' } | { status: 'error' } | { status: 'ok'; entries: HallOfTravelersEntry[] };
 
@@ -70,11 +61,14 @@ export function HallPage() {
               ) : (
                 <div className={styles.badges}>
                   {entry.insignias.map((badgeId, j) => {
-                    const info = BADGE_INFO[badgeId];
+                    const badge = getBadgeById(badgeId);
                     return (
-                      <div key={`${badgeId}-${j}`} className={styles.badge} title={info?.title ?? badgeId}>
-                        {info ? <TrailBadge trailId={info.trailId} size={48} /> : null}
-                        <span>{info?.title ?? badgeId}</span>
+                      <div key={`${badgeId}-${j}`} className={styles.badge} title={badge?.name ?? badgeId}>
+                        {badge ? (
+                          <BadgeMedal badge={badge} earned size={48} showCaption={false} />
+                        ) : (
+                          <span>{badgeId}</span>
+                        )}
                       </div>
                     );
                   })}

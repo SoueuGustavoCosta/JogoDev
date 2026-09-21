@@ -90,6 +90,10 @@ export function Layout() {
               Hall dos Viajantes
             </Link>
             {' · '}
+            <Link to="/insignias" className={styles.footerLink}>
+              Insígnias
+            </Link>
+            {' · '}
             <Link to="/privacidade" className={styles.footerLink}>
               Privacidade
             </Link>
@@ -109,6 +113,9 @@ export function Layout() {
             </Link>
             <Link to="/hall" onClick={() => setMoreOpen(false)}>
               Hall dos Viajantes
+            </Link>
+            <Link to="/insignias" onClick={() => setMoreOpen(false)}>
+              Meu passaporte de insígnias
             </Link>
             <Link to="/privacidade" onClick={() => setMoreOpen(false)}>
               Privacidade

@@ -3,6 +3,7 @@ export * from './badges';
 export * from './bossFight';
 export * from './completeModule';
 export * from './getTrailProgress';
+export * from './getMyBadges';
 export * from './exportProgress';
 export * from './hall';
 export * from './importProgress';

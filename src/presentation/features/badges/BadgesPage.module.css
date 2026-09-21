@@ -1,0 +1,19 @@
+.group {
+  margin-bottom: 32px;
+}
+
+.group h2 {
+  margin: 0 0 12px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 16px;
+}
+
+.count {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  margin: -6px 0 12px;
+}

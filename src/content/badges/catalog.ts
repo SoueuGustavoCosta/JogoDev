@@ -6,6 +6,20 @@ import type { Badge } from '@/domain/badges';
  * do caminho de extração ("insignias/<trilha>/<id>.webp") para o caminho servido
  * em /public ("<trilha>/<id>.webp", relativo a /badges/).
  */
+export function getBadgeById(id: string): Badge | undefined {
+  return badgeCatalog.find((b) => b.id === id);
+}
+
+/**
+ * O campo `trail` do catálogo (logica/sql/git/outras) é o "slug" do manifesto do autor,
+ * que não é sempre igual ao `Trail.id` real usado em content/registry.ts.
+ */
+export const BADGE_TRAIL_TO_TRAIL_ID: Record<string, string> = {
+  logica: 'logica',
+  sql: 'banco-de-dados',
+  git: 'git-github',
+};
+
 export const badgeCatalog: Badge[] = [
   {
     id: "logica",
