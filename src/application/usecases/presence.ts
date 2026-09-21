@@ -149,6 +149,33 @@ export function getCachedRecoveryCode(deps: { repository: ProgressRepository }):
   return deps.repository.load()?.recoveryCode ?? null;
 }
 
+/** Tamanho máximo da bio do viajante: um resumo curto, não um parágrafo. */
+export const BIO_MAX_LENGTH = 160;
+
+/**
+ * Salva a bio curta do viajante ("Estou cursando Ciência da Computação..."): corta espaços
+ * nas pontas e trunca em `BIO_MAX_LENGTH` caracteres. Grava no cache local (`Progress.bio`)
+ * e sincroniza silenciosamente com o Supabase (mesmo padrão de `checkInDaily`/`backupProgress`
+ * — a escrita nunca deve travar o jogo, então não espera nem propaga erro da rede).
+ */
+export function saveBio(
+  deps: { repository: ProgressRepository; leaderboard: LeaderboardPort },
+  params: { bio: string },
+): string {
+  const bio = params.bio.trim().slice(0, BIO_MAX_LENGTH);
+  const progress = deps.repository.load() ?? createEmptyProgress();
+  deps.repository.save({ ...progress, bio });
+
+  const uuid = getOrCreateTravelerUuid({ repository: deps.repository });
+  void deps.leaderboard.saveBio(uuid, bio);
+  return bio;
+}
+
+/** Lê a bio já salva neste aparelho (string vazia se ainda não escreveu nenhuma). */
+export function getCachedBio(deps: { repository: ProgressRepository }): string {
+  return deps.repository.load()?.bio ?? '';
+}
+
 /**
  * Recuperação de progresso: nome do jogador **e** o código de recuperação gerado por ele
  * (ver `generateAndSaveRecoveryCode`). O nome sozinho não bastava mais: nomes são públicos
