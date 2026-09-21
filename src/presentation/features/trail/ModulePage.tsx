@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Navigate, useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { completeModule, getOrCreateTravelerUuid, getTraveler } from '@/application/usecases';
 import { getTrailById } from '@/content/registry';
+import { badgeCatalog } from '@/content/badges/catalog';
 import { XP_MODULE_COMPLETION_BONUS } from '@/domain/progress';
 import { BlockRenderer } from '@/presentation/blocks';
 import { Confetti, SintaxeFace } from '@/presentation/design-system';
@@ -20,6 +21,7 @@ export function ModulePage() {
   const trail = trailId ? getTrailById(trailId) : undefined;
   const moduleIndex = trail?.modules.findIndex((m) => m.id === moduleId) ?? -1;
   const module = trail && moduleIndex >= 0 ? trail.modules[moduleIndex] : undefined;
+  const travelerName = getTraveler({ repository: progressRepository }).name;
 
   useEffect(() => {
     setResult(null);
@@ -35,7 +37,7 @@ export function ModulePage() {
     const { name } = getTraveler({ repository: progressRepository });
     const outcome = completeModule(
       { repository: progressRepository, analytics, leaderboard },
-      { trail: trail!, moduleId: module!.id, traveler: { uuid, name } },
+      { trail: trail!, moduleId: module!.id, traveler: { uuid, name }, badgeCatalog },
     );
     setResult({ fresh: !outcome.alreadyCompleted, trailCompleted: outcome.trailCompleted });
     refresh();
@@ -63,6 +65,7 @@ export function ModulePage() {
         <BlockRenderer
           key={i}
           block={block}
+          travelerName={travelerName}
           onOpenInLab={(sql) => navigate(`/trilhas/${trail.id}/laboratorio`, { state: { sql } })}
         />
       ))}

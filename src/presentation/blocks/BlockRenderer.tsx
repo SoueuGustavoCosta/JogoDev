@@ -1,5 +1,6 @@
 import type { Block } from '@/domain/trail';
-import { NotebookFrame } from '@/presentation/design-system';
+import { interpolate } from '@/domain/prologue';
+import { NotebookFrame, SintaxeFace } from '@/presentation/design-system';
 import { highlightSql } from './highlight';
 import styles from './BlockRenderer.module.css';
 
@@ -11,9 +12,12 @@ function Html({ html }: { html: string }) {
 export function BlockRenderer({
   block,
   onOpenInLab,
+  travelerName = 'Viajante',
 }: {
   block: Block;
   onOpenInLab?: (sql: string) => void;
+  /** Usado para interpolar `{name}` em blocos `say` (falas da Senhorita Sintaxe dentro da lição). */
+  travelerName?: string;
 }) {
   switch (block.t) {
     case 'h':
@@ -158,6 +162,41 @@ export function BlockRenderer({
         <div className={styles.placeholder}>
           Widget interativo em construção — o conteúdo da lição continua completo nos blocos ao redor.
         </div>
+      );
+
+    case 'say':
+      return (
+        <div className={styles.say}>
+          <SintaxeFace size={44} />
+          <div className={styles.sayBubble}>
+            <b className={styles.sayWho}>Senhorita Sintaxe</b>
+            <p>
+              <Html html={interpolate(block.x, travelerName)} />
+            </p>
+          </div>
+        </div>
+      );
+
+    case 'timeline':
+      return (
+        <div className={styles.timeline}>
+          {block.items.map((item, i) => (
+            <div key={i} className={styles.timelineItem}>
+              <div className={styles.timelineYear}>{item.y}</div>
+              <h3>{item.h}</h3>
+              <p>
+                <Html html={item.x} />
+              </p>
+            </div>
+          ))}
+        </div>
+      );
+
+    case 'out':
+      return (
+        <NotebookFrame title={block.file}>
+          <div className={styles.outLine}>{block.x}</div>
+        </NotebookFrame>
       );
 
     default:

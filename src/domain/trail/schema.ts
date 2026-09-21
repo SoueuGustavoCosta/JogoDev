@@ -40,6 +40,7 @@ export const blockSchema: z.ZodType = z.discriminatedUnion('t', [
     x: z.string().min(1),
     nolab: z.boolean().optional(),
     expectError: z.boolean().optional(),
+    lang: z.string().optional(),
   }),
   z.object({
     t: z.literal('table'),
@@ -52,6 +53,14 @@ export const blockSchema: z.ZodType = z.discriminatedUnion('t', [
   z.object({ t: z.literal('raw'), file: z.string().min(1), x: z.string().min(1) }),
   z.object({ t: z.literal('gui') }),
   z.object({ t: z.literal('syntax') }),
+  z.object({ t: z.literal('say'), x: z.string().min(1) }),
+  z.object({
+    t: z.literal('timeline'),
+    items: z
+      .array(z.object({ y: z.string().min(1), h: z.string().min(1), x: z.string().min(1) }))
+      .min(1),
+  }),
+  z.object({ t: z.literal('out'), file: z.string().min(1), x: z.string().min(1) }),
 ]);
 
 export const moduleSchema = z.object({

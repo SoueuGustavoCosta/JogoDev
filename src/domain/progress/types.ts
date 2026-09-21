@@ -31,6 +31,12 @@ export type Progress = {
   travelerUuid?: string;
   prologueSeen?: boolean;
   trails: Record<string, TrailProgress>;
+  /**
+   * Insígnias compartilhadas (ver domain/badges), por id -> data ISO de conquista. Campo
+   * novo, de nível raiz (as insígnias atravessam trilhas), e opcional: progresso salvo
+   * antes dele continua válido sem migração (chave simplesmente ausente).
+   */
+  badgesEarned?: Record<string, string>;
 };
 
 export type ExplorationMode = 'sequential' | 'free';
