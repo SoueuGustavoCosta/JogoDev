@@ -79,6 +79,17 @@ select {
   font-size: 16px;
 }
 
+/*
+ * O JetBrains Mono funde !=, ==, <= etc. num símbolo só (ligaduras) por padrão. Bonito para
+ * quem já programa, mas confunde quem está aprendendo: o aluno vê ≠ na tela e digita != no
+ * teclado. Desligado em todo código do jogo, dentro e fora de <code>/<pre>.
+ */
+code,
+pre {
+  font-variant-ligatures: none;
+  font-feature-settings: 'liga' 0, 'calt' 0;
+}
+
 code {
   font-family: var(--font-mono);
   font-size: 0.88em;
