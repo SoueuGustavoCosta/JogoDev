@@ -20,6 +20,13 @@ alter table public.jogadores
   add column if not exists sequencia_recorde integer not null default 0,
   add column if not exists ultimo_dia_ativo date;
 
+-- backup silencioso do `Progress` inteiro (não só o resumo público usado no Hall dos
+-- Viajantes): permite recuperar o progresso completo de outro aparelho pelo nome único,
+-- sem login/senha. Guardado como JSON opaco — o app nunca modela essa coluna no Supabase,
+-- só serializa/deserializa o mesmo objeto que já vive em `localStorage`.
+alter table public.jogadores
+  add column if not exists progresso_completo jsonb;
+
 -- bucket de storage "avatars": público pra leitura, aceita só imagem, limite de 60KB
 -- (o cliente já manda redimensionado a ~128x128px/50KB, a margem é só segurança)
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
