@@ -16,6 +16,7 @@ import { SUPPORT_COPY } from '@/domain/support';
 import { HallIcon, MapIcon, TravelerIcon } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
 import { SupportModal } from '@/presentation/features/support';
+import { SaveProgressWidget } from '@/presentation/features/save-progress';
 import { ProfileHeader } from './ProfileHeader';
 import styles from './Layout.module.css';
 
@@ -95,9 +96,10 @@ export function Layout() {
 
   return (
     <div className={styles.root}>
-      <button type="button" className={styles.pix} onClick={() => setSupportOpen(true)} aria-label="Contribua com o meu Pix">
-        Pix
+      <button type="button" className={styles.pix} onClick={() => setSupportOpen(true)} aria-label="Contribua com o projeto e conheça quem desenvolve">
+        Contribua
       </button>
+      <SaveProgressWidget />
       <nav className={styles.nav} aria-label="Navegação principal">
         <NavItem to="/" end label="Mapa" icon={<MapIcon />} />
         <NavItem to="/configuracoes" label="Viajante" icon={<TravelerIcon />} />

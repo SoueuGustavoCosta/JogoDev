@@ -1,4 +1,4 @@
-import type { HallOfTravelersEntry, LeaderboardPort, OnlinePlayer, PlayerProfile } from '@/application/ports';
+import type { HallOfTravelersEntry, LeaderboardPort, OnlinePlayer, PlayerProfile, SavePhoneResult } from '@/application/ports';
 
 /** Usado em testes e em desenvolvimento: não envia nada a lugar nenhum. */
 export class NoopLeaderboard implements LeaderboardPort {
@@ -59,5 +59,9 @@ export class NoopLeaderboard implements LeaderboardPort {
 
   async ensureSignedIn(): Promise<string | null> {
     return null;
+  }
+
+  async saveProgressWithPhone(_phone: string, _password: string): Promise<SavePhoneResult> {
+    return { ok: false, reason: 'Indisponível em desenvolvimento.' };
   }
 }

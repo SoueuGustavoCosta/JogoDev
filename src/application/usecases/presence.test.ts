@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Progress } from '@/domain/progress';
-import type { LeaderboardPort, OnlinePlayer, PlayerProfile, HallOfTravelersEntry } from '../ports';
+import type { LeaderboardPort, OnlinePlayer, PlayerProfile, HallOfTravelersEntry, SavePhoneResult } from '../ports';
 import type { ProgressRepository } from '../ports';
 import { backupProgress, BIO_MAX_LENGTH, generateAndSaveRecoveryCode, getCachedBio, restoreProgress, saveBio } from './presence';
 
@@ -58,6 +58,9 @@ class StubLeaderboard implements LeaderboardPort {
   }
   async ensureSignedIn(): Promise<string | null> {
     return null;
+  }
+  async saveProgressWithPhone(): Promise<SavePhoneResult> {
+    return { ok: false, reason: 'não usado neste teste' };
   }
 }
 

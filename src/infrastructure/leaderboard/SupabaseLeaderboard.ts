@@ -1,4 +1,6 @@
-import type { HallOfTravelersEntry, LeaderboardPort, OnlinePlayer, PlayerProfile } from '@/application/ports';
+import type { HallOfTravelersEntry, LeaderboardPort, OnlinePlayer, PlayerProfile, SavePhoneResult } from '@/application/ports';
+import { syntheticEmailForPhone } from '@/domain/traveler';
+import { PHONE_AUTH_EMAIL_DOMAIN } from '@/config/auth';
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from '@/config/supabase';
 
 type SelectResult = {
@@ -15,11 +17,15 @@ type SelectQuery = {
 };
 
 type AuthSession = { user: { id: string } };
+type AuthUserResult = { data: { user: { id: string } | null; session: AuthSession | null }; error: { message: string } | null };
 
 type SupabaseClientLike = {
   auth: {
     getSession(): Promise<{ data: { session: AuthSession | null }; error: { message: string } | null }>;
     signInAnonymously(): Promise<{ data: { session: AuthSession | null }; error: { message: string } | null }>;
+    updateUser(attrs: { email?: string; password?: string }): Promise<AuthUserResult>;
+    signUp(params: { email: string; password: string }): Promise<AuthUserResult>;
+    signInWithPassword(params: { email: string; password: string }): Promise<AuthUserResult>;
   };
   from(table: string): {
     upsert(values: Record<string, unknown>, opts?: { onConflict: string }): Promise<{ error: { message: string } | null }>;
@@ -286,6 +292,72 @@ export class SupabaseLeaderboard implements LeaderboardPort {
     } catch (e) {
       if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] ensureSignedIn falhou:', e);
       return null;
+    }
+  }
+
+  private static readonly GENERIC_ERROR_REASON = 'Não foi possível salvar agora. Tente novamente em instantes.';
+
+  /** Mensagens do Supabase Auth para "essa identidade já existe" variam por versão/idioma. */
+  private static looksLikeAlreadyRegistered(message: string): boolean {
+    return /already (been )?register|already exists|already in use/i.test(message);
+  }
+
+  private async signInWithSyntheticEmail(email: string, password: string): Promise<SavePhoneResult> {
+    try {
+      const client = await this.ensureClient();
+      const { data, error } = await client.auth.signInWithPassword({ email, password });
+      if (error || !data.user) {
+        return { ok: false, reason: 'Telefone já cadastrado, mas a senha não confere.' };
+      }
+      const { data: row } = await client
+        .from('jogadores')
+        .select('progresso_completo')
+        .eq('uuid', data.user.id)
+        .maybeSingle();
+      return { ok: true, uid: data.user.id, restoredProgress: row?.progresso_completo ?? null };
+    } catch (e) {
+      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] signInWithSyntheticEmail falhou:', e);
+      return { ok: false, reason: SupabaseLeaderboard.GENERIC_ERROR_REASON };
+    }
+  }
+
+  /**
+   * "Salvar progresso" (ver LeaderboardPort): promove a sessão atual (anônima) para uma
+   * conta permanente de telefone+senha via e-mail sintético. Sem SMS, sem e-mail de
+   * verdade — exige "Confirm email" desligado no painel do Supabase (ver `config/auth.ts`).
+   */
+  async saveProgressWithPhone(phone: string, password: string): Promise<SavePhoneResult> {
+    const email = syntheticEmailForPhone(phone, PHONE_AUTH_EMAIL_DOMAIN);
+    try {
+      const client = await this.ensureClient();
+      const { data: sessionData } = await client.auth.getSession();
+
+      if (sessionData.session) {
+        const { data, error } = await client.auth.updateUser({ email, password });
+        if (!error && data.user) return { ok: true, uid: data.user.id, restoredProgress: null };
+        if (error && SupabaseLeaderboard.looksLikeAlreadyRegistered(error.message)) {
+          return this.signInWithSyntheticEmail(email, password);
+        }
+        if (error) {
+          if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] saveProgressWithPhone (updateUser) falhou:', error.message);
+          return { ok: false, reason: SupabaseLeaderboard.GENERIC_ERROR_REASON };
+        }
+      }
+
+      // Sem sessão (raro: bootstrap anônimo ainda não rodou/falhou): cria a conta direto.
+      const { data, error } = await client.auth.signUp({ email, password });
+      if (error) {
+        if (SupabaseLeaderboard.looksLikeAlreadyRegistered(error.message)) {
+          return this.signInWithSyntheticEmail(email, password);
+        }
+        if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] saveProgressWithPhone (signUp) falhou:', error.message);
+        return { ok: false, reason: SupabaseLeaderboard.GENERIC_ERROR_REASON };
+      }
+      if (!data.user) return { ok: false, reason: SupabaseLeaderboard.GENERIC_ERROR_REASON };
+      return { ok: true, uid: data.user.id, restoredProgress: null };
+    } catch (e) {
+      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] saveProgressWithPhone falhou:', e);
+      return { ok: false, reason: SupabaseLeaderboard.GENERIC_ERROR_REASON };
     }
   }
 }
