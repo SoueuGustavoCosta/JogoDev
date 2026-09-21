@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link, Navigate, Outlet, useLocation, useParams } from 'react-router-dom';
-import { getTrailProgress } from '@/application/usecases';
+import { getMyBadges, getTrailProgress } from '@/application/usecases';
 import { getTrailById } from '@/content/registry';
+import { badgeCatalog, BADGE_TRAIL_TO_TRAIL_ID } from '@/content/badges/catalog';
 import { DEFAULT_EXPLORATION_MODE } from '@/config/exploration';
 import { isModuleUnlocked } from '@/domain/progress';
 import { useServices } from '@/presentation/app/ServicesContext';
@@ -23,14 +24,28 @@ export function TrailShell() {
   const firstOpen = trail.modules.findIndex((m) => !trailProgress?.modules[m.id]?.completed);
   const allDone = firstOpen === -1;
   const onLab = location.pathname.endsWith('/laboratorio');
+  const onBoss = location.pathname.endsWith('/chefe');
+
+  const myBadges = getMyBadges({ repository: progressRepository });
+  const trailBadges = badgeCatalog.filter((b) => BADGE_TRAIL_TO_TRAIL_ID[b.trail] === trail.id);
+  const badgesEarnedCount = trailBadges.filter((b) => Boolean(myBadges[b.id])).length;
+  const bossDefeated = Boolean(trailProgress?.bossDefeated);
 
   return (
     <div className={styles.layout}>
       <nav className={styles.rail} aria-label="Fases da ilha">
-        <Link to={`/trilhas/${trail.id}`} className={`${styles.node} ${!moduleId && !onLab ? styles.sel : ''}`}>
+        <Link to={`/trilhas/${trail.id}`} className={`${styles.node} ${!moduleId && !onLab && !onBoss ? styles.sel : ''}`}>
           <span className={styles.dot}>◈</span>
           <span className={styles.label}>Início da era</span>
         </Link>
+        {trailBadges.length ? (
+          <Link to="/insignias" className={styles.node}>
+            <span className={styles.dot}>★</span>
+            <span className={styles.label}>
+              Coleção de insígnias ({badgesEarnedCount}/{trailBadges.length})
+            </span>
+          </Link>
+        ) : null}
         {trail.modules.map((module, index) => {
           const done = Boolean(trailProgress?.modules[module.id]?.completed);
           const unlocked = isModuleUnlocked(trail, module.id, trailProgress, DEFAULT_EXPLORATION_MODE);
@@ -58,6 +73,22 @@ export function TrailShell() {
             </span>
           );
         })}
+        {trail.bossFight ? (
+          allDone ? (
+            <Link
+              to={`/trilhas/${trail.id}/chefe`}
+              className={`${styles.node} ${styles.trophy} ${bossDefeated ? styles.done : ''} ${onBoss ? styles.sel : ''}`}
+            >
+              <span className={styles.dot}>☠</span>
+              <span className={styles.label}>Chefe: {trail.bossFight.bossName}</span>
+            </Link>
+          ) : (
+            <span className={`${styles.node} ${styles.trophy} ${styles.lock}`} aria-disabled="true">
+              <span className={styles.dot}>☠</span>
+              <span className={styles.label}>Chefe: {trail.bossFight.bossName}</span>
+            </span>
+          )
+        ) : null}
         <span
           className={`${styles.node} ${styles.trophy} ${trailProgress?.trophyAwarded ? styles.done : ''} ${allDone ? '' : styles.lock}`}
           aria-disabled={!allDone}
