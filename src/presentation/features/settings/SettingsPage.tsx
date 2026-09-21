@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { exportProgress, getMyBadges, importProgress } from '@/application/usecases';
+import { exportProgress, getMyBadges, importProgress, restoreProgressByName } from '@/application/usecases';
 import { badgeCatalog } from '@/content/badges/catalog';
 import { SUPPORT_COPY } from '@/domain/support';
 import { BadgeMedal, Button } from '@/presentation/design-system';
@@ -8,11 +8,14 @@ import { SupportModal } from '@/presentation/features/support';
 import { useServices } from '@/presentation/app/ServicesContext';
 
 export function SettingsPage() {
-  const { progressRepository, analytics } = useServices();
+  const { progressRepository, leaderboard, analytics } = useServices();
   const [exported, setExported] = useState('');
   const [importText, setImportText] = useState('');
   const [importMessage, setImportMessage] = useState<string | null>(null);
   const [supportOpen, setSupportOpen] = useState(false);
+  const [restoreName, setRestoreName] = useState('');
+  const [restoreMessage, setRestoreMessage] = useState<string | null>(null);
+  const [restoring, setRestoring] = useState(false);
 
   const earned = getMyBadges({ repository: progressRepository });
   const earnedCount = Object.keys(earned).length;
@@ -31,6 +34,21 @@ export function SettingsPage() {
       analytics.track('progress_imported');
     } else {
       setImportMessage(result.reason);
+    }
+  }
+
+  async function handleRestore() {
+    setRestoring(true);
+    setRestoreMessage(null);
+    try {
+      const result = await restoreProgressByName({ repository: progressRepository, leaderboard }, { nome: restoreName });
+      if (result.ok) {
+        setRestoreMessage('Progresso recuperado com sucesso! Atualize a página para ver.');
+      } else {
+        setRestoreMessage(result.reason);
+      }
+    } finally {
+      setRestoring(false);
     }
   }
 
@@ -83,6 +101,31 @@ export function SettingsPage() {
           </Button>
         </div>
         {importMessage ? <p>{importMessage}</p> : null}
+      </section>
+
+      <section style={{ marginBottom: 32 }}>
+        <h2>Recuperar progresso de outro aparelho</h2>
+        <p>
+          Já jogou antes com outro nome, neste ou em outro aparelho? Digite o nome usado na época para trazer aquele
+          progresso de volta.
+        </p>
+        <p style={{ color: 'var(--color-error, #ff5d7a)' }}>
+          Atenção: isso substitui o progresso salvo neste navegador agora. Se você tem algo aqui que ainda não
+          exportou, exporte antes de continuar.
+        </p>
+        <input
+          type="text"
+          value={restoreName}
+          onChange={(e) => setRestoreName(e.target.value)}
+          placeholder="Nome do viajante"
+          style={{ width: '100%', fontSize: 16, padding: '10px 12px', marginBottom: 12 }}
+        />
+        <div>
+          <Button onClick={handleRestore} disabled={!restoreName.trim() || restoring}>
+            {restoring ? 'Buscando...' : 'Recuperar progresso'}
+          </Button>
+        </div>
+        {restoreMessage ? <p>{restoreMessage}</p> : null}
       </section>
 
       <section>
