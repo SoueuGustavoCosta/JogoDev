@@ -113,3 +113,9 @@ export const HallIcon = () => (
     <path d="M4 10l8-6 8 6M5 10v10h14V10M9 20v-6h6v6" />
   </Svg>
 );
+export const WalletIcon = () => (
+  <Svg>
+    <path d="M3 7a2 2 0 012-2h13a1 1 0 011 1v2M3 7v11a2 2 0 002 2h14a2 2 0 002-2v-8a2 2 0 00-2-2H6a2 2 0 01-2-2z" />
+    <circle cx="16" cy="14" r="1.4" />
+  </Svg>
+);
