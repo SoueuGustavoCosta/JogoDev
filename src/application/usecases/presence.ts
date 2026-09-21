@@ -1,4 +1,5 @@
 import { createEmptyProgress, xpForTrail } from '@/domain/progress';
+import type { Progress } from '@/domain/progress';
 import { nextStreak, travelerLevel } from '@/domain/traveler';
 import type { Badge } from '@/domain/badges';
 import type { Trail } from '@/domain/trail';
@@ -107,4 +108,52 @@ export async function uploadAvatarPhoto(
   const progress = deps.repository.load() ?? createEmptyProgress();
   deps.repository.save({ ...progress, avatarUrl: url });
   return url;
+}
+
+/**
+ * Backup silencioso do `Progress` inteiro (além do resumo público sincronizado por
+ * `checkInDaily`/`syncProgress`/`syncBadge`). Chamado periodicamente pelo mesmo ciclo
+ * de vida do batimento de presença (ver Layout). Não faz nada se ainda não houver
+ * progresso local nem uuid — nada para guardar.
+ */
+export function backupProgress(deps: { repository: ProgressRepository; leaderboard: LeaderboardPort }): void {
+  const progress = deps.repository.load();
+  if (!progress) return;
+  const uuid = getOrCreateTravelerUuid({ repository: deps.repository });
+  void deps.leaderboard.backupProgress(uuid, progress);
+}
+
+export type RestoreProgressResult = { ok: true } | { ok: false; reason: string };
+
+/**
+ * Recuperação sem senha: busca o progresso salvo de outro aparelho pelo nome único do
+ * jogador e o adota neste navegador, sobrescrevendo o progresso local. Também adota o
+ * uuid restaurado (não o deste aparelho), para que as próximas sincronizações silenciosas
+ * (heartbeat, módulos concluídos, insígnias...) escrevam na linha certa do Supabase.
+ *
+ * Ao contrário de `backupProgress`/`checkInDaily`, esta é uma ação direta do aluno (clique
+ * em um botão), então devolve um resultado para a tela mostrar — mesmo formato de
+ * `importProgress`.
+ */
+export async function restoreProgressByName(
+  deps: { repository: ProgressRepository; leaderboard: LeaderboardPort },
+  params: { nome: string },
+): Promise<RestoreProgressResult> {
+  const nome = params.nome.trim();
+  if (!nome) return { ok: false, reason: 'Digite o nome do viajante.' };
+
+  let found: { uuid: string; progress: unknown } | null;
+  try {
+    found = await deps.leaderboard.fetchProgressByName(nome);
+  } catch {
+    return { ok: false, reason: 'Não foi possível buscar agora. Tente novamente em instantes.' };
+  }
+
+  if (!found) {
+    return { ok: false, reason: 'Nenhum progresso salvo foi encontrado com esse nome.' };
+  }
+
+  const restored = found.progress as Progress;
+  deps.repository.save({ ...restored, travelerUuid: found.uuid });
+  return { ok: true };
 }
