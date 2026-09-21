@@ -23,6 +23,12 @@ export type Progress = {
   version: number;
   /** Nome do viajante, guardado só no navegador (nunca vai para as métricas). */
   travelerName?: string;
+  /**
+   * Identificador anônimo do viajante para o Hall dos Viajantes (Supabase). Campo novo
+   * e opcional: progresso salvo antes dele continua válido sem migração (chave ausente
+   * até a primeira sincronização, quando é gerado com `crypto.randomUUID()`).
+   */
+  travelerUuid?: string;
   prologueSeen?: boolean;
   trails: Record<string, TrailProgress>;
 };

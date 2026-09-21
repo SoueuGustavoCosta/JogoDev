@@ -30,3 +30,17 @@ export function markPrologueSkipped(deps: { repository: ProgressRepository }): v
   const progress = deps.repository.load() ?? createEmptyProgress();
   deps.repository.save({ ...progress, prologueSeen: true });
 }
+
+/**
+ * Devolve o identificador anônimo do viajante para o Hall dos Viajantes, gerando um
+ * com `crypto.randomUUID()` e persistindo-o na primeira vez que for preciso. Ponto
+ * único desta lógica: componentes nunca leem/gravam `travelerUuid` diretamente no
+ * `ProgressRepository`, sempre por aqui.
+ */
+export function getOrCreateTravelerUuid(deps: { repository: ProgressRepository }): string {
+  const progress = deps.repository.load() ?? createEmptyProgress();
+  if (progress.travelerUuid) return progress.travelerUuid;
+  const uuid = crypto.randomUUID();
+  deps.repository.save({ ...progress, travelerUuid: uuid });
+  return uuid;
+}

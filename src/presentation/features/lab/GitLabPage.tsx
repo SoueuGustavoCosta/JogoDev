@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { completeGitMission, getTrailProgress } from '@/application/usecases';
+import { completeGitMission, getOrCreateTravelerUuid, getTraveler, getTrailProgress } from '@/application/usecases';
 import {
   applyGitCommand,
   createGitRepoState,
@@ -43,7 +43,7 @@ function fileChip(name: string, file: { tracked: boolean; staged: boolean; modif
 /** Laboratório Git: terminal simulado, puramente síncrono (sem dynamic import nem wasm). */
 export function GitLabPage({ trail }: { trail: Trail }) {
   const location = useLocation();
-  const { progressRepository, analytics } = useServices();
+  const { progressRepository, analytics, leaderboard } = useServices();
   const outputRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -79,7 +79,12 @@ export function GitLabPage({ trail }: { trail: Trail }) {
       if (previousDone && mission.check(nextState)) {
         next[mission.id] = true;
         changed = true;
-        completeGitMission({ repository: progressRepository, analytics, trailId: trail.id }, mission.id);
+        const uuid = getOrCreateTravelerUuid({ repository: progressRepository });
+        const { name } = getTraveler({ repository: progressRepository });
+        completeGitMission(
+          { repository: progressRepository, analytics, leaderboard, trailId: trail.id, traveler: { uuid, name } },
+          mission.id,
+        );
         break; // uma missão avança por comando, como no protótipo original
       }
     }

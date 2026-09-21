@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
-import { getTrailProgress, loseBossFight, startBossFight, winBossFight } from '@/application/usecases';
+import {
+  getOrCreateTravelerUuid,
+  getTraveler,
+  getTrailProgress,
+  loseBossFight,
+  startBossFight,
+  winBossFight,
+} from '@/application/usecases';
 import {
   applyBossAttempt,
   applyBossHint,
@@ -103,7 +110,7 @@ function BossFightArena({
   bossFight: BossFight;
   alreadyDefeated: boolean;
 }) {
-  const { progressRepository, analytics } = useServices();
+  const { progressRepository, analytics, leaderboard } = useServices();
   const config = configFor(bossFight);
   const consoleRef = useRef<HTMLDivElement>(null);
 
@@ -122,7 +129,12 @@ function BossFightArena({
   const isSequence = bossFight.mode === 'sequence';
 
   function finishWin() {
-    winBossFight({ repository: progressRepository, analytics }, { trailId: trail.id, badgeId: bossFight.badgeId });
+    const uuid = getOrCreateTravelerUuid({ repository: progressRepository });
+    const { name } = getTraveler({ repository: progressRepository });
+    winBossFight(
+      { repository: progressRepository, analytics, leaderboard },
+      { trailId: trail.id, badgeId: bossFight.badgeId, traveler: { uuid, name } },
+    );
     setPhase('won');
   }
 

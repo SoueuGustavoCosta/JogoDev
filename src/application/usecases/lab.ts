@@ -1,6 +1,6 @@
 import { createEmptyProgress, getOrCreateTrailProgress } from '@/domain/progress';
 import type { Mission } from '@/domain/trail';
-import type { AnalyticsPort, ProgressRepository, SqlEnginePort, SqlResultBlock } from '../ports';
+import type { AnalyticsPort, LeaderboardPort, ProgressRepository, SqlEnginePort, SqlResultBlock } from '../ports';
 
 export function openLab(deps: { engine: SqlEnginePort; analytics: AnalyticsPort }): Promise<void> {
   deps.analytics.track('lab_opened');
@@ -58,11 +58,21 @@ function markMissionCompleted(repository: ProgressRepository, trailId: string, m
  * persistir e disparar a métrica, do mesmo jeito que o laboratório SQL faz.
  */
 export function completeGitMission(
-  deps: { repository: ProgressRepository; analytics: AnalyticsPort; trailId: string },
+  deps: {
+    repository: ProgressRepository;
+    analytics: AnalyticsPort;
+    leaderboard: LeaderboardPort;
+    trailId: string;
+    traveler: { uuid: string; name: string };
+  },
   missionId: string,
 ): boolean {
   const changed = markMissionCompleted(deps.repository, deps.trailId, missionId);
-  if (changed) deps.analytics.track('mission_completed', { mission: missionId });
+  if (changed) {
+    deps.analytics.track('mission_completed', { mission: missionId });
+    void deps.leaderboard.upsertPlayer(deps.traveler.uuid, deps.traveler.name);
+    void deps.leaderboard.syncProgress(deps.traveler.uuid, deps.trailId, missionId);
+  }
   return changed;
 }
 
@@ -77,7 +87,9 @@ export async function verifyMission(
     engine: SqlEnginePort;
     repository: ProgressRepository;
     analytics: AnalyticsPort;
+    leaderboard: LeaderboardPort;
     trailId: string;
+    traveler: { uuid: string; name: string };
   },
   mission: Mission,
   studentSql: string,
@@ -137,6 +149,8 @@ export async function verifyMission(
 
   if (markMissionCompleted(deps.repository, deps.trailId, mission.id)) {
     deps.analytics.track('mission_completed', { mission: mission.id });
+    void deps.leaderboard.upsertPlayer(deps.traveler.uuid, deps.traveler.name);
+    void deps.leaderboard.syncProgress(deps.traveler.uuid, deps.trailId, mission.id);
   }
 
   return { ok: true };

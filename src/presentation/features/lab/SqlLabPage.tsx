@@ -1,6 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { getTrailProgress, openLab, resetLabDataset, runLabQuery, verifyMission } from '@/application/usecases';
+import {
+  getOrCreateTravelerUuid,
+  getTraveler,
+  getTrailProgress,
+  openLab,
+  resetLabDataset,
+  runLabQuery,
+  verifyMission,
+} from '@/application/usecases';
 import { hintFor } from '@/domain/lab';
 import type { Mission, Trail } from '@/domain/trail';
 import type { SqlDataset, SqlResultBlock } from '@/application/ports';
@@ -74,7 +82,7 @@ function OutputBlocks({ blocks }: { blocks: SqlResultBlock[] }) {
 
 export function SqlLabPage({ trail }: { trail: Trail }) {
   const location = useLocation();
-  const { sqlEngine, progressRepository, analytics } = useServices();
+  const { sqlEngine, progressRepository, analytics, leaderboard } = useServices();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const missions = trail.missions ?? [];
@@ -138,8 +146,10 @@ export function SqlLabPage({ trail }: { trail: Trail }) {
 
   async function verify() {
     if (!selectedMission || !trail) return;
+    const uuid = getOrCreateTravelerUuid({ repository: progressRepository });
+    const { name } = getTraveler({ repository: progressRepository });
     const result = await verifyMission(
-      { engine: sqlEngine, repository: progressRepository, analytics, trailId: trail.id },
+      { engine: sqlEngine, repository: progressRepository, analytics, leaderboard, trailId: trail.id, traveler: { uuid, name } },
       selectedMission,
       sql,
     );

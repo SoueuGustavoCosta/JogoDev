@@ -5,11 +5,13 @@ import {
   isTrailCompleted,
 } from '@/domain/progress';
 import type { Trail } from '@/domain/trail';
-import type { AnalyticsPort, ProgressRepository } from '../ports';
+import type { AnalyticsPort, LeaderboardPort, ProgressRepository } from '../ports';
 
 export type CompleteModuleParams = {
   trail: Trail;
   moduleId: string;
+  /** Viajante atual, para sincronizar silenciosamente com o Hall dos Viajantes. */
+  traveler: { uuid: string; name: string };
 };
 
 export type CompleteModuleResult = {
@@ -18,7 +20,7 @@ export type CompleteModuleResult = {
 };
 
 export function completeModule(
-  deps: { repository: ProgressRepository; analytics: AnalyticsPort },
+  deps: { repository: ProgressRepository; analytics: AnalyticsPort; leaderboard: LeaderboardPort },
   params: CompleteModuleParams,
 ): CompleteModuleResult {
   const progress = deps.repository.load() ?? createEmptyProgress();
@@ -43,6 +45,10 @@ export function completeModule(
 
   deps.repository.save(nextProgress);
   deps.analytics.track('module_completed', { island: params.trail.id, module: params.moduleId });
+  // Sincronização silenciosa e "fire-and-forget": nunca deve travar nem quebrar o
+  // fluxo do aluno (a porta garante que essas chamadas não lançam).
+  void deps.leaderboard.upsertPlayer(params.traveler.uuid, params.traveler.name);
+  void deps.leaderboard.syncProgress(params.traveler.uuid, params.trail.id, params.moduleId);
 
   const trailCompleted = isTrailCompleted(params.trail, nextTrailProgress);
   if (trailCompleted && !nextTrailProgress.trophyAwarded) {

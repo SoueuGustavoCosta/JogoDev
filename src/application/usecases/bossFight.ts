@@ -1,5 +1,5 @@
 import { createEmptyProgress, getOrCreateTrailProgress } from '@/domain/progress';
-import type { AnalyticsPort, ProgressRepository } from '../ports';
+import type { AnalyticsPort, LeaderboardPort, ProgressRepository } from '../ports';
 
 /**
  * Marca a insígnia do chefe de fase como conquistada em `TrailProgress.bossDefeated`,
@@ -7,8 +7,8 @@ import type { AnalyticsPort, ProgressRepository } from '../ports';
  * já ter vencido nunca desfaz a insígnia (esta função só é chamada em vitória).
  */
 export function winBossFight(
-  deps: { repository: ProgressRepository; analytics: AnalyticsPort },
-  params: { trailId: string; badgeId: string },
+  deps: { repository: ProgressRepository; analytics: AnalyticsPort; leaderboard: LeaderboardPort },
+  params: { trailId: string; badgeId: string; traveler: { uuid: string; name: string } },
 ): void {
   const progress = deps.repository.load() ?? createEmptyProgress();
   const trailProgress = getOrCreateTrailProgress(progress, params.trailId);
@@ -21,8 +21,10 @@ export function winBossFight(
         [params.trailId]: { ...trailProgress, bossDefeated: true },
       },
     });
-    // TODO(supabase): sincronizar a insígnia '<badgeId>' quando a integração existir.
-    // ex.: await supabaseInsigniasPort.grant({ trailId: params.trailId, badgeId: params.badgeId });
+    // Sincronização silenciosa: upsertPlayer de novo aqui não custa nada se o chefe
+    // for a primeira sincronização da sessão (nenhum módulo/missão sincronizou antes).
+    void deps.leaderboard.upsertPlayer(params.traveler.uuid, params.traveler.name);
+    void deps.leaderboard.syncBadge(params.traveler.uuid, params.badgeId);
   }
 
   deps.analytics.track('boss_fight_won', { island: params.trailId });

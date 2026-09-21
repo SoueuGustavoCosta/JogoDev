@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { Progress } from '@/domain/progress';
+import { NoopLeaderboard } from '@/infrastructure/leaderboard';
 import { PgliteEngine } from '@/infrastructure/sql';
 import type { AnalyticsPort, ProgressRepository } from '../ports';
 import { verifyMission } from './lab';
@@ -28,14 +29,18 @@ class RecordingAnalytics implements AnalyticsPort {
  * Integração de verifyMission com o motor real (PGlite), usando as duas missões
  * migradas do protótipo: uma de consulta ("select") e uma de estado do banco ("state").
  */
+const traveler = { uuid: 'uuid-teste', name: 'Viajante' };
+
 describe('verifyMission (integração com PGlite)', () => {
   let repository: InMemoryProgressRepository;
   let analytics: RecordingAnalytics;
+  let leaderboard: NoopLeaderboard;
   let engine: PgliteEngine;
 
   beforeEach(() => {
     repository = new InMemoryProgressRepository();
     analytics = new RecordingAnalytics();
+    leaderboard = new NoopLeaderboard();
     engine = new PgliteEngine();
   });
 
@@ -52,7 +57,7 @@ describe('verifyMission (integração com PGlite)', () => {
 
   it('accepts a correct query and records the mission as completed', async () => {
     const result = await verifyMission(
-      { engine, repository, analytics, trailId: 'banco-de-dados' },
+      { engine, repository, analytics, leaderboard, trailId: 'banco-de-dados', traveler },
       selectMission,
       'SELECT nome, preco FROM produtos WHERE estoque > 0 ORDER BY preco',
     );
@@ -64,7 +69,7 @@ describe('verifyMission (integração com PGlite)', () => {
 
   it('rejects a query with the wrong number of rows', async () => {
     const result = await verifyMission(
-      { engine, repository, analytics, trailId: 'banco-de-dados' },
+      { engine, repository, analytics, leaderboard, trailId: 'banco-de-dados', traveler },
       selectMission,
       'SELECT nome, preco FROM produtos ORDER BY preco',
     );
@@ -74,7 +79,7 @@ describe('verifyMission (integração com PGlite)', () => {
 
   it('rejects a query that errors', async () => {
     const result = await verifyMission(
-      { engine, repository, analytics, trailId: 'banco-de-dados' },
+      { engine, repository, analytics, leaderboard, trailId: 'banco-de-dados', traveler },
       selectMission,
       'SELECT nome, preco FROM tabela_que_nao_existe',
     );
@@ -103,7 +108,7 @@ describe('verifyMission (integração com PGlite)', () => {
 
   it('accepts the correct DDL for a "state" mission', async () => {
     const result = await verifyMission(
-      { engine, repository, analytics, trailId: 'banco-de-dados' },
+      { engine, repository, analytics, leaderboard, trailId: 'banco-de-dados', traveler },
       stateMission,
       'CREATE TABLE alunos (id SERIAL PRIMARY KEY, nome VARCHAR(80) NOT NULL, xp INTEGER DEFAULT 0)',
     );
@@ -113,7 +118,7 @@ describe('verifyMission (integração com PGlite)', () => {
 
   it('rejects DDL that does not match the expected final state', async () => {
     const result = await verifyMission(
-      { engine, repository, analytics, trailId: 'banco-de-dados' },
+      { engine, repository, analytics, leaderboard, trailId: 'banco-de-dados', traveler },
       stateMission,
       'CREATE TABLE alunos (id SERIAL PRIMARY KEY, nome VARCHAR(80))',
     );
