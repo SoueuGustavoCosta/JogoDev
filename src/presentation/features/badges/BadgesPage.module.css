@@ -1,3 +1,48 @@
+.wallet {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: var(--touch-target);
+  padding: 12px 14px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-panel);
+  color: var(--color-text);
+  cursor: pointer;
+  text-align: left;
+}
+
+.walletIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  background: rgba(155, 77, 255, 0.14);
+  color: var(--color-purple-soft);
+}
+
+.walletText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.walletChevron {
+  color: var(--color-muted);
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.walletContent {
+  margin-top: 16px;
+}
+
 .group {
   margin-bottom: 32px;
 }
