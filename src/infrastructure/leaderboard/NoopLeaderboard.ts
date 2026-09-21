@@ -40,4 +40,12 @@ export class NoopLeaderboard implements LeaderboardPort {
   async listOnlinePlayers(_sinceMinutes?: number): Promise<OnlinePlayer[]> {
     return [];
   }
+
+  async backupProgress(_uuid: string, _progress: unknown): Promise<void> {
+    // Intencionalmente vazio.
+  }
+
+  async fetchProgressByName(_nome: string): Promise<{ uuid: string; progress: unknown } | null> {
+    return null;
+  }
 }

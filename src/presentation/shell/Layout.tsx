@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { checkInDaily, getPresence, getProfileSummary, sendHeartbeat } from '@/application/usecases';
+import { backupProgress, checkInDaily, getPresence, getProfileSummary, sendHeartbeat } from '@/application/usecases';
 import type { ProfileSummary } from '@/application/usecases';
 import type { OnlinePlayer } from '@/application/ports';
 import { trailRegistry } from '@/content/registry';
@@ -48,13 +48,15 @@ export function Layout() {
   );
 
   // Check-in diário (uma vez por sessão do app) + batimento de presença (uma vez já,
-  // depois a cada ~90s). Fica aqui porque Layout é o elemento de rota pai — persiste
+  // depois a cada ~90s), que também carrega o backup silencioso do progresso completo
+  // (ver `backupProgress`). Fica aqui porque Layout é o elemento de rota pai — persiste
   // durante toda a navegação, só remonta se o app inteiro recarregar.
   useEffect(() => {
     checkInDaily({ repository: progressRepository, leaderboard });
 
     const refreshPresence = () => {
       sendHeartbeat({ repository: progressRepository, leaderboard });
+      backupProgress({ repository: progressRepository, leaderboard });
       getPresence({ leaderboard })
         .then(setOnlinePlayers)
         .catch(() => {

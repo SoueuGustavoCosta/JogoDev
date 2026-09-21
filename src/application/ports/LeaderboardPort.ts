@@ -49,4 +49,17 @@ export interface LeaderboardPort {
   uploadAvatar(uuid: string, blob: Blob): Promise<string | null>;
   /** Lista quem pingou nos últimos `sinceMinutes` minutos (padrão ~5). Pode rejeitar. */
   listOnlinePlayers(sinceMinutes?: number): Promise<OnlinePlayer[]>;
+  /**
+   * Sobe o `Progress` inteiro (backup silencioso, além do resumo público já sincronizado
+   * pelos outros métodos). `unknown` de propósito: esta porta vive em `application/`, que
+   * não deve importar o tipo `Progress` de `domain/` só para repassá-lo como JSON opaco.
+   * Falha silenciosa: nunca deve quebrar o jogo.
+   */
+  backupProgress(uuid: string, progress: unknown): Promise<void>;
+  /**
+   * Busca o progresso salvo de outro aparelho/navegador pelo nome único do jogador
+   * (recuperação sem senha: o nome já é único no Supabase). `null` se o nome não existe
+   * ou ainda não tem backup. Leitura normal: pode rejeitar.
+   */
+  fetchProgressByName(nome: string): Promise<{ uuid: string; progress: unknown } | null>;
 }

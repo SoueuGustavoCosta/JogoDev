@@ -12,6 +12,9 @@ type SelectQuery = {
     maybeSingle(): Promise<{ data: Record<string, unknown> | null; error: { message: string } | null }>;
   };
   gte(column: string, value: string): Promise<SelectResult>;
+  ilike(column: string, value: string): {
+    maybeSingle(): Promise<{ data: Record<string, unknown> | null; error: { message: string } | null }>;
+  };
 };
 
 type SupabaseClientLike = {
@@ -213,5 +216,23 @@ export class SupabaseLeaderboard implements LeaderboardPort {
       nome: String(row.nome),
       fotoUrl: row.foto_url ? String(row.foto_url) : null,
     }));
+  }
+
+  async backupProgress(uuid: string, progress: unknown): Promise<void> {
+    try {
+      const client = await this.ensureClient();
+      const { error } = await client.from('jogadores').update({ progresso_completo: progress }).eq('uuid', uuid);
+      if (error && import.meta.env.DEV) console.warn('[SupabaseLeaderboard] backupProgress falhou:', error.message);
+    } catch (e) {
+      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] backupProgress falhou:', e);
+    }
+  }
+
+  async fetchProgressByName(nome: string): Promise<{ uuid: string; progress: unknown } | null> {
+    const client = await this.ensureClient();
+    const { data, error } = await client.from('jogadores').select('uuid,progresso_completo').ilike('nome', nome).maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!data || data.progresso_completo == null) return null;
+    return { uuid: String(data.uuid), progress: data.progresso_completo };
   }
 }
