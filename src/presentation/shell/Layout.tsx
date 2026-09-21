@@ -6,7 +6,7 @@ import type { OnlinePlayer } from '@/application/ports';
 import { trailRegistry } from '@/content/registry';
 import { badgeCatalog } from '@/content/badges/catalog';
 import { SUPPORT_COPY } from '@/domain/support';
-import { LabIcon, MapIcon, Modal, MoreIcon, TravelerIcon } from '@/presentation/design-system';
+import { MapIcon, Modal, MoreIcon, TravelerIcon } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
 import { SupportModal } from '@/presentation/features/support';
 import { ProfileHeader } from './ProfileHeader';
@@ -77,7 +77,6 @@ export function Layout() {
       <nav className={styles.nav} aria-label="Navegação principal">
         <NavItem to="/" end label="Mapa" icon={<MapIcon />} />
         <NavItem to="/configuracoes" label="Viajante" icon={<TravelerIcon />} />
-        <NavItem to="/trilhas/banco-de-dados/laboratorio" label="Máquina" icon={<LabIcon />} />
         <button type="button" className={styles.navLink} onClick={() => setMoreOpen(true)}>
           <MoreIcon />
           <span>Mais</span>
