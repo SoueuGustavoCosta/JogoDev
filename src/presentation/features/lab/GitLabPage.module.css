@@ -1,0 +1,200 @@
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.seg {
+  display: inline-flex;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.segButton {
+  min-height: var(--touch-target);
+  padding: 8px 14px;
+  background: var(--color-panel);
+  color: var(--color-text);
+  border: none;
+  cursor: pointer;
+}
+
+.segButtonOn {
+  background: var(--color-purple);
+}
+
+.status {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0;
+}
+
+.chip {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  background: var(--color-panel-2);
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  color: var(--color-orange-soft);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+}
+
+.chipStaged {
+  border-color: var(--color-good);
+  color: var(--color-good);
+}
+
+.chipModified {
+  border-color: var(--color-orange);
+  color: var(--color-orange-soft);
+}
+
+.chipUntracked {
+  border-color: var(--color-purple);
+  color: var(--color-purple-soft);
+}
+
+.chipBranch {
+  margin-left: auto;
+  color: var(--color-muted);
+}
+
+.termOut {
+  padding: 14px 16px;
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+  line-height: 1.65;
+  min-height: 200px;
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+.tlCmd {
+  color: var(--color-text);
+}
+
+.tlOk {
+  color: var(--color-good);
+}
+
+.tlErr {
+  color: var(--color-bad);
+}
+
+.tlInfo {
+  color: var(--color-purple-soft);
+}
+
+.tlLog {
+  color: var(--color-code-num);
+}
+
+.tlDiffnew {
+  color: var(--color-good);
+}
+
+.tlDiffmod {
+  color: var(--color-orange-soft);
+}
+
+.prompt {
+  color: var(--color-good);
+}
+
+.termInput {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-top: 1px solid var(--color-line);
+}
+
+.termInputField {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  min-height: var(--touch-target);
+}
+
+.labActions {
+  display: flex;
+  gap: 10px;
+  padding: 0 16px 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.missionsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+@media (min-width: 640px) {
+  .missionsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.missionCard {
+  background: var(--color-panel);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+}
+
+.missionCard h3 {
+  font-size: 0.98rem;
+  margin-bottom: 4px;
+}
+
+.missionCard p {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--color-muted);
+}
+
+.missionDone {
+  border-color: var(--color-good);
+}
+
+.missionCurrent {
+  border-color: var(--color-orange);
+}
+
+.hint {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  color: var(--color-purple-soft);
+  margin-top: 6px;
+}
+
+.okBadge {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-good);
+  border: 1px solid var(--color-good);
+  border-radius: 999px;
+  padding: 1px 8px;
+  margin-left: 6px;
+  vertical-align: middle;
+}

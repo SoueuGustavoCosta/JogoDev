@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useNavigate, useOutletContext, useParams } from 'react-router-dom';
-import { completeModule } from '@/application/usecases';
+import { completeModule, getOrCreateTravelerUuid, getTraveler } from '@/application/usecases';
 import { getTrailById } from '@/content/registry';
 import { XP_MODULE_COMPLETION_BONUS } from '@/domain/progress';
 import { BlockRenderer } from '@/presentation/blocks';
@@ -14,7 +14,7 @@ export function ModulePage() {
   const { trailId, moduleId } = useParams<{ trailId: string; moduleId: string }>();
   const navigate = useNavigate();
   const { refresh } = useOutletContext<TrailOutletContext>();
-  const { progressRepository, analytics } = useServices();
+  const { progressRepository, analytics, leaderboard } = useServices();
   const [result, setResult] = useState<{ fresh: boolean; trailCompleted: boolean } | null>(null);
 
   const trail = trailId ? getTrailById(trailId) : undefined;
@@ -31,9 +31,11 @@ export function ModulePage() {
   if (!trail || !module) return <Navigate to="/" replace />;
 
   function handleFinished() {
+    const uuid = getOrCreateTravelerUuid({ repository: progressRepository });
+    const { name } = getTraveler({ repository: progressRepository });
     const outcome = completeModule(
-      { repository: progressRepository, analytics },
-      { trail: trail!, moduleId: module!.id },
+      { repository: progressRepository, analytics, leaderboard },
+      { trail: trail!, moduleId: module!.id, traveler: { uuid, name } },
     );
     setResult({ fresh: !outcome.alreadyCompleted, trailCompleted: outcome.trailCompleted });
     refresh();
@@ -52,7 +54,7 @@ export function ModulePage() {
       <div className={styles.sintaxe}>
         <SintaxeFace size={44} />
         <p>
-          <b>SINTAXE</b> · Toda lição parte de um problema real. Leia com calma; quando estiver pronto, o
+          <b>Senhorita Sintaxe</b> · Toda lição parte de um problema real. Leia com calma; quando estiver pronto, o
           paradoxo no fim destrava o próximo salto.
         </p>
       </div>

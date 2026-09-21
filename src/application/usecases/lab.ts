@@ -1,6 +1,6 @@
 import { createEmptyProgress, getOrCreateTrailProgress } from '@/domain/progress';
 import type { Mission } from '@/domain/trail';
-import type { AnalyticsPort, ProgressRepository, SqlEnginePort, SqlResultBlock } from '../ports';
+import type { AnalyticsPort, LeaderboardPort, ProgressRepository, SqlEnginePort, SqlResultBlock } from '../ports';
 
 export function openLab(deps: { engine: SqlEnginePort; analytics: AnalyticsPort }): Promise<void> {
   deps.analytics.track('lab_opened');
@@ -30,6 +30,52 @@ function stringifyRow(row: unknown[]): string {
   );
 }
 
+/**
+ * Marca uma missão como concluída em `ProgressRepository`, sem depender de nenhum
+ * motor específico (SQL ou Git). Devolve `true` só quando a missão ainda não estava
+ * marcada (para o chamador decidir se dispara o evento `mission_completed`).
+ */
+function markMissionCompleted(repository: ProgressRepository, trailId: string, missionId: string): boolean {
+  const progress = repository.load() ?? createEmptyProgress();
+  const trailProgress = getOrCreateTrailProgress(progress, trailId);
+  if (trailProgress.missionsCompleted[missionId]) return false;
+  repository.save({
+    ...progress,
+    trails: {
+      ...progress.trails,
+      [trailId]: {
+        ...trailProgress,
+        missionsCompleted: { ...trailProgress.missionsCompleted, [missionId]: true },
+      },
+    },
+  });
+  return true;
+}
+
+/**
+ * Equivalente de `verifyMission` para o Laboratório Git: como o motor é síncrono e
+ * puro (domain/lab/git.ts já decide se a missão foi cumprida), aqui só falta
+ * persistir e disparar a métrica, do mesmo jeito que o laboratório SQL faz.
+ */
+export function completeGitMission(
+  deps: {
+    repository: ProgressRepository;
+    analytics: AnalyticsPort;
+    leaderboard: LeaderboardPort;
+    trailId: string;
+    traveler: { uuid: string; name: string };
+  },
+  missionId: string,
+): boolean {
+  const changed = markMissionCompleted(deps.repository, deps.trailId, missionId);
+  if (changed) {
+    deps.analytics.track('mission_completed', { mission: missionId });
+    void deps.leaderboard.upsertPlayer(deps.traveler.uuid, deps.traveler.name);
+    void deps.leaderboard.syncProgress(deps.traveler.uuid, deps.trailId, missionId);
+  }
+  return changed;
+}
+
 export type VerifyMissionResult = { ok: true } | { ok: false; message: string };
 
 /**
@@ -41,7 +87,9 @@ export async function verifyMission(
     engine: SqlEnginePort;
     repository: ProgressRepository;
     analytics: AnalyticsPort;
+    leaderboard: LeaderboardPort;
     trailId: string;
+    traveler: { uuid: string; name: string };
   },
   mission: Mission,
   studentSql: string,
@@ -99,20 +147,10 @@ export async function verifyMission(
     };
   }
 
-  const progress = deps.repository.load() ?? createEmptyProgress();
-  const trailProgress = getOrCreateTrailProgress(progress, deps.trailId);
-  if (!trailProgress.missionsCompleted[mission.id]) {
-    deps.repository.save({
-      ...progress,
-      trails: {
-        ...progress.trails,
-        [deps.trailId]: {
-          ...trailProgress,
-          missionsCompleted: { ...trailProgress.missionsCompleted, [mission.id]: true },
-        },
-      },
-    });
+  if (markMissionCompleted(deps.repository, deps.trailId, mission.id)) {
     deps.analytics.track('mission_completed', { mission: mission.id });
+    void deps.leaderboard.upsertPlayer(deps.traveler.uuid, deps.traveler.name);
+    void deps.leaderboard.syncProgress(deps.traveler.uuid, deps.trailId, mission.id);
   }
 
   return { ok: true };

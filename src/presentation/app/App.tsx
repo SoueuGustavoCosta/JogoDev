@@ -13,6 +13,9 @@ const TrailOverview = lazy(() =>
 const TrailShell = lazy(() => import('@/presentation/features/trail').then((m) => ({ default: m.TrailShell })));
 const ModulePage = lazy(() => import('@/presentation/features/trail').then((m) => ({ default: m.ModulePage })));
 const LabPage = lazy(() => import('@/presentation/features/lab').then((m) => ({ default: m.LabPage })));
+const BossFightPage = lazy(() =>
+  import('@/presentation/features/bossfight').then((m) => ({ default: m.BossFightPage })),
+);
 const SettingsPage = lazy(() =>
   import('@/presentation/features/settings').then((m) => ({ default: m.SettingsPage })),
 );
@@ -22,6 +25,7 @@ const PrologueScreen = lazy(() =>
 const PrivacyPage = lazy(() =>
   import('@/presentation/features/settings').then((m) => ({ default: m.PrivacyPage })),
 );
+const HallPage = lazy(() => import('@/presentation/features/hall').then((m) => ({ default: m.HallPage })));
 
 function AppRoutes() {
   return (
@@ -33,9 +37,11 @@ function AppRoutes() {
             <Route index element={<TrailOverview />} />
             <Route path="modulos/:moduleId" element={<ModulePage />} />
             <Route path="laboratorio" element={<LabPage />} />
+            <Route path="chefe" element={<BossFightPage />} />
           </Route>
           <Route path="configuracoes" element={<SettingsPage />} />
           <Route path="privacidade" element={<PrivacyPage />} />
+          <Route path="hall" element={<HallPage />} />
           <Route path="prologo" element={<PrologueScreen />} />
         </Route>
       </Routes>

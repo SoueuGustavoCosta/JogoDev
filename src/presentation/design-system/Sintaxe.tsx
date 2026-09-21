@@ -7,7 +7,7 @@ export function SintaxeFace({ size = 96, className }: { size?: number; className
       height={(size * 52) / 60}
       className={className}
       role="img"
-      aria-label="Sintaxe, a guia da Linha do Tempo"
+      aria-label="Senhorita Sintaxe, a guia da Linha do Tempo"
     >
       <rect x="-24" y="-20" width="48" height="40" rx="6" fill="#151225" stroke="#9b4dff" strokeWidth="1.6" />
       <rect x="-24" y="-20" width="48" height="8" rx="5" fill="#1b1731" />

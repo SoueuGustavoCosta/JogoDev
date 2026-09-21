@@ -1,0 +1,77 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding-block: 8px;
+  max-width: 68ch;
+}
+
+.header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.skip {
+  min-height: var(--touch-target);
+  padding: 0 16px;
+  border-radius: 99px;
+  border: 1px solid var(--color-line);
+  background: var(--color-panel);
+  color: var(--color-muted);
+  font: 700 0.78rem var(--font-mono);
+  cursor: pointer;
+}
+
+.stage {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.bubble {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--color-line);
+  background: var(--color-panel);
+  border-radius: 16px;
+  padding: 14px 16px;
+  animation: rise 0.35s ease;
+}
+
+.who {
+  font: 700 0.7rem var(--font-mono);
+  color: var(--color-cyan);
+  margin-bottom: 6px;
+}
+
+.bubble p {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.5;
+  color: var(--color-text);
+}
+
+.continue {
+  align-self: flex-start;
+  min-height: var(--touch-target);
+  padding: 12px 22px;
+  border: 0;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--color-purple), #7b2ff0);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bubble {
+    animation: none;
+  }
+}

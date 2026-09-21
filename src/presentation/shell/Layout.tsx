@@ -86,6 +86,10 @@ export function Layout() {
               {SUPPORT_COPY.footerLinkLabel}
             </button>
             {' · '}
+            <Link to="/hall" className={styles.footerLink}>
+              Hall dos Viajantes
+            </Link>
+            {' · '}
             <Link to="/privacidade" className={styles.footerLink}>
               Privacidade
             </Link>
@@ -102,6 +106,9 @@ export function Layout() {
             </Link>
             <Link to="/configuracoes" onClick={() => setMoreOpen(false)}>
               Exportar / importar meu progresso
+            </Link>
+            <Link to="/hall" onClick={() => setMoreOpen(false)}>
+              Hall dos Viajantes
             </Link>
             <Link to="/privacidade" onClick={() => setMoreOpen(false)}>
               Privacidade

@@ -3,9 +3,11 @@ import { Link, Navigate, useParams } from 'react-router-dom';
 import { getTrailProgress } from '@/application/usecases';
 import { maxXpForTrail } from '@/domain/progress';
 import { SUPPORT_COPY } from '@/domain/support';
+import type { Module, Trail } from '@/domain/trail';
 import { getTrailById } from '@/content/registry';
 import { SupportModal } from '@/presentation/features/support';
 import { useServices } from '@/presentation/app/ServicesContext';
+import { TrailIntroDialogue, hasSeenTrailIntro } from './TrailIntroDialogue';
 import styles from './TrailOverview.module.css';
 
 export function TrailOverview() {
@@ -14,6 +16,11 @@ export function TrailOverview() {
   const [supportOpen, setSupportOpen] = useState(false);
 
   const trail = trailId ? getTrailById(trailId) : undefined;
+
+  const [introOpen, setIntroOpen] = useState(() => {
+    if (!trail?.intro?.length) return false;
+    return !hasSeenTrailIntro(trail.id);
+  });
 
   useEffect(() => {
     if (trail) analytics.track('island_opened', { island: trail.id });
@@ -26,16 +33,56 @@ export function TrailOverview() {
   const firstOpen = trail.modules.find((m) => !trailProgress?.modules[m.id]?.completed);
   const started = xp > 0 || Object.keys(trailProgress?.modules ?? {}).length > 0;
   const trophy = Boolean(trailProgress?.trophyAwarded);
+  const bossDefeated = Boolean(trailProgress?.bossDefeated);
   const quizCount = trail.modules.reduce((sum, m) => sum + m.quiz.length, 0);
 
   return (
     <article className={styles.hero}>
-      <p className="eyebrow">Era 1 · 1963 → hoje</p>
+      <p className="eyebrow">{trail.eyebrow ?? 'Era 1 · 1963 → hoje'}</p>
       <h1>
         <em>{trail.title}</em>
       </h1>
       <p className={styles.lead}>{trail.tagline}</p>
 
+      {introOpen && trail.intro?.length ? (
+        <TrailIntroDialogue trailId={trail.id} lines={trail.intro} onDone={() => setIntroOpen(false)} />
+      ) : (
+        <TrailOverviewBody
+          trail={trail}
+          firstOpen={firstOpen}
+          started={started}
+          trophy={trophy}
+          bossDefeated={bossDefeated}
+          quizCount={quizCount}
+          supportOpen={supportOpen}
+          setSupportOpen={setSupportOpen}
+        />
+      )}
+    </article>
+  );
+}
+
+function TrailOverviewBody({
+  trail,
+  firstOpen,
+  started,
+  trophy,
+  bossDefeated,
+  quizCount,
+  supportOpen,
+  setSupportOpen,
+}: {
+  trail: Trail;
+  firstOpen: Module | undefined;
+  started: boolean;
+  trophy: boolean;
+  bossDefeated: boolean;
+  quizCount: number;
+  supportOpen: boolean;
+  setSupportOpen: (open: boolean) => void;
+}) {
+  return (
+    <>
       <div className={styles.row}>
         {firstOpen ? (
           <Link to={`/trilhas/${trail.id}/modulos/${firstOpen.id}`} className={styles.primary}>
@@ -91,10 +138,19 @@ export function TrailOverview() {
               {SUPPORT_COPY.footerLinkLabel}
             </button>
           </p>
+          {trail.bossFight ? (
+            bossDefeated ? (
+              <p className={styles.lead}>🛡️ Insígnia conquistada: {trail.bossFight.badgeTitle}.</p>
+            ) : (
+              <Link to={`/trilhas/${trail.id}/chefe`} className={styles.ghost}>
+                Enfrentar {trail.bossFight.bossName} ▸
+              </Link>
+            )
+          ) : null}
         </div>
       ) : null}
 
       {supportOpen ? <SupportModal onClose={() => setSupportOpen(false)} /> : null}
-    </article>
+    </>
   );
 }

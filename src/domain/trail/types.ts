@@ -1,3 +1,5 @@
+import type { BossFight } from '../bossFight/types';
+
 export type SymbolId = string;
 
 export type QuizItem =
@@ -70,13 +72,27 @@ export type Mission =
       expect: string[][];
     };
 
+// Os tipos do chefe de fase vivem em domain/bossFight (motor puro, compartilhado entre
+// eras); aqui só reexportamos para quem só conhece domain/trail.
+export type { BossFight, BossRound, BossSequence } from '../bossFight/types';
+
 export type Trail = {
   id: string;
   title: string;
   tagline: string;
   symbol: SymbolId;
   accent: string;
+  /** Rótulo da era mostrado na tela de entrada da ilha (ex.: "Era 4 · Código Compartilhado"). */
+  eyebrow?: string;
+  /**
+   * Conversa da Senhorita Sintaxe que abre a ilha, situando o problema da era, em pequenos
+   * blocos (um por fala). Cada item pode conter <b> simples. Quando presente, a tela da trilha
+   * mostra essa conversa antes de liberar o resto da visão geral.
+   */
+  intro?: string[];
   modules: Module[];
   missions?: Mission[];
-  lab?: 'sql' | null;
+  lab?: 'sql' | 'git' | null;
+  /** Chefe de fase de fim de era (desbloqueado só quando a trilha inteira estiver concluída). */
+  bossFight?: BossFight;
 };

@@ -75,9 +75,10 @@ export const ERAS: MapEra[] = [
     y: 830,
     color: '#ffa36b',
     icon: 'git',
-    status: 'breve',
+    status: 'ativo',
     years: 'ERA 4',
-    description: 'Git e GitHub: como times escrevem juntos sem se atropelar.',
+    trailId: 'git-github',
+    description: 'Git e GitHub: como times escrevem juntos sem se atropelar. Do primeiro commit ao primeiro push, com laboratório de terminal.',
   },
   {
     id: 'nuvem',
@@ -110,7 +111,7 @@ export const ERAS: MapEra[] = [
     icon: 'ia',
     status: 'nevoa',
     years: 'ERA 7',
-    description: 'Ainda inexplorada. A Sintaxe diz que a névoa só abre quando o mapa estiver mais completo.',
+    description: 'Ainda inexplorada. A Senhorita Sintaxe diz que a névoa só abre quando o mapa estiver mais completo.',
   },
 ];
 
