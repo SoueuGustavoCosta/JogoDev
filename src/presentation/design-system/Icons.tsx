@@ -108,3 +108,8 @@ export const TravelerIcon = () => (
     <path d="M4 21c1-5 5-7 8-7s7 2 8 7" />
   </Svg>
 );
+export const HallIcon = () => (
+  <Svg>
+    <path d="M4 10l8-6 8 6M5 10v10h14V10M9 20v-6h6v6" />
+  </Svg>
+);

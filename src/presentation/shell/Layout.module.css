@@ -96,48 +96,6 @@
   box-shadow: 0 0 18px -4px rgba(94, 231, 255, 0.6);
 }
 
-.more {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.moreSection {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.moreSection h3 {
-  font: 700 0.72rem var(--font-mono);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--color-muted);
-  margin: 0;
-}
-
-.more a,
-.more button {
-  display: block;
-  width: 100%;
-  padding: 12px 14px;
-  min-height: var(--touch-target);
-  background: var(--color-panel-2);
-  border: 1px solid var(--color-line);
-  border-radius: 12px;
-  color: var(--color-text);
-  text-decoration: none;
-  font-weight: 600;
-  text-align: left;
-  opacity: 1;
-}
-
-.more p {
-  color: var(--color-muted);
-  font-size: 0.8rem;
-  margin: 8px 0 0;
-}
-
 .pix {
   position: fixed;
   top: max(8px, env(safe-area-inset-top));

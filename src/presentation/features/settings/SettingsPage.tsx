@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
+  BIO_MAX_LENGTH,
   exportProgress,
   generateAndSaveRecoveryCode,
+  getCachedBio,
   getCachedRecoveryCode,
-  getMyBadges,
   getTraveler,
   importProgress,
   restoreProgress,
+  saveBio,
 } from '@/application/usecases';
-import { badgeCatalog } from '@/content/badges/catalog';
 import { SUPPORT_COPY } from '@/domain/support';
 import { Button } from '@/presentation/design-system';
+import { BadgePassport } from '@/presentation/features/badges';
 import { SupportModal } from '@/presentation/features/support';
 import { useServices } from '@/presentation/app/ServicesContext';
 import styles from './SettingsPage.module.css';
@@ -28,10 +30,14 @@ export function SettingsPage() {
   const [restoreCode, setRestoreCode] = useState('');
   const [restoreMessage, setRestoreMessage] = useState<string | null>(null);
   const [restoring, setRestoring] = useState(false);
+  const [bio, setBio] = useState(() => getCachedBio({ repository: progressRepository }));
 
   const name = getTraveler({ repository: progressRepository }).name;
-  const earned = getMyBadges({ repository: progressRepository });
-  const earnedCount = Object.keys(earned).length;
+
+  function handleBioBlur() {
+    const saved = saveBio({ repository: progressRepository, leaderboard }, { bio });
+    setBio(saved);
+  }
 
   function handleExport() {
     const code = exportProgress({ repository: progressRepository });
@@ -80,6 +86,10 @@ export function SettingsPage() {
       <h1>Viajante</h1>
 
       <section className={styles.section}>
+        <BadgePassport />
+      </section>
+
+      <section className={styles.section}>
         <div className={styles.idCard}>
           <div className={styles.idField}>
             <span className={styles.idLabel}>Nome</span>
@@ -100,14 +110,28 @@ export function SettingsPage() {
           outro lugar — sem ele, seu nome sozinho (que é público no Hall) não basta.
         </p>
         <p className={styles.hint}>
-          {earnedCount}/{badgeCatalog.length} insígnias ·{' '}
-          <Link className={styles.link} to="/insignias">
-            ver passaporte ▸
-          </Link>{' '}
-          ·{' '}
           <Link className={styles.link} to="/prologo">
             trocar de nome ▸
           </Link>
+        </p>
+      </section>
+
+      <section className={styles.section}>
+        <h2>Sobre você</h2>
+        <p className={styles.hint}>
+          Um resumo curto pra aparecer no Hall dos Viajantes, do seu jeito: curso, período, o que estiver estudando.
+        </p>
+        <textarea
+          value={bio}
+          onChange={(e) => setBio(e.target.value.slice(0, BIO_MAX_LENGTH))}
+          onBlur={handleBioBlur}
+          placeholder="Ex.: Curso Ciência da Computação, 4º período, na tal universidade."
+          className={styles.field}
+          style={{ minHeight: 52 }}
+          maxLength={BIO_MAX_LENGTH}
+        />
+        <p className={styles.hint} style={{ margin: 0 }}>
+          {bio.length}/{BIO_MAX_LENGTH}
         </p>
       </section>
 

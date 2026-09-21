@@ -56,6 +56,7 @@ export function HallPage() {
           {state.entries.map((entry, i) => (
             <div key={`${entry.nome}-${i}`} className={styles.cardItem}>
               <h3>{entry.nome}</h3>
+              {entry.bio ? <p className={styles.bio}>{entry.bio}</p> : null}
               {entry.insignias.length === 0 ? (
                 <p className={styles.empty}>Ainda sem insígnias.</p>
               ) : (

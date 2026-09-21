@@ -22,6 +22,13 @@
   font-size: 1rem;
 }
 
+.bio {
+  margin: -4px 0 10px;
+  color: var(--color-muted);
+  font-size: 0.84rem;
+  line-height: 1.35;
+}
+
 .empty {
   margin: 0;
   color: var(--color-muted);
