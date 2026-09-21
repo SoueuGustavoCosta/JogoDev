@@ -30,7 +30,8 @@ export type Block =
   | { t: 'table'; cols: string[]; rows: string[][]; file?: string; mac?: boolean }
   | { t: 'flow'; items: string[] }
   | { t: 'raw'; file: string; x: string }
-  | { t: 'gui' }
+  /** Widget interativo registrado por id (ver presentation/blocks). Sem `widget`, é só um placeholder "em construção". */
+  | { t: 'gui'; widget?: string }
   | { t: 'syntax' }
   /** Fala embutida da Senhorita Sintaxe dentro de uma lição; `{name}` vira o nome do viajante (ver domain/prologue). */
   | { t: 'say'; x: string }

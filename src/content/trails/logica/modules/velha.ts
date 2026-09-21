@@ -3,14 +3,13 @@ import type { Module } from '@/domain/trail/types';
 /**
  * Migrado de Ilha_da_Logica_PHP_1.html (módulo "velha" — "Desafio: o Jogo da Velha").
  *
- * TODO(autor): o minijogo da velha interativo (VSTEPS: 5 passos de preencher lacunas de
- * código — limpeza, posicao, velha, maquinaJoga e a caça ao bug do tabuleiro cheio — mais
- * o tabuleiro jogável contra a máquina) não foi portado como widget React: é um motor
- * bespoke (validação de lacuna por regex por passo, simulação do "laço infinito", IA
- * simples da máquina, tabuleiro 3x3 jogável) grande o bastante para ser um farol de
- * trabalho à parte. O conteúdo de ensino do farol (as regras do Estudo Dirigido, o que
- * cada função faz e o código-fonte de cada uma, lacunas incluídas) foi portado por
- * completo abaixo, para nada se perder; falta só a parte jogável.
+ * O minijogo interativo (5 passos de preencher lacunas de código — limpeza, posicao,
+ * velha, maquinaJoga e a caça ao bug do tabuleiro cheio — mais o tabuleiro jogável
+ * contra a máquina) virou o widget `TicTacToeStudyWidget`, registrado como
+ * `{ t: 'gui', widget: 'jogo-da-velha' }` no fim dos blocos abaixo. O motor puro (regras
+ * do jogo, jogada da máquina, checagem das lacunas) vive em `domain/ticTacToe`; as
+ * lacunas de cada passo, extraídas literalmente dos blocos `code` abaixo, vivem em
+ * `content/trails/logica/ticTacToeSteps.ts`.
  *
  * O protótipo não tinha `quiz` neste módulo (o "desafio" substituía a prova). Como o
  * domínio desta app exige pelo menos um item de quiz por módulo, foi acrescentado um
@@ -126,6 +125,12 @@ export const modVelha: Module = {
       k: 'Para entregar ao professor',
       x: 'Arquivo começa com o comentário de bloco (curso, disciplina, professor e aluno); todas as funções "Em construção" completadas por você; cada linha comentada, com as suas palavras; a estrutura original mantida; testado no navegador: jogar, ganhar, perder, empatar e reiniciar.',
     },
+    { t: 'h', x: 'Agora é a sua vez: preencha as lacunas' },
+    {
+      t: 'p',
+      x: 'Complete os 5 passos abaixo com o mesmo código dos blocos acima. Quando o último passo estiver certo, o tabuleiro aparece de verdade — e você joga contra a máquina que acabou de programar.',
+    },
+    { t: 'gui', widget: 'jogo-da-velha' },
   ],
   quiz: [
     {

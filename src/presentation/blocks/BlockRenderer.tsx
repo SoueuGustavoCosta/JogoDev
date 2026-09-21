@@ -1,8 +1,14 @@
+import type { ReactElement } from 'react';
 import type { Block } from '@/domain/trail';
 import { interpolate } from '@/domain/prologue';
 import { NotebookFrame, SintaxeFace } from '@/presentation/design-system';
 import { highlightSql } from './highlight';
+import { TicTacToeStudyWidget } from './TicTacToeStudyWidget';
 import styles from './BlockRenderer.module.css';
+
+const GUI_WIDGETS: Record<string, () => ReactElement> = {
+  'jogo-da-velha': TicTacToeStudyWidget,
+};
 
 /** Conteúdo é autoral (vive em src/content), nunca dado do usuário: seguro para innerHTML. */
 function Html({ html }: { html: string }) {
@@ -156,7 +162,16 @@ export function BlockRenderer({
         </NotebookFrame>
       );
 
-    case 'gui':
+    case 'gui': {
+      const Widget = block.widget ? GUI_WIDGETS[block.widget] : undefined;
+      if (Widget) return <Widget />;
+      return (
+        <div className={styles.placeholder}>
+          Widget interativo em construção — o conteúdo da lição continua completo nos blocos ao redor.
+        </div>
+      );
+    }
+
     case 'syntax':
       return (
         <div className={styles.placeholder}>
