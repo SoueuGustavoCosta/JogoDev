@@ -128,10 +128,10 @@ export type RestoreProgressResult = { ok: true } | { ok: false; reason: string }
 /**
  * Gera um código de recuperação (via `params.code`, criado na apresentação com
  * `generateRecoveryCode` — mesmo padrão de `resizeAvatarImage`/`uploadAvatarPhoto`,
- * ver `ServicesContext.tsx`), salva o hash no Supabase (`leaderboard.setRecoveryCode`)
- * e devolve o código em texto puro para a tela mostrar **uma única vez**: depois disso
- * o app nunca mais o guarda nem consegue lê-lo de volta (o hash não é legível nem pela
- * chave anon, ver `supabase/schema.sql`).
+ * ver `ServicesContext.tsx`), salva o hash no Supabase (`leaderboard.setRecoveryCode`) e
+ * guarda o texto puro só localmente (`Progress.recoveryCode`), pra tela do Viajante poder
+ * mostrar o código de novo neste aparelho sempre que quiser — o Supabase nunca guarda nem
+ * consegue devolver o texto puro, só o hash (ver `supabase/schema.sql`).
  */
 export async function generateAndSaveRecoveryCode(
   deps: { repository: ProgressRepository; leaderboard: LeaderboardPort },
@@ -139,7 +139,14 @@ export async function generateAndSaveRecoveryCode(
 ): Promise<string> {
   const uuid = getOrCreateTravelerUuid({ repository: deps.repository });
   await deps.leaderboard.setRecoveryCode(uuid, params.code);
+  const progress = deps.repository.load() ?? createEmptyProgress();
+  deps.repository.save({ ...progress, recoveryCode: params.code });
   return params.code;
+}
+
+/** Lê o código de recuperação já gerado neste aparelho (ou null, se ainda não gerou nenhum). */
+export function getCachedRecoveryCode(deps: { repository: ProgressRepository }): string | null {
+  return deps.repository.load()?.recoveryCode ?? null;
 }
 
 /**

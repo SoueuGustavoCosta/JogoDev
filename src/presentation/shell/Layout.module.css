@@ -116,8 +116,10 @@
   margin: 0;
 }
 
-.more a {
+.more a,
+.more button {
   display: block;
+  width: 100%;
   padding: 12px 14px;
   min-height: var(--touch-target);
   background: var(--color-panel-2);
@@ -126,6 +128,8 @@
   color: var(--color-text);
   text-decoration: none;
   font-weight: 600;
+  text-align: left;
+  opacity: 1;
 }
 
 .more p {
