@@ -2,7 +2,8 @@ import type { Module } from '@/domain/trail/types';
 
 /**
  * Migrado de Ilha_da_Logica_PHP_1.html (módulo "variaveis" — "Variáveis, tipos e constantes").
- * O widget "Laboratório de tipos" (WID.types) vira um placeholder `gui`.
+ * O widget "Laboratório de tipos" virou o jogo `qual-tipo` (GuessTypeWidget): o viajante
+ * adivinha o tipo de cada variável antes de ver a tabela comparativa.
  */
 export const modVariaveis: Module = {
   id: 'variaveis',
@@ -45,7 +46,7 @@ export const modVariaveis: Module = {
       x: 'A apostila cita o tipo <code>char</code> (um único caractere, entre aspas simples). Em C e Java ele existe. Em PHP não: uma letra sozinha é apenas uma string de tamanho 1.',
     },
     { t: 'h', x: 'Teste os tipos você mesmo' },
-    { t: 'gui' },
+    { t: 'gui', widget: 'qual-tipo' },
     { t: 'h', x: 'A mesma ideia em quatro linguagens' },
     {
       t: 'table',

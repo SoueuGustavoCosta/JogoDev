@@ -5,11 +5,13 @@ import { NotebookFrame, SintaxeFace } from '@/presentation/design-system';
 import { highlightSql } from './highlight';
 import { TicTacToeStudyWidget } from './TicTacToeStudyWidget';
 import { GuessTheLanguageWidget } from './GuessTheLanguageWidget';
+import { GuessTypeWidget } from './GuessTypeWidget';
 import styles from './BlockRenderer.module.css';
 
 const GUI_WIDGETS: Record<string, () => ReactElement> = {
   'jogo-da-velha': TicTacToeStudyWidget,
   'qual-linguagem': GuessTheLanguageWidget,
+  'qual-tipo': GuessTypeWidget,
 };
 
 /** Conteúdo é autoral (vive em src/content), nunca dado do usuário: seguro para innerHTML. */
