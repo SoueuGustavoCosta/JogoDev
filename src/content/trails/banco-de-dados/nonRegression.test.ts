@@ -75,7 +75,7 @@ describe('boss fight da Era dos Dados (O Arquivista)', () => {
     expect(bossFight?.mode).toBe('single-shot');
     expect(bossFight?.rounds).toHaveLength(3);
     expect(bossFight?.intro.length).toBeGreaterThanOrEqual(2);
-    expect(bossFight?.badgeId).toBe('guardiao-banco-de-dados');
+    expect(bossFight?.badgeId).toBe('sql-mestre');
   });
 
   it('cada padrão de cada rodada é uma fonte de regex válida', () => {

@@ -64,7 +64,7 @@ describe('boss fight da Era da Bifurcação (O Bifurcador)', () => {
     expect(bossFight?.mode).toBe('sequence');
     expect(bossFight?.rounds).toHaveLength(4);
     expect(bossFight?.intro.length).toBeGreaterThanOrEqual(2);
-    expect(bossFight?.badgeId).toBe('guardiao-do-versionamento');
+    expect(bossFight?.badgeId).toBe('git-mestre');
   });
 
   it('cada passo de cada rodada é uma fonte de regex válida', () => {

@@ -1,4 +1,5 @@
 export * from './answerQuiz';
+export * from './badges';
 export * from './bossFight';
 export * from './completeModule';
 export * from './getTrailProgress';

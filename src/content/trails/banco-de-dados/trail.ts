@@ -46,7 +46,7 @@ export const bancoDeDadosTrail: Trail = {
         check: ['update', 'set', 'where', '42', '^(?!.*delete)[\\s\\S]*$'],
       },
     ],
-    badgeId: 'guardiao-banco-de-dados',
+    badgeId: 'sql-mestre',
     badgeTitle: 'Guardião do Banco de Dados',
     badgeDescription:
       'Concedida a quem modela, consulta e altera dados sem quebrar nada — nas três frentes da Era do Banco de Dados.',
