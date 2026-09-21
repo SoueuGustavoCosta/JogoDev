@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { exportProgress, getMyBadges, importProgress, restoreProgressByName } from '@/application/usecases';
+import { exportProgress, generateAndSaveRecoveryCode, getMyBadges, importProgress, restoreProgress } from '@/application/usecases';
 import { badgeCatalog } from '@/content/badges/catalog';
 import { SUPPORT_COPY } from '@/domain/support';
 import { BadgeMedal, Button } from '@/presentation/design-system';
@@ -8,12 +8,15 @@ import { SupportModal } from '@/presentation/features/support';
 import { useServices } from '@/presentation/app/ServicesContext';
 
 export function SettingsPage() {
-  const { progressRepository, leaderboard, analytics } = useServices();
+  const { progressRepository, leaderboard, analytics, generateRecoveryCode } = useServices();
   const [exported, setExported] = useState('');
   const [importText, setImportText] = useState('');
   const [importMessage, setImportMessage] = useState<string | null>(null);
   const [supportOpen, setSupportOpen] = useState(false);
+  const [recoveryCode, setRecoveryCode] = useState('');
+  const [generatingCode, setGeneratingCode] = useState(false);
   const [restoreName, setRestoreName] = useState('');
+  const [restoreCode, setRestoreCode] = useState('');
   const [restoreMessage, setRestoreMessage] = useState<string | null>(null);
   const [restoring, setRestoring] = useState(false);
 
@@ -37,11 +40,26 @@ export function SettingsPage() {
     }
   }
 
+  async function handleGenerateRecoveryCode() {
+    setGeneratingCode(true);
+    try {
+      const code = generateRecoveryCode();
+      const saved = await generateAndSaveRecoveryCode({ repository: progressRepository, leaderboard }, { code });
+      setRecoveryCode(saved);
+      analytics.track('recovery_code_generated');
+    } finally {
+      setGeneratingCode(false);
+    }
+  }
+
   async function handleRestore() {
     setRestoring(true);
     setRestoreMessage(null);
     try {
-      const result = await restoreProgressByName({ repository: progressRepository, leaderboard }, { nome: restoreName });
+      const result = await restoreProgress(
+        { repository: progressRepository, leaderboard },
+        { nome: restoreName, codigo: restoreCode },
+      );
       if (result.ok) {
         setRestoreMessage('Progresso recuperado com sucesso! Atualize a página para ver.');
       } else {
@@ -104,10 +122,35 @@ export function SettingsPage() {
       </section>
 
       <section style={{ marginBottom: 32 }}>
+        <h2>Código de recuperação</h2>
+        <p>
+          Seu nome aparece no Hall dos Viajantes, então sozinho ele não é suficiente pra provar que o progresso é
+          seu — esse código extra resolve isso. Gere um código e guarde-o: ele é pedido junto com o nome para
+          restaurar o progresso em outro aparelho.
+        </p>
+        <Button onClick={handleGenerateRecoveryCode} disabled={generatingCode}>
+          {generatingCode ? 'Gerando...' : 'Gerar código de recuperação'}
+        </Button>
+        {recoveryCode ? (
+          <>
+            <p style={{ color: 'var(--color-error, #ff5d7a)', marginTop: 12 }}>
+              Guarde este código agora, ele não aparece de novo.
+            </p>
+            <textarea
+              readOnly
+              value={recoveryCode}
+              style={{ width: '100%', minHeight: 48, fontFamily: 'var(--font-mono)', fontSize: 16 }}
+              onFocus={(e) => e.currentTarget.select()}
+            />
+          </>
+        ) : null}
+      </section>
+
+      <section style={{ marginBottom: 32 }}>
         <h2>Recuperar progresso de outro aparelho</h2>
         <p>
-          Já jogou antes com outro nome, neste ou em outro aparelho? Digite o nome usado na época para trazer aquele
-          progresso de volta.
+          Já jogou antes com outro nome, neste ou em outro aparelho? Digite o nome usado na época e o código de
+          recuperação gerado naquele momento para trazer aquele progresso de volta.
         </p>
         <p style={{ color: 'var(--color-error, #ff5d7a)' }}>
           Atenção: isso substitui o progresso salvo neste navegador agora. Se você tem algo aqui que ainda não
@@ -120,8 +163,18 @@ export function SettingsPage() {
           placeholder="Nome do viajante"
           style={{ width: '100%', fontSize: 16, padding: '10px 12px', marginBottom: 12 }}
         />
+        <input
+          type="text"
+          value={restoreCode}
+          onChange={(e) => setRestoreCode(e.target.value)}
+          placeholder="Código de recuperação"
+          autoCapitalize="off"
+          autoCorrect="off"
+          spellCheck={false}
+          style={{ width: '100%', fontSize: 16, padding: '10px 12px', marginBottom: 12, fontFamily: 'var(--font-mono)' }}
+        />
         <div>
-          <Button onClick={handleRestore} disabled={!restoreName.trim() || restoring}>
+          <Button onClick={handleRestore} disabled={!restoreName.trim() || !restoreCode.trim() || restoring}>
             {restoring ? 'Buscando...' : 'Recuperar progresso'}
           </Button>
         </div>

@@ -45,7 +45,11 @@ export class NoopLeaderboard implements LeaderboardPort {
     // Intencionalmente vazio.
   }
 
-  async fetchProgressByName(_nome: string): Promise<{ uuid: string; progress: unknown } | null> {
+  async setRecoveryCode(_uuid: string, _codigo: string): Promise<void> {
+    // Intencionalmente vazio.
+  }
+
+  async restoreProgress(_nome: string, _codigo: string): Promise<{ uuid: string; progress: unknown } | null> {
     return null;
   }
 }

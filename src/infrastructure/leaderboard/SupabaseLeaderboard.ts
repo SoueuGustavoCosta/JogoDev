@@ -12,9 +12,6 @@ type SelectQuery = {
     maybeSingle(): Promise<{ data: Record<string, unknown> | null; error: { message: string } | null }>;
   };
   gte(column: string, value: string): Promise<SelectResult>;
-  ilike(column: string, value: string): {
-    maybeSingle(): Promise<{ data: Record<string, unknown> | null; error: { message: string } | null }>;
-  };
 };
 
 type SupabaseClientLike = {
@@ -23,6 +20,7 @@ type SupabaseClientLike = {
     update(values: Record<string, unknown>): { eq(column: string, value: unknown): Promise<{ error: { message: string } | null }> };
     select(columns: string): SelectQuery;
   };
+  rpc<T = unknown>(fnName: string, args: Record<string, unknown>): Promise<{ data: T | null; error: { message: string } | null }>;
   storage: {
     from(bucket: string): {
       upload(
@@ -228,11 +226,25 @@ export class SupabaseLeaderboard implements LeaderboardPort {
     }
   }
 
-  async fetchProgressByName(nome: string): Promise<{ uuid: string; progress: unknown } | null> {
+  async setRecoveryCode(uuid: string, codigo: string): Promise<void> {
+    try {
+      const client = await this.ensureClient();
+      const { error } = await client.rpc('definir_codigo_recuperacao', { p_uuid: uuid, p_codigo: codigo });
+      if (error && import.meta.env.DEV) console.warn('[SupabaseLeaderboard] setRecoveryCode falhou:', error.message);
+    } catch (e) {
+      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] setRecoveryCode falhou:', e);
+    }
+  }
+
+  async restoreProgress(nome: string, codigo: string): Promise<{ uuid: string; progress: unknown } | null> {
     const client = await this.ensureClient();
-    const { data, error } = await client.from('jogadores').select('uuid,progresso_completo').ilike('nome', nome).maybeSingle();
+    const { data, error } = await client.rpc<{ uuid: string; progresso: unknown }[]>('restaurar_progresso', {
+      p_nome: nome,
+      p_codigo: codigo,
+    });
     if (error) throw new Error(error.message);
-    if (!data || data.progresso_completo == null) return null;
-    return { uuid: String(data.uuid), progress: data.progresso_completo };
+    const row = data?.[0];
+    if (!row || row.progresso == null) return null;
+    return { uuid: String(row.uuid), progress: row.progresso };
   }
 }

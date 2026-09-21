@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { Progress } from '@/domain/progress';
 import type { LeaderboardPort, OnlinePlayer, PlayerProfile, HallOfTravelersEntry } from '../ports';
 import type { ProgressRepository } from '../ports';
-import { backupProgress, restoreProgressByName } from './presence';
+import { backupProgress, generateAndSaveRecoveryCode, restoreProgress } from './presence';
 
 class Memory implements ProgressRepository {
   data: Progress | null = null;
@@ -19,7 +19,8 @@ class Memory implements ProgressRepository {
 
 class StubLeaderboard implements LeaderboardPort {
   backedUp: { uuid: string; progress: unknown }[] = [];
-  byName: Record<string, { uuid: string; progress: unknown }> = {};
+  byName: Record<string, { codigo: string; uuid: string; progress: unknown }> = {};
+  recoveryCodes: { uuid: string; codigo: string }[] = [];
   failFetch = false;
 
   async upsertPlayer(): Promise<void> {}
@@ -42,9 +43,14 @@ class StubLeaderboard implements LeaderboardPort {
   async backupProgress(uuid: string, progress: unknown): Promise<void> {
     this.backedUp.push({ uuid, progress });
   }
-  async fetchProgressByName(nome: string): Promise<{ uuid: string; progress: unknown } | null> {
+  async setRecoveryCode(uuid: string, codigo: string): Promise<void> {
+    this.recoveryCodes.push({ uuid, codigo });
+  }
+  async restoreProgress(nome: string, codigo: string): Promise<{ uuid: string; progress: unknown } | null> {
     if (this.failFetch) throw new Error('rede fora do ar');
-    return this.byName[nome.toLowerCase()] ?? null;
+    const entry = this.byName[nome.toLowerCase()];
+    if (!entry || entry.codigo !== codigo) return null;
+    return { uuid: entry.uuid, progress: entry.progress };
   }
 }
 
@@ -71,26 +77,56 @@ describe('backupProgress', () => {
   });
 });
 
-describe('restoreProgressByName', () => {
+describe('generateAndSaveRecoveryCode', () => {
+  it('salva o hash do código sob o uuid do viajante e devolve o código em texto puro', async () => {
+    const repository = new Memory();
+    const leaderboard = new StubLeaderboard();
+
+    const code = await generateAndSaveRecoveryCode({ repository, leaderboard }, { code: 'ABCD-1234' });
+
+    expect(code).toBe('ABCD-1234');
+    expect(leaderboard.recoveryCodes).toHaveLength(1);
+    expect(leaderboard.recoveryCodes[0].codigo).toBe('ABCD-1234');
+    expect(typeof leaderboard.recoveryCodes[0].uuid).toBe('string');
+    expect(repository.load()?.travelerUuid).toBe(leaderboard.recoveryCodes[0].uuid);
+  });
+});
+
+describe('restoreProgress', () => {
   it('recusa nome vazio', async () => {
     const repository = new Memory();
     const leaderboard = new StubLeaderboard();
-    const result = await restoreProgressByName({ repository, leaderboard }, { nome: '   ' });
+    const result = await restoreProgress({ repository, leaderboard }, { nome: '   ', codigo: 'ABCD-1234' });
     expect(result).toEqual({ ok: false, reason: 'Digite o nome do viajante.' });
   });
 
-  it('avisa quando nenhum progresso foi encontrado com esse nome', async () => {
+  it('recusa código vazio', async () => {
     const repository = new Memory();
     const leaderboard = new StubLeaderboard();
-    const result = await restoreProgressByName({ repository, leaderboard }, { nome: 'Fulano' });
-    expect(result).toEqual({ ok: false, reason: 'Nenhum progresso salvo foi encontrado com esse nome.' });
+    const result = await restoreProgress({ repository, leaderboard }, { nome: 'Ana', codigo: '   ' });
+    expect(result).toEqual({ ok: false, reason: 'Digite o código de recuperação.' });
+  });
+
+  it('avisa quando nome ou código não conferem, sem dizer qual dos dois', async () => {
+    const repository = new Memory();
+    const leaderboard = new StubLeaderboard();
+    const result = await restoreProgress({ repository, leaderboard }, { nome: 'Fulano', codigo: 'ABCD-1234' });
+    expect(result).toEqual({ ok: false, reason: 'Nome ou código incorretos.' });
+  });
+
+  it('avisa quando o nome existe mas o código está errado', async () => {
+    const repository = new Memory();
+    const leaderboard = new StubLeaderboard();
+    leaderboard.byName['ana'] = { codigo: 'CERTO-1234', uuid: 'uuid-remoto', progress: { version: 1, trails: {} } };
+    const result = await restoreProgress({ repository, leaderboard }, { nome: 'Ana', codigo: 'ERRADO-999' });
+    expect(result).toEqual({ ok: false, reason: 'Nome ou código incorretos.' });
   });
 
   it('avisa com segurança quando a busca falha (rede fora do ar)', async () => {
     const repository = new Memory();
     const leaderboard = new StubLeaderboard();
     leaderboard.failFetch = true;
-    const result = await restoreProgressByName({ repository, leaderboard }, { nome: 'Ana' });
+    const result = await restoreProgress({ repository, leaderboard }, { nome: 'Ana', codigo: 'ABCD-1234' });
     expect(result).toEqual({ ok: false, reason: 'Não foi possível buscar agora. Tente novamente em instantes.' });
   });
 
@@ -99,9 +135,9 @@ describe('restoreProgressByName', () => {
     repository.save({ version: 1, trails: {}, travelerUuid: 'uuid-local', travelerName: 'Antigo' });
     const leaderboard = new StubLeaderboard();
     const remoteProgress: Progress = { version: 1, trails: { x: { trailId: 'x', modules: {}, missionsCompleted: {}, trophyAwarded: false } }, travelerName: 'Ana' };
-    leaderboard.byName['ana'] = { uuid: 'uuid-remoto', progress: remoteProgress };
+    leaderboard.byName['ana'] = { codigo: 'ABCD-1234', uuid: 'uuid-remoto', progress: remoteProgress };
 
-    const result = await restoreProgressByName({ repository, leaderboard }, { nome: 'ANA' });
+    const result = await restoreProgress({ repository, leaderboard }, { nome: 'ANA', codigo: 'ABCD-1234' });
 
     expect(result).toEqual({ ok: true });
     expect(repository.load()).toEqual({ ...remoteProgress, travelerUuid: 'uuid-remoto' });

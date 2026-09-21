@@ -126,8 +126,27 @@ export function backupProgress(deps: { repository: ProgressRepository; leaderboa
 export type RestoreProgressResult = { ok: true } | { ok: false; reason: string };
 
 /**
- * Recuperação sem senha: busca o progresso salvo de outro aparelho pelo nome único do
- * jogador e o adota neste navegador, sobrescrevendo o progresso local. Também adota o
+ * Gera um código de recuperação (via `params.code`, criado na apresentação com
+ * `generateRecoveryCode` — mesmo padrão de `resizeAvatarImage`/`uploadAvatarPhoto`,
+ * ver `ServicesContext.tsx`), salva o hash no Supabase (`leaderboard.setRecoveryCode`)
+ * e devolve o código em texto puro para a tela mostrar **uma única vez**: depois disso
+ * o app nunca mais o guarda nem consegue lê-lo de volta (o hash não é legível nem pela
+ * chave anon, ver `supabase/schema.sql`).
+ */
+export async function generateAndSaveRecoveryCode(
+  deps: { repository: ProgressRepository; leaderboard: LeaderboardPort },
+  params: { code: string },
+): Promise<string> {
+  const uuid = getOrCreateTravelerUuid({ repository: deps.repository });
+  await deps.leaderboard.setRecoveryCode(uuid, params.code);
+  return params.code;
+}
+
+/**
+ * Recuperação de progresso: nome do jogador **e** o código de recuperação gerado por ele
+ * (ver `generateAndSaveRecoveryCode`). O nome sozinho não bastava mais: nomes são públicos
+ * no Hall dos Viajantes, então qualquer pessoa que visse o nome de outro jogador ali podia
+ * puxar o progresso completo dele — esse código extra fecha essa brecha. Adota também o
  * uuid restaurado (não o deste aparelho), para que as próximas sincronizações silenciosas
  * (heartbeat, módulos concluídos, insígnias...) escrevam na linha certa do Supabase.
  *
@@ -135,22 +154,24 @@ export type RestoreProgressResult = { ok: true } | { ok: false; reason: string }
  * em um botão), então devolve um resultado para a tela mostrar — mesmo formato de
  * `importProgress`.
  */
-export async function restoreProgressByName(
+export async function restoreProgress(
   deps: { repository: ProgressRepository; leaderboard: LeaderboardPort },
-  params: { nome: string },
+  params: { nome: string; codigo: string },
 ): Promise<RestoreProgressResult> {
   const nome = params.nome.trim();
+  const codigo = params.codigo.trim();
   if (!nome) return { ok: false, reason: 'Digite o nome do viajante.' };
+  if (!codigo) return { ok: false, reason: 'Digite o código de recuperação.' };
 
   let found: { uuid: string; progress: unknown } | null;
   try {
-    found = await deps.leaderboard.fetchProgressByName(nome);
+    found = await deps.leaderboard.restoreProgress(nome, codigo);
   } catch {
     return { ok: false, reason: 'Não foi possível buscar agora. Tente novamente em instantes.' };
   }
 
   if (!found) {
-    return { ok: false, reason: 'Nenhum progresso salvo foi encontrado com esse nome.' };
+    return { ok: false, reason: 'Nome ou código incorretos.' };
   }
 
   const restored = found.progress as Progress;

@@ -2,7 +2,7 @@ import { createContext, useContext, useMemo, type ReactNode } from 'react';
 import type { AnalyticsPort, ClipboardPort, LeaderboardPort, ProgressRepository, SqlEnginePort } from '@/application/ports';
 import { LocalStorageProgressRepository } from '@/infrastructure/storage';
 import { NoopAnalytics, VercelAnalytics } from '@/infrastructure/analytics';
-import { NoopLeaderboard, resizeAvatarImage, SupabaseLeaderboard } from '@/infrastructure/leaderboard';
+import { generateRecoveryCode, NoopLeaderboard, resizeAvatarImage, SupabaseLeaderboard } from '@/infrastructure/leaderboard';
 import { PgliteEngine } from '@/infrastructure/sql';
 import { NavigatorClipboard } from '@/infrastructure/clipboard';
 
@@ -19,6 +19,12 @@ export type Services = {
    * (regra de fronteiras do CLAUDE.md, seção 3).
    */
   resizeAvatarImage: typeof resizeAvatarImage;
+  /**
+   * Gera um código de recuperação no navegador (`crypto.getRandomValues`). Mesmo motivo
+   * de `resizeAvatarImage` acima: não é uma porta (não tem adaptador alternativo), só
+   * passa por aqui para respeitar a fronteira de camadas.
+   */
+  generateRecoveryCode: typeof generateRecoveryCode;
 };
 
 const ServicesContext = createContext<Services | null>(null);
@@ -38,6 +44,7 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
       // dados de teste (mesma lógica do analytics acima).
       leaderboard: import.meta.env.PROD ? new SupabaseLeaderboard() : new NoopLeaderboard(),
       resizeAvatarImage,
+      generateRecoveryCode,
     }),
     [],
   );
