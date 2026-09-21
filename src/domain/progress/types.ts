@@ -15,6 +15,8 @@ export type TrailProgress = {
   modules: Record<string, ModuleProgress>;
   missionsCompleted: Record<string, boolean>;
   trophyAwarded: boolean;
+  /** Insígnia do chefe de fase de fim de era conquistada. Campo novo e opcional: progresso salvo antes dele continua válido sem migração (chave simplesmente ausente). */
+  bossDefeated?: boolean;
 };
 
 export type Progress = {

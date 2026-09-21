@@ -70,6 +70,52 @@ export type Mission =
       expect: string[][];
     };
 
+export type BossRound = {
+  title: string;
+  description: string;
+  /** Fala do chefe ao entrar nesta rodada. */
+  talk: string;
+  hint: string;
+  /** Fontes de regex (case-insensitive); TODAS precisam casar no texto do aluno. */
+  check: string[];
+};
+
+export type BossSequence = {
+  title: string;
+  description: string;
+  talk: string;
+  hint: string;
+  /** Uma fonte de regex por passo, testada em ordem contra cada comando digitado. */
+  steps: string[];
+};
+
+/** Chefe de fase que fecha uma era, desbloqueado só depois do troféu da trilha. */
+export type BossFight =
+  | {
+      bossName: string;
+      tagline: string;
+      /** Conversa da Senhorita Sintaxe antes de liberar o combate (mesmo formato de `Trail.intro`). */
+      intro: string[];
+      /** Glifo do contador de vidas (ex.: "☕", "💾"). */
+      lifeLabel: string;
+      mode: 'single-shot';
+      rounds: BossRound[];
+      badgeId: string;
+      badgeTitle: string;
+      badgeDescription: string;
+    }
+  | {
+      bossName: string;
+      tagline: string;
+      intro: string[];
+      lifeLabel: string;
+      mode: 'sequence';
+      rounds: BossSequence[];
+      badgeId: string;
+      badgeTitle: string;
+      badgeDescription: string;
+    };
+
 export type Trail = {
   id: string;
   title: string;
@@ -87,4 +133,6 @@ export type Trail = {
   modules: Module[];
   missions?: Mission[];
   lab?: 'sql' | 'git' | null;
+  /** Chefe de fase de fim de era (desbloqueado só quando a trilha inteira estiver concluída). */
+  bossFight?: BossFight;
 };

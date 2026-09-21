@@ -16,7 +16,10 @@ export type AnalyticsEventName =
   | 'pix_qr_shown'
   | 'progress_exported'
   | 'progress_imported'
-  | 'install_prompt_shown';
+  | 'install_prompt_shown'
+  | 'boss_fight_started'
+  | 'boss_fight_won'
+  | 'boss_fight_lost';
 
 export type AnalyticsProps = Record<string, string | number | boolean>;
 

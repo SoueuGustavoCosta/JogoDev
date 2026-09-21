@@ -91,6 +91,37 @@ export const missionSchema = z.discriminatedUnion('kind', [
   missionStateSchema,
 ]);
 
+const bossRoundSchema = z.object({
+  title: z.string().min(1),
+  description: z.string().min(1),
+  talk: z.string().min(1),
+  hint: z.string().min(1),
+  check: z.array(z.string().min(1)).min(1),
+});
+
+const bossSequenceSchema = z.object({
+  title: z.string().min(1),
+  description: z.string().min(1),
+  talk: z.string().min(1),
+  hint: z.string().min(1),
+  steps: z.array(z.string().min(1)).min(1),
+});
+
+const bossFightBaseSchema = z.object({
+  bossName: z.string().min(1),
+  tagline: z.string().min(1),
+  intro: z.array(z.string().min(1)).min(1),
+  lifeLabel: z.string().min(1),
+  badgeId: z.string().min(1),
+  badgeTitle: z.string().min(1),
+  badgeDescription: z.string().min(1),
+});
+
+export const bossFightSchema = z.discriminatedUnion('mode', [
+  bossFightBaseSchema.extend({ mode: z.literal('single-shot'), rounds: z.array(bossRoundSchema).min(1) }),
+  bossFightBaseSchema.extend({ mode: z.literal('sequence'), rounds: z.array(bossSequenceSchema).min(1) }),
+]);
+
 export const trailSchema = z.object({
   id: z.string().min(1),
   title: z.string().min(1),
@@ -102,4 +133,5 @@ export const trailSchema = z.object({
   modules: z.array(moduleSchema).min(1),
   missions: z.array(missionSchema).optional(),
   lab: z.enum(['sql', 'git']).nullable().optional(),
+  bossFight: bossFightSchema.optional(),
 });
