@@ -57,9 +57,18 @@ export interface LeaderboardPort {
    */
   backupProgress(uuid: string, progress: unknown): Promise<void>;
   /**
-   * Busca o progresso salvo de outro aparelho/navegador pelo nome único do jogador
-   * (recuperação sem senha: o nome já é único no Supabase). `null` se o nome não existe
-   * ou ainda não tem backup. Leitura normal: pode rejeitar.
+   * Salva o hash do código de recuperação (gerado no cliente) via RPC `definir_codigo_recuperacao`,
+   * que nunca devolve o hash a ninguém (nem à chave anon: a coluna é bloqueada por `revoke select`
+   * — só as duas funções SECURITY DEFINER em `supabase/schema.sql` conseguem lê-la). Falha
+   * silenciosa: nunca deve quebrar o jogo.
    */
-  fetchProgressByName(nome: string): Promise<{ uuid: string; progress: unknown } | null>;
+  setRecoveryCode(uuid: string, codigo: string): Promise<void>;
+  /**
+   * Recuperação de progresso: nome do jogador **e** o código de recuperação gerado por ele
+   * (`setRecoveryCode`). Substitui o antigo `fetchProgressByName`, que bastava saber o nome —
+   * inseguro, porque nomes são públicos no Hall dos Viajantes. Usa a RPC `restaurar_progresso`,
+   * que só devolve linha quando nome e código batem. `null` se não houver correspondência.
+   * Leitura normal: pode rejeitar.
+   */
+  restoreProgress(nome: string, codigo: string): Promise<{ uuid: string; progress: unknown } | null>;
 }

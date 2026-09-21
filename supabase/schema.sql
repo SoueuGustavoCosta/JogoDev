@@ -65,3 +65,52 @@ create table public.insignias (
 -- fora de escopo. Ver o mesmo aviso, repetido perto de cada escrita, no código do
 -- cliente (`src/infrastructure/leaderboard/SupabaseLeaderboard.ts`), para que ninguém
 -- esqueça essa decisão.
+
+-- Código de recuperação: a busca de progresso de outro aparelho antes bastava saber o
+-- nome do jogador (`fetchProgressByName`/`ilike nome`) — inseguro, porque nomes são
+-- públicos no Hall dos Viajantes, e isso permitia a qualquer um sequestrar/ver o
+-- progresso de qualquer jogador só por saber o nome dele. Substituído por um código de
+-- recuperação curto, gerado uma vez no cliente e mostrado uma vez, obrigatório junto do
+-- nome para restaurar qualquer coisa. O hash nunca é lido pelo cliente (nem pela chave
+-- anon: `revoke select` bloqueia a coluna) — só as duas funções SECURITY DEFINER abaixo,
+-- chamadas via RPC (`client.rpc(...)`, não `.from('jogadores')...`), conseguem lê-lo.
+create extension if not exists pgcrypto;
+
+alter table public.jogadores add column if not exists codigo_recuperacao_hash text;
+
+-- a coluna do hash não pode ser lida nem com a chave pública (anon) — só as funções abaixo
+revoke select (codigo_recuperacao_hash) on public.jogadores from anon, authenticated;
+
+create or replace function public.definir_codigo_recuperacao(p_uuid uuid, p_codigo text)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  update public.jogadores
+  set codigo_recuperacao_hash = crypt(p_codigo, gen_salt('bf'))
+  where uuid = p_uuid;
+end;
+$$;
+
+create or replace function public.restaurar_progresso(p_nome text, p_codigo text)
+returns table(uuid uuid, progresso jsonb)
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  return query
+    select j.uuid, j.progresso_completo
+    from public.jogadores j
+    where lower(j.nome) = lower(p_nome)
+      and j.codigo_recuperacao_hash is not null
+      and j.codigo_recuperacao_hash = crypt(p_codigo, j.codigo_recuperacao_hash);
+end;
+$$;
+
+revoke all on function public.definir_codigo_recuperacao(uuid, text) from public;
+revoke all on function public.restaurar_progresso(text, text) from public;
+grant execute on function public.definir_codigo_recuperacao(uuid, text) to anon;
+grant execute on function public.restaurar_progresso(text, text) to anon;
