@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState, type KeyboardEvent, type MouseEvent, type PointerEvent, type ReactNode } from 'react';
+import type { OnlinePlayer } from '@/application/ports';
+import type { ProfileSummary } from '@/application/usecases';
 import { Modal, SintaxeFace } from '@/presentation/design-system';
 import {
   CHARACTERS,
@@ -46,18 +48,17 @@ function buildStars() {
 }
 
 export function TimeMap({
-  travelerName,
-  crystals,
-  xp,
+  summary,
+  onlinePlayers,
   progress,
   onEnterEra,
 }: {
-  travelerName: string;
-  crystals: number;
-  xp: number;
+  summary: ProfileSummary;
+  onlinePlayers: OnlinePlayer[];
   progress: Record<string, EraProgress>;
   onEnterEra: (era: MapEra) => void;
 }) {
+  const travelerName = summary.name;
   const stars = useMemo(buildStars, []);
   const svgRef = useRef<SVGSVGElement>(null);
   const miniRef = useRef<HTMLCanvasElement>(null);
@@ -569,12 +570,24 @@ export function TimeMap({
       <div className={styles.hud}>
         <div>
           <div className={styles.brand}>
-            <i />
-            Viajante <span>{travelerName}</span>
+            <span className={styles.avatar} aria-hidden="true">
+              {summary.avatarUrl ? (
+                <img src={summary.avatarUrl} alt="" className={styles.avatarImg} />
+              ) : (
+                (travelerName.trim()[0] ?? 'V').toUpperCase()
+              )}
+              <i className={styles.avatarDot} />
+            </span>
+            {travelerName} <span className={styles.level}>· Nível {summary.level}</span>
           </div>
           <div className={styles.sub}>
-            CRISTAIS {crystals} · XP {xp}
+            CRISTAIS {summary.crystals} · XP {summary.xp} · 🔥 {summary.streak.current}
           </div>
+          {onlinePlayers.length > 0 ? (
+            <div className={styles.presenceCompact}>
+              {onlinePlayers.length === 1 ? '1 online agora' : `${onlinePlayers.length} online agora`}
+            </div>
+          ) : null}
         </div>
         <div className={styles.mini}>
           <canvas ref={miniRef} width={192} height={240} aria-label="Minimapa" onClick={onMiniClick} />
