@@ -67,11 +67,11 @@ describe('conteúdo da Era dos Dados (migração do protótipo)', () => {
   });
 });
 
-describe('boss fight da Era dos Dados (O Auditor)', () => {
+describe('boss fight da Era dos Dados (O Arquivista)', () => {
   it('tem o formato single-shot com as 3 rodadas do protótipo', () => {
     const bossFight = bancoDeDadosTrail.bossFight;
     expect(bossFight).toBeDefined();
-    expect(bossFight?.bossName).toBe('O Auditor');
+    expect(bossFight?.bossName).toBe('O Arquivista');
     expect(bossFight?.mode).toBe('single-shot');
     expect(bossFight?.rounds).toHaveLength(3);
     expect(bossFight?.intro.length).toBeGreaterThanOrEqual(2);

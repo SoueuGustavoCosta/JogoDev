@@ -19,11 +19,11 @@ export const gitGithubTrail: Trail = {
   lab: 'git',
   bossFight: {
     bossName: 'O Bifurcador',
-    tagline: 'CONFLITO CRÍTICO',
+    tagline: 'LINHAS DO TEMPO SE SOBREPONDO',
     intro: [
-      'Chegamos ao fim da Era da Bifurcação. Um espectro chamado <b>O Bifurcador</b> vive dentro de um conflito de merge que nunca termina.',
-      "É outro rastro do Eco: ele tentou resolver tudo clicando num botão mágico de 'resolver automaticamente' e só piorou tudo. Aqui, só comando de verdade resolve.",
-      'Quatro rodadas: começar, ramificar, resolver o conflito, publicar. Bora fechar essa era com uma linha do tempo limpa?',
+      'Toda vez que você abre um novo ramo no tempo, uma versão da história continua existindo em paralelo.',
+      'Na Era do Git isso virou problema: ramos demais, nunca reunidos, começaram a se sobrepor — o <b>Bifurcador</b> é essa confusão temporal ganhando forma.',
+      'Se a gente não mesclar essas linhas do tempo logo, nenhuma das duas vai ser a versão real. Só comandos de verdade, na ordem certa, fecham essa fenda.',
     ],
     lifeLabel: '💾',
     mode: 'sequence',

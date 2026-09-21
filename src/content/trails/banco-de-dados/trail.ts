@@ -12,12 +12,12 @@ export const bancoDeDadosTrail: Trail = {
   missions: bancoDeDadosMissions,
   lab: 'sql',
   bossFight: {
-    bossName: 'O Auditor',
-    tagline: 'AUDITORIA FINAL',
+    bossName: 'O Arquivista',
+    tagline: 'O ARQUIVISTA GUARDA A SAÍDA',
     intro: [
-      'Essa é a última parada da Era dos Dados. Um auditor chamado <b>O Auditor</b> guarda a saída — e ele não deixa passar quem só decorou sintaxe.',
-      'O Eco tentou enganá-lo antes de você, com atalhos e gambiarra. Não funcionou: O Auditor lembra de cada dado malfeito.',
-      'Três rodadas: modelar, consultar, corrigir com segurança. Erre com calma, acerte com certeza. Bora provar que você aprendeu de verdade?',
+      'Antes de você chegar, ninguém tinha dado forma aos dados dessa era — só ruído solto no tempo.',
+      'Ao vencer as três missões da ilha, um guardião nasceu da própria estrutura que você criou: o <b>Arquivista</b>, feito de tabelas e chaves que só existem porque você as desenhou.',
+      'Ele não é seu inimigo — é a prova de que a era pode seguir em frente. Mas só vai te deixar passar se você souber reconstruir tudo isso de cabeça, sem a ilha inteira do seu lado.',
     ],
     lifeLabel: '☕',
     mode: 'single-shot',
