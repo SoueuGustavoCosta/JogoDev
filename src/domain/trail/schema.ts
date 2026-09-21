@@ -51,7 +51,7 @@ export const blockSchema: z.ZodType = z.discriminatedUnion('t', [
   }),
   z.object({ t: z.literal('flow'), items: z.array(z.string().min(1)).min(1) }),
   z.object({ t: z.literal('raw'), file: z.string().min(1), x: z.string().min(1) }),
-  z.object({ t: z.literal('gui') }),
+  z.object({ t: z.literal('gui'), widget: z.string().min(1).optional() }),
   z.object({ t: z.literal('syntax') }),
   z.object({ t: z.literal('say'), x: z.string().min(1) }),
   z.object({
