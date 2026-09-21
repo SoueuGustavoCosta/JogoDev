@@ -302,6 +302,13 @@ export class SupabaseLeaderboard implements LeaderboardPort {
     return /already (been )?register|already exists|already in use/i.test(message);
   }
 
+  /**
+   * `progresso_completo` não é mais legível por `select` direto (coluna bloqueada no
+   * banco, ver `supabase/schema.sql`) — só por esta RPC `meu_progresso()`, que só
+   * devolve algo quando quem chama já está autenticado como o próprio dono da linha
+   * (`auth.uid() = uuid`, checado dentro da função). É por isso que o `signInWithPassword`
+   * precisa vir antes: só depois dele a sessão passa a ser desse uuid.
+   */
   private async signInWithSyntheticEmail(email: string, password: string): Promise<SavePhoneResult> {
     try {
       const client = await this.ensureClient();
@@ -309,12 +316,8 @@ export class SupabaseLeaderboard implements LeaderboardPort {
       if (error || !data.user) {
         return { ok: false, reason: 'Telefone já cadastrado, mas a senha não confere.' };
       }
-      const { data: row } = await client
-        .from('jogadores')
-        .select('progresso_completo')
-        .eq('uuid', data.user.id)
-        .maybeSingle();
-      return { ok: true, uid: data.user.id, restoredProgress: row?.progresso_completo ?? null };
+      const { data: progresso } = await client.rpc<unknown>('meu_progresso', {});
+      return { ok: true, uid: data.user.id, restoredProgress: progresso ?? null };
     } catch (e) {
       if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] signInWithSyntheticEmail falhou:', e);
       return { ok: false, reason: SupabaseLeaderboard.GENERIC_ERROR_REASON };

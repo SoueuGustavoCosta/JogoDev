@@ -57,34 +57,88 @@ create table public.insignias (
   primary key (uuid, nome_insignia)
 );
 
--- RLS habilitado nas três tabelas.
--- SELECT público nas três (é isso que torna o Hall dos Viajantes público).
--- INSERT público nas três, UPDATE público só em `jogadores` (para permitir renomear),
--- todas com `check (true)`.
+-- RLS habilitado nas três tabelas. SELECT público nas três (é isso que torna o Hall dos
+-- Viajantes público) — mas só nas colunas realmente públicas de `jogadores` (ver GRANT
+-- abaixo; `progresso_completo` nunca entra nesse grant). INSERT/UPDATE em `jogadores`,
+-- `progresso` e `insignias`, e INSERT/UPDATE dos avatares no Storage, exigem
+-- `auth.uid() = uuid` (ou `name = auth.uid() || '.webp'` pros avatares) — só o dono
+-- daquele uuid grava naquela linha. Isso ficou possível com o login anônimo do Supabase
+-- Auth (`ensureSignedIn`/`bootstrapTravelerIdentity`): cada viajante, mesmo sem cadastro
+-- nenhum, passou a ter uma sessão real com um `auth.uid()` verdadeiro.
 --
--- RESSALVA IMPORTANTE (o autor foi avisado e aceitou deliberadamente): não existe
--- Supabase Auth aqui, então qualquer cliente pode, tecnicamente, escrever nas linhas
--- de qualquer `uuid` — a chave anon não tem como provar que o cliente é dono daquele
--- uuid, já que não há `auth.uid()`. Isso foi aceito de propósito, para manter o fluxo
--- simples (sem senha, sem e-mail). Não "conserte" isso adicionando autenticação: está
--- fora de escopo. Ver o mesmo aviso, repetido perto de cada escrita, no código do
--- cliente (`src/infrastructure/leaderboard/SupabaseLeaderboard.ts`), para que ninguém
--- esqueça essa decisão.
+-- ATENÇÃO — pegadinha real que já aconteceu aqui (2026-09-21): um `revoke select
+-- (coluna) on tabela from anon` **não tem efeito nenhum** se `anon`/`authenticated` já
+-- tiverem um GRANT SELECT na TABELA INTEIRA (que é o padrão de bootstrap de projeto do
+-- Supabase) — o grant de tabela inteira já libera todas as colunas, e o revoke por
+-- coluna só desfaz um grant que tivesse sido dado por coluna, que nunca existiu. A forma
+-- certa de bloquear uma coluna sensível é `revoke select on tabela from anon,
+-- authenticated` (a tabela inteira) e depois `grant select (só as colunas públicas) on
+-- tabela to anon, authenticated`. Antes de confiar em qualquer `revoke`/RLS novo,
+-- confirme de verdade consultando `information_schema.column_privileges` — não baste
+-- confiar no que este arquivo diz, ele pode ter ficado desatualizado (foi exatamente o
+-- que aconteceu com `codigo_recuperacao_hash` abaixo, por um bom tempo).
+grant select (uuid, nome, criado_em, foto_url, ultima_atividade, sequencia_atual, sequencia_recorde, ultimo_dia_ativo, bio)
+  on public.jogadores to anon, authenticated;
+
+create policy "jogadores: atualizar so a propria linha"
+  on public.jogadores for update to authenticated
+  using (auth.uid() = uuid)
+  with check (auth.uid() = uuid);
+
+create policy "jogadores: inserir so a propria linha"
+  on public.jogadores for insert to authenticated
+  with check (auth.uid() = uuid);
+
+create policy "insignias: inserir so a propria linha"
+  on public.insignias for insert to authenticated
+  with check (auth.uid() = uuid);
+
+create policy "progresso: inserir so a propria linha"
+  on public.progresso for insert to authenticated
+  with check (auth.uid() = uuid);
+
+create policy "avatars: upload da propria foto"
+  on storage.objects for insert to authenticated
+  with check (bucket_id = 'avatars' and name = (auth.uid())::text || '.webp');
+
+create policy "avatars: atualizar a propria foto"
+  on storage.objects for update to authenticated
+  using (bucket_id = 'avatars' and name = (auth.uid())::text || '.webp')
+  with check (bucket_id = 'avatars' and name = (auth.uid())::text || '.webp');
+
+-- `progresso_completo` (o backup completo do Progress) nunca é legível por `select`
+-- direto — nem pela chave anon, nem autenticado — porque não entra no grant de colunas
+-- acima. Só é lido por `meu_progresso()` (o próprio dono, autenticado) ou por
+-- `restaurar_progresso()` (nome+código, ver abaixo). Ambas SECURITY DEFINER.
+revoke select on public.jogadores from anon, authenticated;
+
+create or replace function public.meu_progresso()
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare v jsonb;
+begin
+  select progresso_completo into v from public.jogadores where uuid = auth.uid();
+  return v;
+end;
+$$;
+revoke all on function public.meu_progresso() from public;
+grant execute on function public.meu_progresso() to authenticated;
 
 -- Código de recuperação: a busca de progresso de outro aparelho antes bastava saber o
 -- nome do jogador (`fetchProgressByName`/`ilike nome`) — inseguro, porque nomes são
 -- públicos no Hall dos Viajantes, e isso permitia a qualquer um sequestrar/ver o
 -- progresso de qualquer jogador só por saber o nome dele. Substituído por um código de
 -- recuperação curto, gerado uma vez no cliente e mostrado uma vez, obrigatório junto do
--- nome para restaurar qualquer coisa. O hash nunca é lido pelo cliente (nem pela chave
--- anon: `revoke select` bloqueia a coluna) — só as duas funções SECURITY DEFINER abaixo,
--- chamadas via RPC (`client.rpc(...)`, não `.from('jogadores')...`), conseguem lê-lo.
+-- nome para restaurar qualquer coisa. O hash nunca é lido pelo cliente (a coluna já não
+-- está no grant de SELECT acima, ver pegadinha do `revoke select on tabela` no
+-- comentário lá de cima) — só as duas funções SECURITY DEFINER abaixo, chamadas via RPC
+-- (`client.rpc(...)`, não `.from('jogadores')...`), conseguem lê-lo.
 create extension if not exists pgcrypto;
 
 alter table public.jogadores add column if not exists codigo_recuperacao_hash text;
-
--- a coluna do hash não pode ser lida nem com a chave pública (anon) — só as funções abaixo
-revoke select (codigo_recuperacao_hash) on public.jogadores from anon, authenticated;
 
 create or replace function public.definir_codigo_recuperacao(p_uuid uuid, p_codigo text)
 returns void
