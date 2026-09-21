@@ -56,4 +56,8 @@ export class NoopLeaderboard implements LeaderboardPort {
   async saveBio(_uuid: string, _bio: string): Promise<void> {
     // Intencionalmente vazio.
   }
+
+  async ensureSignedIn(): Promise<string | null> {
+    return null;
+  }
 }

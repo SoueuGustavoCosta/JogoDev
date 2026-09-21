@@ -56,6 +56,9 @@ class StubLeaderboard implements LeaderboardPort {
   async saveBio(uuid: string, bio: string): Promise<void> {
     this.savedBios.push({ uuid, bio });
   }
+  async ensureSignedIn(): Promise<string | null> {
+    return null;
+  }
 }
 
 describe('backupProgress', () => {

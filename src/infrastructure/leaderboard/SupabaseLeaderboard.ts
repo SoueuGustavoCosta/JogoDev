@@ -14,7 +14,13 @@ type SelectQuery = {
   gte(column: string, value: string): Promise<SelectResult>;
 };
 
+type AuthSession = { user: { id: string } };
+
 type SupabaseClientLike = {
+  auth: {
+    getSession(): Promise<{ data: { session: AuthSession | null }; error: { message: string } | null }>;
+    signInAnonymously(): Promise<{ data: { session: AuthSession | null }; error: { message: string } | null }>;
+  };
   from(table: string): {
     upsert(values: Record<string, unknown>, opts?: { onConflict: string }): Promise<{ error: { message: string } | null }>;
     update(values: Record<string, unknown>): { eq(column: string, value: unknown): Promise<{ error: { message: string } | null }> };
@@ -38,10 +44,11 @@ type SupabaseClientLike = {
  * Carregado só sob demanda (dynamic import), nunca no bundle inicial — mesmo
  * padrão de `PgliteEngine`. O cliente é criado uma única vez e reaproveitado.
  *
- * RESSALVA (ver `supabase/schema.sql`): não há Supabase Auth aqui, então estas
- * escritas não conseguem provar que o uuid pertence a quem está escrevendo. Foi
- * uma decisão aceita para manter o app sem login/senha — não "corrija" isso
- * adicionando autenticação sem que o autor peça.
+ * RESSALVA (ver `supabase/schema.sql`): as políticas de RLS ainda são `using (true)`,
+ * então estas escritas ainda não provam, no banco, que o uuid pertence a quem está
+ * escrevendo — `ensureSignedIn()` (login anônimo do Supabase Auth) já dá um `auth.uid()`
+ * real para cada viajante, mas apertar o RLS para `auth.uid() = uuid` é uma etapa
+ * seguinte deliberadamente separada (não faça isso sem o autor pedir).
  */
 export class SupabaseLeaderboard implements LeaderboardPort {
   private client: SupabaseClientLike | null = null;
@@ -256,6 +263,29 @@ export class SupabaseLeaderboard implements LeaderboardPort {
       if (error && import.meta.env.DEV) console.warn('[SupabaseLeaderboard] saveBio falhou:', error.message);
     } catch (e) {
       if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] saveBio falhou:', e);
+    }
+  }
+
+  async ensureSignedIn(): Promise<string | null> {
+    try {
+      const client = await this.ensureClient();
+      const { data: sessionData, error: sessionError } = await client.auth.getSession();
+      if (sessionError && import.meta.env.DEV) {
+        console.warn('[SupabaseLeaderboard] getSession falhou:', sessionError.message);
+      }
+      if (sessionData.session) return sessionData.session.user.id;
+
+      const { data: signInData, error: signInError } = await client.auth.signInAnonymously();
+      if (signInError || !signInData.session) {
+        if (signInError && import.meta.env.DEV) {
+          console.warn('[SupabaseLeaderboard] signInAnonymously falhou:', signInError.message);
+        }
+        return null;
+      }
+      return signInData.session.user.id;
+    } catch (e) {
+      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] ensureSignedIn falhou:', e);
+      return null;
     }
   }
 }
