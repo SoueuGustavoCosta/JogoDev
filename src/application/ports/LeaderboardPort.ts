@@ -22,13 +22,16 @@ export type PlayerProfile = {
 export type OnlinePlayer = { uuid: string; nome: string; fotoUrl: string | null };
 
 /**
- * Resultado de `saveProgressWithPhone`. `restoredProgress` só vem preenchido quando o
- * telefone já tinha conta (a senha bateu e o método entrou nela em vez de criar uma
- * nova): é o `Progress` (tipado como `unknown` pelo mesmo motivo de `backupProgress`)
- * salvo lá da última vez, pra quem chama restaurar localmente.
+ * Resultado de `saveProgressWithPhone`. `isLogin` diz se entrou numa conta que já
+ * existia (telefone já cadastrado, senha bateu) em vez de criar uma nova — quem chama
+ * usa isso pra saber se deve adotar o estado do servidor mesmo vazio (login) ou manter
+ * o progresso local (conta nova de verdade, criada agora). `restoredProgress` só vem
+ * preenchido em login: é o `Progress` (tipado como `unknown` pelo mesmo motivo de
+ * `backupProgress`) salvo lá da última vez — pode ser `null` mesmo em login, se a conta
+ * existir mas nunca tiver tido um backup completo salvo.
  */
 export type SavePhoneResult =
-  | { ok: true; uid: string; restoredProgress: unknown | null }
+  | { ok: true; uid: string; isLogin: boolean; restoredProgress: unknown | null }
   | { ok: false; reason: string };
 
 /**

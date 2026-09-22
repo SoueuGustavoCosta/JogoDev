@@ -14,12 +14,14 @@ export type SimpleResult = { ok: true } | { ok: false; reason: string };
  * `requestPasswordReset`); sem ele, a conta usa um e-mail sintético e não há como
  * recuperar a senha se for esquecida.
  *
- * Se a conta já existir e a senha bater, entra nela e adota o progresso salvo lá
- * (substituindo o local); senão, cria a conta promovendo a sessão anônima atual,
- * preservando o progresso deste aparelho — e faz o primeiro backup na hora (sem
- * esperar o batimento periódico, ~90s), para a conta já nascer com alguma coisa
- * salva na nuvem, caso o aluno feche o app logo em seguida e só volte a jogar
- * (ou tente entrar) de outro aparelho.
+ * Se a conta já existir e a senha bater, entra nela e adota o progresso salvo lá —
+ * SEMPRE, mesmo vazio (`isLogin: true`; ver `LeaderboardPort.saveProgressWithPhone`):
+ * o progresso local de antes de entrar pode ser de uma sessão anônima sem nenhuma
+ * relação com essa conta, e nunca deve substituir o que está salvo nela. Senão, cria a
+ * conta promovendo a sessão anônima atual, preservando o progresso deste aparelho — e
+ * faz o primeiro backup na hora (sem esperar o batimento periódico, ~90s), para a conta
+ * já nascer com alguma coisa salva na nuvem, caso o aluno feche o app logo em seguida e
+ * só volte a jogar (ou tente entrar) de outro aparelho.
  */
 export async function saveProgressWithPhone(
   deps: { repository: ProgressRepository; leaderboard: LeaderboardPort },
@@ -42,11 +44,14 @@ export async function saveProgressWithPhone(
   const result = await deps.leaderboard.saveProgressWithPhone(phone, params.password, email || undefined);
   if (!result.ok) return result;
 
-  const progress = deps.repository.load() ?? createEmptyProgress();
-  if (result.restoredProgress) {
-    const restored = result.restoredProgress as Progress;
+  if (result.isLogin) {
+    // Login numa conta que já existia: adota o estado salvo nela, mesmo vazio (conta
+    // com zero progresso ainda) — nunca o progresso local de antes de entrar, que pode
+    // ser de uma sessão anônima sem nenhuma relação com essa conta.
+    const restored = (result.restoredProgress as Progress | null) ?? createEmptyProgress();
     deps.repository.save({ ...restored, travelerUuid: result.uid, phoneLinked: true });
   } else {
+    const progress = deps.repository.load() ?? createEmptyProgress();
     const linked = { ...progress, travelerUuid: result.uid, phoneLinked: true };
     deps.repository.save(linked);
     await deps.leaderboard.backupProgress(result.uid, linked);
