@@ -35,7 +35,7 @@ type SupabaseClientLike = {
       values: Record<string, unknown>,
       opts?: { count: 'exact' },
     ): { eq(column: string, value: unknown): Promise<{ error: { message: string } | null; count: number | null }> };
-    insert(values: Record<string, unknown>): Promise<{ error: { message: string } | null }>;
+    insert(values: Record<string, unknown>): Promise<{ error: { message: string; code?: string } | null }>;
     select(columns: string): SelectQuery;
   };
   rpc<T = unknown>(fnName: string, args: Record<string, unknown>): Promise<{ data: T | null; error: { message: string } | null }>;
@@ -263,14 +263,21 @@ export class SupabaseLeaderboard implements LeaderboardPort {
    * colunas públicas certo. Update comum não tem essa exigência; `{ count: 'exact' }` vem
    * do próprio comando UPDATE (quantas linhas afetou), não de nenhuma leitura — por isso
    * também não precisa de SELECT.
+   *
+   * Update-então-insere não é atômico: `checkInDaily` e o batimento de presença disparam
+   * juntos, sem esperar um pelo outro (ver `Layout.tsx`), e ambos podem tentar criar a
+   * linha do jogador pela primeira vez ao mesmo tempo. Se o UPDATE daqui não achar
+   * nenhuma linha (`count === 0`) mas, entre isso e o INSERT, o outro lado já tiver
+   * criado a linha, o INSERT esbarra em "duplicate key" (23505) — não é erro de verdade,
+   * só perdeu a corrida. Refaz o UPDATE uma vez mais nesse caso (a linha já existe agora).
    */
   async backupProgress(uuid: string, nome: string, progress: unknown): Promise<void> {
     try {
       const client = await this.ensureClient();
-      const { error: updateError, count } = await client
-        .from('jogadores')
-        .update({ nome, progresso_completo: progress }, { count: 'exact' })
-        .eq('uuid', uuid);
+      const doUpdate = () =>
+        client.from('jogadores').update({ nome, progresso_completo: progress }, { count: 'exact' }).eq('uuid', uuid);
+
+      const { error: updateError, count } = await doUpdate();
       if (updateError) {
         if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] backupProgress (update) falhou:', updateError.message);
         return;
@@ -281,9 +288,16 @@ export class SupabaseLeaderboard implements LeaderboardPort {
       const { error: insertError } = await client
         .from('jogadores')
         .insert({ uuid, nome, progresso_completo: progress });
-      if (insertError && import.meta.env.DEV) {
-        console.warn('[SupabaseLeaderboard] backupProgress (insert) falhou:', insertError.message);
+      if (!insertError) return;
+
+      if (insertError.code === '23505') {
+        const { error: retryError } = await doUpdate();
+        if (retryError && import.meta.env.DEV) {
+          console.warn('[SupabaseLeaderboard] backupProgress (update pós-corrida) falhou:', retryError.message);
+        }
+        return;
       }
+      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] backupProgress (insert) falhou:', insertError.message);
     } catch (e) {
       if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] backupProgress falhou:', e);
     }
