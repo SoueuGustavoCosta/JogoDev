@@ -4,7 +4,7 @@ import { getTraveler, getTrailProgress } from '@/application/usecases';
 import { trailRegistry } from '@/content/registry';
 import { useServices } from '@/presentation/app/ServicesContext';
 import type { LayoutOutletContext } from '@/presentation/shell';
-import type { MapEra } from './mapData';
+import { ERAS, type MapEra } from './mapData';
 import { TimeMap, type EraProgress } from './TimeMap';
 
 /** Home do app: o Mini Mapa do Tempo. */
@@ -32,8 +32,13 @@ export function ArchipelagoHome() {
 
   if (!traveler.prologueSeen) return <Navigate to="/prologo" replace />;
 
+  // Contador "X/Y módulos" de cada era ativa, não só a Era dos Dados: cada era aponta
+  // pra sua trilha por `trailId` (ids diferentes: 'dados' → 'banco-de-dados', 'git' →
+  // 'git-github'), então o mapeamento não pode ser um `byEra[era.id]` direto.
   const progress: Record<string, EraProgress> = {};
-  if (byEra['banco-de-dados']) progress.dados = byEra['banco-de-dados'];
+  for (const era of ERAS) {
+    if (era.trailId && byEra[era.trailId]) progress[era.id] = byEra[era.trailId];
+  }
 
   return (
     <TimeMap

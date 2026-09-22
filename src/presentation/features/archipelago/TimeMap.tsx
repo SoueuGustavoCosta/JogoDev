@@ -499,12 +499,6 @@ export function TimeMap({
             </g>
           </g>
 
-          <g transform={`translate(${me.x - 42} ${me.y - 40})`} pointerEvents="none">
-            <g className={styles.bob}>
-              <path d="M0 0L-12 -22A15 15 0 1 1 12 -22Z" fill="#ffd479" stroke="#0a0912" strokeWidth={3} />
-              <circle cx={0} cy={-30} r={5.5} fill="#0a0912" />
-            </g>
-          </g>
         </g>
       </svg>
 
