@@ -62,6 +62,12 @@
   margin-right: 7px;
 }
 
+.hudActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .skip {
   min-height: var(--touch-target);
   padding: 0 16px;
