@@ -120,7 +120,8 @@ export function backupProgress(deps: { repository: ProgressRepository; leaderboa
   const progress = deps.repository.load();
   if (!progress) return;
   const uuid = getOrCreateTravelerUuid({ repository: deps.repository });
-  void deps.leaderboard.backupProgress(uuid, progress);
+  const name = getTraveler({ repository: deps.repository }).name;
+  void deps.leaderboard.backupProgress(uuid, name, progress);
 }
 
 export type RestoreProgressResult = { ok: true } | { ok: false; reason: string };

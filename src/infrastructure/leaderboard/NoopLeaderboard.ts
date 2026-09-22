@@ -41,7 +41,7 @@ export class NoopLeaderboard implements LeaderboardPort {
     return [];
   }
 
-  async backupProgress(_uuid: string, _progress: unknown): Promise<void> {
+  async backupProgress(_uuid: string, _nome: string, _progress: unknown): Promise<void> {
     // Intencionalmente vazio.
   }
 
@@ -58,6 +58,10 @@ export class NoopLeaderboard implements LeaderboardPort {
   }
 
   async ensureSignedIn(): Promise<string | null> {
+    return null;
+  }
+
+  async getMyProgress(): Promise<unknown | null> {
     return null;
   }
 

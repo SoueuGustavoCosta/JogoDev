@@ -18,7 +18,7 @@ class Memory implements ProgressRepository {
 }
 
 class StubLeaderboard implements LeaderboardPort {
-  backedUp: { uuid: string; progress: unknown }[] = [];
+  backedUp: { uuid: string; nome: string; progress: unknown }[] = [];
   byName: Record<string, { codigo: string; uuid: string; progress: unknown }> = {};
   recoveryCodes: { uuid: string; codigo: string }[] = [];
   failFetch = false;
@@ -40,8 +40,8 @@ class StubLeaderboard implements LeaderboardPort {
   async listOnlinePlayers(): Promise<OnlinePlayer[]> {
     return [];
   }
-  async backupProgress(uuid: string, progress: unknown): Promise<void> {
-    this.backedUp.push({ uuid, progress });
+  async backupProgress(uuid: string, nome: string, progress: unknown): Promise<void> {
+    this.backedUp.push({ uuid, nome, progress });
   }
   async setRecoveryCode(uuid: string, codigo: string): Promise<void> {
     this.recoveryCodes.push({ uuid, codigo });
@@ -57,6 +57,9 @@ class StubLeaderboard implements LeaderboardPort {
     this.savedBios.push({ uuid, bio });
   }
   async ensureSignedIn(): Promise<string | null> {
+    return null;
+  }
+  async getMyProgress(): Promise<unknown | null> {
     return null;
   }
   async saveProgressWithPhone(): Promise<SavePhoneResult> {

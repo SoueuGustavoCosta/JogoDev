@@ -249,10 +249,15 @@ export class SupabaseLeaderboard implements LeaderboardPort {
     }));
   }
 
-  async backupProgress(uuid: string, progress: unknown): Promise<void> {
+  async backupProgress(uuid: string, nome: string, progress: unknown): Promise<void> {
     try {
       const client = await this.ensureClient();
-      const { error } = await client.from('jogadores').update({ progresso_completo: progress }).eq('uuid', uuid);
+      // upsert, não update: a linha pode ainda não existir (ver doc do método na porta) —
+      // um update nesse caso não erra, só não afeta nenhuma linha, e o progresso se perde
+      // em silêncio.
+      const { error } = await client
+        .from('jogadores')
+        .upsert({ uuid, nome, progresso_completo: progress }, { onConflict: 'uuid' });
       if (error && import.meta.env.DEV) console.warn('[SupabaseLeaderboard] backupProgress falhou:', error.message);
     } catch (e) {
       if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] backupProgress falhou:', e);
@@ -325,8 +330,26 @@ export class SupabaseLeaderboard implements LeaderboardPort {
    * `progresso_completo` não é mais legível por `select` direto (coluna bloqueada no
    * banco, ver `supabase/schema.sql`) — só por esta RPC `meu_progresso()`, que só
    * devolve algo quando quem chama já está autenticado como o próprio dono da linha
-   * (`auth.uid() = uuid`, checado dentro da função). É por isso que o `signInWithPassword`
-   * precisa vir antes: só depois dele a sessão passa a ser desse uuid.
+   * (`auth.uid() = uuid`, checado dentro da função).
+   */
+  async getMyProgress(): Promise<unknown | null> {
+    try {
+      const client = await this.ensureClient();
+      const { data, error } = await client.rpc<unknown>('meu_progresso', {});
+      if (error) {
+        if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] meu_progresso falhou:', error.message);
+        return null;
+      }
+      return data ?? null;
+    } catch (e) {
+      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] meu_progresso falhou:', e);
+      return null;
+    }
+  }
+
+  /**
+   * É por isso que o `signInWithPassword` precisa vir antes de `getMyProgress`: só depois
+   * dele a sessão passa a ser desse uuid, e só então a RPC `meu_progresso()` devolve algo.
    */
   private async signInWithAccountEmail(email: string, password: string): Promise<SavePhoneResult> {
     try {
@@ -335,8 +358,8 @@ export class SupabaseLeaderboard implements LeaderboardPort {
       if (error || !data.user) {
         return { ok: false, reason: 'Telefone já cadastrado, mas a senha não confere.' };
       }
-      const { data: progresso } = await client.rpc<unknown>('meu_progresso', {});
-      return { ok: true, uid: data.user.id, isLogin: true, restoredProgress: progresso ?? null };
+      const restoredProgress = await this.getMyProgress();
+      return { ok: true, uid: data.user.id, isLogin: true, restoredProgress };
     } catch (e) {
       if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] signInWithAccountEmail falhou:', e);
       return { ok: false, reason: SupabaseLeaderboard.GENERIC_ERROR_REASON };
