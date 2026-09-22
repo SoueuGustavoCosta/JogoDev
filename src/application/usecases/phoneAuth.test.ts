@@ -68,6 +68,7 @@ class StubLeaderboard implements LeaderboardPort {
     this.passwordUpdates.push(newPassword);
     return this.nextSimpleResult;
   }
+  async signOut(): Promise<void> {}
 }
 
 describe('saveProgressWithPhone', () => {

@@ -68,6 +68,7 @@ class StubLeaderboard implements LeaderboardPort {
   async updatePassword(): Promise<{ ok: true } | { ok: false; reason: string }> {
     return { ok: false, reason: 'não usado neste teste' };
   }
+  async signOut(): Promise<void> {}
 }
 
 describe('backupProgress', () => {

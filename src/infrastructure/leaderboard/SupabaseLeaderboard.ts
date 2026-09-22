@@ -27,6 +27,7 @@ type SupabaseClientLike = {
     signUp(params: { email: string; password: string }): Promise<AuthUserResult>;
     signInWithPassword(params: { email: string; password: string }): Promise<AuthUserResult>;
     resetPasswordForEmail(email: string, opts?: { redirectTo?: string }): Promise<{ error: { message: string } | null }>;
+    signOut(): Promise<{ error: { message: string } | null }>;
   };
   from(table: string): {
     upsert(values: Record<string, unknown>, opts?: { onConflict: string }): Promise<{ error: { message: string } | null }>;
@@ -414,6 +415,15 @@ export class SupabaseLeaderboard implements LeaderboardPort {
     } catch (e) {
       if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] updatePassword falhou:', e);
       return { ok: false, reason: 'Não foi possível salvar a nova senha. O link pode ter expirado — peça um novo.' };
+    }
+  }
+
+  async signOut(): Promise<void> {
+    try {
+      const client = await this.ensureClient();
+      await client.auth.signOut();
+    } catch (e) {
+      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] signOut falhou:', e);
     }
   }
 }

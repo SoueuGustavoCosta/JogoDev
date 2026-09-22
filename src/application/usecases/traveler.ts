@@ -72,3 +72,21 @@ export async function bootstrapTravelerIdentity(deps: {
     // Falha silenciosa: o jogo continua com o uuid local (gerado sob demanda).
   }
 }
+
+/**
+ * "Sair": encerra a sessão do Supabase Auth deste aparelho e apaga o progresso local, para
+ * outra pessoa poder usar o mesmo aparelho/navegador com a própria conta em seguida.
+ *
+ * Sempre limpa o progresso local, mesmo se `leaderboard.signOut()` falhar silenciosamente
+ * (rede fora do ar etc.) — a conta que estava salva na nuvem continua lá, intacta; só o
+ * que fica neste aparelho é apagado. Quem chama deve recarregar o app logo em seguida
+ * (`window.location.reload()`), para todo o estado em memória (nome em cache, sessão
+ * anônima antiga etc.) ser recriado do zero.
+ */
+export async function signOutTraveler(deps: { repository: ProgressRepository; leaderboard: LeaderboardPort }): Promise<void> {
+  try {
+    await deps.leaderboard.signOut();
+  } finally {
+    deps.repository.clear();
+  }
+}
