@@ -111,12 +111,14 @@ export class SupabaseLeaderboard implements LeaderboardPort {
 
   async listHallOfTravelers(): Promise<HallOfTravelersEntry[]> {
     const client = await this.ensureClient();
-    const [jogadoresRes, insigniasRes] = await Promise.all([
-      client.from('jogadores').select('uuid,nome,criado_em,bio').order('criado_em', { ascending: true }),
+    const [jogadoresRes, insigniasRes, progressoRes] = await Promise.all([
+      client.from('jogadores').select('uuid,nome,criado_em,bio,foto_url').order('criado_em', { ascending: true }),
       client.from('insignias').select('uuid,nome_insignia').order('conquistada_em', { ascending: true }),
+      client.from('progresso').select('uuid,era').order('concluido_em', { ascending: true }),
     ]);
     if (jogadoresRes.error) throw new Error(jogadoresRes.error.message);
     if (insigniasRes.error) throw new Error(insigniasRes.error.message);
+    if (progressoRes.error) throw new Error(progressoRes.error.message);
 
     const badgesByUuid = new Map<string, string[]>();
     for (const row of insigniasRes.data ?? []) {
@@ -126,11 +128,26 @@ export class SupabaseLeaderboard implements LeaderboardPort {
       badgesByUuid.set(uuid, list);
     }
 
+    // `era` = trail.id (ver syncProgress). Cada viajante toca a mesma trilha várias vezes
+    // (um `era`/`fase` por módulo ou missão concluída) — aqui só quer-se as trilhas
+    // distintas, na ordem em que apareceram pela primeira vez.
+    const trailsByUuid = new Map<string, string[]>();
+    for (const row of progressoRes.data ?? []) {
+      const uuid = String(row.uuid);
+      const era = String(row.era);
+      const list = trailsByUuid.get(uuid) ?? [];
+      if (!list.includes(era)) list.push(era);
+      trailsByUuid.set(uuid, list);
+    }
+
     return (jogadoresRes.data ?? []).map((row) => ({
+      uuid: String(row.uuid),
       nome: String(row.nome),
       criadoEm: String(row.criado_em),
       insignias: badgesByUuid.get(String(row.uuid)) ?? [],
       bio: row.bio ? String(row.bio) : null,
+      fotoUrl: row.foto_url ? String(row.foto_url) : null,
+      trilhas: trailsByUuid.get(String(row.uuid)) ?? [],
     }));
   }
 

@@ -1,8 +1,12 @@
 export type HallOfTravelersEntry = {
+  uuid: string;
   nome: string;
   criadoEm: string;
   insignias: string[];
   bio: string | null;
+  fotoUrl: string | null;
+  /** Ids das trilhas (`trail.id`) que o viajante já tocou, na ordem da primeira vez. */
+  trilhas: string[];
 };
 
 /** Perfil público do jogador (tabela `jogadores`), usado no cabeçalho do viajante. */

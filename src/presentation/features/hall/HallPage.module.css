@@ -14,16 +14,51 @@
   border: 1px solid var(--color-line);
   border-radius: var(--radius-lg);
   padding: 16px;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  min-height: var(--touch-target);
+  width: 100%;
+}
+
+.cardItem:hover {
+  border-color: var(--color-purple);
 }
 
 .cardItem h3 {
-  margin: 0 0 8px;
+  margin: 0;
   font-family: var(--font-title);
   font-size: 1rem;
 }
 
+.cardHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.cardNames {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cardStatus {
+  font: 600 0.7rem var(--font-mono);
+  color: var(--color-muted);
+}
+
+.badgeCount {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.84rem;
+}
+
 .bio {
-  margin: -4px 0 10px;
+  margin: 0 0 10px;
   color: var(--color-muted);
   font-size: 0.84rem;
   line-height: 1.35;
@@ -54,4 +89,48 @@
   font-size: 0.7rem;
   color: var(--color-muted);
   line-height: 1.2;
+}
+
+.detailHead {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.detailName {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.detailMeta {
+  margin: 2px 0 0;
+  color: var(--color-muted);
+  font-size: 0.82rem;
+}
+
+.detailSection {
+  margin: 20px 0 10px;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+}
+
+.trailList {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+}
+
+.trailChip {
+  padding: 6px 12px;
+  border-radius: 99px;
+  background: var(--color-panel-2);
+  border: 1px solid var(--color-line);
+  font: 600 0.8rem var(--font-body);
+  color: var(--color-text);
 }

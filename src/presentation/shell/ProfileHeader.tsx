@@ -2,39 +2,11 @@ import { useRef, useState, type ChangeEvent } from 'react';
 import type { ProfileSummary } from '@/application/usecases';
 import { uploadAvatarPhoto } from '@/application/usecases';
 import type { OnlinePlayer } from '@/application/ports';
+import { Avatar } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
 import styles from './ProfileHeader.module.css';
 
 const PRESENCE_MAX_AVATARS = 5;
-
-function initialOf(name: string): string {
-  return (name.trim()[0] ?? 'V').toUpperCase();
-}
-
-function Avatar({
-  name,
-  url,
-  size,
-  online,
-}: {
-  name: string;
-  url: string | null;
-  size: number;
-  online?: boolean;
-}) {
-  return (
-    <span className={styles.avatarWrap} style={{ width: size, height: size }}>
-      {url ? (
-        <img src={url} alt="" className={styles.avatarImg} />
-      ) : (
-        <span className={styles.avatarInitial} aria-hidden="true">
-          {initialOf(name)}
-        </span>
-      )}
-      {online ? <span className={styles.onlineDot} aria-hidden="true" /> : null}
-    </span>
-  );
-}
 
 export function ProfileHeader({
   summary,
