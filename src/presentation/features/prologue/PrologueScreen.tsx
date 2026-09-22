@@ -4,6 +4,7 @@ import { completePrologue, getTraveler, markPrologueSkipped } from '@/applicatio
 import { prologueScript } from '@/content/prologue/script';
 import { interpolate } from '@/domain/prologue';
 import { SintaxeFace } from '@/presentation/design-system';
+import { SaveProgressWidget } from '@/presentation/features/save-progress';
 import { useServices } from '@/presentation/app/ServicesContext';
 import styles from './PrologueScreen.module.css';
 
@@ -84,9 +85,18 @@ export function PrologueScreen() {
           <i />
           Viajante do Tempo
         </div>
-        <button type="button" className={styles.skip} onClick={skip}>
-          Pular
-        </button>
+        <div className={styles.hudActions}>
+          <SaveProgressWidget
+            renderTrigger={(open) => (
+              <button type="button" className={styles.skip} onClick={open}>
+                Já tenho conta
+              </button>
+            )}
+          />
+          <button type="button" className={styles.skip} onClick={skip}>
+            Pular
+          </button>
+        </div>
       </header>
 
       <div className={styles.stage}>

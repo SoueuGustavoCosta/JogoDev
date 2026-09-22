@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, type FormEvent, type ReactNode } from 'react';
 import { hasPhoneLinked, requestPasswordReset, saveProgressWithPhone } from '@/application/usecases';
 import { Button, Modal } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
@@ -7,17 +7,21 @@ import styles from './SaveProgressWidget.module.css';
 type Mode = 'form' | 'forgot' | 'forgot-sent';
 
 /**
- * Caixa flutuante "Salvar ou entrar": cadastro rápido por telefone+senha (sem SMS,
+ * Caixa "Salvar ou entrar": cadastro rápido por telefone+senha (sem SMS,
  * sem código pra copiar — ver `application/usecases/phoneAuth.ts`), pra continuar de
  * qualquer aparelho. A mesma caixa também serve pra entrar numa conta que já existe:
  * se o telefone (e e-mail, se tiver sido usado no cadastro) já tiver conta e a senha
  * bater, entra nela em vez de criar outra. Some sozinha depois que o viajante já
  * vinculou um telefone (`hasPhoneLinked`), neste ou em outro aparelho que tenha
  * restaurado a mesma conta.
+ *
+ * `renderTrigger`, quando passado, substitui o botão flutuante padrão por um elemento
+ * customizado (ver uso em `PrologueScreen`, que precisa de um botão "Já tenho conta"
+ * no lugar do flutuante, que essa tela nem renderiza).
  */
-export function SaveProgressWidget() {
+export function SaveProgressWidget({ renderTrigger }: { renderTrigger?: (open: () => void) => ReactNode } = {}) {
   const { progressRepository, leaderboard } = useServices();
-  const [linked, setLinked] = useState(() => hasPhoneLinked({ repository: progressRepository }));
+  const linked = hasPhoneLinked({ repository: progressRepository });
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<Mode>('form');
   const [phone, setPhone] = useState('');
@@ -50,8 +54,11 @@ export function SaveProgressWidget() {
       setError(result.reason);
       return;
     }
-    setLinked(true);
-    close();
+    // Recarrega o app inteiro em vez de só fechar o modal: um login pode ter
+    // restaurado a conta e o progresso de outro aparelho (nome, XP, troféus),
+    // e o resto da árvore de componentes só lê o repositório/estado uma vez,
+    // no carregamento — sem isso, a tela continuava mostrando "Viajante".
+    window.location.href = '/';
   }
 
   async function handleForgotSubmit(e: FormEvent) {
@@ -70,9 +77,13 @@ export function SaveProgressWidget() {
 
   return (
     <>
-      <button type="button" className={styles.floating} onClick={() => setOpen(true)}>
-        Salvar ou entrar
-      </button>
+      {renderTrigger ? (
+        renderTrigger(() => setOpen(true))
+      ) : (
+        <button type="button" className={styles.floating} onClick={() => setOpen(true)}>
+          Salvar ou entrar
+        </button>
+      )}
 
       {open ? (
         <Modal title={mode === 'form' ? 'Salvar ou entrar' : 'Esqueci minha senha'} onClose={close}>
