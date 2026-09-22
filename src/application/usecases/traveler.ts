@@ -77,14 +77,24 @@ export async function bootstrapTravelerIdentity(deps: {
  * "Sair": encerra a sessão do Supabase Auth deste aparelho e apaga o progresso local, para
  * outra pessoa poder usar o mesmo aparelho/navegador com a própria conta em seguida.
  *
+ * Antes de mais nada, espera um backup final do progresso local na nuvem: o batimento
+ * periódico (`backupProgress`, a cada ~90s) pode não ter alcançado ainda a última lição
+ * concluída, e este método está prestes a apagar esse progresso deste aparelho — sem o
+ * backup, essa última parte se perderia mesmo a conta continuando salva.
+ *
  * Sempre limpa o progresso local, mesmo se `leaderboard.signOut()` falhar silenciosamente
- * (rede fora do ar etc.) — a conta que estava salva na nuvem continua lá, intacta; só o
- * que fica neste aparelho é apagado. Quem chama deve recarregar o app logo em seguida
- * (`window.location.reload()`), para todo o estado em memória (nome em cache, sessão
- * anônima antiga etc.) ser recriado do zero.
+ * (rede fora do ar etc.) — a conta que estava salva na nuvem continua lá, intacta (com o
+ * backup final, o mais atualizado possível); só o que fica neste aparelho é apagado. Quem
+ * chama deve recarregar o app logo em seguida (`window.location.reload()`), para todo o
+ * estado em memória (nome em cache, sessão anônima antiga etc.) ser recriado do zero.
  */
 export async function signOutTraveler(deps: { repository: ProgressRepository; leaderboard: LeaderboardPort }): Promise<void> {
   try {
+    const progress = deps.repository.load();
+    if (progress) {
+      const uuid = getOrCreateTravelerUuid({ repository: deps.repository });
+      await deps.leaderboard.backupProgress(uuid, progress);
+    }
     await deps.leaderboard.signOut();
   } finally {
     deps.repository.clear();

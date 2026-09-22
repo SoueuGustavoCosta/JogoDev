@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Progress } from '@/domain/progress';
 import type { HallOfTravelersEntry, LeaderboardPort, OnlinePlayer, PlayerProfile, ProgressRepository, SavePhoneResult } from '../ports';
-import { bootstrapTravelerIdentity, completePrologue, getOrCreateTravelerUuid, getTraveler, markPrologueSkipped } from './traveler';
+import { bootstrapTravelerIdentity, completePrologue, getOrCreateTravelerUuid, getTraveler, markPrologueSkipped, signOutTraveler } from './traveler';
 
 class Memory implements ProgressRepository {
   data: Progress | null = null;
@@ -37,7 +37,12 @@ class StubLeaderboard implements LeaderboardPort {
   async listOnlinePlayers(): Promise<OnlinePlayer[]> {
     return [];
   }
-  async backupProgress(): Promise<void> {}
+  backupCalls: { uuid: string; progress: unknown }[] = [];
+  signOutCalls = 0;
+
+  async backupProgress(uuid: string, progress: unknown): Promise<void> {
+    this.backupCalls.push({ uuid, progress });
+  }
   async setRecoveryCode(): Promise<void> {}
   async restoreProgress(): Promise<{ uuid: string; progress: unknown } | null> {
     return null;
@@ -56,7 +61,9 @@ class StubLeaderboard implements LeaderboardPort {
   async updatePassword(): Promise<{ ok: true } | { ok: false; reason: string }> {
     return { ok: false, reason: 'não usado neste teste' };
   }
-  async signOut(): Promise<void> {}
+  async signOut(): Promise<void> {
+    this.signOutCalls += 1;
+  }
 }
 
 describe('traveler', () => {
@@ -123,6 +130,44 @@ describe('bootstrapTravelerIdentity', () => {
     leaderboard.ensureSignedInError = true;
 
     await expect(bootstrapTravelerIdentity({ repository, leaderboard })).resolves.toBeUndefined();
+    expect(repository.load()).toBeNull();
+  });
+});
+
+describe('signOutTraveler', () => {
+  it('faz um backup final do progresso antes de sair e limpar o aparelho', async () => {
+    const repository = new Memory();
+    repository.save({ version: 1, trails: {}, travelerUuid: 'uuid-do-viajante', travelerName: 'Gustavo' });
+    const leaderboard = new StubLeaderboard();
+
+    await signOutTraveler({ repository, leaderboard });
+
+    expect(leaderboard.backupCalls).toEqual([
+      { uuid: 'uuid-do-viajante', progress: repository.data ?? { version: 1, trails: {}, travelerUuid: 'uuid-do-viajante', travelerName: 'Gustavo' } },
+    ]);
+    expect(leaderboard.signOutCalls).toBe(1);
+    expect(repository.load()).toBeNull();
+  });
+
+  it('não tenta fazer backup quando não há progresso local', async () => {
+    const repository = new Memory();
+    const leaderboard = new StubLeaderboard();
+
+    await signOutTraveler({ repository, leaderboard });
+
+    expect(leaderboard.backupCalls).toHaveLength(0);
+    expect(leaderboard.signOutCalls).toBe(1);
+  });
+
+  it('limpa o progresso local mesmo se o backup ou o signOut falharem', async () => {
+    const repository = new Memory();
+    repository.save({ version: 1, trails: {}, travelerUuid: 'uuid-do-viajante' });
+    const leaderboard = new StubLeaderboard();
+    leaderboard.signOut = async () => {
+      throw new Error('rede fora do ar');
+    };
+
+    await expect(signOutTraveler({ repository, leaderboard })).rejects.toThrow('rede fora do ar');
     expect(repository.load()).toBeNull();
   });
 });
