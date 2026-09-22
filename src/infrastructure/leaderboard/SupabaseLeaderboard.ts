@@ -16,7 +16,7 @@ type SelectQuery = {
   gte(column: string, value: string): Promise<SelectResult>;
 };
 
-type AuthSession = { user: { id: string } };
+type AuthSession = { user: { id: string; is_anonymous?: boolean } };
 type AuthUserResult = { data: { user: { id: string } | null; session: AuthSession | null }; error: { message: string } | null };
 
 type SupabaseClientLike = {
@@ -440,6 +440,17 @@ export class SupabaseLeaderboard implements LeaderboardPort {
     } catch (e) {
       if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] requestPasswordReset falhou:', e);
       return { ok: false, reason: SupabaseLeaderboard.GENERIC_ERROR_REASON };
+    }
+  }
+
+  async hasRealSession(): Promise<boolean> {
+    try {
+      const client = await this.ensureClient();
+      const { data } = await client.auth.getSession();
+      return Boolean(data.session && data.session.user.is_anonymous === false);
+    } catch (e) {
+      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] hasRealSession falhou:', e);
+      return false;
     }
   }
 

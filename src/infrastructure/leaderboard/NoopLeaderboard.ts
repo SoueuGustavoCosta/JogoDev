@@ -73,6 +73,10 @@ export class NoopLeaderboard implements LeaderboardPort {
     return { ok: false, reason: 'Indisponível em desenvolvimento.' };
   }
 
+  async hasRealSession(): Promise<boolean> {
+    return false;
+  }
+
   async updatePassword(_newPassword: string): Promise<{ ok: true } | { ok: false; reason: string }> {
     return { ok: false, reason: 'Indisponível em desenvolvimento.' };
   }

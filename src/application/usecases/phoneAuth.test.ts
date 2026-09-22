@@ -62,6 +62,9 @@ class StubLeaderboard implements LeaderboardPort {
   async getMyProgress(): Promise<unknown | null> {
     return null;
   }
+  async hasRealSession(): Promise<boolean> {
+    return false;
+  }
   async saveProgressWithPhone(phone: string, password: string, email?: string): Promise<SavePhoneResult> {
     this.savedPhoneCalls.push({ phone, password, email });
     return this.nextResult;

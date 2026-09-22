@@ -153,6 +153,17 @@ export interface LeaderboardPort {
    */
   requestPasswordReset(email: string): Promise<{ ok: true } | { ok: false; reason: string }>;
   /**
+   * Diz se a sessão atual é de uma conta de verdade (não anônima) — usado pela tela de
+   * `/redefinir-senha` (ResetPasswordPage) pra checar se o link de redefinição realmente
+   * abriu uma sessão de recuperação antes de aceitar a senha nova. Sem essa checagem, abrir
+   * `/redefinir-senha` sem token nenhum (link expirado, aberto sem o fragmento da URL, ou
+   * simplesmente digitado) deixava a página tentar `updatePassword` em cima de qualquer
+   * sessão que já estivesse ativa neste aparelho — inclusive a sessão anônima de quem só
+   * estava jogando, definindo uma senha inútil (sem e-mail/telefone pra usar depois) numa
+   * conta que não tem nada a ver com o pedido de redefinição.
+   */
+  hasRealSession(): Promise<boolean>;
+  /**
    * Define uma nova senha pra sessão atual — só funciona logo depois de abrir o link do
    * e-mail de `requestPasswordReset` (o Supabase troca a URL por uma sessão temporária de
    * redefinição). Fora desse contexto, ou se o link já expirou, falha com um motivo
