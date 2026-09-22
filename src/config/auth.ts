@@ -18,3 +18,15 @@
  * saveProgressWithPhone`.
  */
 export const PHONE_AUTH_EMAIL_DOMAIN = 'viajante.jogodev.app';
+
+/**
+ * REQUISITO 3 (TODO(autor), verificar — provável causa de "clico no link de redefinir
+ * senha e dá erro"): em Authentication → URL Configuration no painel do Supabase, a URL
+ * de destino do link (`SupabaseLeaderboard.requestPasswordReset` manda
+ * `redirectTo: <origem atual>/redefinir-senha`, ex.: `https://jogo-dev-rho.vercel.app/
+ * redefinir-senha`) precisa estar na lista "Redirect URLs". Se não estiver, o Supabase
+ * recusa o redirecionamento depois de validar o link e mostra a própria página de erro
+ * dele — antes mesmo do app (rota /redefinir-senha, ver ResetPasswordPage.tsx) carregar.
+ * Adicione a URL exata de produção (ou um curinga, ex.: `https://jogo-dev-rho.vercel.app/**`,
+ * se quiser cobrir também os previews do Vercel) nessa lista.
+ */
