@@ -16,7 +16,10 @@ export type SimpleResult = { ok: true } | { ok: false; reason: string };
  *
  * Se a conta já existir e a senha bater, entra nela e adota o progresso salvo lá
  * (substituindo o local); senão, cria a conta promovendo a sessão anônima atual,
- * preservando o progresso deste aparelho.
+ * preservando o progresso deste aparelho — e faz o primeiro backup na hora (sem
+ * esperar o batimento periódico, ~90s), para a conta já nascer com alguma coisa
+ * salva na nuvem, caso o aluno feche o app logo em seguida e só volte a jogar
+ * (ou tente entrar) de outro aparelho.
  */
 export async function saveProgressWithPhone(
   deps: { repository: ProgressRepository; leaderboard: LeaderboardPort },
@@ -44,7 +47,9 @@ export async function saveProgressWithPhone(
     const restored = result.restoredProgress as Progress;
     deps.repository.save({ ...restored, travelerUuid: result.uid, phoneLinked: true });
   } else {
-    deps.repository.save({ ...progress, travelerUuid: result.uid, phoneLinked: true });
+    const linked = { ...progress, travelerUuid: result.uid, phoneLinked: true };
+    deps.repository.save(linked);
+    await deps.leaderboard.backupProgress(result.uid, linked);
   }
   return { ok: true };
 }
