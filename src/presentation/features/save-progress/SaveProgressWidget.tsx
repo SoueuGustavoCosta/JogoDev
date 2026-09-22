@@ -22,6 +22,7 @@ export function SaveProgressWidget() {
   const [mode, setMode] = useState<Mode>('form');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [forgotEmail, setForgotEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -96,16 +97,26 @@ export function SaveProgressWidget() {
                   onChange={(e) => setPhone(e.target.value)}
                   required
                 />
-                <input
-                  className={styles.field}
-                  type="password"
-                  autoComplete="new-password"
-                  placeholder="Senha (mínimo 6 caracteres)"
-                  minLength={6}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
+                <div className={styles.passwordWrap}>
+                  <input
+                    className={`${styles.field} ${styles.passwordField}`}
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete="new-password"
+                    placeholder="Senha (mínimo 6 caracteres)"
+                    minLength={6}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className={styles.togglePassword}
+                    onClick={() => setShowPassword((v) => !v)}
+                    aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                  >
+                    {showPassword ? 'Ocultar' : 'Mostrar'}
+                  </button>
+                </div>
                 <input
                   className={styles.field}
                   type="email"
