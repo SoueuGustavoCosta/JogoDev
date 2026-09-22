@@ -1,23 +1,43 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { updatePassword } from '@/application/usecases';
 import { Button } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
 import styles from './ResetPasswordPage.module.css';
 
+type LinkCheck = 'checking' | 'valid' | 'invalid';
+
 /**
  * Rota `/redefinir-senha`: destino do link enviado por `requestPasswordReset` (ver
  * `SaveProgressWidget`). Ao abrir o link, o supabase-js já troca a URL por uma sessão
  * temporária de redefinição sozinho (nenhum código aqui precisa ler token nenhum) — só
  * falta pedir a senha nova e chamar `updatePassword`.
+ *
+ * Antes de mostrar o formulário, confere que essa sessão temporária realmente existe
+ * (`hasRealSession`). Sem essa checagem, abrir esta rota sem token nenhum (link
+ * expirado, aberto sem o fragmento da URL, ou simplesmente digitado) deixava a página
+ * tentar `updatePassword` em cima de qualquer sessão que já estivesse ativa neste
+ * aparelho — inclusive a sessão anônima de quem só estava jogando, o que definiria uma
+ * senha inútil numa conta sem relação nenhuma com o pedido de redefinição.
  */
 export function ResetPasswordPage() {
   const { leaderboard } = useServices();
+  const [linkCheck, setLinkCheck] = useState<LinkCheck>('checking');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    leaderboard.hasRealSession().then((ok) => {
+      if (!cancelled) setLinkCheck(ok ? 'valid' : 'invalid');
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [leaderboard]);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -42,6 +62,30 @@ export function ResetPasswordPage() {
       <article>
         <h1>Senha alterada</h1>
         <p>Sua senha foi trocada. Já pode continuar jogando.</p>
+        <Link className={styles.link} to="/">
+          ◂ Voltar ao mapa
+        </Link>
+      </article>
+    );
+  }
+
+  if (linkCheck === 'checking') {
+    return (
+      <article>
+        <h1>Redefinir senha</h1>
+        <p className={styles.hint}>Conferindo o link...</p>
+      </article>
+    );
+  }
+
+  if (linkCheck === 'invalid') {
+    return (
+      <article>
+        <h1>Link inválido ou expirado</h1>
+        <p className={styles.error}>
+          Este link de redefinição não é mais válido — pode já ter sido usado, ou ter expirado. Peça um novo em
+          "Salvar ou entrar" → "Esqueci minha senha".
+        </p>
         <Link className={styles.link} to="/">
           ◂ Voltar ao mapa
         </Link>

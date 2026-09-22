@@ -24,6 +24,9 @@ class StubLeaderboard implements LeaderboardPort {
   async getMyProgress(): Promise<unknown | null> {
     return this.myProgress;
   }
+  async hasRealSession(): Promise<boolean> {
+    return false;
+  }
 
   async upsertPlayer(): Promise<void> {}
   async syncProgress(): Promise<void> {}
