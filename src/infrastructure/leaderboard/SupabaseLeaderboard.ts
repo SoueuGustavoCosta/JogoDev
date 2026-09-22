@@ -31,7 +31,11 @@ type SupabaseClientLike = {
   };
   from(table: string): {
     upsert(values: Record<string, unknown>, opts?: { onConflict: string }): Promise<{ error: { message: string } | null }>;
-    update(values: Record<string, unknown>): { eq(column: string, value: unknown): Promise<{ error: { message: string } | null }> };
+    update(
+      values: Record<string, unknown>,
+      opts?: { count: 'exact' },
+    ): { eq(column: string, value: unknown): Promise<{ error: { message: string } | null; count: number | null }> };
+    insert(values: Record<string, unknown>): Promise<{ error: { message: string } | null }>;
     select(columns: string): SelectQuery;
   };
   rpc<T = unknown>(fnName: string, args: Record<string, unknown>): Promise<{ data: T | null; error: { message: string } | null }>;
@@ -249,16 +253,37 @@ export class SupabaseLeaderboard implements LeaderboardPort {
     }));
   }
 
+  /**
+   * Nunca upsert/`ON CONFLICT DO UPDATE` aqui, só update-e-se-não-existir-insere na mão:
+   * Postgres exige privilégio de SELECT nas colunas do SET de um `ON CONFLICT DO UPDATE`
+   * — mesmo só escrevendo nelas, nunca lendo — e `progresso_completo` não tem SELECT de
+   * propósito (protege o backup de leitura direta, ver `supabase/schema.sql`). Confirmado
+   * ao vivo: um upsert bate exatamente nesse muro ("permission denied for table
+   * jogadores") assim que `progresso_completo` entra no SET, mesmo com o GRANT de
+   * colunas públicas certo. Update comum não tem essa exigência; `{ count: 'exact' }` vem
+   * do próprio comando UPDATE (quantas linhas afetou), não de nenhuma leitura — por isso
+   * também não precisa de SELECT.
+   */
   async backupProgress(uuid: string, nome: string, progress: unknown): Promise<void> {
     try {
       const client = await this.ensureClient();
-      // upsert, não update: a linha pode ainda não existir (ver doc do método na porta) —
-      // um update nesse caso não erra, só não afeta nenhuma linha, e o progresso se perde
-      // em silêncio.
-      const { error } = await client
+      const { error: updateError, count } = await client
         .from('jogadores')
-        .upsert({ uuid, nome, progresso_completo: progress }, { onConflict: 'uuid' });
-      if (error && import.meta.env.DEV) console.warn('[SupabaseLeaderboard] backupProgress falhou:', error.message);
+        .update({ nome, progresso_completo: progress }, { count: 'exact' })
+        .eq('uuid', uuid);
+      if (updateError) {
+        if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] backupProgress (update) falhou:', updateError.message);
+        return;
+      }
+      if (count && count > 0) return;
+
+      // Nenhuma linha existia ainda pra esse uuid: insere (sem ON CONFLICT).
+      const { error: insertError } = await client
+        .from('jogadores')
+        .insert({ uuid, nome, progresso_completo: progress });
+      if (insertError && import.meta.env.DEV) {
+        console.warn('[SupabaseLeaderboard] backupProgress (insert) falhou:', insertError.message);
+      }
     } catch (e) {
       if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] backupProgress falhou:', e);
     }
