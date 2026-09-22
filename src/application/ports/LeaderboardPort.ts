@@ -72,8 +72,17 @@ export interface LeaderboardPort {
    * pelos outros métodos). `unknown` de propósito: esta porta vive em `application/`, que
    * não deve importar o tipo `Progress` de `domain/` só para repassá-lo como JSON opaco.
    * Falha silenciosa: nunca deve quebrar o jogo.
+   *
+   * Recebe `nome` à parte (não só dentro de `progress`) porque a implementação faz um
+   * upsert, não um update: se a linha do jogador ainda não existir em `jogadores` (ex.:
+   * este é o primeiro backup depois de criar a conta, antes de `checkIn` ter rodado —
+   * ou simplesmente rodou antes dele, por causa da corrida entre as duas chamadas
+   * disparadas juntas em `Layout.tsx`), um `update` não cria nada — silenciosamente não
+   * salva nada, e o app segue achando que salvou. Isso já causou perda de progresso de
+   * verdade. `nome` é obrigatório na tabela (`not null check`), então o upsert precisa
+   * dele pra poder inserir a linha quando for a primeira vez.
    */
-  backupProgress(uuid: string, progress: unknown): Promise<void>;
+  backupProgress(uuid: string, nome: string, progress: unknown): Promise<void>;
   /**
    * Salva o hash do código de recuperação (gerado no cliente) via RPC `definir_codigo_recuperacao`,
    * que nunca devolve o hash a ninguém (nem à chave anon: a coluna é bloqueada por `revoke select`
@@ -104,6 +113,18 @@ export interface LeaderboardPort {
    * mais (falha silenciosa, o jogo continua funcionando só sem sincronizar).
    */
   ensureSignedIn(): Promise<string | null>;
+  /**
+   * Devolve o `Progress` salvo (backup completo) da conta autenticada agora (via RPC
+   * `meu_progresso()`, que só lê a própria linha — `auth.uid() = uuid`), ou `null` se não
+   * houver nada salvo ainda ou a leitura falhar. Usado por `bootstrapTravelerIdentity`
+   * quando a sessão do Supabase resolve pra um uid diferente do `travelerUuid` já salvo
+   * neste aparelho (ex.: sessão de recuperação de senha assumindo sozinha, fora do fluxo
+   * de `saveProgressWithPhone`) — sem checar isso, o app re-rotulava o progresso local
+   * (podia ser de sessão anônima sem relação nenhuma) pro uid novo sem nunca olhar o que
+   * já estava salvo na conta de verdade, arriscando sobrescrever esse progresso no
+   * próximo backup silencioso. Nunca lança.
+   */
+  getMyProgress(): Promise<unknown | null>;
   /**
    * "Salvar progresso"/"Entrar": promove a sessão atual (anônima, ver `ensureSignedIn`)
    * para uma conta permanente de telefone+senha, sem SMS nem confirmação por e-mail. O

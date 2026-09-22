@@ -19,6 +19,11 @@ class Memory implements ProgressRepository {
 class StubLeaderboard implements LeaderboardPort {
   signedInUid: string | null = null;
   ensureSignedInError = false;
+  myProgress: unknown | null = null;
+
+  async getMyProgress(): Promise<unknown | null> {
+    return this.myProgress;
+  }
 
   async upsertPlayer(): Promise<void> {}
   async syncProgress(): Promise<void> {}
@@ -37,11 +42,11 @@ class StubLeaderboard implements LeaderboardPort {
   async listOnlinePlayers(): Promise<OnlinePlayer[]> {
     return [];
   }
-  backupCalls: { uuid: string; progress: unknown }[] = [];
+  backupCalls: { uuid: string; nome: string; progress: unknown }[] = [];
   signOutCalls = 0;
 
-  async backupProgress(uuid: string, progress: unknown): Promise<void> {
-    this.backupCalls.push({ uuid, progress });
+  async backupProgress(uuid: string, nome: string, progress: unknown): Promise<void> {
+    this.backupCalls.push({ uuid, nome, progress });
   }
   async setRecoveryCode(): Promise<void> {}
   async restoreProgress(): Promise<{ uuid: string; progress: unknown } | null> {
@@ -113,6 +118,34 @@ describe('bootstrapTravelerIdentity', () => {
     expect(repository.load()?.travelerUuid).toBe('auth-uid-real');
   });
 
+  it('busca o progresso salvo na conta antes de trocar o uid, se este aparelho já tinha um progresso local diferente', async () => {
+    // Regressão: isso cobre uma sessão de recuperação de senha assumindo sozinha (fora
+    // do fluxo controlado de saveProgressWithPhone) — sem essa checagem, o progresso
+    // local (podia ser de outra sessão) virava o rótulo da conta de verdade e sobrescrevia
+    // o progresso dela no próximo backup silencioso.
+    const repository = new Memory();
+    repository.save({ version: 1, trails: {}, travelerName: 'Local', travelerUuid: 'uuid-local-antigo' });
+    const leaderboard = new StubLeaderboard();
+    leaderboard.signedInUid = 'auth-uid-conta-real';
+    leaderboard.myProgress = { version: 1, trails: {}, travelerName: 'Conta Real', prologueSeen: true };
+
+    await bootstrapTravelerIdentity({ repository, leaderboard });
+
+    expect(repository.load()).toMatchObject({ travelerName: 'Conta Real', travelerUuid: 'auth-uid-conta-real' });
+  });
+
+  it('preserva o progresso local (não zera) quando a conta trocou de uid mas não tem nada salvo', async () => {
+    const repository = new Memory();
+    repository.save({ version: 1, trails: {}, travelerName: 'Local', travelerUuid: 'uuid-local-antigo' });
+    const leaderboard = new StubLeaderboard();
+    leaderboard.signedInUid = 'auth-uid-conta-vazia';
+    leaderboard.myProgress = null;
+
+    await bootstrapTravelerIdentity({ repository, leaderboard });
+
+    expect(repository.load()).toMatchObject({ travelerName: 'Local', travelerUuid: 'auth-uid-conta-vazia' });
+  });
+
   it('não mexe no progresso local quando o login anônimo falha (ensureSignedIn devolve null)', async () => {
     const repository = new Memory();
     repository.save({ version: 1, trails: {}, travelerUuid: 'uuid-local' });
@@ -143,7 +176,11 @@ describe('signOutTraveler', () => {
     await signOutTraveler({ repository, leaderboard });
 
     expect(leaderboard.backupCalls).toEqual([
-      { uuid: 'uuid-do-viajante', progress: repository.data ?? { version: 1, trails: {}, travelerUuid: 'uuid-do-viajante', travelerName: 'Gustavo' } },
+      {
+        uuid: 'uuid-do-viajante',
+        nome: 'Gustavo',
+        progress: repository.data ?? { version: 1, trails: {}, travelerUuid: 'uuid-do-viajante', travelerName: 'Gustavo' },
+      },
     ]);
     expect(leaderboard.signOutCalls).toBe(1);
     expect(repository.load()).toBeNull();

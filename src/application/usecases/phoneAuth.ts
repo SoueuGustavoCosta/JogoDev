@@ -14,14 +14,20 @@ export type SimpleResult = { ok: true } | { ok: false; reason: string };
  * `requestPasswordReset`); sem ele, a conta usa um e-mail sintético e não há como
  * recuperar a senha se for esquecida.
  *
- * Se a conta já existir e a senha bater, entra nela e adota o progresso salvo lá —
- * SEMPRE, mesmo vazio (`isLogin: true`; ver `LeaderboardPort.saveProgressWithPhone`):
- * o progresso local de antes de entrar pode ser de uma sessão anônima sem nenhuma
- * relação com essa conta, e nunca deve substituir o que está salvo nela. Senão, cria a
- * conta promovendo a sessão anônima atual, preservando o progresso deste aparelho — e
- * faz o primeiro backup na hora (sem esperar o batimento periódico, ~90s), para a conta
- * já nascer com alguma coisa salva na nuvem, caso o aluno feche o app logo em seguida e
- * só volte a jogar (ou tente entrar) de outro aparelho.
+ * Se a conta já existir e a senha bater, entra nela e adota o progresso salvo lá
+ * (`isLogin: true`; ver `LeaderboardPort.saveProgressWithPhone`) — nunca o progresso
+ * local de antes de entrar, que pode ser de uma sessão anônima sem nenhuma relação com
+ * essa conta. EXCEÇÃO deliberada: se a conta existir mas não vier nada salvo
+ * (`restoredProgress` nulo — conta de verdade sem nenhum backup completo ainda, ou uma
+ * falha silenciosa ao buscar), mantém o progresso local em vez de zerar a tela: entre
+ * "a conta pode estar vazia mesmo" e "posso estar prestes a apagar um progresso de
+ * verdade que não consegui ler", a segunda é bem pior — perder o jogo de alguém é o
+ * jeito mais rápido de fazer a pessoa desistir. Esse progresso local vira, a partir daí,
+ * o que fica salvo na conta (backup imediato). Senão (conta nova de verdade), também
+ * preserva o progresso deste aparelho — e faz o primeiro backup na hora (sem esperar o
+ * batimento periódico, ~90s), para a conta já nascer com alguma coisa salva na nuvem,
+ * caso o aluno feche o app logo em seguida e só volte a jogar (ou tente entrar) de outro
+ * aparelho.
  */
 export async function saveProgressWithPhone(
   deps: { repository: ProgressRepository; leaderboard: LeaderboardPort },
@@ -44,17 +50,20 @@ export async function saveProgressWithPhone(
   const result = await deps.leaderboard.saveProgressWithPhone(phone, params.password, email || undefined);
   if (!result.ok) return result;
 
-  if (result.isLogin) {
-    // Login numa conta que já existia: adota o estado salvo nela, mesmo vazio (conta
-    // com zero progresso ainda) — nunca o progresso local de antes de entrar, que pode
-    // ser de uma sessão anônima sem nenhuma relação com essa conta.
-    const restored = (result.restoredProgress as Progress | null) ?? createEmptyProgress();
+  if (result.isLogin && result.restoredProgress) {
+    // Login numa conta que já existia e trouxe progresso salvo: adota o estado da nuvem
+    // — nunca o progresso local de antes de entrar, que pode ser de uma sessão anônima
+    // sem nenhuma relação com essa conta.
+    const restored = result.restoredProgress as Progress;
     deps.repository.save({ ...restored, travelerUuid: result.uid, phoneLinked: true });
   } else {
+    // Conta nova, ou login numa conta que existe mas não trouxe nada salvo: preserva o
+    // progresso deste aparelho (nunca zera a tela) e faz o backup na hora, pra essa
+    // passar a ser a versão salva na conta a partir de agora.
     const progress = deps.repository.load() ?? createEmptyProgress();
     const linked = { ...progress, travelerUuid: result.uid, phoneLinked: true };
     deps.repository.save(linked);
-    await deps.leaderboard.backupProgress(result.uid, linked);
+    await deps.leaderboard.backupProgress(result.uid, linked.travelerName || 'Viajante', linked);
   }
   return { ok: true };
 }

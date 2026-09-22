@@ -1,4 +1,5 @@
 import { createEmptyProgress } from '@/domain/progress';
+import type { Progress } from '@/domain/progress';
 import type { LeaderboardPort, ProgressRepository } from '../ports';
 
 const DEFAULT_NAME = 'Viajante';
@@ -50,6 +51,17 @@ export function getOrCreateTravelerUuid(deps: { repository: ProgressRepository }
  * grava em `Progress.travelerUuid`, para que `getOrCreateTravelerUuid` (síncrono,
  * chamado de muitos lugares) passe a devolver o `auth.uid()` real assim que possível.
  *
+ * Quando o uid da sessão já resolvida é DIFERENTE do `travelerUuid` que este aparelho
+ * já tinha salvo (não é a primeira vez), busca o progresso salvo nessa conta
+ * (`getMyProgress`) antes de trocar o rótulo local — nunca troca "no escuro". Isso
+ * cobre o caso de uma sessão de recuperação de senha (link de e-mail) assumir sozinha
+ * neste aparelho, fora do fluxo controlado de `saveProgressWithPhone`: sem essa checagem,
+ * o progresso local (que podia ser de uma sessão anônima sem nenhuma relação com a
+ * conta) virava o rótulo dessa conta e, no próximo backup silencioso, sobrescrevia o
+ * progresso de verdade dela. Mesma regra de segurança do login por telefone+senha: se
+ * vier progresso salvo, adota; se não vier nada (conta vazia ou falha ao buscar),
+ * preserva o progresso local em vez de zerá-lo.
+ *
  * Desenhado para nunca bloquear o jogo: é a única ponta assíncrona desta troca de
  * identidade. Chame uma vez por sessão do app (ver `Layout.tsx`), sem aguardar o
  * resultado antes de liberar a tela — antes da primeira resolução (ou se ela nunca
@@ -67,7 +79,19 @@ export async function bootstrapTravelerIdentity(deps: {
     if (!authUid) return;
     const progress = deps.repository.load() ?? createEmptyProgress();
     if (progress.travelerUuid === authUid) return;
-    deps.repository.save({ ...progress, travelerUuid: authUid });
+
+    if (!progress.travelerUuid) {
+      // Primeira vez neste aparelho: não há nada local a proteger, só rotular.
+      deps.repository.save({ ...progress, travelerUuid: authUid });
+      return;
+    }
+
+    const restored = (await deps.leaderboard.getMyProgress()) as Progress | null;
+    if (restored) {
+      deps.repository.save({ ...restored, travelerUuid: authUid });
+    } else {
+      deps.repository.save({ ...progress, travelerUuid: authUid });
+    }
   } catch {
     // Falha silenciosa: o jogo continua com o uuid local (gerado sob demanda).
   }
@@ -93,7 +117,8 @@ export async function signOutTraveler(deps: { repository: ProgressRepository; le
     const progress = deps.repository.load();
     if (progress) {
       const uuid = getOrCreateTravelerUuid({ repository: deps.repository });
-      await deps.leaderboard.backupProgress(uuid, progress);
+      const name = getTraveler({ repository: deps.repository }).name;
+      await deps.leaderboard.backupProgress(uuid, name, progress);
     }
     await deps.leaderboard.signOut();
   } finally {
