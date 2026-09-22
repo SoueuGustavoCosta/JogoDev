@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BIO_MAX_LENGTH, getCachedBio, getTraveler, saveBio } from '@/application/usecases';
+import { BIO_MAX_LENGTH, getCachedBio, getTraveler, hasPhoneLinked, saveBio, signOutTraveler } from '@/application/usecases';
 import { SUPPORT_COPY } from '@/domain/support';
+import { Button, Modal } from '@/presentation/design-system';
 import { BadgePassport } from '@/presentation/features/badges';
 import { SupportModal } from '@/presentation/features/support';
 import { useServices } from '@/presentation/app/ServicesContext';
@@ -10,13 +11,24 @@ import styles from './SettingsPage.module.css';
 export function SettingsPage() {
   const { progressRepository, leaderboard } = useServices();
   const [supportOpen, setSupportOpen] = useState(false);
+  const [signOutOpen, setSignOutOpen] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
   const [bio, setBio] = useState(() => getCachedBio({ repository: progressRepository }));
 
   const name = getTraveler({ repository: progressRepository }).name;
+  const linked = hasPhoneLinked({ repository: progressRepository });
 
   function handleBioBlur() {
     const saved = saveBio({ repository: progressRepository, leaderboard }, { bio });
     setBio(saved);
+  }
+
+  async function handleSignOut() {
+    setSigningOut(true);
+    await signOutTraveler({ repository: progressRepository, leaderboard });
+    // Recarrega o app inteiro: é a forma mais simples de garantir que todo estado em
+    // memória (nome em cache, sessão anônima antiga etc.) seja recriado do zero.
+    window.location.href = '/';
   }
 
   return (
@@ -61,10 +73,41 @@ export function SettingsPage() {
       </section>
 
       <section className={styles.section}>
+        <h2>Sair</h2>
+        <p className={styles.hint}>
+          {linked
+            ? 'Encerra sua conta neste aparelho, para outra pessoa entrar com a dela. Depois é só usar "Salvar ou entrar" com o mesmo telefone e senha para voltar.'
+            : 'Você ainda não salvou telefone e senha: o progresso deste aparelho só existe aqui. Sair agora apaga tudo, sem jeito de recuperar.'}
+        </p>
+        <Button variant="ghost" size="sm" onClick={() => setSignOutOpen(true)}>
+          Sair desta conta
+        </Button>
+      </section>
+
+      <section className={styles.section}>
         <button type="button" className={styles.muted} onClick={() => setSupportOpen(true)}>
           {SUPPORT_COPY.footerLinkLabel}
         </button>
       </section>
+
+      {signOutOpen ? (
+        <Modal title="Sair desta conta" onClose={() => (signingOut ? undefined : setSignOutOpen(false))}>
+          <h2>Tem certeza?</h2>
+          <p className={linked ? styles.hint : styles.warn}>
+            {linked
+              ? 'O progresso continua salvo na nuvem — é só entrar de novo com telefone e senha quando quiser.'
+              : 'Sem telefone e senha salvos, sair agora apaga o progresso deste aparelho para sempre.'}
+          </p>
+          <div className={styles.row}>
+            <Button variant="alt" size="sm" onClick={handleSignOut} disabled={signingOut}>
+              {signingOut ? 'Saindo...' : 'Sim, sair'}
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => setSignOutOpen(false)} disabled={signingOut}>
+              Cancelar
+            </Button>
+          </div>
+        </Modal>
+      ) : null}
 
       {supportOpen ? <SupportModal onClose={() => setSupportOpen(false)} /> : null}
     </div>

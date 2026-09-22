@@ -131,4 +131,11 @@ export interface LeaderboardPort {
    * pronto pra mostrar.
    */
   updatePassword(newPassword: string): Promise<{ ok: true } | { ok: false; reason: string }>;
+  /**
+   * Encerra a sessão do Supabase Auth (telefone+senha ou anônima) neste aparelho, para
+   * outra pessoa poder entrar na própria conta em seguida (ver `signOutTraveler`, em
+   * `application/usecases/traveler.ts`). Falha silenciosa: nunca lança — o usecase que
+   * chama sempre limpa o progresso local em seguida, sessão tendo saído ou não.
+   */
+  signOut(): Promise<void>;
 }
