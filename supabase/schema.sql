@@ -77,6 +77,15 @@ create table public.insignias (
 -- confirme de verdade consultando `information_schema.column_privileges` — não baste
 -- confiar no que este arquivo diz, ele pode ter ficado desatualizado (foi exatamente o
 -- que aconteceu com `codigo_recuperacao_hash` abaixo, por um bom tempo).
+--
+-- ACONTECEU DE NOVO (2026-09-22): rodando o app de verdade (Playwright) contra o banco
+-- de produção pra auditar login/cadastro, o `backupProgress` (upsert, ver
+-- `SupabaseLeaderboard.ts`) falhava com "permission denied for table jogadores" — o
+-- banco de produção não tinha mais este GRANT abaixo (drift entre este arquivo e o banco
+-- real; causa não confirmada). `INSERT ... ON CONFLICT DO UPDATE` (é isso que um upsert
+-- vira) exige SELECT na tabela pra checar o conflito, diferente de um UPDATE simples.
+-- Reaplicado direto em produção; deixado aqui documentado para reforçar: se algo parecido
+-- acontecer de novo, é este GRANT que provavelmente sumiu.
 grant select (uuid, nome, criado_em, foto_url, ultima_atividade, sequencia_atual, sequencia_recorde, ultimo_dia_ativo, bio)
   on public.jogadores to anon, authenticated;
 
