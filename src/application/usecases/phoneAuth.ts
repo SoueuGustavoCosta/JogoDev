@@ -2,6 +2,7 @@ import { createEmptyProgress } from '@/domain/progress';
 import type { Progress } from '@/domain/progress';
 import { isValidEmail, isValidPassword, MIN_PASSWORD_LENGTH, normalizePhone } from '@/domain/traveler';
 import type { LeaderboardPort, ProgressRepository } from '../ports';
+import { getTraveler } from './traveler';
 
 export type SaveProgressWithPhoneResult = { ok: true } | { ok: false; reason: string };
 export type SimpleResult = { ok: true } | { ok: false; reason: string };
@@ -61,9 +62,14 @@ export async function saveProgressWithPhone(
     // progresso deste aparelho (nunca zera a tela) e faz o backup na hora, pra essa
     // passar a ser a versão salva na conta a partir de agora.
     const progress = deps.repository.load() ?? createEmptyProgress();
+    // getTraveler resolve o nome de exibição de verdade, incluindo o padrão único por
+    // aparelho quando o viajante nunca escolheu um (ver defaultTravelerName em
+    // traveler.ts) — nunca o literal "Viajante" puro, que colide com qualquer outro
+    // viajante que também não tenha escolhido nome.
+    const nome = getTraveler({ repository: deps.repository }).name;
     const linked = { ...progress, travelerUuid: result.uid, phoneLinked: true };
     deps.repository.save(linked);
-    await deps.leaderboard.backupProgress(result.uid, linked.travelerName || 'Viajante', linked);
+    await deps.leaderboard.backupProgress(result.uid, nome, linked);
   }
   return { ok: true };
 }

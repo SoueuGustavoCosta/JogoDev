@@ -42,7 +42,7 @@ export function getProfileSummary(
   }
 
   return {
-    name: progress.travelerName || 'Viajante',
+    name: getTraveler({ repository: deps.repository }).name,
     avatarUrl: progress.avatarUrl ?? null,
     xp,
     crystals,

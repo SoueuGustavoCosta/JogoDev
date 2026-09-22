@@ -75,8 +75,17 @@ class StubLeaderboard implements LeaderboardPort {
 }
 
 describe('traveler', () => {
-  it('defaults to "Viajante" with the prologue unseen', () => {
-    expect(getTraveler({ repository: new Memory() })).toEqual({ name: 'Viajante', prologueSeen: false });
+  // Regressão: "Viajante" sozinho, igual pra todo mundo que não escolhe nome, colide
+  // direto com `jogadores.nome` (único no banco) assim que dois viajantes sem nome
+  // tentam sincronizar — descoberto rodando o app de verdade contra o banco (409, chave
+  // duplicada), fazendo o backup falhar em silêncio pro segundo em diante. O padrão
+  // agora inclui um sufixo derivado do próprio uuid (já único), sempre "Viajante XXXX".
+  const DEFAULT_NAME_PATTERN = /^Viajante [0-9A-F]{6}$/;
+
+  it('defaults to "Viajante <sufixo>" (único por aparelho) with the prologue unseen', () => {
+    const traveler = getTraveler({ repository: new Memory() });
+    expect(traveler.name).toMatch(DEFAULT_NAME_PATTERN);
+    expect(traveler.prologueSeen).toBe(false);
   });
 
   it('saves a trimmed name capped at 20 characters and marks the prologue seen', () => {
@@ -86,15 +95,24 @@ describe('traveler', () => {
     expect(getTraveler({ repository })).toEqual({ name, prologueSeen: true });
   });
 
-  it('turns an empty name into "Viajante"', () => {
+  it('turns an empty name into the default "Viajante <sufixo>"', () => {
     const repository = new Memory();
-    expect(completePrologue({ repository }, { name: '   ' })).toBe('Viajante');
+    expect(completePrologue({ repository }, { name: '   ' })).toMatch(DEFAULT_NAME_PATTERN);
   });
 
   it('skipping keeps the default name but marks the prologue seen', () => {
     const repository = new Memory();
     markPrologueSkipped({ repository });
-    expect(getTraveler({ repository })).toEqual({ name: 'Viajante', prologueSeen: true });
+    const traveler = getTraveler({ repository });
+    expect(traveler.name).toMatch(DEFAULT_NAME_PATTERN);
+    expect(traveler.prologueSeen).toBe(true);
+  });
+
+  it('o sufixo do nome padrão é estável: mesmo uuid, mesmo nome sempre', () => {
+    const repository = new Memory();
+    const first = getTraveler({ repository }).name;
+    const second = getTraveler({ repository }).name;
+    expect(first).toBe(second);
   });
 });
 

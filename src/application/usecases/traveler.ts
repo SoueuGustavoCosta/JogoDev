@@ -2,27 +2,44 @@ import { createEmptyProgress } from '@/domain/progress';
 import type { Progress } from '@/domain/progress';
 import type { LeaderboardPort, ProgressRepository } from '../ports';
 
-const DEFAULT_NAME = 'Viajante';
 const MAX_NAME_LENGTH = 20;
+
+/**
+ * Nome padrão pra quem não escolhe um: "Viajante" sozinho colide direto com qualquer
+ * outro viajante que também não tenha escolhido nome (é o valor padrão de todo mundo) —
+ * e `jogadores.nome` é único (índice `jogadores_nome_unique_ci`, sem diferenciar
+ * maiúsculas/minúsculas). Descoberto numa auditoria rodando o app de verdade contra o
+ * banco: o SEGUNDO viajante a nunca ter escolhido nome já falha (409, chave duplicada)
+ * em todo envio pra nuvem — checkInDaily, upsertPlayer (a cada módulo/insígnia/chefe) e
+ * o backup do progresso — silenciosamente, porque essas chamadas nunca propagam erro pra
+ * tela. Sufixo derivado do próprio `travelerUuid` (já único) resolve isso sem pedir nada
+ * a mais do aluno: cada aparelho que nunca nomeou o viajante ganha um nome padrão só
+ * seu, nunca precisa ser digitado, e nunca muda (mesmo uuid → mesmo sufixo sempre).
+ */
+function defaultTravelerName(uuid: string): string {
+  return `Viajante ${uuid.replace(/-/g, '').slice(0, 6).toUpperCase()}`;
+}
 
 export function getTraveler(deps: { repository: ProgressRepository }): {
   name: string;
   prologueSeen: boolean;
 } {
   const progress = deps.repository.load();
+  const uuid = getOrCreateTravelerUuid({ repository: deps.repository });
   return {
-    name: progress?.travelerName || DEFAULT_NAME,
+    name: progress?.travelerName || defaultTravelerName(uuid),
     prologueSeen: Boolean(progress?.prologueSeen),
   };
 }
 
-/** Salva o nome (máx. 20 caracteres; vazio vira "Viajante") e marca o prólogo como visto. */
+/** Salva o nome (máx. 20 caracteres; vazio vira o padrão "Viajante ####") e marca o prólogo como visto. */
 export function completePrologue(
   deps: { repository: ProgressRepository },
   params: { name: string },
 ): string {
-  const name = params.name.trim().slice(0, MAX_NAME_LENGTH) || DEFAULT_NAME;
   const progress = deps.repository.load() ?? createEmptyProgress();
+  const uuid = getOrCreateTravelerUuid({ repository: deps.repository });
+  const name = params.name.trim().slice(0, MAX_NAME_LENGTH) || defaultTravelerName(uuid);
   deps.repository.save({ ...progress, travelerName: name, prologueSeen: true });
   return name;
 }
