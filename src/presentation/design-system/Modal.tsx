@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import styles from './Modal.module.css';
 
 export function Modal({
@@ -19,7 +20,12 @@ export function Modal({
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [onClose]);
 
-  return (
+  // Sempre em portal pra `document.body`: apesar de `position: fixed`, um ancestral
+  // qualquer com `position: relative` + `z-index` (ex.: o cabeçalho do prólogo) cria seu
+  // próprio contexto de empilhamento e prende o modal dentro dele — bastava outro
+  // elemento com `z-index` maior fora desse ancestral (ex.: o balão de diálogo da
+  // Senhorita Sintaxe) pra aparecer por cima do modal. O portal escapa disso sempre.
+  return createPortal(
     <div className={styles.overlay} onClick={onClose}>
       <div
         className={styles.sheet}
@@ -33,6 +39,7 @@ export function Modal({
         </button>
         {children}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

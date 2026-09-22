@@ -95,7 +95,7 @@ describe('saveProgressWithPhone', () => {
     const repository = new Memory();
     repository.save({ version: 1, trails: {}, travelerName: 'Ana', travelerUuid: 'uuid-local' });
     const leaderboard = new StubLeaderboard();
-    leaderboard.nextResult = { ok: true, uid: 'uuid-novo', restoredProgress: null };
+    leaderboard.nextResult = { ok: true, uid: 'uuid-novo', isLogin: false, restoredProgress: null };
 
     const result = await saveProgressWithPhone(
       { repository, leaderboard },
@@ -111,7 +111,7 @@ describe('saveProgressWithPhone', () => {
     const repository = new Memory();
     repository.save({ version: 1, trails: {}, travelerName: 'Ana', travelerUuid: 'uuid-local' });
     const leaderboard = new StubLeaderboard();
-    leaderboard.nextResult = { ok: true, uid: 'uuid-novo', restoredProgress: null };
+    leaderboard.nextResult = { ok: true, uid: 'uuid-novo', isLogin: false, restoredProgress: null };
 
     await saveProgressWithPhone({ repository, leaderboard }, { phone: '31999999999', password: 'senha123' });
 
@@ -123,12 +123,31 @@ describe('saveProgressWithPhone', () => {
     repository.save({ version: 1, trails: {}, travelerName: 'Local' });
     const leaderboard = new StubLeaderboard();
     const remoteProgress: Progress = { version: 1, trails: {}, travelerName: 'Remoto' };
-    leaderboard.nextResult = { ok: true, uid: 'uuid-remoto', restoredProgress: remoteProgress };
+    leaderboard.nextResult = { ok: true, uid: 'uuid-remoto', isLogin: true, restoredProgress: remoteProgress };
 
     const result = await saveProgressWithPhone({ repository, leaderboard }, { phone: '31999999999', password: 'senha123' });
 
     expect(result).toEqual({ ok: true });
     expect(repository.load()).toEqual({ ...remoteProgress, travelerUuid: 'uuid-remoto', phoneLinked: true });
+    expect(leaderboard.backupCalls).toHaveLength(0);
+  });
+
+  it('conta já existente sem backup salvo (restoredProgress nulo): adota progresso vazio, nunca o local anterior', async () => {
+    // Regressão: o progresso local antes do login pode ser de uma sessão anônima sem
+    // nenhuma relação com a conta (ex.: o aparelho ficou jogando "Viajante" depois de
+    // sair de uma conta). Sem essa distinção (`isLogin`), esse progresso anônimo
+    // acabava substituindo o da conta de verdade — e podia até sobrescrever o backup
+    // dela na nuvem, apagando progresso de verdade.
+    const repository = new Memory();
+    repository.save({ version: 1, trails: {}, travelerName: 'Viajante', travelerUuid: 'uuid-anonimo-sem-relacao' });
+    const leaderboard = new StubLeaderboard();
+    leaderboard.nextResult = { ok: true, uid: 'uuid-remoto', isLogin: true, restoredProgress: null };
+
+    const result = await saveProgressWithPhone({ repository, leaderboard }, { phone: '31999999999', password: 'senha123' });
+
+    expect(result).toEqual({ ok: true });
+    expect(repository.load()?.travelerName).not.toBe('Viajante');
+    expect(repository.load()).toMatchObject({ travelerUuid: 'uuid-remoto', phoneLinked: true });
     expect(leaderboard.backupCalls).toHaveLength(0);
   });
 
@@ -173,7 +192,7 @@ describe('saveProgressWithPhone com e-mail opcional', () => {
   it('repassa o e-mail pra porta quando informado', async () => {
     const repository = new Memory();
     const leaderboard = new StubLeaderboard();
-    leaderboard.nextResult = { ok: true, uid: 'uuid-novo', restoredProgress: null };
+    leaderboard.nextResult = { ok: true, uid: 'uuid-novo', isLogin: false, restoredProgress: null };
 
     await saveProgressWithPhone(
       { repository, leaderboard },

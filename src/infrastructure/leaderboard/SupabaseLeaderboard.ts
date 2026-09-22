@@ -336,7 +336,7 @@ export class SupabaseLeaderboard implements LeaderboardPort {
         return { ok: false, reason: 'Telefone já cadastrado, mas a senha não confere.' };
       }
       const { data: progresso } = await client.rpc<unknown>('meu_progresso', {});
-      return { ok: true, uid: data.user.id, restoredProgress: progresso ?? null };
+      return { ok: true, uid: data.user.id, isLogin: true, restoredProgress: progresso ?? null };
     } catch (e) {
       if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] signInWithAccountEmail falhou:', e);
       return { ok: false, reason: SupabaseLeaderboard.GENERIC_ERROR_REASON };
@@ -384,7 +384,7 @@ export class SupabaseLeaderboard implements LeaderboardPort {
 
       if (sessionData.session) {
         const { data, error } = await client.auth.updateUser({ email: accountEmail, password });
-        if (!error && data.user) return { ok: true, uid: data.user.id, restoredProgress: null };
+        if (!error && data.user) return { ok: true, uid: data.user.id, isLogin: false, restoredProgress: null };
         if (error) return this.recoverAsLogin(accountEmail, password, error, 'updateUser');
       }
 
@@ -392,7 +392,7 @@ export class SupabaseLeaderboard implements LeaderboardPort {
       const { data, error } = await client.auth.signUp({ email: accountEmail, password });
       if (error) return this.recoverAsLogin(accountEmail, password, error, 'signUp');
       if (!data.user) return { ok: false, reason: SupabaseLeaderboard.GENERIC_ERROR_REASON };
-      return { ok: true, uid: data.user.id, restoredProgress: null };
+      return { ok: true, uid: data.user.id, isLogin: false, restoredProgress: null };
     } catch (e) {
       if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] saveProgressWithPhone falhou:', e);
       return { ok: false, reason: SupabaseLeaderboard.GENERIC_ERROR_REASON };
