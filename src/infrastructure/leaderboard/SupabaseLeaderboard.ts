@@ -326,6 +326,31 @@ export class SupabaseLeaderboard implements LeaderboardPort {
   }
 
   /**
+   * `updateUser`/`signUp` erraram ao tentar criar ou vincular a conta. Antes de desistir,
+   * tenta entrar como se o telefone já tivesse conta — cobre não só o caso já detectado
+   * pelo regex de `looksLikeAlreadyRegistered` (mensagem varia por versão/idioma do
+   * Supabase, então o regex nem sempre bate), como qualquer outra falha nessa chamada.
+   * Se o login também falhar: com colisão confirmada pelo regex, devolve o motivo exato
+   * do login ("senha não confere" é um diagnóstico confiável quando já sabemos que a
+   * conta existe); sem confirmação, devolve o erro genérico em vez de arriscar uma
+   * mensagem que pode estar errada (a conta pode nem existir ainda).
+   */
+  private async recoverAsLogin(
+    accountEmail: string,
+    password: string,
+    originalError: { message: string },
+    origin: string,
+  ): Promise<SavePhoneResult> {
+    const knownCollision = SupabaseLeaderboard.looksLikeAlreadyRegistered(originalError.message);
+    const signIn = await this.signInWithAccountEmail(accountEmail, password);
+    if (signIn.ok) return signIn;
+    if (import.meta.env.DEV) {
+      console.warn(`[SupabaseLeaderboard] saveProgressWithPhone (${origin}) falhou:`, originalError.message);
+    }
+    return knownCollision ? signIn : { ok: false, reason: SupabaseLeaderboard.GENERIC_ERROR_REASON };
+  }
+
+  /**
    * "Salvar progresso"/"Entrar" (ver LeaderboardPort): promove a sessão atual (anônima)
    * para uma conta permanente de telefone+senha. `accountEmail` é o e-mail informado
    * (quando houver) ou um e-mail sintético derivado só do telefone — em qualquer um dos
@@ -342,24 +367,12 @@ export class SupabaseLeaderboard implements LeaderboardPort {
       if (sessionData.session) {
         const { data, error } = await client.auth.updateUser({ email: accountEmail, password });
         if (!error && data.user) return { ok: true, uid: data.user.id, restoredProgress: null };
-        if (error && SupabaseLeaderboard.looksLikeAlreadyRegistered(error.message)) {
-          return this.signInWithAccountEmail(accountEmail, password);
-        }
-        if (error) {
-          if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] saveProgressWithPhone (updateUser) falhou:', error.message);
-          return { ok: false, reason: SupabaseLeaderboard.GENERIC_ERROR_REASON };
-        }
+        if (error) return this.recoverAsLogin(accountEmail, password, error, 'updateUser');
       }
 
       // Sem sessão (raro: bootstrap anônimo ainda não rodou/falhou): cria a conta direto.
       const { data, error } = await client.auth.signUp({ email: accountEmail, password });
-      if (error) {
-        if (SupabaseLeaderboard.looksLikeAlreadyRegistered(error.message)) {
-          return this.signInWithAccountEmail(accountEmail, password);
-        }
-        if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] saveProgressWithPhone (signUp) falhou:', error.message);
-        return { ok: false, reason: SupabaseLeaderboard.GENERIC_ERROR_REASON };
-      }
+      if (error) return this.recoverAsLogin(accountEmail, password, error, 'signUp');
       if (!data.user) return { ok: false, reason: SupabaseLeaderboard.GENERIC_ERROR_REASON };
       return { ok: true, uid: data.user.id, restoredProgress: null };
     } catch (e) {
