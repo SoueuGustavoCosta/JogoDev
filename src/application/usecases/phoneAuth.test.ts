@@ -47,7 +47,10 @@ class StubLeaderboard implements LeaderboardPort {
   async listOnlinePlayers(): Promise<OnlinePlayer[]> {
     return [];
   }
-  async backupProgress(): Promise<void> {}
+  backupCalls: { uuid: string; progress: unknown }[] = [];
+  async backupProgress(uuid: string, progress: unknown): Promise<void> {
+    this.backupCalls.push({ uuid, progress });
+  }
   async setRecoveryCode(): Promise<void> {}
   async restoreProgress(): Promise<{ uuid: string; progress: unknown } | null> {
     return null;
@@ -104,7 +107,18 @@ describe('saveProgressWithPhone', () => {
     expect(repository.load()).toMatchObject({ travelerName: 'Ana', travelerUuid: 'uuid-novo', phoneLinked: true });
   });
 
-  it('conta já existente: adota o progresso restaurado', async () => {
+  it('cadastro novo: faz o backup na hora, sem esperar o batimento periódico', async () => {
+    const repository = new Memory();
+    repository.save({ version: 1, trails: {}, travelerName: 'Ana', travelerUuid: 'uuid-local' });
+    const leaderboard = new StubLeaderboard();
+    leaderboard.nextResult = { ok: true, uid: 'uuid-novo', restoredProgress: null };
+
+    await saveProgressWithPhone({ repository, leaderboard }, { phone: '31999999999', password: 'senha123' });
+
+    expect(leaderboard.backupCalls).toEqual([{ uuid: 'uuid-novo', progress: repository.load() }]);
+  });
+
+  it('conta já existente: adota o progresso restaurado sem refazer o backup (já está na nuvem)', async () => {
     const repository = new Memory();
     repository.save({ version: 1, trails: {}, travelerName: 'Local' });
     const leaderboard = new StubLeaderboard();
@@ -115,6 +129,7 @@ describe('saveProgressWithPhone', () => {
 
     expect(result).toEqual({ ok: true });
     expect(repository.load()).toEqual({ ...remoteProgress, travelerUuid: 'uuid-remoto', phoneLinked: true });
+    expect(leaderboard.backupCalls).toHaveLength(0);
   });
 
   it('devolve o motivo de erro da porta sem mexer no progresso local', async () => {
