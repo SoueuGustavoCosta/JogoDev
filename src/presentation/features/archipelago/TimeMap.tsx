@@ -16,6 +16,7 @@ import {
   type MapEra,
 } from './mapData';
 import { EraVortex } from './EraVortex';
+import { SintaxePlaza } from './SintaxePlaza';
 import styles from './TimeMap.module.css';
 
 /** Só mostra no mapa as eras que já têm trilha jogável (trilha registrada). As demais ficam ocultas até existirem. */
@@ -486,20 +487,8 @@ export function TimeMap({
             aria-label="Praça da Sintaxe"
             {...activate(() => setSheet({ kind: 'hub' }))}
           >
-            <circle r={100} fill="#9b4dff" opacity={0.12} filter="url(#tm-blur)" />
-            <circle r={78} fill="#0d0b18" stroke="#9b4dff" strokeWidth={5} />
-            <circle r={78} fill="none" stroke="#5ee7ff" strokeWidth={2} strokeDasharray="6 8" className={styles.flow} />
-            <g transform="scale(1.9)">
-              <rect x="-24" y="-20" width="48" height="40" rx="6" fill="#151225" stroke="#9b4dff" strokeWidth="1.6" />
-              <rect x="-24" y="-20" width="48" height="8" rx="5" fill="#1b1731" />
-              <circle cx="-18" cy="-16" r="1.5" fill="#ff5f57" />
-              <circle cx="-13" cy="-16" r="1.5" fill="#febc2e" />
-              <circle cx="-8" cy="-16" r="1.5" fill="#28c840" />
-              <rect x="-14" y="-6" width="8" height="11" rx="3" fill="#5ee7ff" />
-              <rect x="6" y="-6" width="8" height="11" rx="3" fill="#5ee7ff" />
-              <path d="M-8 11q8 5 16 0" stroke="#ff6b1f" strokeWidth="2.4" fill="none" strokeLinecap="round" />
-            </g>
-            <g transform="translate(0 118)">
+            <SintaxePlaza />
+            <g transform="translate(0 142)">
               <rect x={-96} y={-22} width={192} height={38} rx={19} fill="#151225" stroke="#9b4dff" strokeWidth={2} />
               <text y={4} textAnchor="middle" fill="#ece9f8" fontSize={22} fontWeight={800} fontFamily="Syne, sans-serif">
                 Praça da Sintaxe
