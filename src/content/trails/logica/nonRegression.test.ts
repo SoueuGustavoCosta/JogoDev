@@ -44,8 +44,8 @@ describe('conteúdo da Era da Lógica (logica)', () => {
     expect(() => trailSchema.parse(logicaTrail)).not.toThrow();
   });
 
-  it('a trilha não tem laboratório e usa o símbolo "logic-diamond"', () => {
-    expect(logicaTrail.lab).toBeNull();
+  it('a trilha tem o laboratório de PHP e usa o símbolo "logic-diamond"', () => {
+    expect(logicaTrail.lab).toBe('php');
     expect(logicaTrail.symbol).toBe('logic-diamond');
   });
 

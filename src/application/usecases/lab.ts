@@ -1,6 +1,7 @@
 import { createEmptyProgress, getOrCreateTrailProgress } from '@/domain/progress';
+import { phpLooksLikeError } from '@/domain/lab';
 import type { Mission } from '@/domain/trail';
-import type { AnalyticsPort, LeaderboardPort, ProgressRepository, SqlEnginePort, SqlResultBlock } from '../ports';
+import type { AnalyticsPort, LeaderboardPort, PhpEnginePort, PhpRunResult, ProgressRepository, SqlEnginePort, SqlResultBlock } from '../ports';
 
 export function openLab(deps: { engine: SqlEnginePort; analytics: AnalyticsPort }): Promise<void> {
   deps.analytics.track('lab_opened');
@@ -22,6 +23,26 @@ export function resetLabDataset(
   dataset: Parameters<SqlEnginePort['reset']>[0],
 ): Promise<void> {
   return deps.engine.reset(dataset);
+}
+
+/** Equivalente de `openLab` para o laboratório de PHP (Ilha da Lógica). Mesmo evento. */
+export function openPhpLab(deps: { engine: PhpEnginePort; analytics: AnalyticsPort }): Promise<void> {
+  deps.analytics.track('lab_opened');
+  return deps.engine.init();
+}
+
+/**
+ * Equivalente de `runLabQuery` para PHP. "ok" quando o texto que saiu não parece um erro
+ * do PHP — o php-wasm nem sempre separa aviso/erro do canal normal de saída (stdout),
+ * então a checagem olha o texto inteiro, não só stderr (ver `phpLooksLikeError`).
+ */
+export async function runPhpCode(
+  deps: { engine: PhpEnginePort; analytics: AnalyticsPort },
+  code: string,
+): Promise<PhpRunResult> {
+  const result = await deps.engine.run(code);
+  deps.analytics.track('lab_query_run', { ok: !phpLooksLikeError(result.stdout + result.stderr) });
+  return result;
 }
 
 function stringifyRow(row: unknown[]): string {

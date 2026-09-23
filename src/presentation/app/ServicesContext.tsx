@@ -1,15 +1,17 @@
 import { createContext, useContext, useMemo, type ReactNode } from 'react';
-import type { AnalyticsPort, ClipboardPort, LeaderboardPort, ProgressRepository, SqlEnginePort } from '@/application/ports';
+import type { AnalyticsPort, ClipboardPort, LeaderboardPort, PhpEnginePort, ProgressRepository, SqlEnginePort } from '@/application/ports';
 import { LocalStorageProgressRepository } from '@/infrastructure/storage';
 import { NoopAnalytics, VercelAnalytics } from '@/infrastructure/analytics';
 import { generateRecoveryCode, NoopLeaderboard, resizeAvatarImage, SupabaseLeaderboard } from '@/infrastructure/leaderboard';
 import { PgliteEngine } from '@/infrastructure/sql';
+import { PhpWasmEngine } from '@/infrastructure/php';
 import { NavigatorClipboard } from '@/infrastructure/clipboard';
 
 export type Services = {
   progressRepository: ProgressRepository;
   analytics: AnalyticsPort;
   sqlEngine: SqlEnginePort;
+  phpEngine: PhpEnginePort;
   clipboard: ClipboardPort;
   leaderboard: LeaderboardPort;
   /**
@@ -39,6 +41,7 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
       progressRepository: new LocalStorageProgressRepository(),
       analytics: import.meta.env.PROD ? new VercelAnalytics() : new NoopAnalytics(),
       sqlEngine: new PgliteEngine(),
+      phpEngine: new PhpWasmEngine(),
       clipboard: new NavigatorClipboard(),
       // Só em produção: em dev, escritas reais poluiriam o Hall dos Viajantes com
       // dados de teste (mesma lógica do analytics acima).

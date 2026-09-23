@@ -143,6 +143,6 @@ export const trailSchema = z.object({
   intro: z.array(z.string().min(1)).min(1).optional(),
   modules: z.array(moduleSchema).min(1),
   missions: z.array(missionSchema).optional(),
-  lab: z.enum(['sql', 'git']).nullable().optional(),
+  lab: z.enum(['sql', 'git', 'php']).nullable().optional(),
   bossFight: bossFightSchema.optional(),
 });
