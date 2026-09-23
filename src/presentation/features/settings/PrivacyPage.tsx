@@ -3,19 +3,55 @@ export function PrivacyPage() {
     <article>
       <h1>Privacidade</h1>
       <p>
-        O app não tem login nem cadastro e não usa cookies. Seu progresso fica só no seu navegador
-        (localStorage) e nunca é enviado a nenhum servidor.
+        Esta página explica, sem letra miúda, o que o app guarda sobre você, onde guarda e quem pode ver. Ela segue a
+        LGPD (Lei nº 13.709/2018).
       </p>
+
+      <h2>No seu aparelho</h2>
+      <p>
+        Seu progresso (módulos, XP, insígnias, sequência de dias) fica salvo no navegador (localStorage). O app não
+        usa cookies. Algumas preferências, como o som ligado ou desligado, também ficam só aqui.
+      </p>
+
+      <h2>No servidor</h2>
+      <p>
+        Depois que você passa pelo prólogo, o app cria uma conta anônima no Supabase (servidor em São Paulo) para o
+        Hall dos Viajantes e para o seu progresso não se perder se você trocar de aparelho. Lá ficam:
+      </p>
+      <ul>
+        <li>o nome que você escolheu, e a foto e o resumo &quot;Sobre você&quot;, se você adicionar;</li>
+        <li>os módulos concluídos, as insígnias e a sequência de dias;</li>
+        <li>o horário da última atividade, para mostrar quem está online agora;</li>
+        <li>uma cópia de segurança do seu progresso completo.</li>
+      </ul>
+      <p>
+        Se você usar &quot;Salvar ou entrar&quot;, o telefone (e o e-mail, se você informar um para recuperar a senha)
+        vira o acesso da sua conta. A senha é guardada protegida pelo Supabase, e o código de recuperação só é
+        guardado embaralhado (em hash), nunca em texto.
+      </p>
+
+      <h2>Quem vê o quê</h2>
+      <p>
+        No Hall dos Viajantes, qualquer pessoa vê seu nome, foto, resumo, eras concluídas, insígnias e se você está
+        online. Telefone, e-mail, senha e a cópia do progresso não aparecem para ninguém. Use um apelido se preferir
+        não mostrar seu nome real.
+      </p>
+
       <h2>O que é medido</h2>
       <p>
-        Apenas contagens anônimas de acesso e de uso (por exemplo: quantas pessoas abrem uma era, em
-        qual módulo mais gente para, se o laboratório foi usado). Não coletamos nome, e-mail, IP próprio
-        nem qualquer dado que identifique você, conforme a LGPD (Lei nº 13.709/2018).
+        Contagens anônimas de acesso e de uso (por exemplo: quantas pessoas abrem uma era, em qual módulo mais gente
+        para, se o laboratório foi usado), pelo Vercel Web Analytics, sem cookies e sem identificar você.
       </p>
-      <h2>Contribuição por Pix</h2>
+
+      <h2>Seus direitos</h2>
       <p>
-        É voluntária. O app não sabe se um Pix foi feito e não mede valores ou apoiadores.
+        &quot;Sair desta conta&quot;, na tela do Viajante, apaga o progresso deste aparelho, mas não apaga o que está
+        no servidor. Para ver, corrigir ou apagar seus dados de lá, fale com o autor do projeto, Gustavo Costa Gomes.
+        {/* TODO(autor): colocar aqui o canal de contato para pedidos da LGPD (e-mail ou rede social). */}
       </p>
+
+      <h2>Contribuição por Pix</h2>
+      <p>É voluntária. O app não sabe se um Pix foi feito e não mede valores nem apoiadores.</p>
     </article>
   );
 }
