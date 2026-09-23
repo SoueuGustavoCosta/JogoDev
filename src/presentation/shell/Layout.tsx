@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import {
   backupProgress,
@@ -13,11 +13,13 @@ import type { OnlinePlayer } from '@/application/ports';
 import { trailRegistry } from '@/content/registry';
 import { badgeCatalog } from '@/content/badges/catalog';
 import { SUPPORT_COPY } from '@/domain/support';
+import type { StreakCheckIn } from '@/domain/traveler';
 import { HallIcon, MapIcon, TravelerIcon } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
 import { SupportModal } from '@/presentation/features/support';
 import { SaveProgressWidget } from '@/presentation/features/save-progress';
 import { ProfileHeader } from './ProfileHeader';
+import { StreakCelebration } from './StreakCelebration';
 import styles from './Layout.module.css';
 
 /** Batimento de presença ("estou aqui"): a cada ~90s enquanto o app está aberto. */
@@ -43,6 +45,10 @@ export function Layout() {
   const location = useLocation();
   const [supportOpen, setSupportOpen] = useState(false);
   const [onlinePlayers, setOnlinePlayers] = useState<OnlinePlayer[]>([]);
+  // Check-in do dia que ainda não foi comemorado; null depois de fechar (uma vez por sessão).
+  const [pendingStreak, setPendingStreak] = useState<StreakCheckIn | null>(null);
+  const [streakGrew, setStreakGrew] = useState(false);
+  const closeStreak = useCallback(() => setPendingStreak(null), []);
 
   const isMap = location.pathname === '/';
   const isPrologue = location.pathname === '/prologo';
@@ -80,7 +86,11 @@ export function Layout() {
     // navegável enquanto isto roda em segundo plano.
     bootstrapTravelerIdentity({ repository: progressRepository, leaderboard }).finally(() => {
       if (cancelled) return;
-      checkInDaily({ repository: progressRepository, leaderboard });
+      const checkIn = checkInDaily({ repository: progressRepository, leaderboard });
+      if (checkIn.kind !== 'same-day') {
+        setPendingStreak(checkIn);
+        setStreakGrew(true);
+      }
       refreshPresence();
     });
 
@@ -114,7 +124,7 @@ export function Layout() {
             <Link to="/" className={styles.back}>
               ◂ Voltar ao mapa
             </Link>
-            <ProfileHeader summary={summary} onlinePlayers={onlinePlayers} />
+            <ProfileHeader summary={summary} onlinePlayers={onlinePlayers} streakGrew={streakGrew} />
           </header>
           <main className={styles.main}>
             <div key={location.pathname} className={styles.page}>
@@ -132,6 +142,10 @@ export function Layout() {
           </footer>
         </div>
       )}
+
+      {/* Fora do mapa de propósito: a tela do hub não recebe nada por cima. A comemoração
+          espera o aluno entrar numa trilha/tela interna. */}
+      {pendingStreak && !isMap ? <StreakCelebration checkIn={pendingStreak} onClose={closeStreak} /> : null}
 
       {supportOpen ? <SupportModal onClose={() => setSupportOpen(false)} /> : null}
     </div>
