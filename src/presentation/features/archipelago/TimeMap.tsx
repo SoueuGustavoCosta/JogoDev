@@ -10,6 +10,8 @@ import {
   MAP_H,
   MAP_W,
   pathToEra,
+  satellitePosition,
+  SATELLITE_ICON_PATHS,
   type MapCharacter,
   type MapEra,
 } from './mapData';
@@ -428,6 +430,39 @@ export function TimeMap({
               </g>
             );
           })}
+
+          {VISIBLE_ERAS.flatMap((e) =>
+            (e.satellites ?? []).map((sat) => {
+              const pos = satellitePosition(e, sat);
+              return (
+                <g
+                  key={sat.id}
+                  className={`${styles.node} ${styles.satellite}`}
+                  transform={`translate(${pos.x} ${pos.y})`}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`${sat.name}. Em breve.`}
+                  {...activate(() =>
+                    setSay(
+                      <>
+                        <b>SINTAXE</b> · {sat.name} ainda está guardada na névoa... em breve chega uma ilha só
+                        dela!
+                      </>,
+                    ),
+                  )}
+                >
+                  <line x1={(e.x - pos.x) * 0.35} y1={(e.y - pos.y) * 0.35} x2={0} y2={0} stroke="#2c2647" strokeWidth={2} strokeDasharray="1 6" />
+                  <circle r={24} fill="#0d0b18" stroke="#3a3454" strokeWidth={2} opacity={0.75} />
+                  <g stroke="#6a6483" strokeWidth={2.4} fill="none" strokeLinecap="round" strokeLinejoin="round" opacity={0.7}>
+                    <path d={SATELLITE_ICON_PATHS[sat.icon]} />
+                  </g>
+                  <text y={40} textAnchor="middle" fill="#6a6483" fontSize={12} fontWeight={700} fontFamily="JetBrains Mono, monospace">
+                    em breve
+                  </text>
+                </g>
+              );
+            }),
+          )}
 
           <g
             className={`${styles.node} ${styles.eco}`}

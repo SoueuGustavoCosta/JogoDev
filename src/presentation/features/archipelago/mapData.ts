@@ -7,6 +7,9 @@ export const HUB = { x: 500, y: 660 };
 export type EraStatus = 'ativo' | 'novo' | 'breve' | 'nevoa';
 export type EraIcon = 'db' | 'log' | 'code' | 'git' | 'cloud' | 'web' | 'ia';
 
+/** Linguagem "satélite" que ainda vai ganhar ilha própria — ver `LanguageSatellite`. */
+export type SatelliteIcon = 'py' | 'java' | 'c' | 'php';
+
 export type MapEra = {
   id: string;
   name: string;
@@ -19,7 +22,44 @@ export type MapEra = {
   description: string;
   /** Ilha (Trail) que esta era abre; só existe para eras com conteúdo. */
   trailId?: string;
+  /** Luas apagadas em volta da era, cada uma "em breve" (ver `SATELLITE_ICON_PATHS`). */
+  satellites?: LanguageSatellite[];
 };
+
+export type LanguageSatellite = {
+  id: string;
+  name: string;
+  icon: SatelliteIcon;
+  /** Ângulo em graus (0 = direita, 90 = abaixo) ao redor do centro da era-mãe. */
+  angle: number;
+};
+
+/**
+ * Símbolos próprios e simples que só sugerem cada linguagem (nunca os logotipos oficiais,
+ * ver seção 8 do CLAUDE.md) — desenhados apagados/dessaturados de propósito, pra dar
+ * curiosidade sem prometer nada ainda: essas linguagens não têm ilha, só o gancho visual.
+ */
+export const SATELLITE_ICON_PATHS: Record<SatelliteIcon, string> = {
+  // Python: duas curvas entrelaçadas, ecoando as "duas cobras" do símbolo real.
+  py: 'M-1 -9a5 5 0 1 0 0 10a5 5 0 1 1 0 8',
+  // Java: xícara com pires e duas baforadas de vapor.
+  java: 'M-6 -2h12v5a6 5 0 0 1 -12 0zM-8 3h16M6 -1c3 0 4 3 2 5M-3 -9c1 2 -1 3 0 5M2 -9c1 2 -1 3 0 5',
+  // C: um anel aberto, a própria letra.
+  c: 'M7 -6a8 8 0 1 0 0 12',
+  // PHP: o óvalo do logotipo, sem o texto.
+  php: 'M-9 0a9 5 0 1 0 18 0a9 5 0 1 0 -18 0',
+};
+
+const SATELLITE_RADIUS = 118;
+
+/** Posição (x,y) de um satélite, a partir do centro da era-mãe. */
+export function satellitePosition(era: MapEra, satellite: LanguageSatellite): { x: number; y: number } {
+  const rad = (satellite.angle * Math.PI) / 180;
+  return {
+    x: era.x + SATELLITE_RADIUS * Math.cos(rad),
+    y: era.y + SATELLITE_RADIUS * Math.sin(rad),
+  };
+}
 
 export const ICON_PATHS: Record<EraIcon, string> = {
   db: 'M-12 -9a12 5 0 1 0 24 0a12 5 0 1 0 -24 0M-12 -9v18c0 3 5 5 12 5s12-2 12-5v-18M-12 0c0 3 5 5 12 5s12-2 12-5',
@@ -56,6 +96,12 @@ export const ERAS: MapEra[] = [
     years: 'ERA 2',
     trailId: 'logica',
     description: 'Como pensar um problema passo a passo: variáveis, condições, laços e funções.',
+    satellites: [
+      { id: 'py', name: 'Python', icon: 'py', angle: -45 },
+      { id: 'java', name: 'Java', icon: 'java', angle: 45 },
+      { id: 'c', name: 'C', icon: 'c', angle: 135 },
+      { id: 'php', name: 'PHP', icon: 'php', angle: -135 },
+    ],
   },
   {
     id: 'ling',
@@ -114,12 +160,6 @@ export const ERAS: MapEra[] = [
     years: 'ERA 7',
     description: 'Ainda inexplorada. A Senhorita Sintaxe diz que a névoa só abre quando o mapa estiver mais completo.',
   },
-];
-
-export const SATELLITES = [
-  { name: 'Java', x: 915, y: 370 },
-  { name: 'Python', x: 950, y: 485 },
-  { name: 'PHP', x: 920, y: 600 },
 ];
 
 export type MapCharacter = {
