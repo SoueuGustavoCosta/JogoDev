@@ -82,6 +82,15 @@ export function playWrongSound(): void {
   ]);
 }
 
+/** Três notas subindo — fanfarra curta ao concluir um módulo. */
+export function playModuleCompleteSound(): void {
+  play([
+    [523, 0, 0.14, 'triangle', 0.15],
+    [659, 0.12, 0.14, 'triangle', 0.15],
+    [784, 0.24, 0.32, 'triangle', 0.17],
+  ]);
+}
+
 /** Toque de teste curto, usado só quando o aluno reativa o som nas Configurações. */
 export function playTestSound(): void {
   play([[523, 0, 0.16, 'triangle', 0.16]]);

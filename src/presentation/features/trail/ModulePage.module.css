@@ -47,6 +47,69 @@
   margin: 0;
 }
 
+.recap {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.recapFace {
+  flex-shrink: 0;
+  animation: recapHop 0.9s ease 0.1s 2;
+}
+
+.bubble {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  padding: 10px 14px;
+  background: var(--color-panel-2);
+  border: 1px solid var(--color-line);
+  border-radius: 14px;
+}
+
+.bubble::before {
+  content: '';
+  position: absolute;
+  left: -7px;
+  top: 16px;
+  width: 12px;
+  height: 12px;
+  background: var(--color-panel-2);
+  border-left: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--color-line);
+  transform: rotate(45deg);
+}
+
+.bubble p {
+  font-size: 0.95rem;
+}
+
+.bubbleName {
+  display: block;
+  margin-bottom: 2px;
+  color: var(--color-cyan);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+}
+
+@keyframes recapHop {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-8px) rotate(-4deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recapFace {
+    animation: none;
+  }
+}
+
 .next {
   min-height: var(--touch-target);
   padding: 12px 20px;

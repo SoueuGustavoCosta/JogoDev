@@ -3,6 +3,8 @@ import {
   getOrCreateModuleProgress,
   getOrCreateTrailProgress,
   isTrailCompleted,
+  moduleRecap,
+  type ModuleRecap,
 } from '@/domain/progress';
 import type { Trail } from '@/domain/trail';
 import type { Badge } from '@/domain/badges';
@@ -21,6 +23,8 @@ export type CompleteModuleParams = {
 export type CompleteModuleResult = {
   alreadyCompleted: boolean;
   trailCompleted: boolean;
+  /** Como o aluno foi neste módulo, para a Sintaxe comentar. */
+  recap: ModuleRecap;
 };
 
 export function completeModule(
@@ -32,7 +36,11 @@ export function completeModule(
   const moduleProgress = getOrCreateModuleProgress(trailProgress, params.moduleId);
 
   if (moduleProgress.completed) {
-    return { alreadyCompleted: true, trailCompleted: isTrailCompleted(params.trail, trailProgress) };
+    return {
+      alreadyCompleted: true,
+      trailCompleted: isTrailCompleted(params.trail, trailProgress),
+      recap: moduleRecap(params.trail, params.moduleId, trailProgress),
+    };
   }
 
   const nextTrailProgress = {
@@ -70,5 +78,5 @@ export function completeModule(
     deps.analytics.track('island_completed', { island: params.trail.id });
   }
 
-  return { alreadyCompleted: false, trailCompleted };
+  return { alreadyCompleted: false, trailCompleted, recap: moduleRecap(params.trail, params.moduleId, nextTrailProgress) };
 }

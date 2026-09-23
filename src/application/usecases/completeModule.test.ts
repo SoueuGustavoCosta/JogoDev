@@ -53,7 +53,8 @@ describe('completeModule', () => {
   it('marks the module as completed and tracks module_completed', () => {
     const result = completeModule({ repository, analytics, leaderboard }, { trail, moduleId: 'a', traveler });
 
-    expect(result).toEqual({ alreadyCompleted: false, trailCompleted: false });
+    expect(result).toMatchObject({ alreadyCompleted: false, trailCompleted: false });
+    expect(result.recap.modulesLeft).toBe(1);
     expect(repository.load()?.trails.t1.modules.a.completed).toBe(true);
     expect(analytics.events).toContainEqual({
       event: 'module_completed',

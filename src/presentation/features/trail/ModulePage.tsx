@@ -3,20 +3,33 @@ import { Navigate, useNavigate, useOutletContext, useParams } from 'react-router
 import { completeModule, getOrCreateTravelerUuid, getTraveler } from '@/application/usecases';
 import { getTrailById } from '@/content/registry';
 import { badgeCatalog } from '@/content/badges/catalog';
-import { XP_MODULE_COMPLETION_BONUS } from '@/domain/progress';
+import { XP_MODULE_COMPLETION_BONUS, type ModuleRecap } from '@/domain/progress';
 import { BlockRenderer } from '@/presentation/blocks';
-import { Confetti, SintaxeFace } from '@/presentation/design-system';
+import { Confetti, playModuleCompleteSound, SintaxeFace } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
 import { QuizRunner } from './QuizRunner';
 import type { TrailOutletContext } from './TrailShell';
 import styles from './ModulePage.module.css';
+
+function sintaxeRecapLine(recap: ModuleRecap, name: string): string {
+  const score = `${recap.firstTry} de ${recap.total} de primeira`;
+  if (recap.tier === 'perfect') return `Perfeito, ${name}! ${score}. Você tá voando nesta era.`;
+  if (recap.tier === 'good') return `Mandou bem, ${name}! ${score}, e o resto você destravou na insistência.`;
+  return `Esse foi puxado, ${name}, e você não desistiu. É errando que a gente aprende de verdade.`;
+}
+
+function sintaxeTrailLine(recap: ModuleRecap, trailCompleted: boolean): string {
+  if (trailCompleted || recap.modulesLeft === 0) return 'Você fechou a era inteira! O artefato está te esperando.';
+  if (recap.modulesLeft === 1) return 'Falta só 1 salto pra fechar a era.';
+  return `Faltam ${recap.modulesLeft} saltos pra fechar a era.`;
+}
 
 export function ModulePage() {
   const { trailId, moduleId } = useParams<{ trailId: string; moduleId: string }>();
   const navigate = useNavigate();
   const { refresh } = useOutletContext<TrailOutletContext>();
   const { progressRepository, analytics, leaderboard } = useServices();
-  const [result, setResult] = useState<{ fresh: boolean; trailCompleted: boolean } | null>(null);
+  const [result, setResult] = useState<{ fresh: boolean; trailCompleted: boolean; recap: ModuleRecap } | null>(null);
 
   const trail = trailId ? getTrailById(trailId) : undefined;
   const moduleIndex = trail?.modules.findIndex((m) => m.id === moduleId) ?? -1;
@@ -39,7 +52,8 @@ export function ModulePage() {
       { repository: progressRepository, analytics, leaderboard },
       { trail: trail!, moduleId: module!.id, traveler: { uuid, name }, badgeCatalog },
     );
-    setResult({ fresh: !outcome.alreadyCompleted, trailCompleted: outcome.trailCompleted });
+    setResult({ fresh: !outcome.alreadyCompleted, trailCompleted: outcome.trailCompleted, recap: outcome.recap });
+    if (!outcome.alreadyCompleted) playModuleCompleteSound();
     refresh();
   }
 
@@ -73,11 +87,19 @@ export function ModulePage() {
       {result ? (
         <div className={styles.done}>
           {result.fresh ? <Confetti /> : null}
+          <div className={styles.recap}>
+            <SintaxeFace size={52} className={result.fresh ? styles.recapFace : undefined} />
+            <div className={styles.bubble}>
+              <b className={styles.bubbleName}>Senhorita Sintaxe</b>
+              <p>
+                {result.fresh ? sintaxeRecapLine(result.recap, travelerName) : 'Você já passou por aqui, e o XP deste salto já está contado.'}{' '}
+                {sintaxeTrailLine(result.recap, result.trailCompleted)}
+              </p>
+            </div>
+          </div>
           <p>
             <b>Cristal aceso!</b>{' '}
-            {result.fresh
-              ? `Salto concluído: +${XP_MODULE_COMPLETION_BONUS} XP.`
-              : 'Você já passou por aqui e o XP foi contabilizado.'}
+            {result.fresh ? `Salto concluído: +${XP_MODULE_COMPLETION_BONUS} XP.` : 'XP já contabilizado.'}
           </p>
           {next ? (
             <button type="button" className={styles.next} onClick={() => navigate(`/trilhas/${trail.id}/modulos/${next.id}`)}>
