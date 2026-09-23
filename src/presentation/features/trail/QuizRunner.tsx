@@ -3,6 +3,7 @@ import { answerQuiz } from '@/application/usecases';
 import type { QuizAnswer } from '@/domain/progress';
 import type { QuizItem } from '@/domain/trail';
 import { useServices } from '@/presentation/app/ServicesContext';
+import { SintaxeReaction } from './SintaxeReaction';
 import styles from './QuizRunner.module.css';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
@@ -67,8 +68,15 @@ export function QuizRunner({
   const hintForced = attempts >= 2;
   const showHint = !isSolved && !!item.hint && (hintRevealed || hintForced);
 
+  // A Sintaxe reage a cada tentativa: "signal" muda mesmo quando o tipo continua "wrong"
+  // de novo (outra opção errada, outro fill errado), pra tocar o som e reiniciar a
+  // animação em cada uma — não só na primeira vez que o tipo muda.
+  const reactionType: 'correct' | 'wrong' | null = isSolved ? 'correct' : fillWrong || wrong.length > 0 ? 'wrong' : null;
+  const reactionSignal = (isSolved ? 1000 : 0) + wrong.length + fillTries;
+
   return (
     <section className={styles.quiz} aria-label="Paradoxo do salto">
+      <SintaxeReaction type={reactionType} signal={reactionSignal} />
       <div className={styles.box}>
         <div className={styles.top}>
           <span>

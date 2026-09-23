@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BIO_MAX_LENGTH, getCachedBio, getTraveler, hasPhoneLinked, saveBio, signOutTraveler } from '@/application/usecases';
 import { SUPPORT_COPY } from '@/domain/support';
-import { Button, Modal } from '@/presentation/design-system';
+import { Button, isSoundMuted, Modal, playTestSound, setSoundMuted } from '@/presentation/design-system';
 import { BadgePassport } from '@/presentation/features/badges';
 import { SupportModal } from '@/presentation/features/support';
 import { useServices } from '@/presentation/app/ServicesContext';
@@ -14,9 +14,17 @@ export function SettingsPage() {
   const [signOutOpen, setSignOutOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const [bio, setBio] = useState(() => getCachedBio({ repository: progressRepository }));
+  const [muted, setMuted] = useState(() => isSoundMuted());
 
   const name = getTraveler({ repository: progressRepository }).name;
   const linked = hasPhoneLinked({ repository: progressRepository });
+
+  function toggleSound() {
+    const next = !muted;
+    setSoundMuted(next);
+    setMuted(next);
+    if (!next) playTestSound();
+  }
 
   function handleBioBlur() {
     const saved = saveBio({ repository: progressRepository, leaderboard }, { bio });
@@ -70,6 +78,14 @@ export function SettingsPage() {
         <p className={styles.hint} style={{ margin: 0 }}>
           {bio.length}/{BIO_MAX_LENGTH}
         </p>
+      </section>
+
+      <section className={styles.section}>
+        <h2>Som</h2>
+        <p className={styles.hint}>A Senhorita Sintaxe reage a cada resposta do quiz com um efeito sonoro curto.</p>
+        <Button variant="ghost" size="sm" onClick={toggleSound} aria-pressed={!muted}>
+          {muted ? '🔇 Som desligado' : '🔊 Som ligado'}
+        </Button>
       </section>
 
       <section className={styles.section}>

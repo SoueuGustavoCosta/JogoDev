@@ -1,0 +1,49 @@
+.root {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.face {
+  filter: drop-shadow(0 0 10px rgba(155, 77, 255, 0.35));
+}
+
+.correct {
+  animation: popGood 0.5s ease;
+}
+
+.wrong {
+  animation: shakeBad 0.4s ease;
+}
+
+@keyframes popGood {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.28) rotate(-4deg);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes shakeBad {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px) rotate(-3deg);
+  }
+  75% {
+    transform: translateX(5px) rotate(3deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .correct,
+  .wrong {
+    animation: none;
+  }
+}
