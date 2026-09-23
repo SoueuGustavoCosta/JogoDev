@@ -92,7 +92,7 @@ export function EraVortex({
         </g>
         <circle r={RING_R} fill={`url(#${coreId})`} stroke={color} strokeWidth={4} />
         {progressArc}
-        {icon(styles.steady)}
+        <g data-era-icon="">{icon(styles.steady)}</g>
       </g>
     );
   }
@@ -142,9 +142,11 @@ export function EraVortex({
       </g>
 
       <circle r={31} fill="#030208" stroke={color} strokeWidth={1.2} opacity={0.95} />
-      {icon(styles.ghostA, '#ff5d7a')}
-      {icon(styles.ghostB, '#5ee7ff')}
-      {icon(styles.flicker)}
+      <g data-era-icon="">
+        {icon(styles.ghostA, '#ff5d7a')}
+        {icon(styles.ghostB, '#5ee7ff')}
+        {icon(styles.flicker)}
+      </g>
     </g>
   );
 }

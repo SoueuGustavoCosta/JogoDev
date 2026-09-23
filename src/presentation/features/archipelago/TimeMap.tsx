@@ -84,7 +84,8 @@ export function TimeMap({
   const [sheet, setSheet] = useState<Sheet>(null);
   const [say, setSay] = useState<ReactNode>(null);
   const [tipVisible, setTipVisible] = useState(true);
-  const [entering, setEntering] = useState<string | null>(null);
+  // Mergulho no vórtice: cor da era e o ponto da tela onde ela está (centro do giro/zoom).
+  const [entering, setEntering] = useState<{ id: string; color: string; x: number; y: number } | null>(null);
 
   const clamp = useCallback(() => {
     const { w, h } = size.current;
@@ -299,8 +300,9 @@ export function TimeMap({
       );
       if (reducedMotion()) onEnterEra(era);
       else {
-        setEntering(era.color);
-        window.setTimeout(() => mounted.current && onEnterEra(era), 1200);
+        const cc = cam.current;
+        setEntering({ id: era.id, color: era.color, x: era.x * cc.k + cc.x, y: era.y * cc.k + cc.y });
+        window.setTimeout(() => mounted.current && onEnterEra(era), 1150);
       }
     } else {
       setSay(
@@ -316,7 +318,7 @@ export function TimeMap({
 
   return (
     <div className={`${styles.root} ${entering ? styles.leaving : ""}`}>
-      {entering ? <div className={styles.portal} style={{ ["--portal" as string]: entering }} aria-hidden="true" /> : null}
+      {entering ? <div className={styles.portal} style={{ ["--portal" as string]: entering.color, ["--px" as string]: `${entering.x}px`, ["--py" as string]: `${entering.y}px` }} aria-hidden="true" /> : null}
       <svg
         ref={svgRef}
         className={styles.map}
@@ -336,9 +338,15 @@ export function TimeMap({
             <feGaussianBlur stdDeviation="6" />
           </filter>
         </defs>
-        <g transform={`translate(${c.x} ${c.y}) scale(${c.k})`}>
+        {/* O mergulho gira e aproxima em torno do núcleo da era (CSS num <g> por fora da
+            câmera: no mesmo <g>, o transform do CSS apagaria o da câmera). */}
+        <g
+          className={entering ? styles.dive : undefined}
+          style={entering ? { transformOrigin: `${entering.x}px ${entering.y}px` } : undefined}
+        >
+        <g transform={`translate(${c.x} ${c.y}) scale(${c.k})`} className={entering ? styles.diving : undefined}>
           {stars.map((s, i) => (
-            <circle key={i} {...s} />
+            <circle key={i} {...s} className={styles.star} />
           ))}
           <circle cx={HUB.x} cy={HUB.y} r={380} fill="url(#tm-glow)" />
           {[140, 250, 360].map((r) => (
@@ -371,7 +379,7 @@ export function TimeMap({
             return (
               <g
                 key={e.id}
-                className={styles.node}
+                className={`${styles.node} ${entering?.id === e.id ? styles.diveTarget : ''}`}
                 transform={`translate(${e.x} ${e.y})`}
                 tabIndex={0}
                 role="button"
@@ -379,6 +387,7 @@ export function TimeMap({
                 {...activate(() => setSheet({ kind: 'era', era: e }))}
               >
                 <EraVortex id={e.id} color={e.color} iconPath={ICON_PATHS[e.icon]} progress={pr} />
+                <g className={styles.eraMeta}>
                 <g transform="translate(0 88)">
                   <rect x={-labelW / 2} y={-20} width={labelW} height={34} rx={17} fill="#151225" stroke={e.color} strokeWidth={2} />
                   <text y={3} textAnchor="middle" fill="#ece9f8" fontSize={20} fontWeight={700} fontFamily="Instrument Sans, sans-serif">
@@ -401,6 +410,7 @@ export function TimeMap({
                     </text>
                   </g>
                 ) : null}
+                </g>
               </g>
             );
           })}
@@ -501,6 +511,7 @@ export function TimeMap({
             </g>
           </g>
 
+        </g>
         </g>
       </svg>
 
