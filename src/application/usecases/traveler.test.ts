@@ -21,7 +21,9 @@ class StubLeaderboard implements LeaderboardPort {
   ensureSignedInError = false;
   myProgress: unknown | null = null;
 
+  myProgressFails = false;
   async getMyProgress(): Promise<unknown | null> {
+    if (this.myProgressFails) throw new Error('rede fora do ar');
     return this.myProgress;
   }
   async hasRealSession(): Promise<boolean> {
@@ -113,6 +115,36 @@ describe('traveler', () => {
     const first = getTraveler({ repository }).name;
     const second = getTraveler({ repository }).name;
     expect(first).toBe(second);
+  });
+});
+
+describe('bootstrapTravelerIdentity: nunca perde progresso ao trocar de sessão', () => {
+  const done = { trailId: 'logica', trophyAwarded: false, missionsCompleted: {}, modules: { origem: { moduleId: 'origem', completed: true, quizResults: {} } } };
+
+  it('sessão nova com cópia vazia na nuvem: o progresso do aparelho continua', async () => {
+    const repository = new Memory();
+    repository.save({ version: 1, trails: { logica: done }, travelerUuid: 'uuid-local', travelerName: 'Gustavo' });
+    const leaderboard = new StubLeaderboard();
+    leaderboard.signedInUid = 'uuid-conta';
+    leaderboard.myProgress = { version: 1, trails: {} };
+
+    await bootstrapTravelerIdentity({ repository, leaderboard });
+
+    expect(repository.load()?.trails.logica.modules.origem.completed).toBe(true);
+    expect(repository.load()?.travelerUuid).toBe('uuid-conta');
+  });
+
+  it('se a leitura da nuvem falhar, não troca nada agora', async () => {
+    const repository = new Memory();
+    repository.save({ version: 1, trails: { logica: done }, travelerUuid: 'uuid-local' });
+    const before = repository.load();
+    const leaderboard = new StubLeaderboard();
+    leaderboard.signedInUid = 'uuid-conta';
+    leaderboard.myProgressFails = true;
+
+    await bootstrapTravelerIdentity({ repository, leaderboard });
+
+    expect(repository.load()).toEqual(before);
   });
 });
 

@@ -372,18 +372,16 @@ export class SupabaseLeaderboard implements LeaderboardPort {
    * (`auth.uid() = uuid`, checado dentro da função).
    */
   async getMyProgress(): Promise<unknown | null> {
-    try {
-      const client = await this.ensureClient();
-      const { data, error } = await client.rpc<unknown>('meu_progresso', {});
-      if (error) {
-        if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] meu_progresso falhou:', error.message);
-        return null;
-      }
-      return data ?? null;
-    } catch (e) {
-      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] meu_progresso falhou:', e);
-      return null;
+    // Lança em falha de leitura (nunca devolve null nesse caso): quem chama decide o que
+    // gravar a partir disto, e "não consegui ler" tratado como "não tem nada salvo" foi o
+    // que deixou cópias vazias sobrescreverem progresso de verdade.
+    const client = await this.ensureClient();
+    const { data, error } = await client.rpc<unknown>('meu_progresso', {});
+    if (error) {
+      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] meu_progresso falhou:', error.message);
+      throw new Error(error.message);
     }
+    return data ?? null;
   }
 
   /**

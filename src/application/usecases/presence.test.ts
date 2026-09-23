@@ -59,8 +59,13 @@ class StubLeaderboard implements LeaderboardPort {
   async ensureSignedIn(): Promise<string | null> {
     return null;
   }
+  cloud: unknown | null = null;
+  cloudFails = false;
+  onCloudRead?: () => void;
   async getMyProgress(): Promise<unknown | null> {
-    return null;
+    if (this.cloudFails) throw new Error('rede fora do ar');
+    this.onCloudRead?.();
+    return this.cloud;
   }
   async hasRealSession(): Promise<boolean> {
     return false;
@@ -77,26 +82,73 @@ class StubLeaderboard implements LeaderboardPort {
   async signOut(): Promise<void> {}
 }
 
+const moduleDone = (trailId: string, moduleId: string) => ({
+  trailId,
+  trophyAwarded: false,
+  missionsCompleted: {},
+  modules: { [moduleId]: { moduleId, completed: true, quizResults: {} } },
+});
+
 describe('backupProgress', () => {
-  it('não faz nada quando ainda não há progresso local', () => {
+  it('não faz nada quando ainda não há progresso local', async () => {
     const repository = new Memory();
     const leaderboard = new StubLeaderboard();
-    backupProgress({ repository, leaderboard });
+    expect(await backupProgress({ repository, leaderboard })).toBe(false);
     expect(leaderboard.backedUp).toHaveLength(0);
   });
 
-  it('sobe o Progress inteiro sob o uuid do viajante, gerando um se preciso', () => {
+  it('sobe o Progress inteiro sob o uuid do viajante, gerando um se preciso', async () => {
     const repository = new Memory();
     repository.save({ version: 1, trails: {}, travelerName: 'Ana' });
     const leaderboard = new StubLeaderboard();
 
-    backupProgress({ repository, leaderboard });
+    await backupProgress({ repository, leaderboard });
 
     expect(leaderboard.backedUp).toHaveLength(1);
     expect(leaderboard.backedUp[0].progress).toMatchObject({ travelerName: 'Ana' });
-    expect(typeof leaderboard.backedUp[0].uuid).toBe('string');
-    // o uuid gerado também foi persistido localmente, para as próximas sincronizações
     expect(repository.load()?.travelerUuid).toBe(leaderboard.backedUp[0].uuid);
+  });
+
+  it('se não conseguir ler a nuvem, não sobe nada (nunca sobrescreve às cegas)', async () => {
+    const repository = new Memory();
+    repository.save({ version: 1, trails: {}, travelerName: 'Ana' });
+    const before = repository.load();
+    const leaderboard = new StubLeaderboard();
+    leaderboard.cloudFails = true;
+
+    expect(await backupProgress({ repository, leaderboard })).toBe(false);
+    expect(leaderboard.backedUp).toHaveLength(0);
+    expect(repository.load()).toEqual(before);
+  });
+
+  it('aparelho com cópia velha não apaga o que outro aparelho salvou: sobe a união', async () => {
+    const repository = new Memory();
+    repository.save({ version: 1, trails: { logica: moduleDone('logica', 'origem') }, travelerName: 'Ana', travelerUuid: 'u1' });
+    const leaderboard = new StubLeaderboard();
+    leaderboard.cloud = { version: 1, trails: { 'banco-de-dados': moduleDone('banco-de-dados', 'porque') }, travelerName: 'Ana' };
+
+    await backupProgress({ repository, leaderboard });
+
+    const uploaded = leaderboard.backedUp[0].progress as Progress;
+    expect(Object.keys(uploaded.trails).sort()).toEqual(['banco-de-dados', 'logica']);
+    // e o aparelho também ganha o que veio do outro
+    expect(repository.load()?.trails['banco-de-dados'].modules.porque.completed).toBe(true);
+  });
+
+  it('resposta dada enquanto a nuvem era lida não se perde', async () => {
+    const repository = new Memory();
+    repository.save({ version: 1, trails: {}, travelerName: 'Ana', travelerUuid: 'u1' });
+    const leaderboard = new StubLeaderboard();
+    leaderboard.cloud = { version: 1, trails: {} };
+    leaderboard.onCloudRead = () => {
+      const p = repository.load()!;
+      repository.save({ ...p, trails: { logica: moduleDone('logica', 'ola') } });
+    };
+
+    await backupProgress({ repository, leaderboard });
+
+    expect(repository.load()?.trails.logica.modules.ola.completed).toBe(true);
+    expect((leaderboard.backedUp[0].progress as Progress).trails.logica.modules.ola.completed).toBe(true);
   });
 });
 
@@ -163,7 +215,20 @@ describe('restoreProgress', () => {
     const result = await restoreProgress({ repository, leaderboard }, { nome: 'ANA', codigo: 'ABCD-1234' });
 
     expect(result).toEqual({ ok: true });
-    expect(repository.load()).toEqual({ ...remoteProgress, travelerUuid: 'uuid-remoto' });
+    expect(repository.load()).toMatchObject({ travelerName: 'Ana', travelerUuid: 'uuid-remoto' });
+    expect(repository.load()?.trails.x).toBeDefined();
+  });
+
+  it('recuperar junta com o que já estava neste aparelho, sem apagar nada', async () => {
+    const repository = new Memory();
+    repository.save({ version: 1, trails: { logica: moduleDone('logica', 'origem') }, travelerUuid: 'uuid-local' });
+    const leaderboard = new StubLeaderboard();
+    leaderboard.byName['ana'] = { codigo: 'ABCD-1234', uuid: 'uuid-remoto', progress: { version: 1, trails: {}, travelerName: 'Ana' } };
+
+    await restoreProgress({ repository, leaderboard }, { nome: 'Ana', codigo: 'ABCD-1234' });
+
+    expect(repository.load()?.trails.logica.modules.origem.completed).toBe(true);
+    expect(repository.load()?.travelerUuid).toBe('uuid-remoto');
   });
 });
 

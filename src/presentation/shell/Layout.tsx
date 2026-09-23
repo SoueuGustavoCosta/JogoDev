@@ -81,7 +81,7 @@ export function Layout() {
 
     const refreshPresence = () => {
       sendHeartbeat({ repository: progressRepository, leaderboard });
-      backupProgress({ repository: progressRepository, leaderboard });
+      void backupProgress({ repository: progressRepository, leaderboard });
       getPresence({ leaderboard })
         .then((players) => {
           if (!cancelled) setOnlinePlayers(players);
