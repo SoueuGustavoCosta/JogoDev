@@ -406,12 +406,12 @@ export function TimeMap({
           })}
 
           {VISIBLE_ERAS.flatMap((e) =>
-            (e.satellites ?? []).map((sat) => {
+            (e.satellites ?? []).map((sat, i) => {
               const pos = satellitePosition(e, sat);
               return (
                 <g
                   key={sat.id}
-                  className={`${styles.node} ${styles.satellite}`}
+                  className={styles.node}
                   transform={`translate(${pos.x} ${pos.y})`}
                   tabIndex={0}
                   role="button"
@@ -426,31 +426,36 @@ export function TimeMap({
                   )}
                 >
                   <line x1={(e.x - pos.x) * 0.35} y1={(e.y - pos.y) * 0.35} x2={0} y2={0} stroke="#2c2647" strokeWidth={2} strokeDasharray="1 6" />
-                  <circle r={24} fill="#0d0b18" stroke="#3a3454" strokeWidth={2} opacity={0.75} />
-                  <g stroke="#6a6483" strokeWidth={2.4} fill="none" strokeLinecap="round" strokeLinejoin="round" opacity={0.7}>
-                    <path d={SATELLITE_ICON_PATHS[sat.icon]} />
+                  {/* Animação num <g> interno: no externo, o transform do CSS apagaria o translate da posição. */}
+                  <g className={styles.satellite} style={{ animationDelay: `${(-i * 0.8).toFixed(1)}s` }}>
+                    <circle r={24} fill="#0d0b18" stroke="#3a3454" strokeWidth={2} opacity={0.75} />
+                    <g stroke="#6a6483" strokeWidth={2.4} fill="none" strokeLinecap="round" strokeLinejoin="round" opacity={0.7}>
+                      <path d={SATELLITE_ICON_PATHS[sat.icon]} />
+                    </g>
+                    <text y={40} textAnchor="middle" fill="#6a6483" fontSize={12} fontWeight={700} fontFamily="JetBrains Mono, monospace">
+                      em breve
+                    </text>
                   </g>
-                  <text y={40} textAnchor="middle" fill="#6a6483" fontSize={12} fontWeight={700} fontFamily="JetBrains Mono, monospace">
-                    em breve
-                  </text>
                 </g>
               );
             }),
           )}
 
           <g
-            className={`${styles.node} ${styles.eco}`}
+            className={styles.node}
             transform={`translate(${ERAS[0].x - 100} ${ERAS[0].y + 35})`}
             tabIndex={0}
             role="button"
             aria-label="Rastro do Eco"
             {...activate(() => setSheet({ kind: 'eco' }))}
           >
-            <path d="M0 -18l16 28h-32z" fill="#ff5d7a" opacity={0.9} />
-            <text y={8} textAnchor="middle" fontSize={18} fontWeight={800} fill="#0a0912" fontFamily="JetBrains Mono, monospace">
-              !
-            </text>
-            <circle r={30} fill="none" stroke="#ff5d7a" strokeWidth={2} className={styles.pulse} />
+            <g className={styles.eco}>
+              <path d="M0 -18l16 28h-32z" fill="#ff5d7a" opacity={0.9} />
+              <text y={8} textAnchor="middle" fontSize={18} fontWeight={800} fill="#0a0912" fontFamily="JetBrains Mono, monospace">
+                !
+              </text>
+              <circle r={30} fill="none" stroke="#ff5d7a" strokeWidth={2} className={styles.pulse} />
+            </g>
           </g>
 
           {CHARACTERS.map((ch) => (
