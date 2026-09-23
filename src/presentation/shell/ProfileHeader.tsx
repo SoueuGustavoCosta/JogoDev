@@ -11,9 +11,11 @@ const PRESENCE_MAX_AVATARS = 5;
 export function ProfileHeader({
   summary,
   onlinePlayers,
+  streakGrew = false,
 }: {
   summary: ProfileSummary;
   onlinePlayers: OnlinePlayer[];
+  streakGrew?: boolean;
 }) {
   const { progressRepository, leaderboard, resizeAvatarImage } = useServices();
   const [avatarOverride, setAvatarOverride] = useState<string | null>(null);
@@ -73,7 +75,7 @@ export function ProfileHeader({
         <span className={styles.pill}>
           <b>{summary.xp}</b> XP
         </span>
-        <span className={styles.pill}>
+        <span className={`${styles.pill} ${streakGrew ? styles.pillHot : ''}`} title="Dias seguidos estudando">
           🔥 <b>{summary.streak.current}</b>
         </span>
         <span className={styles.pill}>

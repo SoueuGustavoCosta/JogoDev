@@ -1,6 +1,6 @@
 import { createEmptyProgress, xpForTrail } from '@/domain/progress';
 import type { Progress } from '@/domain/progress';
-import { nextStreak, travelerLevel } from '@/domain/traveler';
+import { checkInStreak, localDateISO, travelerLevel, type StreakCheckIn } from '@/domain/traveler';
 import type { Badge } from '@/domain/badges';
 import type { Trail } from '@/domain/trail';
 import type { LeaderboardPort, OnlinePlayer, ProgressRepository } from '../ports';
@@ -58,15 +58,19 @@ export function getProfileSummary(
  * do autor). Chamar uma vez por sessão do app (não em intervalo). Atualiza o cache
  * local imediatamente e sincroniza com o Supabase em segundo plano, sem bloquear.
  */
-export function checkInDaily(deps: { repository: ProgressRepository; leaderboard: LeaderboardPort }): void {
+export function checkInDaily(
+  deps: { repository: ProgressRepository; leaderboard: LeaderboardPort },
+  now: Date = new Date(),
+): StreakCheckIn {
   const progress = deps.repository.load() ?? createEmptyProgress();
-  const today = new Date().toISOString().slice(0, 10);
-  const { current, best } = nextStreak(
+  const today = localDateISO(now);
+  const checkIn = checkInStreak(
     progress.ultimoDiaAtivo ?? null,
     today,
     progress.streakCurrent ?? 0,
     progress.streakBest ?? 0,
   );
+  const { current, best } = checkIn;
 
   deps.repository.save({ ...progress, streakCurrent: current, streakBest: best, ultimoDiaAtivo: today });
 
@@ -78,6 +82,7 @@ export function checkInDaily(deps: { repository: ProgressRepository; leaderboard
     sequenciaRecorde: best,
     ultimoDiaAtivo: today,
   });
+  return checkIn;
 }
 
 /** Batimento de presença ("estou aqui"): chamado uma vez ao montar e depois a cada ~90s. */

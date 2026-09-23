@@ -70,6 +70,27 @@
   white-space: nowrap;
 }
 
+.pillHot {
+  border-color: var(--color-orange);
+  animation: pillPulse 1.4s ease-in-out 3;
+}
+
+@keyframes pillPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 107, 31, 0);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(255, 107, 31, 0.25);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pillHot {
+    animation: none;
+  }
+}
+
 .pill b {
   color: var(--color-orange-soft);
   font-size: 0.78rem;

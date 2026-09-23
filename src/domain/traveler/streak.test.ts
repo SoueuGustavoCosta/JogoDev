@@ -1,5 +1,42 @@
 import { describe, expect, it } from 'vitest';
-import { nextStreak, travelerLevel } from './streak';
+import { checkInStreak, localDateISO, nextStreak, travelerLevel } from './streak';
+
+describe('checkInStreak', () => {
+  it('primeira vez: started, sem recorde', () => {
+    expect(checkInStreak(null, '2026-09-21', 0, 0)).toEqual({ current: 1, best: 1, kind: 'started', newRecord: false });
+  });
+
+  it('mesmo dia: same-day, nada muda', () => {
+    expect(checkInStreak('2026-09-21', '2026-09-21', 3, 5)).toEqual({ current: 3, best: 5, kind: 'same-day', newRecord: false });
+  });
+
+  it('dia seguinte abaixo do recorde: continued sem recorde', () => {
+    expect(checkInStreak('2026-09-20', '2026-09-21', 2, 5)).toEqual({ current: 3, best: 5, kind: 'continued', newRecord: false });
+  });
+
+  it('dia seguinte passando o recorde: newRecord', () => {
+    expect(checkInStreak('2026-09-20', '2026-09-21', 5, 5)).toEqual({ current: 6, best: 6, kind: 'continued', newRecord: true });
+  });
+
+  it('segundo dia de todos também é recorde', () => {
+    expect(checkInStreak('2026-09-20', '2026-09-21', 1, 1).newRecord).toBe(true);
+  });
+
+  it('depois de sumir dias: restarted, recorde preservado', () => {
+    expect(checkInStreak('2026-09-10', '2026-09-21', 7, 9)).toEqual({ current: 1, best: 9, kind: 'restarted', newRecord: false });
+  });
+});
+
+describe('localDateISO', () => {
+  it('usa o dia local, não o UTC', () => {
+    // 22h30 local: em UTC-3 isso já seria o dia seguinte no toISOString().
+    expect(localDateISO(new Date(2026, 8, 21, 22, 30))).toBe('2026-09-21');
+  });
+
+  it('preenche mês e dia com zero', () => {
+    expect(localDateISO(new Date(2026, 0, 5, 12))).toBe('2026-01-05');
+  });
+});
 
 describe('nextStreak', () => {
   it('primeira vez (sem última data): reinicia em 1', () => {
