@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { completePrologue, getTraveler, markPrologueSkipped } from '@/application/usecases';
 import { prologueScript } from '@/content/prologue/script';
 import { interpolate } from '@/domain/prologue';
-import { SintaxeFace } from '@/presentation/design-system';
+import { playSintaxeTalkSound, playVortexSound, SintaxeFace } from '@/presentation/design-system';
 import { SaveProgressWidget } from '@/presentation/features/save-progress';
 import { useServices } from '@/presentation/app/ServicesContext';
 import styles from './PrologueScreen.module.css';
@@ -50,6 +50,7 @@ export function PrologueScreen() {
 
   useEffect(() => {
     logRef.current?.scrollTo({ top: logRef.current.scrollHeight });
+    playSintaxeTalkSound();
   }, [stepId]);
 
   function skip() {
@@ -72,6 +73,7 @@ export function PrologueScreen() {
       return;
     }
     setWarping(true);
+    playVortexSound(1.6);
     window.setTimeout(() => navigate('/'), 1700);
   }
 

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { SintaxeFace } from '@/presentation/design-system';
+import { useEffect, useState } from 'react';
+import { playSintaxeTalkSound, SintaxeFace } from '@/presentation/design-system';
 import styles from './TrailIntroDialogue.module.css';
 
 const SEEN_KEY_PREFIX = 'viajante:trail-intro-seen:';
@@ -37,6 +37,11 @@ export function TrailIntroDialogue({
 }) {
   const [step, setStep] = useState(0);
   const isLast = step === lines.length - 1;
+
+  // Cada fala nova da Sintaxe vem com a "voz" dela (bipes curtos, bem baixos).
+  useEffect(() => {
+    playSintaxeTalkSound();
+  }, [step]);
 
   function finish() {
     markSeen(trailId);

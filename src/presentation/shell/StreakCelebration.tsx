@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import type { StreakCheckIn } from '@/domain/traveler';
-import { SintaxeFace } from '@/presentation/design-system';
+import { playStreakSound, SintaxeFace } from '@/presentation/design-system';
 import styles from './StreakCelebration.module.css';
 
 const AUTO_CLOSE_MS = 5000;
@@ -20,6 +20,10 @@ function copyFor(checkIn: StreakCheckIn): { title: string; line: string } {
 }
 
 export function StreakCelebration({ checkIn, onClose }: { checkIn: StreakCheckIn; onClose: () => void }) {
+  useEffect(() => {
+    playStreakSound();
+  }, []);
+
   useEffect(() => {
     const id = window.setTimeout(onClose, AUTO_CLOSE_MS);
     return () => window.clearTimeout(id);

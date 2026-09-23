@@ -1,7 +1,14 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState, type KeyboardEvent, type MouseEvent, type PointerEvent, type ReactNode } from 'react';
 import type { OnlinePlayer } from '@/application/ports';
 import type { ProfileSummary } from '@/application/usecases';
-import { Modal, SintaxeFace } from '@/presentation/design-system';
+import {
+  Modal,
+  playSelectSound,
+  playVortexSound,
+  SintaxeFace,
+  startHubAmbience,
+  stopHubAmbience,
+} from '@/presentation/design-system';
 import {
   CHARACTERS,
   ERAS,
@@ -86,6 +93,18 @@ export function TimeMap({
   const [tipVisible, setTipVisible] = useState(true);
   // Mergulho no vórtice: cor da era e o ponto da tela onde ela está (centro do giro/zoom).
   const [entering, setEntering] = useState<{ id: string; color: string; x: number; y: number } | null>(null);
+
+  // Som ambiente calmo enquanto o aluno está no hub; some em fade ao sair do mapa.
+  useEffect(() => {
+    startHubAmbience();
+    return () => stopHubAmbience();
+  }, []);
+
+  // Toque macio ao abrir o cartão de uma era, da praça ou do Eco.
+  const sheetOpen = sheet !== null;
+  useEffect(() => {
+    if (sheetOpen) playSelectSound();
+  }, [sheetOpen]);
 
   const clamp = useCallback(() => {
     const { w, h } = size.current;
@@ -302,6 +321,8 @@ export function TimeMap({
       else {
         const cc = cam.current;
         setEntering({ id: era.id, color: era.color, x: era.x * cc.k + cc.x, y: era.y * cc.k + cc.y });
+        stopHubAmbience(0.9);
+        playVortexSound(1.15);
         window.setTimeout(() => mounted.current && onEnterEra(era), 1150);
       }
     } else {
