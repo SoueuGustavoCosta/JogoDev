@@ -116,13 +116,15 @@ export interface LeaderboardPort {
   /**
    * Devolve o `Progress` salvo (backup completo) da conta autenticada agora (via RPC
    * `meu_progresso()`, que só lê a própria linha — `auth.uid() = uuid`), ou `null` se não
-   * houver nada salvo ainda ou a leitura falhar. Usado por `bootstrapTravelerIdentity`
+   * houver nada salvo ainda. **Lança se a leitura falhar** (rede, RPC): "não consegui ler"
+   * nunca pode ser confundido com "não tem nada salvo", senão uma cópia vazia acaba
+   * sobrescrevendo progresso de verdade. Usado por `bootstrapTravelerIdentity`
    * quando a sessão do Supabase resolve pra um uid diferente do `travelerUuid` já salvo
    * neste aparelho (ex.: sessão de recuperação de senha assumindo sozinha, fora do fluxo
    * de `saveProgressWithPhone`) — sem checar isso, o app re-rotulava o progresso local
    * (podia ser de sessão anônima sem relação nenhuma) pro uid novo sem nunca olhar o que
    * já estava salvo na conta de verdade, arriscando sobrescrever esse progresso no
-   * próximo backup silencioso. Nunca lança.
+   * próximo backup silencioso.
    */
   getMyProgress(): Promise<unknown | null>;
   /**

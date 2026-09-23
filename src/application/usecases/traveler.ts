@@ -1,6 +1,6 @@
 import { createEmptyProgress } from '@/domain/progress';
-import type { Progress } from '@/domain/progress';
 import type { LeaderboardPort, ProgressRepository } from '../ports';
+import { adoptAccountProgress, syncProgressSafely } from './progressSync';
 
 const MAX_NAME_LENGTH = 20;
 
@@ -103,12 +103,9 @@ export async function bootstrapTravelerIdentity(deps: {
       return;
     }
 
-    const restored = (await deps.leaderboard.getMyProgress()) as Progress | null;
-    if (restored) {
-      deps.repository.save({ ...restored, travelerUuid: authUid });
-    } else {
-      deps.repository.save({ ...progress, travelerUuid: authUid });
-    }
+    // Lança se a leitura falhar: aí não troca nada agora e tenta de novo na próxima abertura.
+    const cloud = await deps.leaderboard.getMyProgress();
+    adoptAccountProgress(deps, { uuid: authUid, cloud });
   } catch {
     // Falha silenciosa: o jogo continua com o uuid local (gerado sob demanda).
   }
@@ -131,12 +128,7 @@ export async function bootstrapTravelerIdentity(deps: {
  */
 export async function signOutTraveler(deps: { repository: ProgressRepository; leaderboard: LeaderboardPort }): Promise<void> {
   try {
-    const progress = deps.repository.load();
-    if (progress) {
-      const uuid = getOrCreateTravelerUuid({ repository: deps.repository });
-      const name = getTraveler({ repository: deps.repository }).name;
-      await deps.leaderboard.backupProgress(uuid, name, progress);
-    }
+    await syncProgressSafely(deps);
     await deps.leaderboard.signOut();
   } finally {
     deps.repository.clear();

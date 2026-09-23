@@ -1,10 +1,10 @@
 import { createEmptyProgress, xpForTrail } from '@/domain/progress';
-import type { Progress } from '@/domain/progress';
 import { checkInStreak, localDateISO, travelerLevel, type StreakCheckIn } from '@/domain/traveler';
 import type { Badge } from '@/domain/badges';
 import type { Trail } from '@/domain/trail';
 import type { LeaderboardPort, OnlinePlayer, ProgressRepository } from '../ports';
 import { getOrCreateTravelerUuid, getTraveler } from './traveler';
+import { adoptAccountProgress, syncProgressSafely } from './progressSync';
 
 export type ProfileSummary = {
   name: string;
@@ -118,15 +118,11 @@ export async function uploadAvatarPhoto(
 /**
  * Backup silencioso do `Progress` inteiro (além do resumo público sincronizado por
  * `checkInDaily`/`syncProgress`/`syncBadge`). Chamado periodicamente pelo mesmo ciclo
- * de vida do batimento de presença (ver Layout). Não faz nada se ainda não houver
- * progresso local nem uuid — nada para guardar.
+ * de vida do batimento de presença (ver Layout). Junta com a cópia da nuvem antes de
+ * gravar e não grava se não conseguir ler (ver `syncProgressSafely`).
  */
-export function backupProgress(deps: { repository: ProgressRepository; leaderboard: LeaderboardPort }): void {
-  const progress = deps.repository.load();
-  if (!progress) return;
-  const uuid = getOrCreateTravelerUuid({ repository: deps.repository });
-  const name = getTraveler({ repository: deps.repository }).name;
-  void deps.leaderboard.backupProgress(uuid, name, progress);
+export function backupProgress(deps: { repository: ProgressRepository; leaderboard: LeaderboardPort }): Promise<boolean> {
+  return syncProgressSafely(deps);
 }
 
 export type RestoreProgressResult = { ok: true } | { ok: false; reason: string };
@@ -214,7 +210,7 @@ export async function restoreProgress(
     return { ok: false, reason: 'Nome ou código incorretos.' };
   }
 
-  const restored = found.progress as Progress;
-  deps.repository.save({ ...restored, travelerUuid: found.uuid });
+  // Junta com o que já está neste aparelho em vez de trocar: nada jogado aqui se perde.
+  adoptAccountProgress(deps, { uuid: found.uuid, cloud: found.progress });
   return { ok: true };
 }

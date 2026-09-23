@@ -23,6 +23,15 @@ class Memory implements ProgressRepository {
   }
 }
 
+function trailWith(trailId: string, moduleId: string) {
+  return {
+    trailId,
+    trophyAwarded: false,
+    missionsCompleted: {},
+    modules: { [moduleId]: { moduleId, completed: true, quizResults: { 0: { correct: true, triesUsed: 1 } } } },
+  };
+}
+
 class StubLeaderboard implements LeaderboardPort {
   nextResult: SavePhoneResult = { ok: false, reason: 'não configurado' };
   savedPhoneCalls: { phone: string; password: string; email?: string }[] = [];
@@ -59,8 +68,13 @@ class StubLeaderboard implements LeaderboardPort {
   async ensureSignedIn(): Promise<string | null> {
     return 'uuid-anonimo';
   }
+  cloud: unknown | null = null;
+  cloudFails = false;
+  onCloudRead?: () => void;
   async getMyProgress(): Promise<unknown | null> {
-    return null;
+    if (this.cloudFails) throw new Error('rede fora do ar');
+    this.onCloudRead?.();
+    return this.cloud;
   }
   async hasRealSession(): Promise<boolean> {
     return false;
@@ -124,18 +138,45 @@ describe('saveProgressWithPhone', () => {
     expect(leaderboard.backupCalls).toEqual([{ uuid: 'uuid-novo', nome: 'Ana', progress: repository.load() }]);
   });
 
-  it('conta já existente: adota o progresso restaurado sem refazer o backup (já está na nuvem)', async () => {
+  it('conta já existente: junta a cópia da nuvem com o aparelho (perfil da conta) e sobe a união', async () => {
     const repository = new Memory();
-    repository.save({ version: 1, trails: {}, travelerName: 'Local' });
+    repository.save({ version: 1, trails: { a: trailWith('a', 'm1') }, travelerName: 'Local' });
     const leaderboard = new StubLeaderboard();
-    const remoteProgress: Progress = { version: 1, trails: {}, travelerName: 'Remoto' };
+    const remoteProgress: Progress = { version: 1, trails: { b: trailWith('b', 'm2') }, travelerName: 'Remoto' };
     leaderboard.nextResult = { ok: true, uid: 'uuid-remoto', isLogin: true, restoredProgress: remoteProgress };
 
     const result = await saveProgressWithPhone({ repository, leaderboard }, { phone: '31999999999', password: 'senha123' });
 
     expect(result).toEqual({ ok: true });
-    expect(repository.load()).toEqual({ ...remoteProgress, travelerUuid: 'uuid-remoto', phoneLinked: true });
-    expect(leaderboard.backupCalls).toHaveLength(0);
+    const saved = repository.load()!;
+    expect(Object.keys(saved.trails).sort()).toEqual(['a', 'b']);
+    expect(saved).toMatchObject({ travelerName: 'Remoto', travelerUuid: 'uuid-remoto', phoneLinked: true });
+    expect(leaderboard.backupCalls).toEqual([{ uuid: 'uuid-remoto', nome: 'Remoto', progress: saved }]);
+  });
+
+  it('regressão: login numa conta com cópia vazia NÃO apaga o progresso do aparelho', async () => {
+    // Foi o que apagou progresso de verdade: a nuvem da conta estava vazia e o login
+    // trocou dias de jogo deste aparelho por ela.
+    const repository = new Memory();
+    repository.save({
+      version: 1,
+      trails: { 'banco-de-dados': trailWith('banco-de-dados', 'porque') },
+      travelerName: 'Gustavo',
+      badgesEarned: { sql: '2026-09-20T10:00:00Z' },
+      streakBest: 6,
+    });
+    const leaderboard = new StubLeaderboard();
+    const emptyCloud: Progress = { version: 1, trails: {}, phoneLinked: true };
+    leaderboard.nextResult = { ok: true, uid: 'uuid-conta', isLogin: true, restoredProgress: emptyCloud };
+
+    await saveProgressWithPhone({ repository, leaderboard }, { phone: '31999999999', password: 'senha123' });
+
+    const saved = repository.load()!;
+    expect(saved.trails['banco-de-dados'].modules.porque.completed).toBe(true);
+    expect(saved.badgesEarned).toEqual({ sql: '2026-09-20T10:00:00Z' });
+    expect(saved.streakBest).toBe(6);
+    expect(saved.travelerName).toBe('Gustavo');
+    expect(leaderboard.backupCalls[0].progress).toEqual(saved);
   });
 
   it('conta já existente sem nada salvo (restoredProgress nulo): preserva o progresso local em vez de zerar a tela', async () => {

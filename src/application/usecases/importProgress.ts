@@ -1,4 +1,4 @@
-import type { Progress } from '@/domain/progress';
+import { mergeProgress, type Progress } from '@/domain/progress';
 import type { ProgressRepository } from '../ports';
 
 export type ImportProgressResult = { ok: true } | { ok: false; reason: string };
@@ -35,6 +35,9 @@ export function importProgress(
     return { ok: false, reason: 'O código informado não tem o formato esperado.' };
   }
 
-  deps.repository.save(parsed);
+  // Junta com o progresso deste aparelho (identidade daqui, conquistas das duas cópias):
+  // importar nunca apaga o que já foi jogado neste navegador.
+  const local = deps.repository.load();
+  deps.repository.save(local ? mergeProgress(local, parsed) : parsed);
   return { ok: true };
 }

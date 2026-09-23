@@ -1,8 +1,7 @@
 import { createEmptyProgress } from '@/domain/progress';
-import type { Progress } from '@/domain/progress';
 import { isValidEmail, isValidPassword, MIN_PASSWORD_LENGTH, normalizePhone } from '@/domain/traveler';
 import type { LeaderboardPort, ProgressRepository } from '../ports';
-import { getTraveler } from './traveler';
+import { adoptAccountProgress, syncProgressSafely } from './progressSync';
 
 export type SaveProgressWithPhoneResult = { ok: true } | { ok: false; reason: string };
 export type SimpleResult = { ok: true } | { ok: false; reason: string };
@@ -51,26 +50,18 @@ export async function saveProgressWithPhone(
   const result = await deps.leaderboard.saveProgressWithPhone(phone, params.password, email || undefined);
   if (!result.ok) return result;
 
-  if (result.isLogin && result.restoredProgress) {
-    // Login numa conta que já existia e trouxe progresso salvo: adota o estado da nuvem
-    // — nunca o progresso local de antes de entrar, que pode ser de uma sessão anônima
-    // sem nenhuma relação com essa conta.
-    const restored = result.restoredProgress as Progress;
-    deps.repository.save({ ...restored, travelerUuid: result.uid, phoneLinked: true });
+  if (result.isLogin) {
+    // Login numa conta que já existia: junta a cópia dela com o que já está neste aparelho.
+    // Nunca troca um pelo outro: foi assim que um login restaurou uma cópia vazia por cima
+    // de dias de jogo. O perfil (nome) vem da conta; as conquistas somam as duas.
+    adoptAccountProgress(deps, { uuid: result.uid, cloud: result.restoredProgress, extra: { phoneLinked: true } });
   } else {
-    // Conta nova, ou login numa conta que existe mas não trouxe nada salvo: preserva o
-    // progresso deste aparelho (nunca zera a tela) e faz o backup na hora, pra essa
-    // passar a ser a versão salva na conta a partir de agora.
+    // Conta nova (a sessão deste aparelho virou permanente): só marca o vínculo.
     const progress = deps.repository.load() ?? createEmptyProgress();
-    // getTraveler resolve o nome de exibição de verdade, incluindo o padrão único por
-    // aparelho quando o viajante nunca escolheu um (ver defaultTravelerName em
-    // traveler.ts) — nunca o literal "Viajante" puro, que colide com qualquer outro
-    // viajante que também não tenha escolhido nome.
-    const nome = getTraveler({ repository: deps.repository }).name;
-    const linked = { ...progress, travelerUuid: result.uid, phoneLinked: true };
-    deps.repository.save(linked);
-    await deps.leaderboard.backupProgress(result.uid, nome, linked);
+    deps.repository.save({ ...progress, travelerUuid: result.uid, phoneLinked: true });
   }
+  // Sobe a união na hora, pra essa passar a ser a versão salva na conta.
+  await syncProgressSafely(deps);
   return { ok: true };
 }
 
