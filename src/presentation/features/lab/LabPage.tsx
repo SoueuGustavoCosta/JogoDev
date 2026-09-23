@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { getTrailById } from '@/content/registry';
 import { GitLabPage } from './GitLabPage';
+import { PhpLabPage } from './PhpLabPage';
 import { SqlLabPage } from './SqlLabPage';
 
 /**
@@ -14,5 +15,6 @@ export function LabPage() {
   if (!trail) return null;
 
   if (trail.lab === 'git') return <GitLabPage trail={trail} />;
+  if (trail.lab === 'php') return <PhpLabPage trail={trail} />;
   return <SqlLabPage trail={trail} />;
 }

@@ -22,7 +22,7 @@ export const logicaTrail: Trail = {
     'Vamos reacender os dez faróis desta ilha, um por um, até você estar pronto para enfrentar o próprio bug que o Eco deixou pra trás: o <b>Loopus Infinitus</b>. Bora?',
   ],
   modules: logicaModules,
-  lab: null,
+  lab: 'php',
   bossFight: {
     bossName: 'Loopus Infinitus',
     tagline: 'UM WHILE(TRUE) QUE NUNCA TERMINOU',

@@ -1,0 +1,88 @@
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.status {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 160px;
+  background: transparent;
+  border: none;
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  padding: 16px;
+  resize: vertical;
+}
+
+.textarea:focus {
+  outline: none;
+}
+
+.shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 16px 0;
+}
+
+.shortcutKey {
+  min-width: 36px;
+  min-height: 36px;
+  padding: 0 8px;
+  background: var(--color-panel-2);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  cursor: pointer;
+}
+
+.labActions {
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.outScroll {
+  overflow-x: auto;
+  padding: 12px 16px;
+}
+
+.outStdout {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+}
+
+.outInfo {
+  padding: 12px 16px;
+  color: var(--color-muted);
+}
+
+.outErr {
+  margin: 0;
+  color: var(--color-bad);
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: var(--font-mono);
+  font-size: 0.86rem;
+}
+
+.outHint {
+  margin: 8px 0 0;
+  color: var(--color-muted);
+  font-size: 0.86rem;
+}

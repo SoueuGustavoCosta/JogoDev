@@ -103,7 +103,7 @@ export type Trail = {
   intro?: string[];
   modules: Module[];
   missions?: Mission[];
-  lab?: 'sql' | 'git' | null;
+  lab?: 'sql' | 'git' | 'php' | null;
   /** Chefe de fase de fim de era (desbloqueado só quando a trilha inteira estiver concluída). */
   bossFight?: BossFight;
 };
