@@ -28,6 +28,7 @@ export function QuizRunner({
   const [fillTries, setFillTries] = useState(0);
   const [hintRevealed, setHintRevealed] = useState(false);
   const [solved, setSolved] = useState<number | 'fill' | null>(null);
+  const [xpGained, setXpGained] = useState(0);
 
   const item = quiz[index];
   const isFill = 'fill' in item;
@@ -39,6 +40,7 @@ export function QuizRunner({
       { trailId, moduleId, quizIndex: index, item, answer },
     );
     if (result.correct) {
+      setXpGained(result.xpGained);
       setSolved(choiceIndex ?? 'fill');
       setFillWrong(false);
     } else if (choiceIndex !== undefined) {
@@ -58,6 +60,7 @@ export function QuizRunner({
       setFillTries(0);
       setHintRevealed(false);
       setSolved(null);
+      setXpGained(0);
     } else {
       onFinished();
     }
@@ -76,7 +79,7 @@ export function QuizRunner({
 
   return (
     <section className={styles.quiz} aria-label="Paradoxo do salto">
-      <SintaxeReaction type={reactionType} signal={reactionSignal} />
+      <SintaxeReaction type={reactionType} signal={reactionSignal} xpGained={isSolved ? xpGained : 0} />
       <div className={styles.box}>
         <div className={styles.top}>
           <span>

@@ -9,7 +9,16 @@ import styles from './SintaxeReaction.module.css';
  * Duolingo. `signal` deve mudar a cada tentativa nova (mesmo quando o tipo continua
  * "wrong" de novo), pra tocar o som e reiniciar a animação em cada uma.
  */
-export function SintaxeReaction({ type, signal }: { type: 'correct' | 'wrong' | null; signal: number }) {
+export function SintaxeReaction({
+  type,
+  signal,
+  xpGained = 0,
+}: {
+  type: 'correct' | 'wrong' | null;
+  signal: number;
+  /** XP ganho nesta resposta; > 0 mostra o "+100 XP" subindo ao lado da Sintaxe. */
+  xpGained?: number;
+}) {
   useEffect(() => {
     if (type === 'correct') playCorrectSound();
     else if (type === 'wrong') playWrongSound();
@@ -22,6 +31,11 @@ export function SintaxeReaction({ type, signal }: { type: 'correct' | 'wrong' | 
   return (
     <div className={styles.root} aria-hidden="true">
       <SintaxeFace key={signal} size={48} expression={expression} className={`${styles.face} ${pulseClass}`} />
+      {xpGained > 0 ? (
+        <span key={`xp-${signal}`} className={styles.xp}>
+          +{xpGained} XP
+        </span>
+      ) : null}
     </div>
   );
 }
