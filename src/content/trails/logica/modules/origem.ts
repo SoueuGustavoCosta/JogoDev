@@ -5,19 +5,19 @@ import type { Module } from '@/domain/trail/types';
  */
 export const modOrigem: Module = {
   id: 'origem',
-  short: 'A ilha nasce: algoritmos',
-  title: 'A ilha nasce: o que é lógica de programação?',
-  lead: 'Antes de qualquer linguagem existia uma ideia: resolver problemas em passos. Foi ela que fez esta ilha emergir do mapa.',
+  short: 'A era nasce: algoritmos',
+  title: 'A era nasce: o que é lógica de programação?',
+  lead: 'Antes de qualquer linguagem existia uma ideia: resolver problemas em passos. Foi ela que fez esta era emergir do mapa.',
   level: 'Base',
   blocks: [
     {
       t: 'say',
-      x: 'Bem-vindo(a) ao Farol 1, {name}. Eu sou a Sintaxe. A ilha surgiu em três tempestades de ideias. Vou mostrar onde cada uma caiu, porque é justamente essa história que o Bug está tentando apagar.',
+      x: 'Bem-vindo(a) ao Farol 1, {name}. Eu sou a Sintaxe. A era surgiu em três tempestades de ideias. Vou mostrar onde cada uma caiu, porque é justamente essa história que o Bug está tentando apagar.',
     },
-    { t: 'h', x: 'Por que esta ilha existe?' },
+    { t: 'h', x: 'Por que esta era existe?' },
     {
       t: 'p',
-      x: 'Linguagens vêm e vão: PHP, Python, Java, C... Cada uma tem sua sintaxe, seu jeito de escrever. Mas por baixo de todas existe a mesma coisa: <b>lógica</b>, a capacidade de quebrar um problema em passos claros, na ordem certa. Quem domina a lógica aprende qualquer linguagem depressa. Por isso a ilha vem antes de todas as outras.',
+      x: 'Linguagens vêm e vão: PHP, Python, Java, C... Cada uma tem sua sintaxe, seu jeito de escrever. Mas por baixo de todas existe a mesma coisa: <b>lógica</b>, a capacidade de quebrar um problema em passos claros, na ordem certa. Quem domina a lógica aprende qualquer linguagem depressa. Por isso a era vem antes de todas as outras.',
     },
     { t: 'h', x: 'As três tempestades (fatos reais)' },
     {
@@ -43,7 +43,7 @@ export const modOrigem: Module = {
     {
       t: 'note',
       k: 'O que o Bug quer',
-      x: 'Sem al-Khwarizmi, ninguém teria a ideia de "receita de cálculo". Sem Ada, ninguém teria pensado em programar uma máquina. Sem o "hello, world", ninguém teria o primeiro teste. Se as três tempestades sumirem, a ilha some junto.',
+      x: 'Sem al-Khwarizmi, ninguém teria a ideia de "receita de cálculo". Sem Ada, ninguém teria pensado em programar uma máquina. Sem o "hello, world", ninguém teria o primeiro teste. Se as três tempestades sumirem, a era some junto.',
     },
     { t: 'h', x: 'O que é um algoritmo, afinal?' },
     {

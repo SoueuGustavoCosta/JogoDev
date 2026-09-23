@@ -11,15 +11,15 @@ import { logicaModules } from './modules';
  */
 export const logicaTrail: Trail = {
   id: 'logica',
-  title: 'Ilha da Lógica',
-  tagline: 'A ilha que nasce primeiro: antes de qualquer linguagem, existe a lógica.',
+  title: 'Era da Lógica',
+  tagline: 'A era que nasce primeiro: antes de qualquer linguagem, existe a lógica.',
   symbol: 'logic-diamond',
   accent: '#2dff8a',
   eyebrow: 'Era 2 · Era da Lógica',
   intro: [
     'Viajante, esta é a <b>Era da Lógica</b> — a que nasce antes de todas as outras. Aqui não tem linguagem nenhuma ainda: só a ideia de resolver um problema em passos, na ordem certa.',
     'O Eco esteve aqui primeiro. Ele apagou pedaços da história — al-Khwarizmi, Ada Lovelace, o primeiro "hello, world" — achando que ia mais rápido pulando direto para o código. Só que sem entender o "porquê", ele deixou rastros: laços que nunca terminam, condições que confundem atribuição com comparação.',
-    'Vamos reacender os dez faróis desta ilha, um por um, até você estar pronto para enfrentar o próprio bug que o Eco deixou pra trás: o <b>Loopus Infinitus</b>. Bora?',
+    'Vamos reacender os dez faróis desta era, um por um, até você estar pronto para enfrentar o próprio bug que o Eco deixou pra trás: o <b>Loopus Infinitus</b>. Bora?',
   ],
   modules: logicaModules,
   lab: 'php',
@@ -112,6 +112,6 @@ export const logicaTrail: Trail = {
     ],
     badgeId: 'problemas',
     badgeTitle: 'Resolução de Problemas',
-    badgeDescription: 'Derrotou o Loopus Infinitus. Esta insígnia reúne todas as outras — a coroa da Ilha da Lógica.',
+    badgeDescription: 'Derrotou o Loopus Infinitus. Esta insígnia reúne todas as outras — a coroa da Era da Lógica.',
   },
 };

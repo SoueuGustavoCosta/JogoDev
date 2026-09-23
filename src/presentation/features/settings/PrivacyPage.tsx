@@ -8,7 +8,7 @@ export function PrivacyPage() {
       </p>
       <h2>O que é medido</h2>
       <p>
-        Apenas contagens anônimas de acesso e de uso (por exemplo: quantas pessoas abrem uma ilha, em
+        Apenas contagens anônimas de acesso e de uso (por exemplo: quantas pessoas abrem uma era, em
         qual módulo mais gente para, se o laboratório foi usado). Não coletamos nome, e-mail, IP próprio
         nem qualquer dado que identifique você, conforme a LGPD (Lei nº 13.709/2018).
       </p>

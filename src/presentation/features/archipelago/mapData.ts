@@ -117,7 +117,7 @@ export const ERAS: MapEra[] = [
   },
   {
     id: 'git',
-    name: 'Código Compartilhado',
+    name: 'Era do Git',
     x: 810,
     y: 830,
     color: '#ffa36b',

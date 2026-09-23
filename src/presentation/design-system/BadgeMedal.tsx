@@ -8,7 +8,7 @@ export type BadgeMedalState = 'earned' | 'locked-path' | 'locked-unassigned' | '
 
 /** O que falta para desbloquear, em texto curto — ou null quando não há o que dizer (já conquistada). */
 function unlockCaption(badge: Badge): string | null {
-  if (badge.trail === 'outras') return 'Em breve — ilha ainda não existe';
+  if (badge.trail === 'outras') return 'Em breve — era ainda não existe';
   if (!badge.unlockedBy) return 'Ainda sem lição ligada a esta insígnia';
 
   if (badge.unlockedBy === 'boss') return 'Vença o chefe de fase da trilha';

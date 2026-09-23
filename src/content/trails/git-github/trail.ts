@@ -7,7 +7,7 @@ export const gitGithubTrail: Trail = {
   tagline: 'Do primeiro commit ao primeiro push: controle de versão de verdade, no seu navegador.',
   symbol: 'git',
   accent: '#ffa36b',
-  eyebrow: 'Era 4 · Código Compartilhado',
+  eyebrow: 'Era 4 · Era do Git',
   intro: [
     'Viajante, chegamos à <b>Era da Bifurcação</b>. Aqui o tempo não anda em linha reta: ele se ramifica.',
     'Cada ideia nova pode virar uma linha do tempo paralela — um <b>branch</b> — que depois volta a se juntar à principal. ' +
