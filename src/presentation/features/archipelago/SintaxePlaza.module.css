@@ -1,0 +1,100 @@
+.float {
+  animation: float 3.6s ease-in-out infinite;
+}
+
+/* A sombra encolhe quando a Sintaxe sobe, reforçando a altura. */
+.shadow {
+  transform-origin: 0 104px;
+  animation: shadow 3.6s ease-in-out infinite;
+}
+
+.platform {
+  animation: hover 5s ease-in-out infinite;
+}
+
+.dash {
+  animation: dash 3s linear infinite;
+}
+
+.moon {
+  offset-rotate: 0deg;
+  animation: orbit 7s linear infinite;
+}
+
+.eyes {
+  transform-origin: 0 -4px;
+  animation: blink 5s infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+@keyframes shadow {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scale(0.9);
+    opacity: 0.4;
+  }
+}
+
+@keyframes hover {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: -34;
+  }
+}
+
+@keyframes orbit {
+  from {
+    offset-distance: 0%;
+  }
+  to {
+    offset-distance: 100%;
+  }
+}
+
+@keyframes blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .float,
+  .shadow,
+  .platform,
+  .dash,
+  .moon,
+  .eyes {
+    animation: none;
+  }
+
+  .moon {
+    offset-distance: 20%;
+  }
+}
