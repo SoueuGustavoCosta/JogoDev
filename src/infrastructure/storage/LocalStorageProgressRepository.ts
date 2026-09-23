@@ -1,4 +1,4 @@
-import { createEmptyProgress, PROGRESS_SCHEMA_VERSION, type Progress } from '@/domain/progress';
+import { PROGRESS_SCHEMA_VERSION, type Progress } from '@/domain/progress';
 import type { ProgressRepository } from '@/application/ports';
 
 const STORAGE_KEY = 'arquipelago:progress:v1';
@@ -12,15 +12,33 @@ const migrations: Record<number, (data: unknown) => unknown> = {
   // Exemplo para o futuro: migrations[1] = (data) => ({ ...data, version: 2, novoCampo: [] });
 };
 
-function migrate(raw: unknown): Progress {
+/** Onde fica guardado, intacto, um progresso que este app não conseguiu ler. */
+const RESCUE_KEY = `${STORAGE_KEY}:resgate`;
+
+/** `null` = formato que esta versão do app não sabe ler (nem migrar). */
+function migrate(raw: unknown): Progress | null {
+  if (typeof raw !== 'object' || raw === null) return null;
   let data = raw as { version?: number } & Record<string, unknown>;
   let version = typeof data.version === 'number' ? data.version : 0;
   while (version < PROGRESS_SCHEMA_VERSION && migrations[version]) {
     data = migrations[version](data) as typeof data;
     version = typeof data.version === 'number' ? data.version : version + 1;
   }
-  if (version !== PROGRESS_SCHEMA_VERSION) return createEmptyProgress();
+  if (version !== PROGRESS_SCHEMA_VERSION) return null;
   return data as unknown as Progress;
+}
+
+/**
+ * Antes de o app seguir com um progresso vazio (e sobrescrever a chave na próxima
+ * gravação), guarda o texto original numa chave à parte, uma vez só: um JSON corrompido
+ * ou de uma versão mais nova do app nunca é apagado, dá pra resgatar depois.
+ */
+function rescue(raw: string): void {
+  try {
+    if (!window.localStorage.getItem(RESCUE_KEY)) window.localStorage.setItem(RESCUE_KEY, raw);
+  } catch {
+    // Sem espaço/bloqueado: não há o que fazer sem quebrar o app.
+  }
 }
 
 function isStorageAvailable(): boolean {
@@ -47,7 +65,16 @@ export class LocalStorageProgressRepository implements ProgressRepository {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       if (!raw) return null;
-      return migrate(JSON.parse(raw));
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(raw);
+      } catch {
+        rescue(raw);
+        return null;
+      }
+      const progress = migrate(parsed);
+      if (!progress) rescue(raw);
+      return progress;
     } catch {
       return null;
     }
