@@ -6,10 +6,10 @@ import { useServices } from '@/presentation/app/ServicesContext';
 import styles from './BadgesPage.module.css';
 
 const GROUP_LABEL: Record<string, string> = {
-  logica: 'Ilha da Lógica',
+  logica: 'Era da Lógica',
   sql: 'Banco de Dados',
   git: 'Git e GitHub',
-  outras: 'Outras ilhas (em breve)',
+  outras: 'Outras eras (em breve)',
 };
 
 const GROUP_ORDER = ['logica', 'sql', 'git', 'outras'];

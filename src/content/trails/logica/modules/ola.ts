@@ -14,7 +14,7 @@ export const modOla: Module = {
   blocks: [
     {
       t: 'say',
-      x: 'Farol 2. Ele só acende com uma frase. Mas atenção: a ilha fala quatro idiomas, e eu quero que você perceba o que muda e o que continua igual.',
+      x: 'Farol 2. Ele só acende com uma frase. Mas atenção: a era fala quatro idiomas, e eu quero que você perceba o que muda e o que continua igual.',
     },
     { t: 'h', x: 'De onde vem o "Hello, World"?' },
     {
@@ -64,7 +64,7 @@ export const modOla: Module = {
     {
       t: 'note',
       k: 'Em todo o jogo',
-      x: 'A língua oficial da ilha é o <b>PHP</b>: todos os exemplos daqui em diante serão PHP, como na apostila da faculdade. As outras linguagens aparecem quando a comparação ajuda a entender a ideia.',
+      x: 'A língua oficial da era é o <b>PHP</b>: todos os exemplos daqui em diante serão PHP, como na apostila da faculdade. As outras linguagens aparecem quando a comparação ajuda a entender a ideia.',
     },
     { t: 'h', x: 'PHP em duas linhas' },
     {

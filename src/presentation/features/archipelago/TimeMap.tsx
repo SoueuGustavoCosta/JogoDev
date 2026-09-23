@@ -17,7 +17,7 @@ import {
 } from './mapData';
 import styles from './TimeMap.module.css';
 
-/** Só mostra no mapa as eras que já têm ilha jogável (trilha registrada). As demais ficam ocultas até existirem. */
+/** Só mostra no mapa as eras que já têm trilha jogável (trilha registrada). As demais ficam ocultas até existirem. */
 const VISIBLE_ERAS = ERAS.filter((e) => e.status === 'ativo');
 
 type Cam = { x: number; y: number; k: number };
@@ -445,7 +445,7 @@ export function TimeMap({
                   {...activate(() =>
                     setSay(
                       <>
-                        <b>SINTAXE</b> · {sat.name} ainda está guardada na névoa... em breve chega uma ilha só
+                        <b>SINTAXE</b> · {sat.name} ainda está guardada na névoa... em breve chega uma era só
                         dela!
                       </>,
                     ),

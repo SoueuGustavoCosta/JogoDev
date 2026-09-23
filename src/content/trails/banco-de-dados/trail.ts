@@ -12,7 +12,7 @@ export const bancoDeDadosTrail: Trail = {
   intro: [
     'Viajante, chegamos à <b>Era dos Dados</b> — 1963, o ano da lista de peças do foguete Saturn V. Antes de qualquer linha de SQL, existia só um monte de papel tentando não se perder.',
     'O Eco esteve aqui primeiro. Duplicou listas, escreveu o mesmo nome de três jeitos diferentes e deixou uma bagunça que nem a NASA soube resolver sozinha — até alguém inventar o modelo relacional.',
-    'Vamos reorganizar essa bagunça, tabela por tabela, até você estar pronto para provar que sabe reconstruir tudo isso sem a ilha inteira do seu lado: o <b>Arquivista</b> está esperando. Bora?',
+    'Vamos reorganizar essa bagunça, tabela por tabela, até você estar pronto para provar que sabe reconstruir tudo isso sem a era inteira do seu lado: o <b>Arquivista</b> está esperando. Bora?',
   ],
   modules: bancoDeDadosModules,
   missions: bancoDeDadosMissions,
@@ -22,8 +22,8 @@ export const bancoDeDadosTrail: Trail = {
     tagline: 'O ARQUIVISTA GUARDA A SAÍDA',
     intro: [
       'O Eco não deixou só um bug aqui — deixou uma era inteira de dados soltos, sem forma, exatamente como ele encontrou antes de qualquer tabela existir.',
-      'Ao vencer as três missões da ilha, um guardião nasceu da própria estrutura que você criou: o <b>Arquivista</b>, feito de tabelas e chaves que só existem porque você as desenhou — a prova de que a bagunça do Eco não teve a última palavra.',
-      'Ele não é seu inimigo. Mas só vai te deixar passar se você souber reconstruir tudo isso de cabeça, sem a ilha inteira do seu lado.',
+      'Ao vencer as três missões da era, um guardião nasceu da própria estrutura que você criou: o <b>Arquivista</b>, feito de tabelas e chaves que só existem porque você as desenhou — a prova de que a bagunça do Eco não teve a última palavra.',
+      'Ele não é seu inimigo. Mas só vai te deixar passar se você souber reconstruir tudo isso de cabeça, sem a era inteira do seu lado.',
     ],
     lifeLabel: '☕',
     mode: 'single-shot',
