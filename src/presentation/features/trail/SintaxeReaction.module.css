@@ -1,7 +1,39 @@
 .root {
+  position: relative;
   display: flex;
   justify-content: center;
   margin-bottom: 8px;
+}
+
+.xp {
+  position: absolute;
+  left: calc(50% + 30px);
+  top: 4px;
+  font: 700 1rem var(--font-mono);
+  color: var(--color-gold);
+  text-shadow: 0 0 12px rgba(255, 212, 121, 0.55);
+  white-space: nowrap;
+  pointer-events: none;
+  animation: xpFloat 1.4s ease-out forwards;
+}
+
+@keyframes xpFloat {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.7);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(0) scale(1.15);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(-14px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-28px) scale(1);
+  }
 }
 
 .face {
@@ -44,6 +76,11 @@
 @media (prefers-reduced-motion: reduce) {
   .correct,
   .wrong {
+    animation: none;
+  }
+
+  /* Sem movimento: o "+XP" fica parado e visível até a próxima pergunta. */
+  .xp {
     animation: none;
   }
 }
