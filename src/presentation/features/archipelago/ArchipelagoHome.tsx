@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { Navigate, useNavigate, useOutletContext } from 'react-router-dom';
 import { getTraveler, getTrailProgress } from '@/application/usecases';
 import { trailRegistry } from '@/content/registry';
+import { isEraRestored } from '@/domain/progress';
 import { useServices } from '@/presentation/app/ServicesContext';
 import type { LayoutOutletContext } from '@/presentation/shell';
 import { ERAS, type MapEra } from './mapData';
@@ -20,7 +21,7 @@ export function ArchipelagoHome() {
     for (const trail of trailRegistry) {
       const view = getTrailProgress({ repository: progressRepository }, { trail });
       const done = trail.modules.filter((m) => view.trailProgress?.modules[m.id]?.completed).length;
-      map[trail.id] = { done, total: trail.modules.length };
+      map[trail.id] = { done, total: trail.modules.length, restored: isEraRestored(trail, view.trailProgress) };
     }
     return map;
   }, [progressRepository]);
