@@ -203,6 +203,16 @@
   animation: glitch 2.4s infinite;
 }
 
+.satellite {
+  animation: bob 3.2s ease-in-out infinite;
+  transition: opacity 0.2s;
+}
+
+.satellite:hover,
+.satellite:focus-visible {
+  opacity: 0.85;
+}
+
 .pulse {
   animation: pulse 2s infinite;
 }
@@ -245,7 +255,8 @@
   .flow,
   .bob,
   .eco,
-  .pulse {
+  .pulse,
+  .satellite {
     animation: none;
   }
 }
