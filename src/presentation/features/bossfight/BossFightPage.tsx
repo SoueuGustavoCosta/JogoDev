@@ -20,7 +20,17 @@ import {
 import { isTrailCompleted } from '@/domain/progress';
 import type { BossFight, Trail } from '@/domain/trail';
 import { getTrailById } from '@/content/registry';
-import { Button, NotebookFrame, ProgressBar, BadgeMedal } from '@/presentation/design-system';
+import {
+  BadgeMedal,
+  Button,
+  NotebookFrame,
+  playBossHitSound,
+  playDefeatSound,
+  playGlitchSound,
+  playVictorySound,
+  playWrongSound,
+  ProgressBar,
+} from '@/presentation/design-system';
 import { getBadgeById } from '@/content/badges/catalog';
 import { useServices } from '@/presentation/app/ServicesContext';
 import { hasSeenTrailIntro, TrailIntroDialogue } from '@/presentation/features/trail';
@@ -137,11 +147,13 @@ function BossFightArena({
       { trailId: trail.id, badgeId: bossFight.badgeId, traveler: { uuid, name } },
     );
     setPhase('won');
+    playVictorySound();
   }
 
   function finishLose() {
     loseBossFight({ analytics }, { trailId: trail.id });
     setPhase('lost');
+    playDefeatSound();
   }
 
   function start() {
@@ -176,6 +188,7 @@ function BossFightArena({
       ]);
       const next = applyBossAttempt(state, config, { correct: true, stepsInRound: meta.stepsInRound });
       setState(next);
+      playBossHitSound();
       setInput('');
       setHint(null);
       setFeedback({
@@ -211,6 +224,8 @@ function BossFightArena({
     setState(next);
 
     const lostLife = next.lives < state.lives;
+    if (lostLife) playGlitchSound();
+    else playWrongSound();
     if (lostLife) {
       setFeedback({
         kind: 'bad',

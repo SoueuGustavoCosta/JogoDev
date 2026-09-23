@@ -82,7 +82,7 @@ export function SettingsPage() {
 
       <section className={styles.section}>
         <h2>Som</h2>
-        <p className={styles.hint}>A Senhorita Sintaxe reage a cada resposta do quiz com um efeito sonoro curto.</p>
+        <p className={styles.hint}>Sons suaves pelo jogo: o ambiente calmo da Praça da Sintaxe, o vórtice ao entrar numa era, a voz da Sintaxe, o quiz e o chefão. Desligue aqui se preferir silêncio.</p>
         <Button variant="ghost" size="sm" onClick={toggleSound} aria-pressed={!muted}>
           {muted ? '🔇 Som desligado' : '🔊 Som ligado'}
         </Button>
