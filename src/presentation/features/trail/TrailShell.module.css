@@ -102,6 +102,17 @@
   border-color: var(--color-orange);
 }
 
+.badgesTitle {
+  font-size: 1.1rem;
+  margin: 0 0 12px;
+}
+
+.badgesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 16px;
+}
+
 @media (max-width: 900px) {
   .layout {
     grid-template-columns: minmax(0, 1fr);

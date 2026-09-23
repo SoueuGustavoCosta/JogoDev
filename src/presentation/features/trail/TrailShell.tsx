@@ -5,6 +5,7 @@ import { getTrailById } from '@/content/registry';
 import { badgeCatalog, BADGE_TRAIL_TO_TRAIL_ID } from '@/content/badges/catalog';
 import { DEFAULT_EXPLORATION_MODE } from '@/config/exploration';
 import { isModuleUnlocked } from '@/domain/progress';
+import { BadgeMedal, Modal } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
 import styles from './TrailShell.module.css';
 
@@ -16,6 +17,7 @@ export function TrailShell() {
   const { progressRepository } = useServices();
   const location = useLocation();
   const [, setTick] = useState(0);
+  const [badgesOpen, setBadgesOpen] = useState(false);
 
   const trail = trailId ? getTrailById(trailId) : undefined;
   if (!trail) return <Navigate to="/" replace />;
@@ -39,12 +41,12 @@ export function TrailShell() {
           <span className={styles.label}>Início da era</span>
         </Link>
         {trailBadges.length ? (
-          <Link to="/configuracoes" className={styles.node}>
+          <button type="button" className={styles.node} onClick={() => setBadgesOpen(true)}>
             <span className={styles.dot}>★</span>
             <span className={styles.label}>
               Coleção de insígnias ({badgesEarnedCount}/{trailBadges.length})
             </span>
-          </Link>
+          </button>
         ) : null}
         {trail.modules.map((module, index) => {
           const done = Boolean(trailProgress?.modules[module.id]?.completed);
@@ -100,6 +102,19 @@ export function TrailShell() {
       <section className={styles.content}>
         <Outlet context={{ refresh: () => setTick((t) => t + 1) } satisfies TrailOutletContext} />
       </section>
+
+      {badgesOpen ? (
+        <Modal title={`Insígnias — ${trail.title}`} onClose={() => setBadgesOpen(false)}>
+          <h2 className={styles.badgesTitle}>
+            {trail.title} · {badgesEarnedCount}/{trailBadges.length}
+          </h2>
+          <div className={styles.badgesGrid}>
+            {trailBadges.map((badge) => (
+              <BadgeMedal key={badge.id} badge={badge} earned={Boolean(myBadges[badge.id])} size={84} />
+            ))}
+          </div>
+        </Modal>
+      ) : null}
     </div>
   );
 }
