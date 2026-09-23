@@ -22,3 +22,12 @@ export function isTrailCompleted(trail: Trail, progress: TrailProgress | undefin
   if (!progress) return false;
   return trail.modules.every((module) => progress.modules[module.id]?.completed);
 }
+
+/**
+ * Era "restaurada" no mapa: o chefe de fase foi vencido e a corrupção do Eco parou. Trilha
+ * sem chefe se restaura ao ganhar o troféu (todos os módulos concluídos).
+ */
+export function isEraRestored(trail: Trail, progress: TrailProgress | undefined): boolean {
+  if (!progress) return false;
+  return trail.bossFight ? Boolean(progress.bossDefeated) : progress.trophyAwarded;
+}

@@ -15,6 +15,7 @@ import {
   type MapCharacter,
   type MapEra,
 } from './mapData';
+import { EraVortex } from './EraVortex';
 import styles from './TimeMap.module.css';
 
 /** Só mostra no mapa as eras que já têm trilha jogável (trilha registrada). As demais ficam ocultas até existirem. */
@@ -28,7 +29,12 @@ type Sheet =
   | { kind: 'eco' }
   | null;
 
-export type EraProgress = { done: number; total: number };
+export type EraProgress = {
+  done: number;
+  total: number;
+  /** Chefe vencido: a era para de ser puxada pelo Eco e fica estável no mapa. */
+  restored?: boolean;
+};
 
 const reducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -359,9 +365,7 @@ export function TimeMap({
           })}
 
           {VISIBLE_ERAS.map((e) => {
-            const fog = e.status === 'nevoa';
             const pr = progress[e.id];
-            const circ = 2 * Math.PI * 56;
             const labelW = e.name.length * 10.5 + 26;
             return (
               <g
@@ -373,38 +377,7 @@ export function TimeMap({
                 aria-label={`${e.name}. ${e.description}`}
                 {...activate(() => setSheet({ kind: 'era', era: e }))}
               >
-                <circle r={74} fill={e.color} opacity={fog ? 0.05 : 0.12} filter="url(#tm-blur)" />
-                <circle r={56} fill="#0d0b18" stroke="#2c2647" strokeWidth={8} />
-                {pr && pr.total > 0 ? (
-                  <circle
-                    r={56}
-                    fill="none"
-                    stroke={e.color}
-                    strokeWidth={8}
-                    strokeLinecap="round"
-                    strokeDasharray={`${(circ * pr.done) / pr.total} ${circ}`}
-                    transform="rotate(-90)"
-                  />
-                ) : null}
-                <circle
-                  className={styles.ring}
-                  r={56}
-                  fill="none"
-                  stroke={e.color}
-                  strokeWidth={fog ? 2 : 3}
-                  opacity={fog ? 0.4 : 0.9}
-                  strokeDasharray={fog ? '4 6' : pr && pr.total ? '0 999' : undefined}
-                />
-                <g
-                  stroke={fog ? '#9b94b8' : e.color}
-                  strokeWidth={3}
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  transform="scale(1.35)"
-                >
-                  <path d={ICON_PATHS[e.icon]} />
-                </g>
+                <EraVortex id={e.id} color={e.color} iconPath={ICON_PATHS[e.icon]} progress={pr} />
                 <g transform="translate(0 88)">
                   <rect x={-labelW / 2} y={-20} width={labelW} height={34} rx={17} fill="#151225" stroke={e.color} strokeWidth={2} />
                   <text y={3} textAnchor="middle" fill="#ece9f8" fontSize={20} fontWeight={700} fontFamily="Instrument Sans, sans-serif">

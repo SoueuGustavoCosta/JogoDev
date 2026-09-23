@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Module, Trail } from '../trail/types';
-import { isModuleUnlocked, isTrailCompleted } from './unlock';
+import { isEraRestored, isModuleUnlocked, isTrailCompleted } from './unlock';
 import type { TrailProgress } from './types';
 
 function makeModule(id: string): Module {
@@ -71,5 +71,24 @@ describe('isTrailCompleted', () => {
       trophyAwarded: false,
     };
     expect(isTrailCompleted(trail, progress)).toBe(true);
+  });
+});
+
+describe('isEraRestored', () => {
+  const base: TrailProgress = { trailId: 't1', modules: {}, missionsCompleted: {}, trophyAwarded: true };
+  const withBoss = { ...trail, bossFight: {} } as unknown as Trail;
+
+  it('sem progresso: corrompida', () => {
+    expect(isEraRestored(withBoss, undefined)).toBe(false);
+  });
+
+  it('com chefe: só o chefe vencido restaura (troféu não basta)', () => {
+    expect(isEraRestored(withBoss, base)).toBe(false);
+    expect(isEraRestored(withBoss, { ...base, bossDefeated: true })).toBe(true);
+  });
+
+  it('sem chefe: o troféu restaura', () => {
+    expect(isEraRestored(trail, base)).toBe(true);
+    expect(isEraRestored(trail, { ...base, trophyAwarded: false })).toBe(false);
   });
 });
