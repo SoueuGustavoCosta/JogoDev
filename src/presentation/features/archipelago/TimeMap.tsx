@@ -300,7 +300,7 @@ export function TimeMap({
       if (reducedMotion()) onEnterEra(era);
       else {
         setEntering(era.color);
-        window.setTimeout(() => mounted.current && onEnterEra(era), 900);
+        window.setTimeout(() => mounted.current && onEnterEra(era), 1200);
       }
     } else {
       setSay(
