@@ -46,8 +46,12 @@ export function PrivacyPage() {
       <h2>Seus direitos</h2>
       <p>
         &quot;Sair desta conta&quot;, na tela do Viajante, apaga o progresso deste aparelho, mas não apaga o que está
-        no servidor. Para ver, corrigir ou apagar seus dados de lá, fale com o autor do projeto, Gustavo Costa Gomes.
-        {/* TODO(autor): colocar aqui o canal de contato para pedidos da LGPD (e-mail ou rede social). */}
+        no servidor. Para ver, corrigir ou apagar seus dados de lá, fale com o autor do projeto, Gustavo Costa Gomes,
+        pelo e-mail <a href="mailto:costagustavogt@gmail.com">costagustavogt@gmail.com</a> ou pelo Instagram{' '}
+        <a href="https://www.instagram.com/soueugustavocosta/" target="_blank" rel="noopener noreferrer">
+          @Soueugustavocosta
+        </a>
+        .
       </p>
 
       <h2>Contribuição por Pix</h2>
