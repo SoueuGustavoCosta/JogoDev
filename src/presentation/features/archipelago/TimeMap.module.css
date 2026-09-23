@@ -343,9 +343,11 @@
   color: var(--color-text);
 }
 
-/* transição suave ao entrar numa ilha: o mapa se aproxima e um portal da cor da era engole a tela */
+/* Entrar numa era: o mapa é sugado pro vórtice (gira em espiral e encolhe até o centro
+   da era, que o centerOn deixou em 50% 42%) e o buraco negro cresce até engolir a tela. */
 .leaving .map {
-  animation: dive 0.9s cubic-bezier(0.5, 0, 0.75, 0) forwards;
+  transform-origin: 50% 42%;
+  animation: suck 1.2s cubic-bezier(0.55, 0, 0.85, 0.35) forwards;
 }
 
 .leaving .hud,
@@ -361,27 +363,62 @@
   inset: 0;
   z-index: 20;
   pointer-events: none;
-  background: radial-gradient(circle at 50% 42%, var(--portal) 0%, #0a0912 70%);
+  background: radial-gradient(circle at 50% 42%, #000 0 34%, var(--portal) 46%, rgba(10, 9, 18, 0.6) 58%, transparent 70%);
   clip-path: circle(0% at 50% 42%);
-  animation: portal 0.9s cubic-bezier(0.5, 0, 0.75, 0) forwards;
+  animation: horizon 1.2s cubic-bezier(0.7, 0, 0.9, 0.5) forwards;
 }
 
-@keyframes dive {
-  to {
-    transform: scale(1.5);
-    filter: blur(3px) brightness(1.4);
+/* Raios da cor da era girando pra dentro, por cima do mapa sendo sugado. */
+.portal::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: 260vmax;
+  height: 260vmax;
+  margin: -130vmax 0 0 -130vmax;
+  background: repeating-conic-gradient(from 0deg, transparent 0 9deg, var(--portal) 11deg, transparent 14deg 24deg);
+  -webkit-mask: radial-gradient(circle, transparent 6%, #000 20%, transparent 55%);
+  mask: radial-gradient(circle, transparent 6%, #000 20%, transparent 55%);
+  opacity: 0.35;
+  animation: swirl 1.2s linear forwards;
+}
+
+@keyframes suck {
+  0% {
+    transform: none;
+    filter: none;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(-300deg) scale(0.04);
+    filter: blur(4px) brightness(0.6);
+    opacity: 0;
   }
 }
 
-@keyframes portal {
+@keyframes horizon {
+  0%,
+  45% {
+    clip-path: circle(0% at 50% 42%);
+  }
+  100% {
+    clip-path: circle(150% at 50% 42%);
+  }
+}
+
+@keyframes swirl {
   to {
-    clip-path: circle(80% at 50% 42%);
+    transform: rotate(-240deg);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .leaving .map,
-  .portal {
+  .portal,
+  .portal::before {
     animation: none;
   }
 }
