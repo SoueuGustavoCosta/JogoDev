@@ -7,7 +7,7 @@ const AUTO_CLOSE_MS = 5000;
 
 function copyFor(checkIn: StreakCheckIn): { title: string; line: string } {
   const days = `${checkIn.current} ${checkIn.current === 1 ? 'dia' : 'dias'}`;
-  if (checkIn.kind === 'started') {
+  if (checkIn.kind === 'started' || (checkIn.kind === 'restarted' && checkIn.best <= 1)) {
     return { title: 'Sua chama acendeu!', line: 'Primeiro dia da sequência. Volte amanhã pra ela crescer.' };
   }
   if (checkIn.kind === 'restarted') {

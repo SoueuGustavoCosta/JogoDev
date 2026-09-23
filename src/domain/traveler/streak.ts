@@ -73,7 +73,8 @@ export function checkInStreak(
   let kind: StreakCheckInKind;
   if (lastActiveDateISO === null) kind = 'started';
   else if (lastActiveDateISO === todayISO) kind = 'same-day';
-  else if (next.current > current) kind = 'continued';
+  // Só "continuou" quem já tinha sequência e voltou no dia seguinte; qualquer volta a 1 é recomeço.
+  else if (next.current > 1 && next.current === current + 1) kind = 'continued';
   else kind = 'restarted';
   const newRecord = kind === 'continued' && next.current > best && next.current > 1;
   return { ...next, kind, newRecord };
