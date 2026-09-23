@@ -208,8 +208,8 @@
   transition: opacity 0.2s;
 }
 
-.satellite:hover,
-.satellite:focus-visible {
+.node:hover .satellite,
+.node:focus-visible .satellite {
   opacity: 0.85;
 }
 

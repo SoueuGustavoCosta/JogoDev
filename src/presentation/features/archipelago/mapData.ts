@@ -97,10 +97,11 @@ export const ERAS: MapEra[] = [
     trailId: 'logica',
     description: 'Como pensar um problema passo a passo: variáveis, condições, laços e funções.',
     satellites: [
-      { id: 'py', name: 'Python', icon: 'py', angle: -45 },
-      { id: 'java', name: 'Java', icon: 'java', angle: 45 },
-      { id: 'c', name: 'C', icon: 'c', angle: 135 },
-      { id: 'php', name: 'PHP', icon: 'php', angle: -135 },
+      // Arco de cima: embaixo ficam o nome da era e o "Seu Bloco".
+      { id: 'py', name: 'Python', icon: 'py', angle: -155 },
+      { id: 'java', name: 'Java', icon: 'java', angle: -112 },
+      { id: 'c', name: 'C', icon: 'c', angle: -68 },
+      { id: 'php', name: 'PHP', icon: 'php', angle: -25 },
     ],
   },
   {
