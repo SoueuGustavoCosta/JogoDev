@@ -22,6 +22,14 @@ describe('checkInStreak', () => {
     expect(checkInStreak('2026-09-20', '2026-09-21', 1, 1).newRecord).toBe(true);
   });
 
+  it('data salva mas sequência zerada: restarted, nunca "1 dia seguidos"', () => {
+    expect(checkInStreak('2026-09-20', '2026-09-21', 0, 0).kind).toBe('restarted');
+  });
+
+  it('data salva no futuro (relógio errado): restarted', () => {
+    expect(checkInStreak('2099-01-01', '2026-09-21', 3, 3).kind).toBe('restarted');
+  });
+
   it('depois de sumir dias: restarted, recorde preservado', () => {
     expect(checkInStreak('2026-09-10', '2026-09-21', 7, 9)).toEqual({ current: 1, best: 9, kind: 'restarted', newRecord: false });
   });
