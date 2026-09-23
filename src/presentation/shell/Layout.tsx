@@ -6,6 +6,7 @@ import {
   checkInDaily,
   getPresence,
   getProfileSummary,
+  getTraveler,
   sendHeartbeat,
 } from '@/application/usecases';
 import type { ProfileSummary } from '@/application/usecases';
@@ -60,12 +61,22 @@ export function Layout() {
     [progressRepository, location.pathname],
   );
 
+  // Só quem passou pelo prólogo (nome escolhido ou "Pular") vira viajante no Supabase:
+  // quem abre o link e fecha, ou um robô de pré-visualização, não cria conta anônima nem
+  // aparece no Hall. Relido a cada troca de tela, pra ligar assim que o prólogo terminar.
+  const prologueSeen = useMemo(
+    () => getTraveler({ repository: progressRepository }).prologueSeen,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [progressRepository, location.pathname],
+  );
+
   // Identidade (login anônimo do Supabase, ver `bootstrapTravelerIdentity`) + check-in
   // diário (uma vez por sessão do app) + batimento de presença (uma vez já, depois a
   // cada ~90s), que também carrega o backup silencioso do progresso completo (ver
   // `backupProgress`). Fica aqui porque Layout é o elemento de rota pai — persiste
   // durante toda a navegação, só remonta se o app inteiro recarregar.
   useEffect(() => {
+    if (!prologueSeen) return;
     let cancelled = false;
 
     const refreshPresence = () => {
@@ -100,7 +111,7 @@ export function Layout() {
       window.clearInterval(id);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [prologueSeen]);
 
   if (isPrologue) return <Outlet />;
 
