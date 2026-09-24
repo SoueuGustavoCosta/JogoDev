@@ -1,0 +1,129 @@
+import type { Module } from '@/domain/trail/types';
+
+/** Farol 8 da Lua de Python: classes, __init__, self e herança básica. */
+export const modPoo: Module = {
+  id: 'poo-python',
+  short: 'Modelar com classes',
+  title: 'Orientação a objetos: classes, self e herança',
+  lead: 'O último farol antes de enfrentar Onduluk. Aqui você aprende a modelar o mundo em código: classes que viram objetos.',
+  level: 'Avançado',
+  blocks: [
+    { t: 'h', x: 'class: o molde de um objeto' },
+    {
+      t: 'p',
+      x: 'Uma <b>classe</b> é um molde para criar objetos. O método especial <code>__init__</code> roda automaticamente ao criar um objeto novo, e serve para preparar seus dados iniciais.',
+    },
+    {
+      t: 'code',
+      file: 'classe.py',
+      lang: 'python',
+      nolab: true,
+      x: 'class Viajante:\n    def __init__(self, nome, xp=0):\n        self.nome = nome\n        self.xp = xp\n\n    def ganhar_xp(self, quantidade):\n        self.xp += quantidade\n\n    def __str__(self):\n        return f"{self.nome} ({self.xp} XP)"',
+    },
+    { t: 'h', x: 'Criando e usando um objeto' },
+    {
+      t: 'code',
+      file: 'objeto.py',
+      lang: 'python',
+      nolab: true,
+      x: 'ana = Viajante("Ana")\nana.ganhar_xp(150)\nprint(ana)   # Ana (150 XP)',
+    },
+    {
+      t: 'note',
+      k: 'O que é self?',
+      x: 'self representa "este objeto específico": é como o método sabe de qual Viajante está falando (Ana, e não outro). Python exige self como primeiro parâmetro de todo método — outras linguagens escondem isso, Python deixa explícito.',
+    },
+    { t: 'h', x: 'Atributos de instância vs. atributos de classe' },
+    {
+      t: 'p',
+      x: 'Atributos definidos dentro de <code>__init__</code> com <code>self.</code> pertencem a cada objeto individualmente. Atributos definidos direto no corpo da classe são compartilhados por todos os objetos dela.',
+    },
+    {
+      t: 'code',
+      file: 'atributo_classe.py',
+      lang: 'python',
+      nolab: true,
+      x: 'class Viajante:\n    era_atual = "Lua de Python"   # compartilhado por todos os Viajantes\n\n    def __init__(self, nome):\n        self.nome = nome           # próprio de cada Viajante',
+    },
+    { t: 'h', x: 'Herança: uma classe que estende outra' },
+    {
+      t: 'p',
+      x: 'Uma classe pode <b>herdar</b> de outra, reaproveitando seus métodos e atributos. A classe nova pode adicionar ou sobrescrever comportamento.',
+    },
+    {
+      t: 'code',
+      file: 'heranca.py',
+      lang: 'python',
+      nolab: true,
+      x: 'class Viajante:\n    def __init__(self, nome):\n        self.nome = nome\n\n    def apresentar(self):\n        return f"Eu sou {self.nome}"\n\n\nclass ViajanteVIP(Viajante):\n    def __init__(self, nome, insignias):\n        super().__init__(nome)      # reaproveita o __init__ da classe-mãe\n        self.insignias = insignias\n\n    def apresentar(self):\n        return f"{super().apresentar()}, com {self.insignias} insígnias"',
+    },
+    {
+      t: 'code',
+      file: 'heranca_uso.py',
+      lang: 'python',
+      nolab: true,
+      x: 'vip = ViajanteVIP("Ana", 8)\nprint(vip.apresentar())',
+    },
+    {
+      t: 'out',
+      file: 'heranca_uso.out',
+      x: 'Eu sou Ana, com 8 insígnias',
+    },
+    {
+      t: 'note',
+      k: 'super()',
+      x: 'super() dá acesso à classe-mãe de dentro da classe-filha — muito usado para reaproveitar o __init__ ou um método, em vez de reescrever tudo do zero.',
+    },
+  ],
+  quiz: [
+    {
+      q: 'Qual método roda automaticamente quando um objeto é criado a partir de uma classe?',
+      options: ['__main__', '__init__', '__new__', 'start()'],
+      answer: 1,
+      explain: '__init__ é chamado automaticamente ao criar um objeto novo, servindo para preparar seus dados iniciais.',
+    },
+    {
+      q: 'O que self representa dentro de um método?',
+      options: [
+        'O nome da classe',
+        'O objeto específico que está chamando o método',
+        'Uma variável global',
+        'Um erro de sintaxe',
+      ],
+      answer: 1,
+      explain: 'self é uma referência ao próprio objeto (instância) que está executando o método.',
+    },
+    {
+      q: 'O que super().__init__(nome) faz dentro de uma classe filha?',
+      options: [
+        'Cria uma nova classe do zero',
+        'Chama o __init__ da classe-mãe, reaproveitando seu comportamento',
+        'Apaga o __init__ da classe-mãe',
+        'Não faz nada em Python',
+      ],
+      answer: 1,
+      explain: 'super() dá acesso à classe-mãe, permitindo reaproveitar (em vez de reescrever) o __init__ ou outros métodos dela.',
+      hint: 'Pense em "super" como um atalho para a classe de onde esta herda.',
+    },
+    {
+      q: 'class ViajanteVIP(Viajante): o que essa linha significa?',
+      options: [
+        'ViajanteVIP e Viajante são a mesma classe',
+        'ViajanteVIP herda de Viajante',
+        'Viajante herda de ViajanteVIP',
+        'Erro de sintaxe',
+      ],
+      answer: 1,
+      explain: 'Escrever a classe-mãe entre parênteses após o nome da classe nova estabelece herança: ViajanteVIP herda de Viajante.',
+    },
+    {
+      q: 'Complete: um atributo definido com self.nome dentro do __init__ pertence a cada ___ individualmente, não à classe inteira.',
+      fill: true,
+      pre: 'Um atributo definido com self.nome pertence a cada',
+      post: 'individualmente, não à classe inteira.',
+      accept: ['objeto', 'instancia', 'instância'],
+      placeholder: 'objeto ou instância',
+      explain: 'Atributos com self. são atributos de instância: cada objeto criado a partir da classe tem o seu próprio valor.',
+    },
+  ],
+};

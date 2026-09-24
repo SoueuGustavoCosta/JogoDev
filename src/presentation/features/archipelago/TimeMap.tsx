@@ -439,6 +439,24 @@ export function TimeMap({
           {VISIBLE_ERAS.flatMap((e) =>
             (e.satellites ?? []).map((sat, i) => {
               const pos = satellitePosition(e, sat);
+              // Uma lua só fica clicável (com trilha própria) depois que a era-mãe é
+              // restaurada (chefe vencido) E o conteúdo dela já existe (`trailId`).
+              const unlocked = Boolean(sat.trailId) && Boolean(progress[e.id]?.restored);
+              const satEra: MapEra = {
+                id: sat.id,
+                name: sat.name,
+                x: pos.x,
+                y: pos.y,
+                color: sat.color ?? e.color,
+                icon: e.icon,
+                status: unlocked ? 'ativo' : 'breve',
+                years: sat.years ?? 'EM BREVE',
+                trailId: unlocked ? sat.trailId : undefined,
+                description:
+                  sat.description ??
+                  `A lua de ${sat.name} ainda está guardada na névoa... em breve chega uma trilha só dela!`,
+              };
+              const label = sat.trailId && !unlocked ? `${sat.name}. Vença o chefe da Lógica para abrir.` : `${sat.name}.`;
               return (
                 <g
                   key={sat.id}
@@ -446,25 +464,50 @@ export function TimeMap({
                   transform={`translate(${pos.x} ${pos.y})`}
                   tabIndex={0}
                   role="button"
-                  aria-label={`${sat.name}. Em breve.`}
-                  {...activate(() =>
-                    setSay(
-                      <>
-                        <b>SINTAXE</b> · {sat.name} ainda está guardada na névoa... em breve chega uma era só
-                        dela!
-                      </>,
-                    ),
-                  )}
+                  aria-label={unlocked ? `${sat.name}. ${satEra.description}` : label}
+                  {...activate(() => {
+                    if (unlocked) {
+                      setSheet({ kind: 'era', era: satEra });
+                    } else if (sat.trailId) {
+                      setSay(
+                        <>
+                          <b>SINTAXE</b> · A lua de <b>{sat.name}</b> já existe, mas só abre depois que você vencer
+                          o chefe da Era da Lógica.
+                        </>,
+                      );
+                    } else {
+                      setSay(
+                        <>
+                          <b>SINTAXE</b> · {sat.name} ainda está guardada na névoa... em breve chega uma lua só
+                          dela!
+                        </>,
+                      );
+                    }
+                  })}
                 >
                   <line x1={(e.x - pos.x) * 0.35} y1={(e.y - pos.y) * 0.35} x2={0} y2={0} stroke="#2c2647" strokeWidth={2} strokeDasharray="1 6" />
                   {/* Animação num <g> interno: no externo, o transform do CSS apagaria o translate da posição. */}
                   <g className={styles.satellite} style={{ animationDelay: `${(-i * 0.8).toFixed(1)}s` }}>
-                    <circle r={24} fill="#0d0b18" stroke="#3a3454" strokeWidth={2} opacity={0.75} />
-                    <g stroke="#6a6483" strokeWidth={2.4} fill="none" strokeLinecap="round" strokeLinejoin="round" opacity={0.7}>
+                    <circle r={24} fill="#0d0b18" stroke={unlocked ? satEra.color : '#3a3454'} strokeWidth={2} opacity={unlocked ? 1 : 0.75} />
+                    <g
+                      stroke={unlocked ? satEra.color : '#6a6483'}
+                      strokeWidth={2.4}
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      opacity={unlocked ? 1 : 0.7}
+                    >
                       <path d={SATELLITE_ICON_PATHS[sat.icon]} />
                     </g>
-                    <text y={40} textAnchor="middle" fill="#6a6483" fontSize={12} fontWeight={700} fontFamily="JetBrains Mono, monospace">
-                      em breve
+                    <text
+                      y={40}
+                      textAnchor="middle"
+                      fill={unlocked ? satEra.color : '#6a6483'}
+                      fontSize={12}
+                      fontWeight={700}
+                      fontFamily="JetBrains Mono, monospace"
+                    >
+                      {unlocked ? 'nova lua' : 'em breve'}
                     </text>
                   </g>
                 </g>

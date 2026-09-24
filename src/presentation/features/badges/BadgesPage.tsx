@@ -9,17 +9,18 @@ const GROUP_LABEL: Record<string, string> = {
   logica: 'Era da Lógica',
   sql: 'Banco de Dados',
   git: 'Git e GitHub',
+  python: 'Lua de Python',
   outras: 'Outras eras (em breve)',
 };
 
-const GROUP_ORDER = ['logica', 'sql', 'git', 'outras'];
+const GROUP_ORDER = ['logica', 'python', 'sql', 'git', 'outras'];
 
 /**
  * "Carteira" do viajante: fechada por padrão (só um resumo), abre ao toque pra revelar
- * as 51 insígnias do catálogo compartilhado (ver domain/badges), agrupadas por trilha,
+ * as insígnias do catálogo compartilhado (ver domain/badges), agrupadas por trilha,
  * cada uma no estado certo (conquistada, bloqueada com caminho, bloqueada sem lição
  * ligada ainda, ou "em breve" para a trilha "outras", que não existe). Fechada evita que
- * a tela do Viajante (SettingsPage), onde é embutida, fique "espalhada" com 51 medalhas
+ * a tela do Viajante (SettingsPage), onde é embutida, fique "espalhada" com muitas medalhas
  * sempre visíveis — decisão do autor.
  */
 export function BadgePassport() {

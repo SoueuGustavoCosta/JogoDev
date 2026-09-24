@@ -35,10 +35,15 @@ export function ArchipelagoHome() {
 
   // Contador "X/Y módulos" de cada era ativa, não só a Era dos Dados: cada era aponta
   // pra sua trilha por `trailId` (ids diferentes: 'dados' → 'banco-de-dados', 'git' →
-  // 'git-github'), então o mapeamento não pode ser um `byEra[era.id]` direto.
+  // 'git-github'), então o mapeamento não pode ser um `byEra[era.id]` direto. As luas
+  // (satélites) entram do mesmo jeito, por `sat.trailId`, para o TimeMap saber quando
+  // cada uma foi restaurada (chefe vencido) e mostrar "X/Y módulos" na lua também.
   const progress: Record<string, EraProgress> = {};
   for (const era of ERAS) {
     if (era.trailId && byEra[era.trailId]) progress[era.id] = byEra[era.trailId];
+    for (const sat of era.satellites ?? []) {
+      if (sat.trailId && byEra[sat.trailId]) progress[sat.id] = byEra[sat.trailId];
+    }
   }
 
   return (

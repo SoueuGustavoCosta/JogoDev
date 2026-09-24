@@ -7,8 +7,8 @@ export const HUB = { x: 500, y: 660 };
 export type EraStatus = 'ativo' | 'novo' | 'breve' | 'nevoa';
 export type EraIcon = 'db' | 'log' | 'code' | 'git' | 'cloud' | 'web' | 'ia';
 
-/** Linguagem "satélite" que ainda vai ganhar ilha própria — ver `LanguageSatellite`. */
-export type SatelliteIcon = 'py' | 'java' | 'c' | 'php';
+/** Linguagem "satélite": lua da Era da Lógica, com trilha própria ou ainda "em breve" — ver `LanguageSatellite`. */
+export type SatelliteIcon = 'py' | 'java' | 'php';
 
 export type MapEra = {
   id: string;
@@ -32,6 +32,12 @@ export type LanguageSatellite = {
   icon: SatelliteIcon;
   /** Ângulo em graus (0 = direita, 90 = abaixo) ao redor do centro da era-mãe. */
   angle: number;
+  /** Trilha própria desta lua, só quando o conteúdo já existe (ver content/registry.ts). */
+  trailId?: string;
+  /** Cor de acento própria da lua, usada quando ela já tem trilha (senão herda a cor da era-mãe). */
+  color?: string;
+  years?: string;
+  description?: string;
 };
 
 /**
@@ -44,8 +50,6 @@ export const SATELLITE_ICON_PATHS: Record<SatelliteIcon, string> = {
   py: 'M-1 -9a5 5 0 1 0 0 10a5 5 0 1 1 0 8',
   // Java: xícara com pires e duas baforadas de vapor.
   java: 'M-6 -2h12v5a6 5 0 0 1 -12 0zM-8 3h16M6 -1c3 0 4 3 2 5M-3 -9c1 2 -1 3 0 5M2 -9c1 2 -1 3 0 5',
-  // C: um anel aberto, a própria letra.
-  c: 'M7 -6a8 8 0 1 0 0 12',
   // PHP: o óvalo do logotipo, sem o texto.
   php: 'M-9 0a9 5 0 1 0 18 0a9 5 0 1 0 -18 0',
 };
@@ -97,11 +101,22 @@ export const ERAS: MapEra[] = [
     trailId: 'logica',
     description: 'Como pensar um problema passo a passo: variáveis, condições, laços e funções.',
     satellites: [
-      // Arco de cima: embaixo ficam o nome da era e o "Seu Bloco".
-      { id: 'py', name: 'Python', icon: 'py', angle: -155 },
-      { id: 'java', name: 'Java', icon: 'java', angle: -112 },
-      { id: 'c', name: 'C', icon: 'c', angle: -68 },
-      { id: 'php', name: 'PHP', icon: 'php', angle: -25 },
+      // Arco de cima: embaixo ficam o nome da era e o "Seu Bloco". Cada lua só libera
+      // (fica clicável, com trilha própria) depois que o viajante derrota o Loopus
+      // Infinitus — ver o cálculo de `unlocked` em TimeMap.tsx.
+      {
+        id: 'py',
+        name: 'Python',
+        icon: 'py',
+        angle: -145,
+        trailId: 'python',
+        color: '#8a7fff',
+        years: '1991 → hoje',
+        description:
+          'A lua de Python: 8 faróis sobre a linguagem que Guido van Rossum começou em 1989, e o chefe Onduluk, que mente sobre a própria origem do nome.',
+      },
+      { id: 'java', name: 'Java', icon: 'java', angle: -90 },
+      { id: 'php', name: 'PHP', icon: 'php', angle: -35 },
     ],
   },
   {
