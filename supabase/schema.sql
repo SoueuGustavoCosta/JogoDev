@@ -189,3 +189,95 @@ grant execute on function public.restaurar_progresso(text, text) to anon;
 -- REQUISITO no painel (Authentication → Providers → Email): desligar "Confirm email".
 -- Sem isso nenhum cadastro completa, porque nenhum e-mail de confirmação de verdade é
 -- enviado para esses endereços sintéticos.
+
+-- ---------------------------------------------------------------------------------------
+-- Telefone da conta (entrar pelo telefone mesmo quando a conta foi criada com e-mail)
+-- ---------------------------------------------------------------------------------------
+-- Quem cadastra um e-mail de verdade fica com ele como e-mail de login, e o telefone não
+-- ficava guardado em lugar nenhum: entrar pelo telefone falhava, e "Criar conta" com o
+-- mesmo telefone abria uma SEGUNDA conta vazia (foi assim que a conta do autor pareceu
+-- "sobrescrita"). Esta tabela liga telefone -> conta. Ninguém lê a tabela direto (RLS
+-- sem política, sem grant): só as funções SECURITY DEFINER abaixo.
+create table if not exists public.contas_telefone (
+  uuid uuid primary key references auth.users (id) on delete cascade,
+  telefone text not null unique check (telefone ~ '^[0-9]{10,11}$'),
+  criado_em timestamptz not null default now()
+);
+alter table public.contas_telefone enable row level security;
+revoke all on public.contas_telefone from anon, authenticated;
+
+-- Tentativas erradas de "Entrar pelo telefone", para limitar quem tenta adivinhar senha.
+create table if not exists public.tentativas_login_telefone (
+  telefone text not null,
+  em timestamptz not null default now()
+);
+create index if not exists tentativas_login_telefone_idx on public.tentativas_login_telefone (telefone, em);
+alter table public.tentativas_login_telefone enable row level security;
+revoke all on public.tentativas_login_telefone from anon, authenticated;
+
+-- Diz se o telefone já tem conta (ligada aqui, ou antiga com e-mail sintético `tel-...`).
+-- Usada por "Criar conta" para nunca abrir uma segunda conta com o mesmo telefone.
+create or replace function public.telefone_tem_conta(p_telefone text)
+returns boolean
+language sql
+security definer
+set search_path = public
+as $$
+  select exists (select 1 from public.contas_telefone where telefone = p_telefone)
+      or exists (select 1 from auth.users where email = 'tel-' || p_telefone || '@viajante.jogodev.app');
+$$;
+revoke all on function public.telefone_tem_conta(text) from public;
+grant execute on function public.telefone_tem_conta(text) to anon, authenticated;
+
+-- Liga o telefone à conta de quem está autenticado (logo depois de "Criar conta").
+-- Recusa sessão anônima e telefone que já é de outra conta.
+create or replace function public.registrar_telefone(p_telefone text)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if auth.uid() is null or coalesce((select is_anonymous from auth.users where id = auth.uid()), true) then
+    raise exception 'sessao sem conta';
+  end if;
+  insert into public.contas_telefone (uuid, telefone) values (auth.uid(), p_telefone)
+  on conflict (uuid) do nothing;
+end;
+$$;
+revoke all on function public.registrar_telefone(text) from public;
+grant execute on function public.registrar_telefone(text) to authenticated;
+
+-- "Entrar pelo telefone" numa conta com e-mail: devolve o e-mail de login SÓ se a senha
+-- conferir (bcrypt do próprio Supabase Auth), para o cliente entrar com ele em seguida.
+-- Sem a senha certa não revela nada. Mais de 8 erros em 15 minutos para o mesmo telefone
+-- bloqueiam novas tentativas por esse caminho.
+create or replace function public.email_de_login(p_telefone text, p_senha text)
+returns text
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_email text;
+  v_hash text;
+begin
+  if (select count(*) from public.tentativas_login_telefone
+      where telefone = p_telefone and em > now() - interval '15 minutes') >= 8 then
+    return null;
+  end if;
+  -- Busca primeiro a conta do telefone e só depois compara a senha: comparar dentro da
+  -- mesma consulta deixava o banco rodar crypt() em contas sem senha (anônimas) e falhar.
+  select u.email, u.encrypted_password into v_email, v_hash
+  from public.contas_telefone c join auth.users u on u.id = c.uuid
+  where c.telefone = p_telefone;
+  if v_hash is null or v_hash not like '$2%' or v_hash <> extensions.crypt(p_senha, v_hash) then
+    insert into public.tentativas_login_telefone (telefone) values (p_telefone);
+    delete from public.tentativas_login_telefone where em < now() - interval '1 day';
+    return null;
+  end if;
+  return v_email;
+end;
+$$;
+revoke all on function public.email_de_login(text, text) from public;
+grant execute on function public.email_de_login(text, text) to anon, authenticated;
