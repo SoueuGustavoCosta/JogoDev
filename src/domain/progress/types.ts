@@ -62,12 +62,20 @@ export type Progress = {
    */
   bio?: string;
   /**
-   * Marca que o viajante já vinculou telefone+senha (ver `saveProgressWithPhone`), para
+   * Marca que o viajante já vinculou telefone+senha (ver `signUpWithPhone`), para
    * a caixa flutuante "Salvar progresso" não aparecer de novo neste aparelho depois
    * disso. Campo novo e opcional: progresso salvo antes dele continua válido sem
    * migração (chave simplesmente ausente, tratada como "ainda não vinculou").
    */
   phoneLinked?: boolean;
+  /**
+   * O progresso deste aparelho é de uma conta (telefone+senha) cuja sessão se perdeu
+   * (expirou, foi encerrada em outro lugar): o app não consegue mais gravar na nuvem
+   * dessa conta até a pessoa entrar de novo. Enquanto estiver marcado, nada sobe para a
+   * nuvem (subiria para a conta errada) e a tela oferece "Entrar de novo". Campo
+   * opcional: ausente = sessão ok.
+   */
+  needsSignIn?: boolean;
 };
 
 export type ExplorationMode = 'sequential' | 'free';

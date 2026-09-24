@@ -26,6 +26,8 @@ import styles from './Layout.module.css';
 /** Batimento de presença ("estou aqui"): a cada ~90s enquanto o app está aberto. */
 const HEARTBEAT_INTERVAL_MS = 90_000;
 
+const FULL_SCREEN_PATHS = new Set(['/prologo', '/entrar', '/cadastro', '/esqueci-senha', '/conta']);
+
 export type LayoutOutletContext = { summary: ProfileSummary; onlinePlayers: OnlinePlayer[] };
 
 function NavItem({ to, label, icon, end }: { to: string; label: string; icon: ReactNode; end?: boolean }) {
@@ -52,7 +54,8 @@ export function Layout() {
   const closeStreak = useCallback(() => setPendingStreak(null), []);
 
   const isMap = location.pathname === '/';
-  const isPrologue = location.pathname === '/prologo';
+  // Telas cheias, sem navegação nem cabeçalho do viajante: o prólogo e as telas de conta.
+  const isFullScreen = FULL_SCREEN_PATHS.has(location.pathname);
 
   const summary = useMemo(
     () => getProfileSummary({ repository: progressRepository }, { trails: trailRegistry, badgeCatalog }),
@@ -113,7 +116,7 @@ export function Layout() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prologueSeen]);
 
-  if (isPrologue) return <Outlet />;
+  if (isFullScreen) return <Outlet />;
 
   return (
     <div className={styles.root}>

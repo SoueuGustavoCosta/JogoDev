@@ -23,12 +23,15 @@ async function readCloud(leaderboard: LeaderboardPort): Promise<Progress | null 
  * quiz nesse meio-tempo, e juntar a partir da cópia antiga apagaria essa resposta.
  */
 export async function syncProgressSafely(deps: Deps): Promise<boolean> {
-  if (!deps.repository.load()) return false;
+  const before = deps.repository.load();
+  // Sessão da conta perdida: a sessão atual é de outra identidade, subir agora gravaria
+  // este progresso na conta errada. Espera a pessoa entrar de novo.
+  if (!before || before.needsSignIn) return false;
   const cloud = await readCloud(deps.leaderboard);
   if (cloud === undefined) return false;
 
   const local = deps.repository.load();
-  if (!local) return false;
+  if (!local || local.needsSignIn) return false;
   const merged = cloud ? mergeProgress(local, cloud) : local;
   deps.repository.save(merged);
 

@@ -15,7 +15,7 @@
  * progresso"/"entrar" às vezes não recuperar a conta certa quando o telefone já tem
  * cadastro em outro aparelho: a chamada que tenta vincular a conta (`updateUser`) fica
  * pendente sem erro, em vez de acusar e-mail duplicado — ver `SupabaseLeaderboard.
- * saveProgressWithPhone`.
+ * signUpWithPhone`.
  */
 export const PHONE_AUTH_EMAIL_DOMAIN = 'viajante.jogodev.app';
 

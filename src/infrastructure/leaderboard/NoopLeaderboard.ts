@@ -1,4 +1,12 @@
-import type { HallOfTravelersEntry, LeaderboardPort, OnlinePlayer, PlayerProfile, SavePhoneResult } from '@/application/ports';
+import type {
+  HallOfTravelersEntry,
+  LeaderboardPort,
+  OnlinePlayer,
+  PlayerProfile,
+  SignInIdentifier,
+  SignInResult,
+  SignUpResult,
+} from '@/application/ports';
 
 /** Usado em testes e em desenvolvimento: não envia nada a lugar nenhum. */
 export class NoopLeaderboard implements LeaderboardPort {
@@ -65,7 +73,11 @@ export class NoopLeaderboard implements LeaderboardPort {
     return null;
   }
 
-  async saveProgressWithPhone(_phone: string, _password: string, _email?: string): Promise<SavePhoneResult> {
+  async signUpWithPhone(_phone: string, _password: string, _email?: string): Promise<SignUpResult> {
+    return { ok: false, reason: 'Indisponível em desenvolvimento.' };
+  }
+
+  async signInWithPassword(_identifier: SignInIdentifier, _password: string): Promise<SignInResult> {
     return { ok: false, reason: 'Indisponível em desenvolvimento.' };
   }
 

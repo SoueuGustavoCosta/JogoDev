@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Progress } from '@/domain/progress';
-import type { HallOfTravelersEntry, LeaderboardPort, OnlinePlayer, PlayerProfile, ProgressRepository, SavePhoneResult } from '../ports';
+import type { HallOfTravelersEntry, LeaderboardPort, OnlinePlayer, PlayerProfile, ProgressRepository, SignInResult, SignUpResult } from '../ports';
 import { bootstrapTravelerIdentity, completePrologue, getOrCreateTravelerUuid, getTraveler, markPrologueSkipped, signOutTraveler } from './traveler';
 
 class Memory implements ProgressRepository {
@@ -62,7 +62,10 @@ class StubLeaderboard implements LeaderboardPort {
     if (this.ensureSignedInError) throw new Error('rede fora do ar');
     return this.signedInUid;
   }
-  async saveProgressWithPhone(): Promise<SavePhoneResult> {
+  async signUpWithPhone(): Promise<SignUpResult> {
+    return { ok: false, reason: 'não usado neste teste' };
+  }
+  async signInWithPassword(): Promise<SignInResult> {
     return { ok: false, reason: 'não usado neste teste' };
   }
   async requestPasswordReset(): Promise<{ ok: true } | { ok: false; reason: string }> {
@@ -148,6 +151,37 @@ describe('bootstrapTravelerIdentity: nunca perde progresso ao trocar de sessão'
   });
 });
 
+describe('bootstrapTravelerIdentity: sessão da conta perdida', () => {
+  const done = { trailId: 'logica', trophyAwarded: false, missionsCompleted: {}, modules: { origem: { moduleId: 'origem', completed: true, quizResults: {} } } };
+
+  it('regressão: progresso de conta com sessão anônima nova NÃO é re-rotulado; pede para entrar de novo', async () => {
+    // Era assim que o progresso "sumia": sair em um aparelho derrubava a sessão da conta
+    // nos outros, e cada um passava o progresso da conta para um uid anônimo novo.
+    const repository = new Memory();
+    repository.save({ version: 1, trails: { logica: done }, travelerUuid: 'uuid-conta', travelerName: 'Gustavo', phoneLinked: true });
+    const leaderboard = new StubLeaderboard();
+    leaderboard.signedInUid = 'uuid-anonimo-novo';
+    leaderboard.myProgress = { version: 1, trails: {} };
+
+    await bootstrapTravelerIdentity({ repository, leaderboard });
+
+    expect(repository.load()).toMatchObject({ travelerUuid: 'uuid-conta', travelerName: 'Gustavo', phoneLinked: false, needsSignIn: true });
+    expect(repository.load()?.trails.logica.modules.origem.completed).toBe(true);
+  });
+
+  it('quando a sessão da própria conta volta, libera a sincronização de novo', async () => {
+    const repository = new Memory();
+    repository.save({ version: 1, trails: {}, travelerUuid: 'uuid-conta', needsSignIn: true, phoneLinked: false });
+    const leaderboard = new StubLeaderboard();
+    leaderboard.signedInUid = 'uuid-conta';
+
+    await bootstrapTravelerIdentity({ repository, leaderboard });
+
+    expect(repository.load()).toMatchObject({ travelerUuid: 'uuid-conta', phoneLinked: true });
+    expect(repository.load()?.needsSignIn).toBeUndefined();
+  });
+});
+
 describe('bootstrapTravelerIdentity', () => {
   it('grava o auth.uid() real em Progress.travelerUuid quando o login anônimo resolve', async () => {
     const repository = new Memory();
@@ -173,7 +207,7 @@ describe('bootstrapTravelerIdentity', () => {
 
   it('busca o progresso salvo na conta antes de trocar o uid, se este aparelho já tinha um progresso local diferente', async () => {
     // Regressão: isso cobre uma sessão de recuperação de senha assumindo sozinha (fora
-    // do fluxo controlado de saveProgressWithPhone) — sem essa checagem, o progresso
+    // do fluxo controlado de signInWithPhone) — sem essa checagem, o progresso
     // local (podia ser de outra sessão) virava o rótulo da conta de verdade e sobrescrevia
     // o progresso dela no próximo backup silencioso.
     const repository = new Memory();

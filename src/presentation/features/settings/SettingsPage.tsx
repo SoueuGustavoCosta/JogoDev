@@ -1,6 +1,14 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BIO_MAX_LENGTH, getCachedBio, getTraveler, hasPhoneLinked, saveBio, signOutTraveler } from '@/application/usecases';
+import {
+  BIO_MAX_LENGTH,
+  getCachedBio,
+  getTraveler,
+  hasPhoneLinked,
+  needsSignInAgain,
+  saveBio,
+  signOutTraveler,
+} from '@/application/usecases';
 import { SUPPORT_COPY } from '@/domain/support';
 import { Button, isSoundMuted, Modal, playTestSound, setSoundMuted } from '@/presentation/design-system';
 import { BadgePassport } from '@/presentation/features/badges';
@@ -18,6 +26,7 @@ export function SettingsPage() {
 
   const name = getTraveler({ repository: progressRepository }).name;
   const linked = hasPhoneLinked({ repository: progressRepository });
+  const expired = needsSignInAgain({ repository: progressRepository });
 
   function toggleSound() {
     const next = !muted;
@@ -34,9 +43,9 @@ export function SettingsPage() {
   async function handleSignOut() {
     setSigningOut(true);
     await signOutTraveler({ repository: progressRepository, leaderboard });
-    // Recarrega o app inteiro: é a forma mais simples de garantir que todo estado em
-    // memória (nome em cache, sessão anônima antiga etc.) seja recriado do zero.
-    window.location.href = '/';
+    // Recarrega o app inteiro (todo estado em memória é recriado do zero) já na tela de
+    // escolha: entrar numa conta ou criar uma.
+    window.location.href = linked || expired ? '/conta?saiu=1' : '/conta';
   }
 
   return (
@@ -89,15 +98,44 @@ export function SettingsPage() {
       </section>
 
       <section className={styles.section}>
-        <h2>Sair</h2>
+        <h2>Conta</h2>
+        {linked ? (
+          <p className={styles.hint}>
+            Seu progresso está salvo na sua conta. Sair encerra a conta só neste aparelho, para outra pessoa entrar com a
+            dela; depois é só tocar em &quot;Entrar&quot; com o mesmo telefone e senha para voltar.
+          </p>
+        ) : expired ? (
+          <>
+            <p className={styles.warn}>
+              Sua sessão expirou: o progresso deste aparelho está guardado aqui, mas não está sendo salvo na conta.
+            </p>
+            <p className={styles.hint}>
+              <Link className={styles.link} to="/entrar">
+                Entrar de novo ▸
+              </Link>
+            </p>
+          </>
+        ) : (
+          <>
+            <p className={styles.hint}>
+              Você está jogando sem conta: o progresso só existe neste aparelho. Crie uma conta para salvar e continuar
+              de qualquer lugar.
+            </p>
+            <div className={styles.accountLinks}>
+              <Link className={styles.link} to="/cadastro">
+                Criar conta ▸
+              </Link>
+              <Link className={styles.link} to="/entrar">
+                Já tenho conta ▸
+              </Link>
+            </div>
+          </>
+        )}
         <p className={styles.hint}>
-          {linked
-            ? 'Encerra sua conta neste aparelho, para outra pessoa entrar com a dela. Depois é só usar "Salvar ou entrar" com o mesmo telefone e senha para voltar.'
-            : 'Você ainda não salvou telefone e senha: o progresso deste aparelho só existe aqui. Sair agora apaga tudo, sem jeito de recuperar.'}
+          <Button variant="ghost" size="sm" onClick={() => setSignOutOpen(true)}>
+            Sair desta conta
+          </Button>
         </p>
-        <Button variant="ghost" size="sm" onClick={() => setSignOutOpen(true)}>
-          Sair desta conta
-        </Button>
       </section>
 
       <section className={styles.section}>
@@ -112,7 +150,9 @@ export function SettingsPage() {
           <p className={linked ? styles.hint : styles.warn}>
             {linked
               ? 'O progresso continua salvo na nuvem — é só entrar de novo com telefone e senha quando quiser.'
-              : 'Sem telefone e senha salvos, sair agora apaga o progresso deste aparelho para sempre.'}
+              : expired
+                ? 'Sua sessão expirou: o que você fez neste aparelho desde então ainda não subiu para a conta. Entre de novo antes de sair para não perder nada.'
+                : 'Sem conta, sair agora apaga o progresso deste aparelho para sempre. Crie uma conta antes, se quiser guardar.'}
           </p>
           <div className={styles.row}>
             <Button variant="alt" size="sm" onClick={handleSignOut} disabled={signingOut}>

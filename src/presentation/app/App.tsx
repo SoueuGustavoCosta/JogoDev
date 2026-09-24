@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Layout } from '@/presentation/shell';
 import { ServicesProvider, useServices } from './ServicesContext';
 import { ErrorBoundary } from './ErrorBoundary';
@@ -26,6 +26,14 @@ const PrivacyPage = lazy(() =>
   import('@/presentation/features/settings').then((m) => ({ default: m.PrivacyPage })),
 );
 const HallPage = lazy(() => import('@/presentation/features/hall').then((m) => ({ default: m.HallPage })));
+const LoginPage = lazy(() => import('@/presentation/features/account').then((m) => ({ default: m.LoginPage })));
+const SignUpPage = lazy(() => import('@/presentation/features/account').then((m) => ({ default: m.SignUpPage })));
+const ForgotPasswordPage = lazy(() =>
+  import('@/presentation/features/account').then((m) => ({ default: m.ForgotPasswordPage })),
+);
+const AccountChoicePage = lazy(() =>
+  import('@/presentation/features/account').then((m) => ({ default: m.AccountChoicePage })),
+);
 const ResetPasswordPage = lazy(() =>
   import('@/presentation/features/reset-password').then((m) => ({ default: m.ResetPasswordPage })),
 );
@@ -47,6 +55,11 @@ function AppRoutes() {
           <Route path="hall" element={<HallPage />} />
           <Route path="redefinir-senha" element={<ResetPasswordPage />} />
           <Route path="prologo" element={<PrologueScreen />} />
+          <Route path="entrar" element={<LoginPage />} />
+          <Route path="cadastro" element={<SignUpPage />} />
+          <Route path="esqueci-senha" element={<ForgotPasswordPage />} />
+          <Route path="conta" element={<AccountChoicePage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
     </Suspense>
