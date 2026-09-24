@@ -1,19 +1,17 @@
-import { useState, type FormEvent } from 'react';
-import { Link } from 'react-router-dom';
-import { hasPhoneLinked, needsSignInAgain, signInWithPhone } from '@/application/usecases';
-import { Button } from '@/presentation/design-system';
+import { Link, useNavigate } from 'react-router-dom';
+import { hasPhoneLinked, needsSignInAgain } from '@/application/usecases';
 import { useServices } from '@/presentation/app/ServicesContext';
 import { AccountScreen } from './AccountScreen';
-import { PasswordField } from './PasswordField';
+import { LoginForm } from './forms';
 import styles from './Account.module.css';
 
-/** Rota `/entrar`: entra numa conta que já existe (telefone ou e-mail + senha). */
+/**
+ * Rota `/entrar`: versão em página do formulário da gaveta de conta, para links diretos
+ * (ex.: depois de redefinir a senha). Dentro do jogo, "Entrar" abre a gaveta.
+ */
 export function LoginPage() {
-  const { progressRepository, leaderboard } = useServices();
-  const [login, setLogin] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  const { progressRepository } = useServices();
+  const navigate = useNavigate();
   const linked = hasPhoneLinked({ repository: progressRepository });
   const expired = needsSignInAgain({ repository: progressRepository });
 
@@ -36,78 +34,14 @@ export function LoginPage() {
     );
   }
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    if (busy) return;
-    setBusy(true);
-    setError(null);
-    const result = await signInWithPhone(
-      { repository: progressRepository, leaderboard },
-      { login, password },
-    );
-    if (!result.ok) {
-      setBusy(false);
-      setError(result.reason);
-      return;
-    }
-    // Recarrega o app: o resto da árvore lê o progresso uma vez só, no carregamento.
-    window.location.href = '/';
-  }
-
   return (
     <AccountScreen title="Entrar">
-      {expired ? (
-        <p className={styles.notice} role="status">
-          Sua sessão expirou. Entre de novo para voltar a salvar: o que você fez neste aparelho
-          continua guardado aqui.
-        </p>
-      ) : (
-        <p className={styles.hint}>
-          Entre com o telefone (ou o e-mail) e a senha que você cadastrou.
-        </p>
-      )}
-      <form onSubmit={handleSubmit} noValidate>
-        <label className={styles.label} htmlFor="login-id">
-          Telefone com DDD ou e-mail
-        </label>
-        <input
-          id="login-id"
-          className={styles.field}
-          type="text"
-          inputMode="email"
-          autoCapitalize="off"
-          autoCorrect="off"
-          spellCheck={false}
-          autoComplete="username"
-          placeholder="(31) 99999-9999"
-          value={login}
-          onChange={(e) => setLogin(e.target.value)}
-          required
-        />
-        <PasswordField
-          id="login-password"
-          label="Senha"
-          autoComplete="current-password"
-          value={password}
-          onChange={setPassword}
-        />
-        {error ? (
-          <p role="alert" className={styles.error}>
-            {error}
-          </p>
-        ) : null}
-        <Button type="submit" className={styles.submit} disabled={busy}>
-          {busy ? 'Entrando...' : 'Entrar'}
-        </Button>
-      </form>
-      <div className={styles.links}>
-        <Link className={styles.link} to="/cadastro">
-          Criar conta
-        </Link>
-        <Link className={styles.mutedLink} to="/esqueci-senha">
-          Esqueci minha senha
-        </Link>
-      </div>
+      <LoginForm
+        idPrefix="page"
+        expired={expired}
+        onForgot={() => navigate('/esqueci-senha')}
+        onCreateAccount={() => navigate('/cadastro')}
+      />
     </AccountScreen>
   );
 }

@@ -13,11 +13,13 @@ import { SUPPORT_COPY } from '@/domain/support';
 import { Button, isSoundMuted, Modal, playTestSound, setSoundMuted } from '@/presentation/design-system';
 import { BadgePassport } from '@/presentation/features/badges';
 import { SupportModal } from '@/presentation/features/support';
+import { useAccountSheet } from '@/presentation/features/account';
 import { useServices } from '@/presentation/app/ServicesContext';
 import styles from './SettingsPage.module.css';
 
 export function SettingsPage() {
   const { progressRepository, leaderboard } = useServices();
+  const { openAccount } = useAccountSheet();
   const [supportOpen, setSupportOpen] = useState(false);
   const [signOutOpen, setSignOutOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
@@ -110,9 +112,9 @@ export function SettingsPage() {
               Sua sessão expirou: o progresso deste aparelho está guardado aqui, mas não está sendo salvo na conta.
             </p>
             <p className={styles.hint}>
-              <Link className={styles.link} to="/entrar">
+              <button type="button" className={styles.accountButton} onClick={() => openAccount('login')}>
                 Entrar de novo ▸
-              </Link>
+              </button>
             </p>
           </>
         ) : (
@@ -122,12 +124,12 @@ export function SettingsPage() {
               de qualquer lugar.
             </p>
             <div className={styles.accountLinks}>
-              <Link className={styles.link} to="/cadastro">
+              <button type="button" className={styles.accountButton} onClick={() => openAccount('signup')}>
                 Criar conta ▸
-              </Link>
-              <Link className={styles.link} to="/entrar">
+              </button>
+              <button type="button" className={styles.accountButton} onClick={() => openAccount('login')}>
                 Já tenho conta ▸
-              </Link>
+              </button>
             </div>
           </>
         )}

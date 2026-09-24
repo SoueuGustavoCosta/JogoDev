@@ -1,4 +1,5 @@
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
+import { useAccountSheet } from './accountSheetContext';
 import { AccountScreen } from './AccountScreen';
 import styles from './Account.module.css';
 
@@ -9,6 +10,7 @@ import styles from './Account.module.css';
 export function AccountChoicePage() {
   const [params] = useSearchParams();
   const signedOut = params.get('saiu') === '1';
+  const { openAccount } = useAccountSheet();
   return (
     <AccountScreen
       title={signedOut ? 'Você saiu da conta' : 'Sua conta'}
@@ -21,14 +23,14 @@ export function AccountChoicePage() {
           : 'Entre na sua conta ou crie uma para salvar o progresso e continuar de qualquer aparelho.'}
       </p>
       <div className={styles.choices}>
-        <Link className={styles.choicePrimary} to="/entrar">
+        <button type="button" className={styles.choicePrimary} onClick={() => openAccount('login')}>
           <strong>Entrar</strong>
           <span>Já tenho conta com telefone e senha</span>
-        </Link>
-        <Link className={styles.choice} to="/cadastro">
+        </button>
+        <button type="button" className={styles.choice} onClick={() => openAccount('signup')}>
           <strong>Criar conta</strong>
           <span>Cadastrar telefone e senha</span>
-        </Link>
+        </button>
       </div>
     </AccountScreen>
   );

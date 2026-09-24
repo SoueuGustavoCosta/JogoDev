@@ -104,10 +104,14 @@
   margin-bottom: 8px;
 }
 
-.accountLinks a {
+.accountButton {
   display: inline-flex;
   align-items: center;
   min-height: var(--touch-target);
-  font-weight: 600;
-  text-decoration: none;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-cyan);
+  font: 600 1rem var(--font-body);
+  cursor: pointer;
 }
