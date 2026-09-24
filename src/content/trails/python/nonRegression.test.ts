@@ -95,13 +95,19 @@ describe('chefe de fase da Lua de Python (Onduluk)', () => {
 });
 
 describe('insígnias da Lua de Python', () => {
-  it('tem 9 insígnias no catálogo (8 faróis + 1 coroa), todas com arquivo próprio', () => {
+  it('tem 10 insígnias no catálogo (8 comuns + 1 rara + 1 lendária), todas com arquivo próprio', () => {
     const pythonBadges = badgeCatalog.filter((b) => b.trail === 'python');
-    expect(pythonBadges).toHaveLength(9);
+    expect(pythonBadges).toHaveLength(10);
     expect(pythonBadges.filter((b) => b.crown)).toHaveLength(1);
+    expect(pythonBadges.filter((b) => b.rare)).toHaveLength(1);
     for (const badge of pythonBadges) {
       expect(badge.file.startsWith('python/')).toBe(true);
     }
+  });
+
+  it('a insígnia rara bate com o completionBadgeId da trilha', () => {
+    const rare = badgeCatalog.find((b) => b.trail === 'python' && b.rare);
+    expect(rare?.id).toBe(pythonTrail.completionBadgeId);
   });
 
   it('cada módulo (exceto o chefe) desbloqueia exatamente uma insígnia do catálogo', () => {

@@ -145,4 +145,5 @@ export const trailSchema = z.object({
   missions: z.array(missionSchema).optional(),
   lab: z.enum(['sql', 'git', 'php']).nullable().optional(),
   bossFight: bossFightSchema.optional(),
+  completionBadgeId: z.string().min(1).optional(),
 });

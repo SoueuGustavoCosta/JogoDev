@@ -6,6 +6,7 @@ export const badgeSchema = z.object({
   name: z.string().min(1),
   description: z.string().min(1),
   crown: z.boolean(),
+  rare: z.boolean().optional(),
   unlockedBy: z.string().min(1).nullable(),
   file: z.string().min(1),
 });

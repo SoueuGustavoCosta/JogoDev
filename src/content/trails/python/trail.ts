@@ -27,6 +27,7 @@ export const pythonTrail: Trail = {
   ],
   modules: pythonModules,
   lab: null,
+  completionBadgeId: 'py-rara',
   bossFight: {
     bossName: 'Onduluk',
     tagline: 'A SERPENTE QUE MENTIU SOBRE O PRÓPRIO NOME',

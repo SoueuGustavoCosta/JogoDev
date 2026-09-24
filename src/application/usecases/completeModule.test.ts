@@ -77,4 +77,21 @@ describe('completeModule', () => {
     expect(repository.load()?.trails.t1.trophyAwarded).toBe(true);
     expect(analytics.events).toContainEqual({ event: 'island_completed', props: { island: 't1' } });
   });
+
+  it('awards the trail\'s "rara" badge (completionBadgeId) only once every module is done', () => {
+    const trailWithRareBadge: Trail = { ...trail, completionBadgeId: 'rara-t1' };
+
+    completeModule({ repository, analytics, leaderboard }, { trail: trailWithRareBadge, moduleId: 'a', traveler });
+    expect(repository.load()?.badgesEarned?.['rara-t1']).toBeUndefined();
+
+    completeModule({ repository, analytics, leaderboard }, { trail: trailWithRareBadge, moduleId: 'b', traveler });
+    expect(repository.load()?.badgesEarned?.['rara-t1']).toBeDefined();
+  });
+
+  it('does nothing badge-related when the trail has no completionBadgeId', () => {
+    completeModule({ repository, analytics, leaderboard }, { trail, moduleId: 'a', traveler });
+    completeModule({ repository, analytics, leaderboard }, { trail, moduleId: 'b', traveler });
+
+    expect(repository.load()?.badgesEarned ?? {}).toEqual({});
+  });
 });

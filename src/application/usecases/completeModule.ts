@@ -9,7 +9,7 @@ import {
 import type { Trail } from '@/domain/trail';
 import type { Badge } from '@/domain/badges';
 import type { AnalyticsPort, LeaderboardPort, ProgressRepository } from '../ports';
-import { awardBadgesForModule } from './badges';
+import { awardBadge, awardBadgesForModule } from './badges';
 
 export type CompleteModuleParams = {
   trail: Trail;
@@ -76,6 +76,11 @@ export function completeModule(
       trails: { ...nextProgress.trails, [params.trail.id]: withTrophy },
     });
     deps.analytics.track('island_completed', { island: params.trail.id });
+    // Insígnia "rara" (o degrau entre as insígnias comuns e a lendária do chefe de
+    // fase): concedida uma única vez, no instante em que o troféu da trilha nasce.
+    if (params.trail.completionBadgeId) {
+      awardBadge(deps, { badgeId: params.trail.completionBadgeId, traveler: params.traveler });
+    }
   }
 
   return { alreadyCompleted: false, trailCompleted, recap: moduleRecap(params.trail, params.moduleId, nextTrailProgress) };

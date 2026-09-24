@@ -95,13 +95,19 @@ describe('chefe de fase da Lua de Java (Nulo)', () => {
 });
 
 describe('insígnias da Lua de Java', () => {
-  it('tem 9 insígnias no catálogo (8 faróis + 1 coroa), todas com arquivo próprio', () => {
+  it('tem 10 insígnias no catálogo (8 comuns + 1 rara + 1 lendária), todas com arquivo próprio', () => {
     const javaBadges = badgeCatalog.filter((b) => b.trail === 'java');
-    expect(javaBadges).toHaveLength(9);
+    expect(javaBadges).toHaveLength(10);
     expect(javaBadges.filter((b) => b.crown)).toHaveLength(1);
+    expect(javaBadges.filter((b) => b.rare)).toHaveLength(1);
     for (const badge of javaBadges) {
       expect(badge.file.startsWith('java/')).toBe(true);
     }
+  });
+
+  it('a insígnia rara bate com o completionBadgeId da trilha', () => {
+    const rare = badgeCatalog.find((b) => b.trail === 'java' && b.rare);
+    expect(rare?.id).toBe(javaTrail.completionBadgeId);
   });
 
   it('cada módulo (exceto o chefe) desbloqueia exatamente uma insígnia do catálogo', () => {

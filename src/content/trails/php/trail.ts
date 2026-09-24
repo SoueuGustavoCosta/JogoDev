@@ -27,6 +27,7 @@ export const phpTrail: Trail = {
   ],
   modules: phpModules,
   lab: null,
+  completionBadgeId: 'php-rara',
   bossFight: {
     bossName: 'Malabari',
     tagline: 'O MESTRE DA COMPARAÇÃO SOLTA',
