@@ -409,6 +409,17 @@ export class SupabaseLeaderboard implements LeaderboardPort {
         return { ok: false, reason: 'Este aparelho já está numa conta. Saia dela antes de criar outra.' };
       }
 
+      // O telefone pode já ser de uma conta criada com e-mail (o e-mail de login dela não é
+      // o sintético): sem esta checagem, "Criar conta" abria uma segunda conta vazia.
+      const { data: phoneTaken, error: phoneCheckError } = await client.rpc<boolean>('telefone_tem_conta', {
+        p_telefone: phone,
+      });
+      if (phoneCheckError) {
+        if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] telefone_tem_conta falhou:', phoneCheckError.message);
+        return { ok: false, reason: SupabaseLeaderboard.GENERIC_ERROR_REASON };
+      }
+      if (phoneTaken) return { ok: false, exists: true, reason: 'Esse telefone já tem conta. Use "Entrar".' };
+
       const { data, error } = session
         ? await client.auth.updateUser({ email: accountEmail, password })
         : await client.auth.signUp({ email: accountEmail, password });
@@ -419,6 +430,11 @@ export class SupabaseLeaderboard implements LeaderboardPort {
           return { ok: false, exists: true, reason };
         }
         return { ok: false, reason: 'Não foi possível criar a conta agora. Se esse telefone já tem conta, use "Entrar".' };
+      }
+      // Liga o telefone à conta, para dar pra entrar por ele mesmo quando o login é o e-mail.
+      const { error: registerError } = await client.rpc('registrar_telefone', { p_telefone: phone });
+      if (registerError && import.meta.env.DEV) {
+        console.warn('[SupabaseLeaderboard] registrar_telefone falhou:', registerError.message);
       }
       return { ok: true, uid: data.user.id };
     } catch (e) {
@@ -438,11 +454,20 @@ export class SupabaseLeaderboard implements LeaderboardPort {
     const accountEmail = byPhone ? syntheticEmailForPhone(identifier.phone, PHONE_AUTH_EMAIL_DOMAIN) : identifier.email;
     try {
       const client = await this.ensureClient();
-      const { data, error } = await client.auth.signInWithPassword({ email: accountEmail, password });
+      let { data, error } = await client.auth.signInWithPassword({ email: accountEmail, password });
+      if ((error || !data.user) && byPhone) {
+        // Conta criada com e-mail: o login dela é o e-mail, não o sintético do telefone. A
+        // RPC só devolve esse e-mail se a senha conferir (ver `email_de_login` no schema).
+        const { data: loginEmail } = await client.rpc<string>('email_de_login', {
+          p_telefone: identifier.phone,
+          p_senha: password,
+        });
+        if (loginEmail) ({ data, error } = await client.auth.signInWithPassword({ email: loginEmail, password }));
+      }
       if (error || !data.user) {
         if (import.meta.env.DEV && error) console.warn('[SupabaseLeaderboard] signInWithPassword falhou:', error.message);
         const reason = byPhone
-          ? 'Telefone ou senha não conferem. Se você cadastrou um e-mail, tente entrar com ele.'
+          ? 'Telefone ou senha não conferem.'
           : 'E-mail ou senha não conferem.';
         return { ok: false, reason };
       }
