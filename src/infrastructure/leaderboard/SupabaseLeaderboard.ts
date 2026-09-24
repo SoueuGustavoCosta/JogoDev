@@ -1,4 +1,12 @@
-import type { HallOfTravelersEntry, LeaderboardPort, OnlinePlayer, PlayerProfile, SavePhoneResult } from '@/application/ports';
+import type {
+  HallOfTravelersEntry,
+  LeaderboardPort,
+  OnlinePlayer,
+  PlayerProfile,
+  SignInIdentifier,
+  SignInResult,
+  SignUpResult,
+} from '@/application/ports';
 import { syntheticEmailForPhone } from '@/domain/traveler';
 import { PHONE_AUTH_EMAIL_DOMAIN } from '@/config/auth';
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from '@/config/supabase';
@@ -27,7 +35,7 @@ type SupabaseClientLike = {
     signUp(params: { email: string; password: string }): Promise<AuthUserResult>;
     signInWithPassword(params: { email: string; password: string }): Promise<AuthUserResult>;
     resetPasswordForEmail(email: string, opts?: { redirectTo?: string }): Promise<{ error: { message: string } | null }>;
-    signOut(): Promise<{ error: { message: string } | null }>;
+    signOut(opts?: { scope?: 'global' | 'local' | 'others' }): Promise<{ error: { message: string } | null }>;
   };
   from(table: string): {
     upsert(values: Record<string, unknown>, opts?: { onConflict: string }): Promise<{ error: { message: string } | null }>;
@@ -385,83 +393,75 @@ export class SupabaseLeaderboard implements LeaderboardPort {
   }
 
   /**
-   * É por isso que o `signInWithPassword` precisa vir antes de `getMyProgress`: só depois
-   * dele a sessão passa a ser desse uuid, e só então a RPC `meu_progresso()` devolve algo.
+   * "Criar conta" (ver LeaderboardPort). Só promove sessão ANÔNIMA: `updateUser` numa
+   * sessão de conta de verdade trocaria o e-mail/senha daquela conta — era assim que a
+   * antiga caixa "Salvar ou entrar" podia sobrescrever a conta de outra pessoa. Nunca
+   * tenta entrar na conta quando o telefone já existe: só avisa. Exige "Confirm email"
+   * desligado no painel do Supabase (ver `config/auth.ts`).
    */
-  private async signInWithAccountEmail(email: string, password: string): Promise<SavePhoneResult> {
-    try {
-      const client = await this.ensureClient();
-      const { data, error } = await client.auth.signInWithPassword({ email, password });
-      if (error || !data.user) {
-        return { ok: false, reason: 'Telefone já cadastrado, mas a senha não confere.' };
-      }
-      const restoredProgress = await this.getMyProgress();
-      return { ok: true, uid: data.user.id, isLogin: true, restoredProgress };
-    } catch (e) {
-      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] signInWithAccountEmail falhou:', e);
-      return { ok: false, reason: SupabaseLeaderboard.GENERIC_ERROR_REASON };
-    }
-  }
-
-  /**
-   * `updateUser`/`signUp` erraram ao tentar criar ou vincular a conta. Antes de desistir,
-   * tenta entrar como se o telefone já tivesse conta — cobre não só o caso já detectado
-   * pelo regex de `looksLikeAlreadyRegistered` (mensagem varia por versão/idioma do
-   * Supabase, então o regex nem sempre bate), como qualquer outra falha nessa chamada.
-   * Se o login também falhar: com colisão confirmada pelo regex, devolve o motivo exato
-   * do login ("senha não confere" é um diagnóstico confiável quando já sabemos que a
-   * conta existe); sem confirmação, devolve o erro genérico em vez de arriscar uma
-   * mensagem que pode estar errada (a conta pode nem existir ainda).
-   */
-  private async recoverAsLogin(
-    accountEmail: string,
-    password: string,
-    originalError: { message: string },
-    origin: string,
-  ): Promise<SavePhoneResult> {
-    const knownCollision = SupabaseLeaderboard.looksLikeAlreadyRegistered(originalError.message);
-    const signIn = await this.signInWithAccountEmail(accountEmail, password);
-    if (signIn.ok) return signIn;
-    if (import.meta.env.DEV) {
-      console.warn(`[SupabaseLeaderboard] saveProgressWithPhone (${origin}) falhou:`, originalError.message);
-    }
-    return knownCollision ? signIn : { ok: false, reason: SupabaseLeaderboard.GENERIC_ERROR_REASON };
-  }
-
-  /**
-   * "Salvar progresso"/"Entrar" (ver LeaderboardPort): promove a sessão atual (anônima)
-   * para uma conta permanente de telefone+senha. `accountEmail` é o e-mail informado
-   * (quando houver) ou um e-mail sintético derivado só do telefone — em qualquer um dos
-   * casos, é essa mesma combinação que precisa ser informada de novo pra entrar depois
-   * (ver doc do método na porta). Sem SMS, sem e-mail de verdade obrigatório — exige
-   * "Confirm email" desligado no painel do Supabase (ver `config/auth.ts`).
-   */
-  async saveProgressWithPhone(phone: string, password: string, email?: string): Promise<SavePhoneResult> {
+  async signUpWithPhone(phone: string, password: string, email?: string): Promise<SignUpResult> {
     const accountEmail = email?.trim() || syntheticEmailForPhone(phone, PHONE_AUTH_EMAIL_DOMAIN);
     try {
       const client = await this.ensureClient();
       const { data: sessionData } = await client.auth.getSession();
-
-      if (sessionData.session) {
-        const { data, error } = await client.auth.updateUser({ email: accountEmail, password });
-        if (!error && data.user) return { ok: true, uid: data.user.id, isLogin: false, restoredProgress: null };
-        if (error) return this.recoverAsLogin(accountEmail, password, error, 'updateUser');
+      const session = sessionData.session;
+      if (session && session.user.is_anonymous === false) {
+        return { ok: false, reason: 'Este aparelho já está numa conta. Saia dela antes de criar outra.' };
       }
 
-      // Sem sessão (raro: bootstrap anônimo ainda não rodou/falhou): cria a conta direto.
-      const { data, error } = await client.auth.signUp({ email: accountEmail, password });
-      if (error) return this.recoverAsLogin(accountEmail, password, error, 'signUp');
-      if (!data.user) return { ok: false, reason: SupabaseLeaderboard.GENERIC_ERROR_REASON };
-      return { ok: true, uid: data.user.id, isLogin: false, restoredProgress: null };
+      const { data, error } = session
+        ? await client.auth.updateUser({ email: accountEmail, password })
+        : await client.auth.signUp({ email: accountEmail, password });
+      if (error || !data.user) {
+        if (import.meta.env.DEV && error) console.warn('[SupabaseLeaderboard] signUpWithPhone falhou:', error.message);
+        if (error && SupabaseLeaderboard.looksLikeAlreadyRegistered(error.message)) {
+          const reason = email ? 'Esse e-mail já tem conta. Use "Entrar".' : 'Esse telefone já tem conta. Use "Entrar".';
+          return { ok: false, exists: true, reason };
+        }
+        return { ok: false, reason: 'Não foi possível criar a conta agora. Se esse telefone já tem conta, use "Entrar".' };
+      }
+      return { ok: true, uid: data.user.id };
     } catch (e) {
-      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] saveProgressWithPhone falhou:', e);
+      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] signUpWithPhone falhou:', e);
       return { ok: false, reason: SupabaseLeaderboard.GENERIC_ERROR_REASON };
+    }
+  }
+
+  /**
+   * "Entrar" (ver LeaderboardPort). `getMyProgress` precisa vir depois do login: só
+   * então a sessão passa a ser desta conta e a RPC `meu_progresso()` devolve o backup.
+   * Se a leitura falhar, sai da conta de novo (só neste aparelho) em vez de seguir sem
+   * saber o que está salvo nela.
+   */
+  async signInWithPassword(identifier: SignInIdentifier, password: string): Promise<SignInResult> {
+    const byPhone = 'phone' in identifier;
+    const accountEmail = byPhone ? syntheticEmailForPhone(identifier.phone, PHONE_AUTH_EMAIL_DOMAIN) : identifier.email;
+    try {
+      const client = await this.ensureClient();
+      const { data, error } = await client.auth.signInWithPassword({ email: accountEmail, password });
+      if (error || !data.user) {
+        if (import.meta.env.DEV && error) console.warn('[SupabaseLeaderboard] signInWithPassword falhou:', error.message);
+        const reason = byPhone
+          ? 'Telefone ou senha não conferem. Se você cadastrou um e-mail, tente entrar com ele.'
+          : 'E-mail ou senha não conferem.';
+        return { ok: false, reason };
+      }
+      try {
+        const progress = await this.getMyProgress();
+        return { ok: true, uid: data.user.id, progress };
+      } catch {
+        await client.auth.signOut({ scope: 'local' });
+        return { ok: false, reason: 'Não consegui carregar sua conta agora. Tente de novo em instantes.' };
+      }
+    } catch (e) {
+      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] signInWithPassword falhou:', e);
+      return { ok: false, reason: 'Não foi possível entrar agora. Tente novamente em instantes.' };
     }
   }
 
   /**
    * Só funciona pra contas que informaram um e-mail de verdade no cadastro (ver
-   * `saveProgressWithPhone`) — o Supabase nunca revela se o e-mail existe ou não (sempre
+   * `signUpWithPhone`) — o Supabase nunca revela se o e-mail existe ou não (sempre
    * devolve sucesso quando a chamada em si funcionou), então nem tentamos adivinhar aqui.
    */
   async requestPasswordReset(email: string): Promise<{ ok: true } | { ok: false; reason: string }> {
@@ -509,7 +509,10 @@ export class SupabaseLeaderboard implements LeaderboardPort {
   async signOut(): Promise<void> {
     try {
       const client = await this.ensureClient();
-      await client.auth.signOut();
+      // Só este aparelho: o padrão do supabase-js ("global") derruba a sessão da conta em
+      // todos os aparelhos, e cada um deles passava a jogar numa sessão anônima nova sem
+      // perceber — o progresso de lá deixava de subir para a conta.
+      await client.auth.signOut({ scope: 'local' });
     } catch (e) {
       if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] signOut falhou:', e);
     }

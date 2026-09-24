@@ -1,73 +1,114 @@
 import { createEmptyProgress } from '@/domain/progress';
-import { isValidEmail, isValidPassword, MIN_PASSWORD_LENGTH, normalizePhone } from '@/domain/traveler';
-import type { LeaderboardPort, ProgressRepository } from '../ports';
+import {
+  isValidEmail,
+  isValidPassword,
+  MIN_PASSWORD_LENGTH,
+  normalizePhone,
+} from '@/domain/traveler';
+import type { LeaderboardPort, ProgressRepository, SignInIdentifier } from '../ports';
 import { adoptAccountProgress, syncProgressSafely } from './progressSync';
 
-export type SaveProgressWithPhoneResult = { ok: true } | { ok: false; reason: string };
 export type SimpleResult = { ok: true } | { ok: false; reason: string };
+export type SignUpWithPhoneResult = { ok: true } | { ok: false; reason: string; exists?: boolean };
 
 /**
- * "Salvar progresso"/"Entrar": cadastro (ou login, se o telefone já tiver conta) por
- * telefone+senha, sem SMS nem confirmação por e-mail obrigatória (ver
- * `LeaderboardPort.saveProgressWithPhone` e `domain/traveler/credentials.ts`). O e-mail
- * é opcional — só existe pra habilitar "esqueci a senha" depois (ver
- * `requestPasswordReset`); sem ele, a conta usa um e-mail sintético e não há como
- * recuperar a senha se for esquecida.
+ * "Criar conta" (rota `/cadastro`): quem já está jogando anônimo cadastra telefone+senha
+ * e continua com o mesmo progresso — a sessão anônima vira permanente, com o mesmo uid,
+ * então nada precisa ser copiado nem juntado. E-mail opcional, só pra "esqueci a senha".
  *
- * Se a conta já existir e a senha bater, entra nela e adota o progresso salvo lá
- * (`isLogin: true`; ver `LeaderboardPort.saveProgressWithPhone`) — nunca o progresso
- * local de antes de entrar, que pode ser de uma sessão anônima sem nenhuma relação com
- * essa conta. EXCEÇÃO deliberada: se a conta existir mas não vier nada salvo
- * (`restoredProgress` nulo — conta de verdade sem nenhum backup completo ainda, ou uma
- * falha silenciosa ao buscar), mantém o progresso local em vez de zerar a tela: entre
- * "a conta pode estar vazia mesmo" e "posso estar prestes a apagar um progresso de
- * verdade que não consegui ler", a segunda é bem pior — perder o jogo de alguém é o
- * jeito mais rápido de fazer a pessoa desistir. Esse progresso local vira, a partir daí,
- * o que fica salvo na conta (backup imediato). Senão (conta nova de verdade), também
- * preserva o progresso deste aparelho — e faz o primeiro backup na hora (sem esperar o
- * batimento periódico, ~90s), para a conta já nascer com alguma coisa salva na nuvem,
- * caso o aluno feche o app logo em seguida e só volte a jogar (ou tente entrar) de outro
- * aparelho.
+ * Nunca entra numa conta que já existe (isso é "Entrar", ver `signInWithPhone`): foi a
+ * caixa única "Salvar ou entrar" que misturava as duas coisas e acabava gravando por
+ * cima de dados salvos. Se o telefone já tiver conta, só avisa (`exists`).
+ *
+ * Faz o primeiro backup na hora, pra conta já nascer com o progresso salvo na nuvem.
  */
-export async function saveProgressWithPhone(
+export async function signUpWithPhone(
   deps: { repository: ProgressRepository; leaderboard: LeaderboardPort },
   params: { phone: string; password: string; email?: string },
-): Promise<SaveProgressWithPhoneResult> {
+): Promise<SignUpWithPhoneResult> {
   const phone = normalizePhone(params.phone);
   if (!phone) return { ok: false, reason: 'Digite um telefone válido, com DDD.' };
   if (!isValidPassword(params.password)) {
-    return { ok: false, reason: `A senha precisa ter pelo menos ${MIN_PASSWORD_LENGTH} caracteres.` };
+    return {
+      ok: false,
+      reason: `A senha precisa ter pelo menos ${MIN_PASSWORD_LENGTH} caracteres.`,
+    };
   }
   const email = params.email?.trim();
   if (email && !isValidEmail(email)) {
     return { ok: false, reason: 'Digite um e-mail válido, ou deixe em branco.' };
   }
+  const local = deps.repository.load();
+  if (local?.phoneLinked || local?.needsSignIn) {
+    return {
+      ok: false,
+      reason: 'Este aparelho já está numa conta. Saia dela antes de criar outra.',
+    };
+  }
 
-  // Garante que já existe uma sessão (mesmo anônima) antes de tentar promovê-la — reforço
-  // caso o bootstrap silencioso em Layout ainda não tenha rodado/tenha falhado.
+  // Garante a sessão anônima que vai ser promovida (o bootstrap do Layout pode não ter rodado).
   await deps.leaderboard.ensureSignedIn();
 
-  const result = await deps.leaderboard.saveProgressWithPhone(phone, params.password, email || undefined);
+  const result = await deps.leaderboard.signUpWithPhone(phone, params.password, email || undefined);
   if (!result.ok) return result;
 
-  if (result.isLogin) {
-    // Login numa conta que já existia: junta a cópia dela com o que já está neste aparelho.
-    // Nunca troca um pelo outro: foi assim que um login restaurou uma cópia vazia por cima
-    // de dias de jogo. O perfil (nome) vem da conta; as conquistas somam as duas.
-    adoptAccountProgress(deps, { uuid: result.uid, cloud: result.restoredProgress, extra: { phoneLinked: true } });
-  } else {
-    // Conta nova (a sessão deste aparelho virou permanente): só marca o vínculo.
-    const progress = deps.repository.load() ?? createEmptyProgress();
-    deps.repository.save({ ...progress, travelerUuid: result.uid, phoneLinked: true });
-  }
-  // Sobe a união na hora, pra essa passar a ser a versão salva na conta.
+  const progress = deps.repository.load() ?? createEmptyProgress();
+  deps.repository.save({ ...progress, travelerUuid: result.uid, phoneLinked: true });
   await syncProgressSafely(deps);
   return { ok: true };
 }
 
-/** Se o viajante já vinculou telefone+senha neste aparelho (esconde a caixa "Salvar progresso"). */
+/**
+ * "Entrar" (rota `/entrar`): telefone (ou o e-mail do cadastro) + senha.
+ *
+ * O que acontece com o progresso deste aparelho:
+ * - se ele era de quem estava jogando anônimo (ou já era desta mesma conta), junta com o
+ *   da conta (`adoptAccountProgress`): nenhuma conquista se perde de nenhum dos lados, e
+ *   o perfil (nome, foto) vem da conta;
+ * - se ele era de OUTRA conta (sessão perdida, ver `Progress.needsSignIn`), não mistura:
+ *   o aparelho passa a mostrar só a conta que entrou. O da outra conta está salvo na
+ *   nuvem dela.
+ *
+ * Depois sobe a união na hora, sempre juntando com a nuvem antes (`syncProgressSafely`).
+ */
+export async function signInWithPhone(
+  deps: { repository: ProgressRepository; leaderboard: LeaderboardPort },
+  params: { login: string; password: string },
+): Promise<SimpleResult> {
+  const login = params.login.trim();
+  let identifier: SignInIdentifier;
+  if (login.includes('@')) {
+    if (!isValidEmail(login)) return { ok: false, reason: 'Digite um e-mail válido.' };
+    identifier = { email: login };
+  } else {
+    const phone = normalizePhone(login);
+    if (!phone)
+      return { ok: false, reason: 'Digite um telefone válido, com DDD, ou o e-mail do cadastro.' };
+    identifier = { phone };
+  }
+  if (!params.password) return { ok: false, reason: 'Digite sua senha.' };
+
+  const result = await deps.leaderboard.signInWithPassword(identifier, params.password);
+  if (!result.ok) return result;
+
+  const local = deps.repository.load();
+  const localIsOtherAccount =
+    local !== null && Boolean(local.phoneLinked || local.needsSignIn) && local.travelerUuid !== result.uid;
+  if (localIsOtherAccount) deps.repository.clear();
+
+  adoptAccountProgress(deps, { uuid: result.uid, cloud: result.progress, extra: { phoneLinked: true, needsSignIn: undefined } });
+  await syncProgressSafely(deps);
+  return { ok: true };
+}
+
+/** Se o viajante já vinculou telefone+senha neste aparelho (esconde o botão "Criar conta"). */
 export function hasPhoneLinked(deps: { repository: ProgressRepository }): boolean {
   return Boolean(deps.repository.load()?.phoneLinked);
+}
+
+/** Se a sessão da conta deste aparelho se perdeu e a pessoa precisa entrar de novo. */
+export function needsSignInAgain(deps: { repository: ProgressRepository }): boolean {
+  return Boolean(deps.repository.load()?.needsSignIn);
 }
 
 /**

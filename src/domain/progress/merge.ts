@@ -41,6 +41,8 @@ export function mergeProgress(primary: Progress, secondary: Progress): Progress 
     recoveryCode: primary.recoveryCode || secondary.recoveryCode,
     prologueSeen: Boolean(primary.prologueSeen || secondary.prologueSeen),
     phoneLinked: Boolean(primary.phoneLinked || secondary.phoneLinked),
+    // Estado da sessão deste aparelho, não do jogo: nunca vem de uma das cópias por mistura.
+    needsSignIn: primary.needsSignIn,
     badgesEarned: mergeBadges(primary.badgesEarned, secondary.badgesEarned),
     streakCurrent,
     streakBest,

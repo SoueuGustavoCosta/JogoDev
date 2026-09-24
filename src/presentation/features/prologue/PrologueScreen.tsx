@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { completePrologue, getTraveler, markPrologueSkipped } from '@/application/usecases';
+import { Link, useNavigate } from 'react-router-dom';
+import { completePrologue, getTraveler, hasPhoneLinked, markPrologueSkipped } from '@/application/usecases';
 import { prologueScript } from '@/content/prologue/script';
 import { interpolate } from '@/domain/prologue';
 import { playSintaxeTalkSound, playVortexSound, SintaxeFace } from '@/presentation/design-system';
-import { SaveProgressWidget } from '@/presentation/features/save-progress';
 import { useServices } from '@/presentation/app/ServicesContext';
 import styles from './PrologueScreen.module.css';
 
@@ -88,13 +87,11 @@ export function PrologueScreen() {
           Viajante do Tempo
         </div>
         <div className={styles.hudActions}>
-          <SaveProgressWidget
-            renderTrigger={(open) => (
-              <button type="button" className={styles.skip} onClick={open}>
-                Já tenho conta
-              </button>
-            )}
-          />
+          {hasPhoneLinked({ repository: progressRepository }) ? null : (
+            <Link to="/entrar" className={styles.skip}>
+              Já tenho conta
+            </Link>
+          )}
           <button type="button" className={styles.skip} onClick={skip}>
             Pular
           </button>

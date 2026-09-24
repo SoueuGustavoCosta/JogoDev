@@ -72,7 +72,7 @@ export function getOrCreateTravelerUuid(deps: { repository: ProgressRepository }
  * já tinha salvo (não é a primeira vez), busca o progresso salvo nessa conta
  * (`getMyProgress`) antes de trocar o rótulo local — nunca troca "no escuro". Isso
  * cobre o caso de uma sessão de recuperação de senha (link de e-mail) assumir sozinha
- * neste aparelho, fora do fluxo controlado de `saveProgressWithPhone`: sem essa checagem,
+ * neste aparelho, fora do fluxo controlado de `signInWithPhone`: sem essa checagem,
  * o progresso local (que podia ser de uma sessão anônima sem nenhuma relação com a
  * conta) virava o rótulo dessa conta e, no próximo backup silencioso, sobrescrevia o
  * progresso de verdade dela. Mesma regra de segurança do login por telefone+senha: se
@@ -95,11 +95,24 @@ export async function bootstrapTravelerIdentity(deps: {
     const authUid = await deps.leaderboard.ensureSignedIn();
     if (!authUid) return;
     const progress = deps.repository.load() ?? createEmptyProgress();
-    if (progress.travelerUuid === authUid) return;
+    if (progress.travelerUuid === authUid) {
+      // A sessão da própria conta voltou a valer: pode sincronizar de novo.
+      if (progress.needsSignIn) deps.repository.save({ ...progress, phoneLinked: true, needsSignIn: undefined });
+      return;
+    }
 
     if (!progress.travelerUuid) {
       // Primeira vez neste aparelho: não há nada local a proteger, só rotular.
       deps.repository.save({ ...progress, travelerUuid: authUid });
+      return;
+    }
+
+    if (progress.phoneLinked || progress.needsSignIn) {
+      // O progresso é de uma conta de verdade, mas a sessão agora é outra (a da conta
+      // expirou ou foi encerrada, e o supabase-js abriu uma anônima nova). Nunca re-rotula
+      // nem junta: isso passava o progresso da conta para uma identidade anônima, e dali em
+      // diante nada mais subia para a conta. Guarda tudo como está e pede para entrar de novo.
+      deps.repository.save({ ...progress, phoneLinked: false, needsSignIn: true });
       return;
     }
 
@@ -128,7 +141,7 @@ export async function bootstrapTravelerIdentity(deps: {
  */
 export async function signOutTraveler(deps: { repository: ProgressRepository; leaderboard: LeaderboardPort }): Promise<void> {
   try {
-    await syncProgressSafely(deps);
+    await syncProgressSafely(deps); // não sobe nada se a sessão da conta já tinha se perdido
     await deps.leaderboard.signOut();
   } finally {
     deps.repository.clear();

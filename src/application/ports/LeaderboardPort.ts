@@ -22,17 +22,21 @@ export type PlayerProfile = {
 export type OnlinePlayer = { uuid: string; nome: string; fotoUrl: string | null };
 
 /**
- * Resultado de `saveProgressWithPhone`. `isLogin` diz se entrou numa conta que já
- * existia (telefone já cadastrado, senha bateu) em vez de criar uma nova — quem chama
- * usa isso pra saber se deve adotar o estado do servidor mesmo vazio (login) ou manter
- * o progresso local (conta nova de verdade, criada agora). `restoredProgress` só vem
- * preenchido em login: é o `Progress` (tipado como `unknown` pelo mesmo motivo de
- * `backupProgress`) salvo lá da última vez — pode ser `null` mesmo em login, se a conta
- * existir mas nunca tiver tido um backup completo salvo.
+ * Resultado de `signUpWithPhone` (tela "Criar conta"). `exists` avisa que o telefone
+ * (ou e-mail) já tem conta: a tela manda a pessoa para "Entrar", nunca entra sozinha
+ * nem mexe na conta que já existe.
  */
-export type SavePhoneResult =
-  | { ok: true; uid: string; isLogin: boolean; restoredProgress: unknown | null }
-  | { ok: false; reason: string };
+export type SignUpResult = { ok: true; uid: string } | { ok: false; reason: string; exists?: boolean };
+
+/**
+ * Resultado de `signInWithPassword` (tela "Entrar"). `progress` é o backup completo
+ * salvo na conta (`unknown` pelo mesmo motivo de `backupProgress`), ou `null` se a conta
+ * nunca teve um backup completo.
+ */
+export type SignInResult = { ok: true; uid: string; progress: unknown | null } | { ok: false; reason: string };
+
+/** Como a pessoa se identifica na tela "Entrar": pelo telefone ou pelo e-mail do cadastro. */
+export type SignInIdentifier = { phone: string } | { email: string };
 
 /**
  * Porta do "Hall dos Viajantes": sincronização silenciosa do progresso público
@@ -121,34 +125,37 @@ export interface LeaderboardPort {
    * sobrescrevendo progresso de verdade. Usado por `bootstrapTravelerIdentity`
    * quando a sessão do Supabase resolve pra um uid diferente do `travelerUuid` já salvo
    * neste aparelho (ex.: sessão de recuperação de senha assumindo sozinha, fora do fluxo
-   * de `saveProgressWithPhone`) — sem checar isso, o app re-rotulava o progresso local
+   * de `signInWithPhone`) — sem checar isso, o app re-rotulava o progresso local
    * (podia ser de sessão anônima sem relação nenhuma) pro uid novo sem nunca olhar o que
    * já estava salvo na conta de verdade, arriscando sobrescrever esse progresso no
    * próximo backup silencioso.
    */
   getMyProgress(): Promise<unknown | null>;
   /**
-   * "Salvar progresso"/"Entrar": promove a sessão atual (anônima, ver `ensureSignedIn`)
-   * para uma conta permanente de telefone+senha, sem SMS nem confirmação por e-mail. O
-   * `email` é opcional — quando informado, vira o e-mail de verdade da conta (permite
-   * "esqueci a senha" de verdade, ver `requestPasswordReset`); quando omitido, usa um
-   * e-mail sintético derivado só do telefone (ver `domain/traveler/credentials`), e nesse
-   * caso não há como recuperar a senha se for esquecida.
+   * "Criar conta": promove a sessão anônima atual (ver `ensureSignedIn`) para uma conta
+   * permanente de telefone+senha, sem SMS nem confirmação por e-mail, mantendo o mesmo
+   * uid (o progresso que a pessoa já fez jogando anônima continua dela). O `email` é
+   * opcional — quando informado, vira o e-mail de verdade da conta (permite "esqueci a
+   * senha", ver `requestPasswordReset`); quando omitido, usa um e-mail sintético derivado
+   * só do telefone (ver `domain/traveler/credentials`).
    *
-   * Se a combinação telefone+e-mail (ou só telefone, se não informou e-mail) já tiver
-   * conta, tenta entrar com a senha informada em vez de criar outra — nesse caso devolve
-   * `restoredProgress` com o backup salvo daquela conta, para quem chama adotar localmente
-   * (mesmo espírito de `restoreProgress`, mas iniciado pelo telefone+senha em vez do
-   * nome+código). Por isso a mesma caixa serve tanto pra criar quanto pra entrar: quem
-   * volta com o mesmo telefone/e-mail+senha simplesmente entra na conta que já existe.
-   * Falha com motivo em português pronto para mostrar na tela (telefone inválido, senha
-   * não confere etc.) — nunca lança.
+   * Nunca entra numa conta que já existe e nunca altera uma conta que não seja anônima:
+   * se a sessão atual já é de uma conta de verdade, recusa (trocar o e-mail/senha dela
+   * seria sobrescrever a conta de outra pessoa); se o telefone/e-mail já tem conta,
+   * devolve `exists: true`. Falha com motivo em português pronto para mostrar — nunca lança.
    */
-  saveProgressWithPhone(phone: string, password: string, email?: string): Promise<SavePhoneResult>;
+  signUpWithPhone(phone: string, password: string, email?: string): Promise<SignUpResult>;
+  /**
+   * "Entrar": troca a sessão deste aparelho pela da conta (telefone ou e-mail + senha) e
+   * devolve o backup completo salvo nela. Nunca altera a conta. Se a senha bater mas não
+   * der pra ler o backup, desfaz a entrada e falha: entrar "no escuro" arriscaria gravar
+   * o progresso deste aparelho por cima do da conta. Nunca lança.
+   */
+  signInWithPassword(identifier: SignInIdentifier, password: string): Promise<SignInResult>;
   /**
    * Pede ao Supabase Auth pra mandar um e-mail de redefinição de senha (link pro app,
    * rota `/redefinir-senha`). Só funciona pra contas que informaram um e-mail de verdade
-   * no cadastro (ver `saveProgressWithPhone`) — contas só com e-mail sintético não têm
+   * no cadastro (ver `signUpWithPhone`) — contas só com e-mail sintético não têm
    * como receber nada. Devolve sempre `{ ok: true }` quando a chamada em si funcionou,
    * mesmo que o e-mail não exista: é assim que o próprio Supabase evita revelar se uma
    * conta existe ou não. `{ ok: false }` só por falha de rede/serviço.
@@ -173,7 +180,8 @@ export interface LeaderboardPort {
    */
   updatePassword(newPassword: string): Promise<{ ok: true } | { ok: false; reason: string }>;
   /**
-   * Encerra a sessão do Supabase Auth (telefone+senha ou anônima) neste aparelho, para
+   * Encerra a sessão do Supabase Auth (telefone+senha ou anônima) SÓ neste aparelho (as
+   * sessões da mesma conta em outros aparelhos continuam valendo), para
    * outra pessoa poder entrar na própria conta em seguida (ver `signOutTraveler`, em
    * `application/usecases/traveler.ts`). Falha silenciosa: nunca lança — o usecase que
    * chama sempre limpa o progresso local em seguida, sessão tendo saído ou não.

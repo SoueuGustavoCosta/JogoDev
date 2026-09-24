@@ -96,3 +96,18 @@
   font: inherit;
   padding: 0;
 }
+
+.accountLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+  margin-bottom: 8px;
+}
+
+.accountLinks a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-target);
+  font-weight: 600;
+  text-decoration: none;
+}

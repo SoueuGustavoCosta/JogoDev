@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Progress } from '@/domain/progress';
-import type { LeaderboardPort, OnlinePlayer, PlayerProfile, HallOfTravelersEntry, SavePhoneResult } from '../ports';
+import type { LeaderboardPort, OnlinePlayer, PlayerProfile, HallOfTravelersEntry, SignInResult, SignUpResult } from '../ports';
 import type { ProgressRepository } from '../ports';
 import { backupProgress, BIO_MAX_LENGTH, checkInDaily, generateAndSaveRecoveryCode, getCachedBio, restoreProgress, saveBio } from './presence';
 
@@ -70,7 +70,10 @@ class StubLeaderboard implements LeaderboardPort {
   async hasRealSession(): Promise<boolean> {
     return false;
   }
-  async saveProgressWithPhone(): Promise<SavePhoneResult> {
+  async signUpWithPhone(): Promise<SignUpResult> {
+    return { ok: false, reason: 'não usado neste teste' };
+  }
+  async signInWithPassword(): Promise<SignInResult> {
     return { ok: false, reason: 'não usado neste teste' };
   }
   async requestPasswordReset(): Promise<{ ok: true } | { ok: false; reason: string }> {
@@ -107,6 +110,15 @@ describe('backupProgress', () => {
     expect(leaderboard.backedUp).toHaveLength(1);
     expect(leaderboard.backedUp[0].progress).toMatchObject({ travelerName: 'Ana' });
     expect(repository.load()?.travelerUuid).toBe(leaderboard.backedUp[0].uuid);
+  });
+
+  it('com a sessão da conta perdida (needsSignIn), não sobe nada: iria para a conta errada', async () => {
+    const repository = new Memory();
+    repository.save({ version: 1, trails: {}, travelerName: 'Ana', travelerUuid: 'uuid-conta', needsSignIn: true });
+    const leaderboard = new StubLeaderboard();
+
+    expect(await backupProgress({ repository, leaderboard })).toBe(false);
+    expect(leaderboard.backedUp).toHaveLength(0);
   });
 
   it('se não conseguir ler a nuvem, não sobe nada (nunca sobrescreve às cegas)', async () => {

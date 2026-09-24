@@ -9,7 +9,7 @@ type LinkCheck = 'checking' | 'valid' | 'invalid';
 
 /**
  * Rota `/redefinir-senha`: destino do link enviado por `requestPasswordReset` (ver
- * `SaveProgressWidget`). Ao abrir o link, o supabase-js já troca a URL por uma sessão
+ * `ForgotPasswordPage`). Ao abrir o link, o supabase-js já troca a URL por uma sessão
  * temporária de redefinição sozinho (nenhum código aqui precisa ler token nenhum) — só
  * falta pedir a senha nova e chamar `updatePassword`.
  *
@@ -61,9 +61,9 @@ export function ResetPasswordPage() {
     return (
       <article>
         <h1>Senha alterada</h1>
-        <p>Sua senha foi trocada. Já pode continuar jogando.</p>
-        <Link className={styles.link} to="/">
-          ◂ Voltar ao mapa
+        <p>Sua senha foi trocada. Agora entre com ela para continuar de onde parou.</p>
+        <Link className={styles.link} to="/entrar">
+          Entrar ▸
         </Link>
       </article>
     );
@@ -84,10 +84,10 @@ export function ResetPasswordPage() {
         <h1>Link inválido ou expirado</h1>
         <p className={styles.error}>
           Este link de redefinição não é mais válido — pode já ter sido usado, ou ter expirado. Peça um novo em
-          "Salvar ou entrar" → "Esqueci minha senha".
+          &quot;Esqueci minha senha&quot;.
         </p>
-        <Link className={styles.link} to="/">
-          ◂ Voltar ao mapa
+        <Link className={styles.link} to="/esqueci-senha">
+          Pedir um novo link ▸
         </Link>
       </article>
     );

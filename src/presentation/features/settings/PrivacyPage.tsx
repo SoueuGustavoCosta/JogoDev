@@ -25,7 +25,7 @@ export function PrivacyPage() {
         <li>uma cópia de segurança do seu progresso completo.</li>
       </ul>
       <p>
-        Se você usar &quot;Salvar ou entrar&quot;, o telefone (e o e-mail, se você informar um para recuperar a senha)
+        Se você usar &quot;Criar conta&quot;, o telefone (e o e-mail, se você informar um para recuperar a senha)
         vira o acesso da sua conta. A senha é guardada protegida pelo Supabase, e o código de recuperação só é
         guardado embaralhado (em hash), nunca em texto.
       </p>
