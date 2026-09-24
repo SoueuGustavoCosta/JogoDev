@@ -20,6 +20,15 @@
   pointer-events: none;
 }
 
+.rareRing {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid var(--color-purple);
+  box-shadow: 0 0 14px -3px var(--color-purple);
+  pointer-events: none;
+}
+
 .name {
   font-weight: 600;
   font-size: 0.9rem;

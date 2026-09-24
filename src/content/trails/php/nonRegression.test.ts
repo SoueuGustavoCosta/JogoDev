@@ -95,13 +95,19 @@ describe('chefe de fase da Lua de PHP (Malabari)', () => {
 });
 
 describe('insígnias da Lua de PHP', () => {
-  it('tem 9 insígnias no catálogo (8 faróis + 1 coroa), todas com arquivo próprio', () => {
+  it('tem 10 insígnias no catálogo (8 comuns + 1 rara + 1 lendária), todas com arquivo próprio', () => {
     const phpBadges = badgeCatalog.filter((b) => b.trail === 'php');
-    expect(phpBadges).toHaveLength(9);
+    expect(phpBadges).toHaveLength(10);
     expect(phpBadges.filter((b) => b.crown)).toHaveLength(1);
+    expect(phpBadges.filter((b) => b.rare)).toHaveLength(1);
     for (const badge of phpBadges) {
       expect(badge.file.startsWith('php/')).toBe(true);
     }
+  });
+
+  it('a insígnia rara bate com o completionBadgeId da trilha', () => {
+    const rare = badgeCatalog.find((b) => b.trail === 'php' && b.rare);
+    expect(rare?.id).toBe(phpTrail.completionBadgeId);
   });
 
   it('cada módulo (exceto o chefe) desbloqueia exatamente uma insígnia do catálogo', () => {

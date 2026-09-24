@@ -26,6 +26,7 @@ export const javaTrail: Trail = {
   ],
   modules: javaModules,
   lab: null,
+  completionBadgeId: 'java-rara',
   bossFight: {
     bossName: 'Nulo',
     tagline: 'O ERRO DE UM BILHÃO DE DÓLARES',

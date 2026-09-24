@@ -106,4 +106,10 @@ export type Trail = {
   lab?: 'sql' | 'git' | 'php' | null;
   /** Chefe de fase de fim de era (desbloqueado só quando a trilha inteira estiver concluída). */
   bossFight?: BossFight;
+  /**
+   * Id da insígnia "rara" do catálogo (ver domain/badges), concedida ao concluir todos
+   * os módulos da trilha (o troféu) — o degrau do meio entre as insígnias comuns de cada
+   * módulo e a insígnia lendária do chefe de fase (`bossFight.badgeId`).
+   */
+  completionBadgeId?: string;
 };

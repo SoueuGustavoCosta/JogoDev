@@ -12,6 +12,7 @@ function unlockCaption(badge: Badge): string | null {
   if (!badge.unlockedBy) return 'Ainda sem lição ligada a esta insígnia';
 
   if (badge.unlockedBy === 'boss') return 'Vença o chefe de fase da trilha';
+  if (badge.unlockedBy === 'trophy') return 'Conclua todos os faróis da trilha';
 
   const trailId = BADGE_TRAIL_TO_TRAIL_ID[badge.trail];
   const trail = trailRegistry.find((t) => t.id === trailId);
@@ -61,6 +62,7 @@ export function BadgeMedal({
           spin={spin && !locked}
         />
         {badge.crown && state === 'earned' ? <span className={styles.crownRing} aria-hidden="true" /> : null}
+        {badge.rare && !badge.crown && state === 'earned' ? <span className={styles.rareRing} aria-hidden="true" /> : null}
       </span>
       <span className={styles.name}>{badge.name}</span>
       {showCaption ? <span className={styles.caption}>{locked ? caption : badge.description}</span> : null}
