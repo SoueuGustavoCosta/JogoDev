@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { completePrologue, getTraveler, hasPhoneLinked, markPrologueSkipped } from '@/application/usecases';
 import { prologueScript } from '@/content/prologue/script';
 import { interpolate } from '@/domain/prologue';
 import { playSintaxeTalkSound, playVortexSound, SintaxeFace } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
+import { useAccountSheet } from '@/presentation/features/account';
 import styles from './PrologueScreen.module.css';
 
 const TERMINAL_LINES = ['> compilando a linha do tempo...', '> ola, viajante do tempo_', '> procurando rastros do Eco...', '> tudo certo. quase._'];
@@ -31,6 +32,7 @@ function TypingLine() {
 export function PrologueScreen() {
   const { progressRepository, analytics } = useServices();
   const navigate = useNavigate();
+  const { openAccount } = useAccountSheet();
   const [stepId, setStepId] = useState(prologueScript.start);
   const [name, setName] = useState(() => {
     const saved = getTraveler({ repository: progressRepository });
@@ -88,9 +90,9 @@ export function PrologueScreen() {
         </div>
         <div className={styles.hudActions}>
           {hasPhoneLinked({ repository: progressRepository }) ? null : (
-            <Link to="/entrar" className={styles.skip}>
+            <button type="button" className={styles.skip} onClick={() => openAccount('login')}>
               Já tenho conta
-            </Link>
+            </button>
           )}
           <button type="button" className={styles.skip} onClick={skip}>
             Pular

@@ -19,6 +19,7 @@ import { HallIcon, MapIcon, TravelerIcon } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
 import { SupportModal } from '@/presentation/features/support';
 import { SaveProgressWidget } from '@/presentation/features/save-progress';
+import { AccountSheetProvider } from '@/presentation/features/account';
 import { ProfileHeader } from './ProfileHeader';
 import { StreakCelebration } from './StreakCelebration';
 import styles from './Layout.module.css';
@@ -116,52 +117,61 @@ export function Layout() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prologueSeen]);
 
-  if (isFullScreen) return <Outlet />;
+  // A gaveta de conta (Entrar / Criar conta) abre por cima de qualquer tela, sem trocar de rota.
+  if (isFullScreen) {
+    return (
+      <AccountSheetProvider>
+        <Outlet />
+      </AccountSheetProvider>
+    );
+  }
 
   return (
-    <div className={styles.root}>
-      <button type="button" className={styles.pix} onClick={() => setSupportOpen(true)} aria-label="Contribua com o projeto e conheça quem desenvolve">
-        Contribua
-      </button>
-      <SaveProgressWidget />
-      <nav className={styles.nav} aria-label="Navegação principal">
-        <NavItem to="/" end label="Mapa" icon={<MapIcon />} />
-        <NavItem to="/configuracoes" label="Viajante" icon={<TravelerIcon />} />
-        <NavItem to="/hall" label="Hall dos Viajantes" icon={<HallIcon />} />
-      </nav>
+    <AccountSheetProvider>
+      <div className={styles.root}>
+        <button type="button" className={styles.pix} onClick={() => setSupportOpen(true)} aria-label="Contribua com o projeto e conheça quem desenvolve">
+          Contribua
+        </button>
+        <SaveProgressWidget />
+        <nav className={styles.nav} aria-label="Navegação principal">
+          <NavItem to="/" end label="Mapa" icon={<MapIcon />} />
+          <NavItem to="/configuracoes" label="Viajante" icon={<TravelerIcon />} />
+          <NavItem to="/hall" label="Hall dos Viajantes" icon={<HallIcon />} />
+        </nav>
 
-      {isMap ? (
-        <Outlet context={{ summary, onlinePlayers } satisfies LayoutOutletContext} />
-      ) : (
-        <div className={styles.column}>
-          <header className={styles.top}>
-            <Link to="/" className={styles.back}>
-              ◂ Voltar ao mapa
-            </Link>
-            <ProfileHeader summary={summary} onlinePlayers={onlinePlayers} streakGrew={streakGrew} />
-          </header>
-          <main className={styles.main}>
-            <div key={location.pathname} className={styles.page}>
-              <Outlet context={{ summary, onlinePlayers } satisfies LayoutOutletContext} />
-            </div>
-          </main>
-          <footer className={styles.footer}>
-            <button type="button" className={styles.footerLink} onClick={() => setSupportOpen(true)}>
-              {SUPPORT_COPY.footerLinkLabel}
-            </button>
-            {' · '}
-            <Link className={styles.footerLink} to="/privacidade">
-              Privacidade
-            </Link>
-          </footer>
-        </div>
-      )}
+        {isMap ? (
+          <Outlet context={{ summary, onlinePlayers } satisfies LayoutOutletContext} />
+        ) : (
+          <div className={styles.column}>
+            <header className={styles.top}>
+              <Link to="/" className={styles.back}>
+                ◂ Voltar ao mapa
+              </Link>
+              <ProfileHeader summary={summary} onlinePlayers={onlinePlayers} streakGrew={streakGrew} />
+            </header>
+            <main className={styles.main}>
+              <div key={location.pathname} className={styles.page}>
+                <Outlet context={{ summary, onlinePlayers } satisfies LayoutOutletContext} />
+              </div>
+            </main>
+            <footer className={styles.footer}>
+              <button type="button" className={styles.footerLink} onClick={() => setSupportOpen(true)}>
+                {SUPPORT_COPY.footerLinkLabel}
+              </button>
+              {' · '}
+              <Link className={styles.footerLink} to="/privacidade">
+                Privacidade
+              </Link>
+            </footer>
+          </div>
+        )}
 
-      {/* Fora do mapa de propósito: a tela do hub não recebe nada por cima. A comemoração
-          espera o aluno entrar numa trilha/tela interna. */}
-      {pendingStreak && !isMap ? <StreakCelebration checkIn={pendingStreak} onClose={closeStreak} /> : null}
+        {/* Fora do mapa de propósito: a tela do hub não recebe nada por cima. A comemoração
+            espera o aluno entrar numa trilha/tela interna. */}
+        {pendingStreak && !isMap ? <StreakCelebration checkIn={pendingStreak} onClose={closeStreak} /> : null}
 
-      {supportOpen ? <SupportModal onClose={() => setSupportOpen(false)} /> : null}
-    </div>
+        {supportOpen ? <SupportModal onClose={() => setSupportOpen(false)} /> : null}
+      </div>
+    </AccountSheetProvider>
   );
 }

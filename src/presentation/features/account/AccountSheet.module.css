@@ -1,0 +1,190 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 400; /* acima da comemoração da sequência (300) e dos toasts (200) */
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(5, 4, 10, 0.72);
+  animation: fadeIn 0.22s ease-out;
+}
+
+.overlayClosing {
+  animation: fadeOut 0.26s ease-in forwards;
+}
+
+.sheet {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  max-height: 92dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 4px 18px max(22px, env(safe-area-inset-bottom));
+  border: 1px solid var(--color-line);
+  border-bottom: 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: var(--color-panel);
+  box-shadow: 0 -18px 50px -20px rgba(155, 77, 255, 0.55);
+  outline: none;
+  animation: slideUp 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.25s ease;
+}
+
+.sheetClosing {
+  animation: slideDown 0.26s ease-in forwards;
+}
+
+@media (min-width: 640px) {
+  .overlay {
+    align-items: center;
+    padding: 24px;
+  }
+
+  .sheet {
+    border-bottom: 1px solid var(--color-line);
+    border-radius: var(--radius-lg);
+  }
+}
+
+.handleArea {
+  display: flex;
+  justify-content: center;
+  padding: 10px 0 12px;
+  touch-action: none;
+  cursor: grab;
+}
+
+.handle {
+  width: 42px;
+  height: 5px;
+  border-radius: 99px;
+  background: var(--color-line);
+}
+
+.close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  min-width: var(--touch-target);
+  min-height: var(--touch-target);
+  border: 0;
+  background: none;
+  color: var(--color-muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.tabs {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin: 4px 36px 18px 0;
+  padding: 4px;
+  border-radius: 99px;
+  border: 1px solid var(--color-line);
+  background: var(--color-bg);
+}
+
+.pill {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  border-radius: 99px;
+  background: linear-gradient(135deg, var(--color-purple), #7a33e0);
+  box-shadow: 0 6px 18px -6px rgba(155, 77, 255, 0.8);
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tab {
+  position: relative;
+  z-index: 1;
+  min-height: var(--touch-target);
+  border: 0;
+  background: none;
+  color: var(--color-muted);
+  font: 700 0.95rem var(--font-title);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.tabActive {
+  color: #fff;
+}
+
+.tab:focus-visible,
+.close:focus-visible {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 2px;
+  border-radius: 99px;
+}
+
+.forgotTitle {
+  font-family: var(--font-title);
+  font-size: 1.3rem;
+  margin: 4px 40px 14px 0;
+}
+
+.viewport {
+  overflow: hidden;
+  transition: height 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.track {
+  display: flex;
+  align-items: flex-start;
+  touch-action: pan-y;
+  transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.panel {
+  flex: 0 0 100%;
+  min-width: 0;
+  padding: 2px;
+}
+
+.noTransition {
+  transition: none;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes slideDown {
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .overlayClosing,
+  .sheet,
+  .sheetClosing {
+    animation: none;
+  }
+
+  .sheet,
+  .pill,
+  .viewport,
+  .track {
+    transition: none;
+  }
+}

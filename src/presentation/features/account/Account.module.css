@@ -135,6 +135,11 @@
   display: inline-flex;
   align-items: center;
   min-height: var(--touch-target);
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
   color: var(--color-cyan);
   font-size: 0.86rem;
   font-weight: 600;
@@ -154,6 +159,10 @@
 }
 
 .choice {
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   gap: 2px;
