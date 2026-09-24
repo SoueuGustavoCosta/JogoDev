@@ -115,7 +115,17 @@ export const ERAS: MapEra[] = [
         description:
           'A lua de Python: 8 faróis sobre a linguagem que Guido van Rossum começou em 1989, e o chefe Onduluk, que mente sobre a própria origem do nome.',
       },
-      { id: 'java', name: 'Java', icon: 'java', angle: -90 },
+      {
+        id: 'java',
+        name: 'Java',
+        icon: 'java',
+        angle: -90,
+        trailId: 'java',
+        color: '#d98a4a',
+        years: '1995 → hoje',
+        description:
+          'A lua de Java: 8 faróis sobre a linguagem que nasceu do Green Project, na Sun Microsystems, e o chefe Nulo, o Erro de Um Bilhão de Dólares.',
+      },
       { id: 'php', name: 'PHP', icon: 'php', angle: -35 },
     ],
   },

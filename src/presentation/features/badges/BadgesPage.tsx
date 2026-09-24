@@ -10,10 +10,11 @@ const GROUP_LABEL: Record<string, string> = {
   sql: 'Banco de Dados',
   git: 'Git e GitHub',
   python: 'Lua de Python',
+  java: 'Lua de Java',
   outras: 'Outras eras (em breve)',
 };
 
-const GROUP_ORDER = ['logica', 'python', 'sql', 'git', 'outras'];
+const GROUP_ORDER = ['logica', 'python', 'java', 'sql', 'git', 'outras'];
 
 /**
  * "Carteira" do viajante: fechada por padrão (só um resumo), abre ao toque pra revelar

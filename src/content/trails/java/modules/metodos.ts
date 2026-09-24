@@ -1,0 +1,110 @@
+import type { Module } from '@/domain/trail/types';
+
+/** Farol 6 da Lua de Java: métodos, parâmetros tipados, retorno, sobrecarga e static x instância. */
+export const modMetodos: Module = {
+  id: 'metodos-java',
+  short: 'Empacotar lógica',
+  title: 'Métodos: parâmetros, retorno e sobrecarga',
+  lead: 'Em Java, funções vivem dentro de classes e se chamam métodos — e cada uma delas tem um tipo de retorno declarado.',
+  level: 'Intermediário',
+  blocks: [
+    { t: 'h', x: 'Declarando um método' },
+    {
+      t: 'p',
+      x: 'Um método precisa declarar o <b>tipo de retorno</b> antes do nome. Se ele não devolve nada, o tipo é <code>void</code>.',
+    },
+    {
+      t: 'code',
+      file: 'Metodo.java',
+      lang: 'java',
+      nolab: true,
+      x: 'static int somar(int a, int b) {\n    return a + b;\n}\n\nstatic void saudacao(String nome) {\n    System.out.println("Olá, " + nome + "!");\n}',
+    },
+    {
+      t: 'note',
+      k: 'O tipo de retorno é uma promessa',
+      x: 'Se um método é declarado int, ele precisa devolver um int em todo caminho possível — o compilador barra o código se algum caminho "esquecer" o return.',
+      warn: true,
+    },
+    { t: 'h', x: 'static x de instância' },
+    {
+      t: 'p',
+      x: 'Um método <code>static</code> pertence à <b>classe</b>, e roda sem precisar criar um objeto. Um método sem <code>static</code> pertence a um <b>objeto</b> (uma instância), e só pode ser chamado a partir dele.',
+    },
+    {
+      t: 'code',
+      file: 'StaticVsInstancia.java',
+      lang: 'java',
+      nolab: true,
+      x: 'class Calculadora {\n    static int dobro(int n) {         // static: chama direto pela classe\n        return n * 2;\n    }\n\n    int total = 0;\n    void somar(int n) {                // de instância: precisa de um objeto\n        total += n;\n    }\n}\n\n// uso:\nCalculadora.dobro(5);               // 10 — sem criar objeto\nCalculadora c = new Calculadora();\nc.somar(3);                          // precisa do objeto c',
+    },
+    { t: 'h', x: 'Sobrecarga (overloading): o mesmo nome, parâmetros diferentes' },
+    {
+      t: 'p',
+      x: 'Java permite ter <b>vários métodos com o mesmo nome</b>, desde que os parâmetros sejam diferentes (em quantidade ou tipo). O compilador escolhe qual versão chamar, olhando os argumentos.',
+    },
+    {
+      t: 'code',
+      file: 'Sobrecarga.java',
+      lang: 'java',
+      nolab: true,
+      x: 'static int somar(int a, int b) {\n    return a + b;\n}\n\nstatic double somar(double a, double b) {\n    return a + b;\n}\n\nsomar(2, 3);       // chama a versão com int\nsomar(2.5, 3.5);   // chama a versão com double',
+    },
+    { t: 'h', x: 'Parâmetros: passagem por valor' },
+    {
+      t: 'p',
+      x: 'Java sempre passa parâmetros <b>por valor</b>. Para tipos primitivos, uma cópia do valor é enviada — mudar o parâmetro dentro do método não afeta a variável original. Para objetos, a cópia é do endereço (referência), então mudar o <i>conteúdo</i> do objeto afeta o original, mas trocar o objeto inteiro não.',
+    },
+  ],
+  quiz: [
+    {
+      q: 'O que o tipo void indica na declaração de um método?',
+      options: ['Que ele é privado', 'Que ele não devolve nenhum valor', 'Que ele é estático', 'Que ele sempre falha'],
+      answer: 1,
+      explain: 'void significa que o método não tem valor de retorno — ele executa uma ação, mas não devolve nada com return.',
+    },
+    {
+      q: 'Qual a diferença entre um método static e um de instância?',
+      options: [
+        'Não há diferença',
+        'static pertence à classe e não precisa de objeto; de instância precisa de um objeto criado',
+        'static só existe em Python',
+        'De instância roda mais rápido',
+      ],
+      answer: 1,
+      explain: 'Métodos static são chamados direto pela classe (Calculadora.dobro(5)); métodos de instância exigem um objeto (c.somar(3)).',
+    },
+    {
+      q: 'O que é sobrecarga (overloading) de métodos?',
+      options: [
+        'Ter vários métodos com o mesmo nome, mas parâmetros diferentes',
+        'Ter um método que nunca termina',
+        'Sobrescrever um método herdado',
+        'Um erro comum em Java',
+      ],
+      answer: 0,
+      explain: 'Sobrecarga permite reusar o mesmo nome de método para versões que aceitam parâmetros diferentes.',
+    },
+    {
+      q: 'Se um método é declarado como retornando int, o que o compilador exige?',
+      options: [
+        'Nada em especial',
+        'Que ele devolva um int em todo caminho possível de execução',
+        'Que ele nunca use if',
+        'Que ele seja sempre static',
+      ],
+      answer: 1,
+      explain: 'O compilador barra o código se algum caminho de execução do método não terminar com um return int.',
+      hint: 'Pense no tipo de retorno como uma promessa que o compilador cobra.',
+    },
+    {
+      q: 'Complete: em Java, o main() precisa ser ___ porque ele roda antes de qualquer objeto existir.',
+      fill: true,
+      pre: 'Em Java, o main() precisa ser',
+      post: 'porque ele roda antes de qualquer objeto existir.',
+      accept: ['static'],
+      placeholder: 'palavra-chave',
+      explain: 'Como nenhum objeto foi criado ainda quando o programa começa, main() precisa ser static para rodar sem instância.',
+    },
+  ],
+};
