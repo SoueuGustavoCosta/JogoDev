@@ -1,0 +1,114 @@
+import type { Module } from '@/domain/trail/types';
+
+/** Farol 6 da Lua de PHP: function, argumentos padrão, variádicos, arrow functions e o operador ??. */
+export const modFuncoes: Module = {
+  id: 'funcoes-php',
+  short: 'Empacotar lógica',
+  title: 'Funções: argumentos, variádicos e o operador ??',
+  lead: 'PHP moderno ganhou recursos que deixam funções mais seguras — inclusive um operador que Malabari não consegue enganar.',
+  level: 'Intermediário',
+  blocks: [
+    { t: 'h', x: 'Declarando uma função' },
+    {
+      t: 'code',
+      file: 'funcao.php',
+      lang: 'php',
+      nolab: true,
+      x: 'function saudacao($nome) {\n    return "Olá, $nome!";\n}\n\necho saudacao("Viajante");',
+    },
+    { t: 'h', x: 'Argumentos com valor padrão' },
+    {
+      t: 'code',
+      file: 'padrao.php',
+      lang: 'php',
+      nolab: true,
+      x: 'function saudacao($nome, $saudacaoInicial = "Olá") {\n    return "$saudacaoInicial, $nome!";\n}\n\necho saudacao("Ana");                 // Olá, Ana!\necho saudacao("Ana", "Bem-vinda");    // Bem-vinda, Ana!',
+    },
+    { t: 'h', x: 'Argumentos variádicos: ... (três pontos)' },
+    {
+      t: 'p',
+      x: 'Assim como *args em Python, PHP usa <code>...</code> antes do nome do parâmetro para receber uma quantidade variável de argumentos, empacotados num array.',
+    },
+    {
+      t: 'code',
+      file: 'variadico.php',
+      lang: 'php',
+      nolab: true,
+      x: 'function somar(...$numeros) {\n    return array_sum($numeros);\n}\n\necho somar(1, 2, 3, 4);   // 10',
+    },
+    { t: 'h', x: 'O operador ?? (null coalescing)' },
+    {
+      t: 'p',
+      x: 'O operador <code>??</code>, do PHP 7, devolve o valor da esquerda se ele existir e não for null; senão, devolve o valor da direita — sem gerar aviso, e sem o malabarismo de tipos do ==.',
+    },
+    {
+      t: 'code',
+      file: 'coalescente.php',
+      lang: 'php',
+      nolab: true,
+      x: 'function saudacao($nome = null) {\n    $nomeFinal = $nome ?? "Viajante";\n    return "Olá, $nomeFinal!";\n}\n\necho saudacao();          // Olá, Viajante!\necho saudacao("Ana");     // Olá, Ana!',
+    },
+    {
+      t: 'note',
+      k: 'Por que isso importa',
+      x: 'Antes do ??, verificar um valor "pode não existir" exigia isset() combinado com um operador ternário, num código mais longo e mais fácil de errar. O ?? resolve isso numa linha, sem malabarismo.',
+    },
+    { t: 'h', x: 'Arrow functions: funções de uma linha (PHP 7.4)' },
+    {
+      t: 'code',
+      file: 'arrow.php',
+      lang: 'php',
+      nolab: true,
+      x: '$dobro = fn($n) => $n * 2;\necho $dobro(5);   // 10',
+    },
+    {
+      t: 'note',
+      k: 'fn, não function',
+      x: 'Arrow functions usam a palavra-chave fn, sempre têm uma única expressão (sem chaves nem return explícito), e capturam automaticamente variáveis do escopo ao redor.',
+    },
+  ],
+  quiz: [
+    {
+      q: 'O que ...$numeros faz na declaração de uma função PHP?',
+      options: [
+        'Recebe um único argumento obrigatório',
+        'Empacota uma quantidade variável de argumentos num array',
+        'Causa um erro de sintaxe',
+        'Declara uma constante',
+      ],
+      answer: 1,
+      explain: 'Os três pontos (...) antes do parâmetro recolhem todos os argumentos extras num array, dentro da função.',
+    },
+    {
+      q: 'O que $nome ?? "Viajante" retorna, se $nome for null?',
+      options: ['null', 'Um erro', '"Viajante"', '""'],
+      answer: 2,
+      explain: 'O operador ?? (null coalescing) devolve o valor da direita quando o da esquerda é null (ou não existe).',
+    },
+    {
+      q: 'Qual palavra-chave declara uma arrow function em PHP?',
+      options: ['function', 'fn', 'arrow', 'lambda'],
+      answer: 1,
+      explain: 'Arrow functions usam fn($param) => expressão, sempre com uma única expressão.',
+    },
+    {
+      q: 'Qual é a vantagem do operador ?? sobre checar isset() manualmente?',
+      options: [
+        'Não há vantagem nenhuma',
+        'Resolve "valor padrão se null" numa linha, sem malabarismo de tipos',
+        '?? só funciona com números',
+        '?? é mais lento'],
+      answer: 1,
+      explain: 'O ?? simplifica a checagem de valores possivelmente ausentes numa expressão curta e segura.',
+    },
+    {
+      q: 'Complete: uma função com valor padrão se escreve como function saudacao($nome, $saudacaoInicial = ___).',
+      fill: true,
+      pre: 'Uma função com valor padrão se escreve como function saudacao($nome, $saudacaoInicial =',
+      post: ').',
+      accept: ['"olá"', "'olá'", '"ola"', "'ola'"],
+      placeholder: '"valor padrão" entre aspas',
+      explain: 'O valor padrão é escrito diretamente após o =, como uma string entre aspas.',
+    },
+  ],
+};

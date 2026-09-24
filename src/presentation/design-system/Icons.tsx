@@ -74,6 +74,12 @@ const SYMBOLS: Record<string, (stroke: string) => ReactNode> = {
       <path d="M6 8v8M18 11c0 4-6 3-10 6" />
     </>
   ),
+  php: () => (
+    <>
+      <ellipse cx="12" cy="12" rx="10" ry="6" />
+      <path d="M9 9v6M9 9h3a2 2 0 010 4H9M15 9v6" />
+    </>
+  ),
 };
 
 /** Símbolo próprio de cada ilha (SVG original, sem logotipos oficiais). */

@@ -1,0 +1,124 @@
+import type { Module } from '@/domain/trail/types';
+
+/** Farol 3 da Lua de PHP: operadores, condições, match (PHP 8) e a armadilha == vs ===. */
+export const modOperadores: Module = {
+  id: 'operadores-condicoes-php',
+  short: 'A comparação solta',
+  title: 'Operadores, condições e o malabarismo de tipos',
+  lead: 'Aqui mora o truque central de Malabari: == em PHP pode converter os dois lados antes de comparar. === nunca converte nada.',
+  level: 'Base',
+  blocks: [
+    { t: 'h', x: 'Operadores básicos' },
+    {
+      t: 'table',
+      cols: ['Operador', 'Significado'],
+      rows: [
+        ['+ - * /', 'soma, subtração, multiplicação, divisão'],
+        ['%', 'resto da divisão'],
+        ['&& and, || or, !', 'e, ou, negação — PHP aceita os dois estilos'],
+      ],
+    },
+    { t: 'h', x: '== compara com conversão de tipo ("malabarismo")' },
+    {
+      t: 'p',
+      x: 'O operador <code>==</code> em PHP converte os dois lados para um tipo comum antes de comparar. Isso é chamado de <b>type juggling</b> ("malabarismo de tipos") — e é exatamente de onde Malabari tira o nome.',
+    },
+    {
+      t: 'code',
+      file: 'malabarismo.php',
+      lang: 'php',
+      expectError: true,
+      nolab: true,
+      x: 'var_dump(0 == "0");       // true — "0" vira o número 0\nvar_dump("10" == "1e1");  // true — os dois viram o número 10\nvar_dump(100 == "1e2");   // true — "1e2" é notação científica de 100',
+    },
+    { t: 'h', x: '=== compara valor E tipo, sem conversão' },
+    {
+      t: 'p',
+      x: 'O operador <code>===</code> (idêntico) nunca converte nada: os dois lados precisam ter <b>o mesmo tipo e o mesmo valor</b>.',
+    },
+    {
+      t: 'code',
+      file: 'identico.php',
+      lang: 'php',
+      nolab: true,
+      x: 'var_dump(0 === "0");   // false — tipos diferentes (int x string)\nvar_dump(0 === 0);      // true',
+    },
+    {
+      t: 'note',
+      k: 'A regra de ouro',
+      x: 'Use === (e !== para diferente) sempre que puder. Reserve == só para os casos raros em que você quer mesmo a conversão automática.',
+      warn: true,
+    },
+    { t: 'h', x: 'if / elseif / else' },
+    {
+      t: 'code',
+      file: 'decisao.php',
+      lang: 'php',
+      nolab: true,
+      x: '$nota = 7;\n\nif ($nota >= 9) {\n    echo "Excelente";\n} elseif ($nota >= 6) {\n    echo "Aprovado";\n} else {\n    echo "Precisa estudar mais";\n}',
+    },
+    {
+      t: 'note',
+      k: 'elseif junto, ou else if separado',
+      x: 'PHP aceita as duas formas: elseif (uma palavra) ou else if (duas palavras) funcionam igual.',
+    },
+    { t: 'h', x: 'match: um switch mais seguro (PHP 8)' },
+    {
+      t: 'p',
+      x: 'Desde o PHP 8, existe o <code>match</code>: parecido com switch, mas sempre compara com <code>===</code> (sem malabarismo) e devolve um valor direto, sem precisar de break.',
+    },
+    {
+      t: 'code',
+      file: 'match.php',
+      lang: 'php',
+      nolab: true,
+      x: '$dia = 3;\n\n$nomeDoDia = match ($dia) {\n    1 => "Segunda",\n    2 => "Terça",\n    3 => "Quarta",\n    default => "Outro dia",\n};\n\necho $nomeDoDia;   // Quarta',
+    },
+  ],
+  quiz: [
+    {
+      q: 'O que 0 == "abc" costumava avaliar em versões antigas de PHP, antes das correções de comparação?',
+      options: ['false', 'true', 'erro de sintaxe', 'null'],
+      answer: 1,
+      explain: 'Em versões antigas, PHP convertia "abc" (uma string não-numérica) para 0 antes de comparar, tornando 0 == "abc" verdadeiro — um dos golpes de Malabari.',
+      hint: 'Pense no "malabarismo de tipos": PHP tentava converter a string para número.',
+    },
+    {
+      q: 'Qual operador compara valor E tipo, sem nenhuma conversão automática?',
+      options: ['==', '===', '=', '<>'],
+      answer: 1,
+      explain: '=== (idêntico) exige mesmo tipo e mesmo valor, sem malabarismo.',
+    },
+    {
+      q: 'O que "type juggling" (malabarismo de tipos) significa em PHP?',
+      options: [
+        'Um erro de sintaxe comum',
+        'A conversão automática de tipos que == faz antes de comparar',
+        'Um recurso removido do PHP 8',
+        'O nome de uma função matemática',
+      ],
+      answer: 1,
+      explain: 'Type juggling é a conversão automática de tipos que PHP faz em certas operações, especialmente com ==.',
+    },
+    {
+      q: 'O que o match (PHP 8) faz de diferente do switch tradicional?',
+      options: [
+        'Nada, são idênticos',
+        'match compara sempre com === (sem malabarismo) e devolve um valor direto',
+        'match só existe para números',
+        'match não aceita default',
+      ],
+      answer: 1,
+      explain: 'match usa comparação estrita (===) e retorna um valor, sem precisar de break nem sofrer fall-through.',
+    },
+    {
+      q: 'Complete: a regra de ouro para evitar os golpes de Malabari é preferir ___ no lugar de == sempre que possível.',
+      fill: true,
+      pre: 'A regra de ouro é preferir',
+      post: 'no lugar de == sempre que possível.',
+      accept: ['===', 'triplo igual', 'identico', 'idêntico'],
+      placeholder: 'operador',
+      explain: '=== nunca converte tipos, evitando as comparações inesperadas do malabarismo de tipos.',
+    },
+  ],
+};
