@@ -571,7 +571,7 @@ export const badgeCatalog: Badge[] = [
     name: "Domador de Onduluk",
     description: "Derrotou Onduluk, a Serpente da Indentação: a coroa da Lua de Python.",
     crown: true,
-    unlockedBy: "boss-python",
+    unlockedBy: "boss",
     file: "python/onduluk.webp",
   },
   {
@@ -662,7 +662,7 @@ export const badgeCatalog: Badge[] = [
     name: "Domador de Nulo",
     description: "Derrotou Nulo, o Erro de Um Bilhão de Dólares: a coroa da Lua de Java.",
     crown: true,
-    unlockedBy: "boss-java",
+    unlockedBy: "boss",
     file: "java/nulo.webp",
   },
   {
@@ -753,7 +753,7 @@ export const badgeCatalog: Badge[] = [
     name: "Domador de Malabari",
     description: "Derrotou Malabari, o Mestre da Comparação Solta: a coroa da Lua de PHP.",
     crown: true,
-    unlockedBy: "boss-php",
+    unlockedBy: "boss",
     file: "php/malabari.webp",
   },
 ];

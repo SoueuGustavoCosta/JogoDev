@@ -46,6 +46,11 @@ describe('catálogo compartilhado de insígnias', () => {
     expect(rares.sort()).toEqual(['java-rara', 'php-rara', 'py-rara']);
   });
 
+  it('coroas usam unlockedBy "boss" e raras "trophy" (a legenda da carteira depende desses valores)', () => {
+    for (const b of badgeCatalog.filter((x) => x.crown && x.unlockedBy !== null)) expect(b.unlockedBy, b.id).toBe('boss');
+    for (const b of badgeCatalog.filter((x) => x.rare)) expect(b.unlockedBy, b.id).toBe('trophy');
+  });
+
   it('nenhuma insígnia rara é também coroa (são níveis distintos)', () => {
     expect(badgeCatalog.every((b) => !(b.rare && b.crown))).toBe(true);
   });
