@@ -1,16 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
   <defs>
-    <radialGradient id="bg" cx="50%" cy="36%" r="75%">
-      <stop offset="0%" stop-color="#241e3f"/>
-      <stop offset="100%" stop-color="#0e0b1a"/>
+    <radialGradient id="fill" cx="50%" cy="32%" r="75%">
+      <stop offset="0%" stop-color="#0a1730"/>
+      <stop offset="100%" stop-color="#050b18"/>
     </radialGradient>
+    <linearGradient id="border" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8fc0ff"/>
+      <stop offset="55%" stop-color="#2f6fe0"/>
+      <stop offset="100%" stop-color="#0a1730"/>
+    </linearGradient>
+    <radialGradient id="medal" cx="50%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#2f6fe0" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#0a1730" stop-opacity="0.9"/>
+    </radialGradient>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="7" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
   </defs>
-  <circle cx="128" cy="128" r="122" fill="url(#bg)" stroke="#8a7fff" stroke-width="6"/>
-  <circle cx="128" cy="128" r="103" fill="none" stroke="#3a3454" stroke-width="2" stroke-dasharray="3 9"/>
-  <g transform="translate(128 132)">
-    
-    <g fill="none" stroke="#ece9f8" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M32 -8a34 34 0 1 1 -10 -24"/><path d="M32 -46l4 22 -22 -6z" fill="#ece9f8" stroke="none"/>
-    </g>
+  <path d="M128.0 22.0 L219.8 75.0 L219.8 181.0 L128.0 234.0 L36.2 181.0 L36.2 75.0 Z" fill="#050b18" opacity="0.55" filter="url(#glow)"/>
+  <path d="M128.0 22.0 L219.8 75.0 L219.8 181.0 L128.0 234.0 L36.2 181.0 L36.2 75.0 Z" fill="url(#fill)" stroke="url(#border)" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M128.0 36.0 L207.7 82.0 L207.7 174.0 L128.0 220.0 L48.3 174.0 L48.3 82.0 Z" fill="none" stroke="#8fc0ff" stroke-width="1.2" stroke-dasharray="1 7" opacity="0.55"/>
+  <g stroke="#8fc0ff" stroke-width="0.8" opacity="0.28"><line x1="128" y1="128" x2="128.0" y2="36.0"/><line x1="128" y1="128" x2="207.7" y2="82.0"/><line x1="128" y1="128" x2="207.7" y2="174.0"/><line x1="128" y1="128" x2="128.0" y2="220.0"/><line x1="128" y1="128" x2="48.3" y2="174.0"/><line x1="128" y1="128" x2="48.3" y2="82.0"/></g>
+  <path d="M36 76 L110 32 L82 58 Z" fill="#ffffff" opacity="0.08"/>
+  <circle cx="128" cy="128" r="58" fill="url(#medal)" stroke="#2f6fe0" stroke-width="2.5"/>
+  <g transform="translate(128 132)" fill="none" stroke="#f3f1ff" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M32 -8a34 34 0 1 1 -10 -24"/><path d="M32 -46l4 22 -22 -6z" fill="#f3f1ff" stroke="none"/>
   </g>
+  <g><circle cx="128.0" cy="22.0" r="4" fill="#8fc0ff"/><circle cx="219.8" cy="75.0" r="4" fill="#8fc0ff"/><circle cx="219.8" cy="181.0" r="4" fill="#8fc0ff"/><circle cx="128.0" cy="234.0" r="4" fill="#8fc0ff"/><circle cx="36.2" cy="181.0" r="4" fill="#8fc0ff"/><circle cx="36.2" cy="75.0" r="4" fill="#8fc0ff"/></g>
 </svg>
