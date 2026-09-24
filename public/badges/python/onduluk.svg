@@ -1,16 +1,35 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
   <defs>
-    <radialGradient id="bg" cx="50%" cy="36%" r="75%">
-      <stop offset="0%" stop-color="#241e3f"/>
-      <stop offset="100%" stop-color="#0e0b1a"/>
+    <radialGradient id="fill" cx="50%" cy="30%" r="80%">
+      <stop offset="0%" stop-color="#2e2005"/>
+      <stop offset="100%" stop-color="#170f02"/>
     </radialGradient>
+    <linearGradient id="border" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff3d0"/>
+      <stop offset="50%" stop-color="#ffd479"/>
+      <stop offset="100%" stop-color="#a86a1f"/>
+    </linearGradient>
+    <radialGradient id="crownGrad" cx="50%" cy="20%" r="90%">
+      <stop offset="0%" stop-color="#fff3d0"/>
+      <stop offset="100%" stop-color="#ffd479"/>
+    </radialGradient>
+    <radialGradient id="medal" cx="50%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#2f6fe0" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#2e2005" stop-opacity="0.95"/>
+    </radialGradient>
+    <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="12" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
   </defs>
-  <circle cx="128" cy="128" r="122" fill="url(#bg)" stroke="#ffd479" stroke-width="6"/>
-  <circle cx="128" cy="128" r="103" fill="none" stroke="#3a3454" stroke-width="2" stroke-dasharray="3 9"/>
-  <g transform="translate(128 132)">
-    <path d="M-34 -78l14 16 20 -26 20 26 14 -16 -6 30h-56z" fill="#ffd479" stroke="#ffd479" stroke-width="3" stroke-linejoin="round"/>
-    <g fill="none" stroke="#ece9f8" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M-8 -30a20 20 0 1 0 0 40a20 20 0 1 1 0 36"/><circle cx="14" cy="-38" r="4" fill="#ece9f8" stroke="none"/>
-    </g>
+  <g opacity="0.6"><line x1="128" y1="128" x2="278" y2="128" stroke="#fff3d0" stroke-width="2" opacity="0.18"/><line x1="128" y1="128" x2="258" y2="203" stroke="#fff3d0" stroke-width="2" opacity="0.18"/><line x1="128" y1="128" x2="203" y2="258" stroke="#fff3d0" stroke-width="2" opacity="0.18"/><line x1="128" y1="128" x2="128" y2="278" stroke="#fff3d0" stroke-width="2" opacity="0.18"/><line x1="128" y1="128" x2="53" y2="258" stroke="#fff3d0" stroke-width="2" opacity="0.18"/><line x1="128" y1="128" x2="-2" y2="203" stroke="#fff3d0" stroke-width="2" opacity="0.18"/><line x1="128" y1="128" x2="-22" y2="128" stroke="#fff3d0" stroke-width="2" opacity="0.18"/><line x1="128" y1="128" x2="-2" y2="53" stroke="#fff3d0" stroke-width="2" opacity="0.18"/><line x1="128" y1="128" x2="53" y2="-2" stroke="#fff3d0" stroke-width="2" opacity="0.18"/><line x1="128" y1="128" x2="128" y2="-22" stroke="#fff3d0" stroke-width="2" opacity="0.18"/><line x1="128" y1="128" x2="203" y2="-2" stroke="#fff3d0" stroke-width="2" opacity="0.18"/><line x1="128" y1="128" x2="258" y2="53" stroke="#fff3d0" stroke-width="2" opacity="0.18"/></g>
+  <path d="M128.0 6.0 L159.4 52.2 L214.3 41.7 L203.8 96.6 L250.0 128.0 L203.8 159.4 L214.3 214.3 L159.4 203.8 L128.0 250.0 L96.6 203.8 L41.7 214.3 L52.2 159.4 L6.0 128.0 L52.2 96.6 L41.7 41.7 L96.6 52.2 Z" fill="#ffd479" opacity="0.5" filter="url(#glow)"/>
+  <path d="M128.0 6.0 L159.4 52.2 L214.3 41.7 L203.8 96.6 L250.0 128.0 L203.8 159.4 L214.3 214.3 L159.4 203.8 L128.0 250.0 L96.6 203.8 L41.7 214.3 L52.2 159.4 L6.0 128.0 L52.2 96.6 L41.7 41.7 L96.6 52.2 Z" fill="url(#fill)" stroke="url(#border)" stroke-width="6.5" stroke-linejoin="round"/>
+  <circle cx="128" cy="128" r="66" fill="url(#medal)" stroke="#fff3d0" stroke-width="2.5"/>
+  <circle cx="128" cy="128" r="74" fill="none" stroke="#fff3d0" stroke-width="1" opacity="0.55"/>
+  <g transform="translate(128 138) scale(1.15)" fill="none" stroke="#fffaf0" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M-8 -30a20 20 0 1 0 0 40a20 20 0 1 1 0 36"/><circle cx="14" cy="-38" r="4" fill="#fffaf0" stroke="none"/>
   </g>
+  <path d="M-34 -96l13 15 21 -27 21 27 13 -15 -6 30h-56z" fill="url(#crownGrad)" stroke="#ffd479" stroke-width="2.5" stroke-linejoin="round"/>
+  <g><circle cx="128.0" cy="6.0" r="4" fill="#fff3d0"/><circle cx="214.3" cy="41.7" r="4" fill="#fff3d0"/><circle cx="250.0" cy="128.0" r="4" fill="#fff3d0"/><circle cx="214.3" cy="214.3" r="4" fill="#fff3d0"/><circle cx="128.0" cy="250.0" r="4" fill="#fff3d0"/><circle cx="41.7" cy="214.3" r="4" fill="#fff3d0"/><circle cx="6.0" cy="128.0" r="4" fill="#fff3d0"/><circle cx="41.7" cy="41.7" r="4" fill="#fff3d0"/></g>
 </svg>
