@@ -490,7 +490,7 @@ export const badgeCatalog: Badge[] = [
     description: "Descobriu como e por que Python nasceu em 1989.",
     crown: false,
     unlockedBy: "nascimento-python",
-    file: "python/nascimento.svg",
+    file: "python/nascimento.webp",
   },
   {
     id: "py-sintaxe",
@@ -499,7 +499,7 @@ export const badgeCatalog: Badge[] = [
     description: "Entendeu por que a indentação é a gramática de Python.",
     crown: false,
     unlockedBy: "sintaxe-e-tipos",
-    file: "python/sintaxe.svg",
+    file: "python/sintaxe.webp",
   },
   {
     id: "py-operadores",
@@ -508,7 +508,7 @@ export const badgeCatalog: Badge[] = [
     description: "Usou operadores e condições para ramificar o código.",
     crown: false,
     unlockedBy: "operadores-condicoes",
-    file: "python/operadores.svg",
+    file: "python/operadores.webp",
   },
   {
     id: "py-loops",
@@ -517,7 +517,7 @@ export const badgeCatalog: Badge[] = [
     description: "Dominou for, while e o range().",
     crown: false,
     unlockedBy: "loops-python",
-    file: "python/loops.svg",
+    file: "python/loops.webp",
   },
   {
     id: "py-colecoes",
@@ -526,7 +526,7 @@ export const badgeCatalog: Badge[] = [
     description: "Organizou dados em listas, tuplas, dicionários e conjuntos.",
     crown: false,
     unlockedBy: "colecoes",
-    file: "python/colecoes.svg",
+    file: "python/colecoes.webp",
   },
   {
     id: "py-funcoes",
@@ -535,7 +535,7 @@ export const badgeCatalog: Badge[] = [
     description: "Empacotou lógica em funções reutilizáveis.",
     crown: false,
     unlockedBy: "funcoes-python",
-    file: "python/funcoes.svg",
+    file: "python/funcoes.webp",
   },
   {
     id: "py-modulos",
@@ -544,7 +544,7 @@ export const badgeCatalog: Badge[] = [
     description: "Importou pacotes e leu/escreveu arquivos de verdade.",
     crown: false,
     unlockedBy: "modulos-e-arquivos",
-    file: "python/modulos.svg",
+    file: "python/modulos.webp",
   },
   {
     id: "py-poo",
@@ -553,7 +553,7 @@ export const badgeCatalog: Badge[] = [
     description: "Modelou o mundo com classes e objetos em Python.",
     crown: false,
     unlockedBy: "poo-python",
-    file: "python/poo.svg",
+    file: "python/poo.webp",
   },
   {
     id: "py-rara",
@@ -572,7 +572,7 @@ export const badgeCatalog: Badge[] = [
     description: "Derrotou Onduluk, a Serpente da Indentação: a coroa da Lua de Python.",
     crown: true,
     unlockedBy: "boss-python",
-    file: "python/onduluk.svg",
+    file: "python/onduluk.webp",
   },
   {
     id: "java-nascimento",
@@ -581,7 +581,7 @@ export const badgeCatalog: Badge[] = [
     description: "Descobriu como e por que Java nasceu em 1991, dentro do Green Project.",
     crown: false,
     unlockedBy: "nascimento-java",
-    file: "java/nascimento.svg",
+    file: "java/nascimento.webp",
   },
   {
     id: "java-sintaxe",
@@ -590,7 +590,7 @@ export const badgeCatalog: Badge[] = [
     description: "Entendeu chaves, ponto e vírgula e a tipagem estática de Java.",
     crown: false,
     unlockedBy: "sintaxe-tipos-java",
-    file: "java/sintaxe.svg",
+    file: "java/sintaxe.webp",
   },
   {
     id: "java-operadores",
@@ -599,7 +599,7 @@ export const badgeCatalog: Badge[] = [
     description: "Usou operadores e condições, e aprendeu a diferença entre == e equals().",
     crown: false,
     unlockedBy: "operadores-condicoes-java",
-    file: "java/operadores.svg",
+    file: "java/operadores.webp",
   },
   {
     id: "java-loops",
@@ -608,7 +608,7 @@ export const badgeCatalog: Badge[] = [
     description: "Dominou for, while, do-while e o for-each.",
     crown: false,
     unlockedBy: "loops-java",
-    file: "java/loops.svg",
+    file: "java/loops.webp",
   },
   {
     id: "java-colecoes",
@@ -617,7 +617,7 @@ export const badgeCatalog: Badge[] = [
     description: "Organizou dados em arrays de tamanho fixo e em ArrayList.",
     crown: false,
     unlockedBy: "arrays-colecoes-java",
-    file: "java/colecoes.svg",
+    file: "java/colecoes.webp",
   },
   {
     id: "java-metodos",
@@ -626,7 +626,7 @@ export const badgeCatalog: Badge[] = [
     description: "Empacotou lógica em métodos, com parâmetros e retorno tipados.",
     crown: false,
     unlockedBy: "metodos-java",
-    file: "java/metodos.svg",
+    file: "java/metodos.webp",
   },
   {
     id: "java-classes",
@@ -635,7 +635,7 @@ export const badgeCatalog: Badge[] = [
     description: "Modelou o mundo com classes, construtores e encapsulamento.",
     crown: false,
     unlockedBy: "classes-objetos-java",
-    file: "java/classes.svg",
+    file: "java/classes.webp",
   },
   {
     id: "java-heranca",
@@ -644,7 +644,7 @@ export const badgeCatalog: Badge[] = [
     description: "Reaproveitou comportamento com extends e implements.",
     crown: false,
     unlockedBy: "heranca-interfaces-java",
-    file: "java/heranca.svg",
+    file: "java/heranca.webp",
   },
   {
     id: "java-rara",
@@ -654,7 +654,7 @@ export const badgeCatalog: Badge[] = [
     crown: false,
     rare: true,
     unlockedBy: "trophy",
-    file: "java/rara.svg",
+    file: "java/rara.webp",
   },
   {
     id: "java-nulo",
@@ -663,7 +663,7 @@ export const badgeCatalog: Badge[] = [
     description: "Derrotou Nulo, o Erro de Um Bilhão de Dólares: a coroa da Lua de Java.",
     crown: true,
     unlockedBy: "boss-java",
-    file: "java/nulo.svg",
+    file: "java/nulo.webp",
   },
   {
     id: "php-nascimento",
@@ -672,7 +672,7 @@ export const badgeCatalog: Badge[] = [
     description: "Descobriu como e por que PHP nasceu em 1994, como ferramenta pessoal de Rasmus Lerdorf.",
     crown: false,
     unlockedBy: "nascimento-php",
-    file: "php/nascimento.svg",
+    file: "php/nascimento.webp",
   },
   {
     id: "php-sintaxe",
@@ -681,7 +681,7 @@ export const badgeCatalog: Badge[] = [
     description: "Entendeu as tags <?php ?>, o $ das variáveis e a tipagem dinâmica de PHP.",
     crown: false,
     unlockedBy: "sintaxe-tipos-php",
-    file: "php/sintaxe.svg",
+    file: "php/sintaxe.webp",
   },
   {
     id: "php-operadores",
@@ -690,7 +690,7 @@ export const badgeCatalog: Badge[] = [
     description: "Usou operadores e condições, e aprendeu a diferença entre == e ===.",
     crown: false,
     unlockedBy: "operadores-condicoes-php",
-    file: "php/operadores.svg",
+    file: "php/operadores.webp",
   },
   {
     id: "php-loops",
@@ -699,7 +699,7 @@ export const badgeCatalog: Badge[] = [
     description: "Dominou for, while, do-while e o foreach.",
     crown: false,
     unlockedBy: "loops-php",
-    file: "php/loops.svg",
+    file: "php/loops.webp",
   },
   {
     id: "php-colecoes",
@@ -708,7 +708,7 @@ export const badgeCatalog: Badge[] = [
     description: "Organizou dados em arrays indexados e associativos.",
     crown: false,
     unlockedBy: "arrays-php",
-    file: "php/colecoes.svg",
+    file: "php/colecoes.webp",
   },
   {
     id: "php-funcoes",
@@ -717,7 +717,7 @@ export const badgeCatalog: Badge[] = [
     description: "Empacotou lógica em funções, com argumentos padrão e variádicos.",
     crown: false,
     unlockedBy: "funcoes-php",
-    file: "php/funcoes.svg",
+    file: "php/funcoes.webp",
   },
   {
     id: "php-poo",
@@ -726,7 +726,7 @@ export const badgeCatalog: Badge[] = [
     description: "Modelou o mundo com classes e objetos em PHP.",
     crown: false,
     unlockedBy: "poo-php",
-    file: "php/classes.svg",
+    file: "php/classes.webp",
   },
   {
     id: "php-web",
@@ -735,7 +735,7 @@ export const badgeCatalog: Badge[] = [
     description: "Usou $_GET, $_POST e $_SESSION para conversar com formulários e navegadores.",
     crown: false,
     unlockedBy: "superglobais-web-php",
-    file: "php/web.svg",
+    file: "php/web.webp",
   },
   {
     id: "php-rara",
@@ -745,7 +745,7 @@ export const badgeCatalog: Badge[] = [
     crown: false,
     rare: true,
     unlockedBy: "trophy",
-    file: "php/rara.svg",
+    file: "php/rara.webp",
   },
   {
     id: "php-malabari",
@@ -754,6 +754,6 @@ export const badgeCatalog: Badge[] = [
     description: "Derrotou Malabari, o Mestre da Comparação Solta: a coroa da Lua de PHP.",
     crown: true,
     unlockedBy: "boss-php",
-    file: "php/malabari.svg",
+    file: "php/malabari.webp",
   },
 ];
