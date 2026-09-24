@@ -126,7 +126,17 @@ export const ERAS: MapEra[] = [
         description:
           'A lua de Java: 8 faróis sobre a linguagem que nasceu do Green Project, na Sun Microsystems, e o chefe Nulo, o Erro de Um Bilhão de Dólares.',
       },
-      { id: 'php', name: 'PHP', icon: 'php', angle: -35 },
+      {
+        id: 'php',
+        name: 'PHP',
+        icon: 'php',
+        angle: -35,
+        trailId: 'php',
+        color: '#6fb8ff',
+        years: '1994 → hoje',
+        description:
+          'A lua de PHP: 8 faróis sobre a linguagem que Rasmus Lerdorf criou em 1994 para o próprio currículo, e o chefe Malabari, o Mestre da Comparação Solta.',
+      },
     ],
   },
   {
