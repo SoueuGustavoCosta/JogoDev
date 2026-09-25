@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Navigate, useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { completeModule, getOrCreateTravelerUuid, getTraveler } from '@/application/usecases';
 import { getTrailById } from '@/content/registry';
@@ -9,6 +9,7 @@ import { Confetti, playModuleCompleteSound, SintaxeFace } from '@/presentation/d
 import { useServices } from '@/presentation/app/ServicesContext';
 import { QuizRunner } from './QuizRunner';
 import type { TrailOutletContext } from './TrailShell';
+import { useModuleLeftTracking } from './useModuleLeftTracking';
 import styles from './ModulePage.module.css';
 
 function sintaxeRecapLine(recap: ModuleRecap, name: string): string {
@@ -35,6 +36,8 @@ export function ModulePage() {
   const moduleIndex = trail?.modules.findIndex((m) => m.id === moduleId) ?? -1;
   const module = trail && moduleIndex >= 0 ? trail.modules[moduleIndex] : undefined;
   const travelerName = getTraveler({ repository: progressRepository }).name;
+  const articleRef = useRef<HTMLElement>(null);
+  useModuleLeftTracking(articleRef, trail?.id, module?.id);
 
   useEffect(() => {
     setResult(null);
@@ -60,7 +63,7 @@ export function ModulePage() {
   const next = trail.modules[moduleIndex + 1];
 
   return (
-    <article>
+    <article ref={articleRef}>
       <p className="eyebrow">
         Salto {moduleIndex + 1} de {trail.modules.length} · {module.level}
       </p>
