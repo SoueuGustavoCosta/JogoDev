@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { QuizItem } from '../trail/types';
-import { isQuizAnswerCorrect } from './quiz';
+import { fillAnswerMatches, isQuizAnswerCorrect } from './quiz';
 
 describe('isQuizAnswerCorrect', () => {
   const mcq: QuizItem = {
@@ -53,3 +53,27 @@ describe('isQuizAnswerCorrect', () => {
     expect(isQuizAnswerCorrect(fill, { kind: 'choice', optionIndex: 0 })).toBe(false);
   });
 });
+
+describe('fillAnswerMatches: tolerante ao teclado do celular', () => {
+  it('aceita a resposta com () no fim, ponto final e maiúscula', () => {
+    for (const text of ['livres', 'livres()', 'Livres', 'livres.', ' livres ( ) ', 'livres;']) {
+      expect(fillAnswerMatches(['livres'], text), text).toBe(true);
+    }
+  });
+
+  it('troca aspas curvas por retas', () => {
+    expect(fillAnswerMatches(["'0'", '0'], '\u20180\u2019')).toBe(true);
+    expect(fillAnswerMatches(['"olá"'], '\u201Colá\u201D')).toBe(true);
+  });
+
+  it('respostas que são só pontuação continuam exigindo a pontuação', () => {
+    expect(fillAnswerMatches([';'], ';')).toBe(true);
+    expect(fillAnswerMatches([';'], '.')).toBe(false);
+  });
+
+  it('continua recusando resposta errada', () => {
+    expect(fillAnswerMatches(['livres'], 'vazias')).toBe(false);
+    expect(fillAnswerMatches(['livres'], 'livre')).toBe(false);
+  });
+});
+
