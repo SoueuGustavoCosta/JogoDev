@@ -1,0 +1,172 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><style>
+@font-face{font-family:Syne;font-weight:700;src:url(https://cdn.jsdelivr.net/npm/@fontsource/syne/files/syne-latin-700-normal.woff2)}
+@font-face{font-family:Syne;font-weight:800;src:url(https://cdn.jsdelivr.net/npm/@fontsource/syne/files/syne-latin-800-normal.woff2)}
+@font-face{font-family:Inst;font-weight:400;src:url(https://cdn.jsdelivr.net/npm/@fontsource/instrument-sans/files/instrument-sans-latin-400-normal.woff2)}
+@font-face{font-family:Inst;font-weight:600;src:url(https://cdn.jsdelivr.net/npm/@fontsource/instrument-sans/files/instrument-sans-latin-600-normal.woff2)}
+@font-face{font-family:Inst;font-weight:700;src:url(https://cdn.jsdelivr.net/npm/@fontsource/instrument-sans/files/instrument-sans-latin-700-normal.woff2)}
+@font-face{font-family:Mono;font-weight:400;src:url(https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2)}
+@font-face{font-family:Mono;font-weight:700;src:url(https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-700-normal.woff2)}
+:root{--bg:#0a0912;--p:#151225;--p2:#1b1731;--t:#ece9f8;--m:#9b94b8;--l:#2c2647;--pu:#9b4dff;--pus:#c9a2ff;--or:#ff6b1f;--ok:#3ee0a1;--bad:#ff5d7a;--cy:#5ee7ff;--go:#ffd479}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#05040a;font-family:Inst,sans-serif;color:var(--t);display:flex;flex-wrap:wrap;gap:40px;padding:40px}
+.s{width:390px;height:844px;position:relative;overflow:hidden;background:var(--bg);
+ background-image:radial-gradient(500px 320px at 90% -5%,rgba(155,77,255,.22),transparent 60%),radial-gradient(420px 300px at -10% 40%,rgba(94,231,255,.07),transparent 60%);
+ padding:18px 20px 0;display:flex;flex-direction:column}
+h1,h2,h3{font-family:Syne;line-height:1.1}
+.mono{font-family:Mono}
+*{font-variant-ligatures:none}
+.top{display:flex;align-items:center;gap:10px;height:44px}
+.av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--pu),var(--or));display:grid;place-items:center;font-weight:700;font-size:15px}
+.chip{display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:var(--p);border:1px solid var(--l);font-size:13px;font-weight:600}
+.sp{flex:1}
+.nav{position:absolute;left:14px;right:14px;bottom:14px;height:62px;border-radius:20px;background:rgba(21,18,37,.92);border:1px solid var(--l);display:flex;justify-content:space-around;align-items:center;font-size:12px;color:var(--m)}
+.nav div{display:flex;flex-direction:column;align-items:center;gap:3px}
+.nav .on{color:var(--cy)}
+.ic{width:22px;height:22px;border:2px solid currentColor;border-radius:6px}
+/* linha do tempo */
+.thread{position:relative;height:64px;margin:6px 0 4px}
+.thread .line{position:absolute;left:12px;right:12px;top:24px;height:4px;border-radius:4px;background:var(--l)}
+.thread .lit{position:absolute;left:12px;top:24px;height:4px;border-radius:4px;background:linear-gradient(90deg,var(--pu),var(--cy));box-shadow:0 0 14px var(--cy)}
+.nodes{position:absolute;inset:0;display:flex;justify-content:space-between;padding:0 2px}
+.nd{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:11px;color:var(--m);width:34px}
+.dot{width:26px;height:26px;border-radius:50%;background:var(--p2);border:2px solid var(--l);margin-top:13px}
+.dot.on{background:var(--cy);border-color:var(--cy);box-shadow:0 0 12px var(--cy)}
+.dot.today{border-color:var(--or);background:var(--bg);box-shadow:0 0 0 5px rgba(255,107,31,.18),0 0 16px var(--or)}
+.card{background:var(--p);border:1px solid var(--l);border-radius:18px;padding:18px}
+.btn{height:52px;border-radius:14px;border:0;font:700 17px Inst;display:flex;align-items:center;justify-content:center;width:100%}
+.b1{background:linear-gradient(135deg,#a45cff,#7b2ff0);color:#fff;box-shadow:0 8px 24px rgba(155,77,255,.35)}
+.b2{background:var(--ok);color:#062b1c}
+.b3{background:transparent;border:1px solid var(--l);color:var(--t)}
+.muted{color:var(--m)}
+.sx{width:44px;height:40px;border-radius:9px;border:2.5px solid var(--pu);background:#110f1d;position:relative;flex:none;box-shadow:0 0 16px rgba(155,77,255,.5)}
+.sx:before,.sx:after{content:"";position:absolute;top:13px;width:8px;height:11px;border-radius:3px;background:var(--cy)}
+.sx:before{left:10px}.sx:after{right:10px}
+.sx i{position:absolute;left:14px;right:14px;bottom:6px;height:4px;border-radius:0 0 8px 8px;border-bottom:3px solid var(--or)}
+.bub{background:var(--p2);border:1px solid var(--l);border-radius:4px 16px 16px 16px;padding:14px 16px;font-size:17px;line-height:1.5}
+.code{background:#07060d;border:1px solid var(--l);border-radius:12px;padding:14px 16px;font:15px/1.7 Mono}
+.kw{color:var(--pus)}.st{color:#8be9b0}.nu{color:var(--go)}.cm{color:#5d5780}
+.prog{display:flex;gap:4px;flex:1}
+.prog i{flex:1;height:8px;border-radius:4px;background:var(--l)}
+.prog i.d{background:var(--ok)}.prog i.c{background:var(--cy);box-shadow:0 0 8px var(--cy)}
+.x{width:32px;height:32px;display:grid;place-items:center;color:var(--m);font-size:24px}
+.lab{position:absolute;top:-30px;left:0;font:600 14px Inst;color:#8a84a8}
+</style></head><body>
+
+<!-- A: HUB com Anomalia do Dia -->
+<div class="s" id="a-hub">
+ <div class="top"><div class="av">G</div><div><div style="font-weight:700">Gustavo</div><div class="muted" style="font-size:12px">Nível 4 · 1.240 XP</div></div><div class="sp"></div>
+ <div class="chip"><span style="color:var(--cy)">◆</span>86</div></div>
+ <div style="margin-top:18px;display:flex;align-items:baseline;justify-content:space-between"><h2 style="font-size:22px">Linha do tempo</h2><span class="mono" style="color:var(--cy);font-size:15px">4 dias estável</span></div>
+ <div class="thread"><div class="line"></div><div class="lit" style="width:57%"></div>
+  <div class="nodes"><div class="nd"><div class="dot on"></div>seg</div><div class="nd"><div class="dot on"></div>ter</div><div class="nd"><div class="dot on"></div>qua</div><div class="nd"><div class="dot on"></div>qui</div><div class="nd"><div class="dot today"></div><b style="color:var(--or)">hoje</b></div><div class="nd"><div class="dot"></div>sáb</div><div class="nd"><div class="dot"></div>dom</div></div></div>
+ <div class="card" style="margin-top:14px;border-color:rgba(255,107,31,.55);box-shadow:0 0 0 1px rgba(255,107,31,.15),0 18px 40px rgba(255,107,31,.12);background:linear-gradient(160deg,#1d1426,#151225 60%)">
+  <div style="display:flex;justify-content:space-between;align-items:center"><span class="mono" style="color:var(--or);font-size:13px">anomalia #127 · era dos dados</span><span class="mono muted" style="font-size:12px">fecha em 9h</span></div>
+  <h3 style="font-size:24px;margin:10px 0 8px">Um SELECT está trazendo produtos sem estoque</h3>
+  <p class="muted" style="font-size:15px;line-height:1.5">O Eco mexeu no filtro. Conserte a consulta antes que a linha ramifique.</p>
+  <div style="display:flex;gap:8px;margin:14px 0 16px"><div class="chip">3 min</div><div class="chip" style="color:var(--go)">+30 XP</div><div class="chip" style="color:var(--cy)">+10 ◆</div></div>
+  <div class="btn b1">Consertar a anomalia</div>
+  <p class="muted" style="font-size:13px;text-align:center;margin-top:10px">38 viajantes da turma já consertaram</p>
+ </div>
+ <div class="card" style="margin-top:12px;display:flex;gap:14px;align-items:center;padding:14px 16px">
+  <div style="width:44px;height:44px;border-radius:12px;background:rgba(62,224,161,.12);border:1px solid var(--ok);display:grid;place-items:center;color:var(--ok);font:700 18px Mono">if</div>
+  <div style="flex:1"><div style="font-weight:700">Continuar: Variáveis</div><div class="muted" style="font-size:13px">Era da Lógica · tela 3 de 8</div>
+  <div style="height:6px;border-radius:3px;background:var(--l);margin-top:8px"><div style="width:37%;height:100%;border-radius:3px;background:var(--ok)"></div></div></div></div>
+ <div style="margin-top:12px;padding:12px 14px;border-radius:14px;border:1px dashed rgba(255,212,121,.5);display:flex;gap:10px;align-items:center;font-size:14px"><span style="color:var(--go);font:700 16px Mono">×2</span><span><b>Surto temporal</b> <span class="muted">— XP em dobro até domingo</span></span></div>
+ <div class="nav"><div class="on"><div class="ic"></div>Início</div><div><div class="ic" style="border-radius:50%"></div>Mapa</div><div><div class="ic"></div>Liga</div><div><div class="ic" style="border-radius:50%"></div>Viajante</div></div>
+</div>
+
+<!-- B: lição em telas curtas -->
+<div class="s" id="b-licao">
+ <div class="top"><div class="x">×</div><div class="prog"><i class="d"></i><i class="d"></i><i class="c"></i><i></i><i></i><i></i><i></i><i></i></div></div>
+ <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:22px;padding-bottom:40px">
+  <h1 style="font-size:32px">Variável é uma caixa com nome</h1>
+  <div style="display:flex;gap:12px;align-items:flex-start"><div class="sx"><i></i></div>
+  <div class="bub">Você dá um nome pra caixa e guarda um valor dentro. Depois é só chamar pelo nome.</div></div>
+  <div style="display:flex;gap:14px;align-items:center;justify-content:center;margin:6px 0">
+   <div style="width:120px;height:92px;border:2px solid var(--cy);border-radius:14px;display:grid;place-items:center;box-shadow:0 0 22px rgba(94,231,255,.25);font:700 34px Mono;color:var(--go);position:relative">17<span style="position:absolute;top:-13px;left:12px;background:var(--bg);padding:0 6px;font:600 14px Mono;color:var(--cy)">idade</span></div></div>
+  <div class="code"><span class="kw">let</span> idade = <span class="nu">17</span>;<br><span class="cm">// a caixa "idade" guarda 17</span></div>
+ </div>
+ <div style="padding-bottom:26px"><div class="btn b1">Entendi</div></div>
+</div>
+
+<!-- C: desafio tocar no bloco -->
+<div class="s" id="c-desafio">
+ <div class="top"><div class="x">×</div><div class="prog"><i class="d"></i><i class="d"></i><i class="d"></i><i class="c"></i><i></i><i></i><i></i><i></i></div><div class="chip" style="color:var(--or);padding:4px 9px">3 seguidas</div></div>
+ <div style="margin-top:34px"><span class="mono" style="color:var(--cy);font-size:13px">desafio</span>
+ <h2 style="font-size:26px;margin-top:8px">Guarde a idade do viajante na caixa</h2></div>
+ <div class="code" style="margin-top:26px;font-size:20px;padding:22px 18px"><span class="kw">let</span> idade <span style="display:inline-block;min-width:54px;text-align:center;border-radius:8px;background:rgba(62,224,161,.15);border:2px solid var(--ok);color:var(--ok);padding:0 10px">=</span> <span class="nu">17</span>;</div>
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:26px">
+  <div class="btn b3" style="font-family:Mono;opacity:.35;border-style:dashed">=</div><div class="btn b3" style="font-family:Mono">==</div>
+  <div class="btn b3" style="font-family:Mono">=&gt;</div><div class="btn b3" style="font-family:Mono">:</div></div>
+ <div style="position:absolute;left:0;right:0;bottom:0;padding:22px 20px 26px;background:#0f2a21;border-top:2px solid var(--ok)">
+  <div style="display:flex;justify-content:space-between;align-items:center"><h3 style="font-size:22px;color:var(--ok)">Na mosca!</h3><span class="mono" style="color:var(--go);font-size:15px">+10 XP</span></div>
+  <p style="margin:6px 0 16px;font-size:15px;color:#bfeedd">Um <b>=</b> guarda o valor. Dois <b>==</b> comparam. Guarde isso pro chefe.</p>
+  <div class="btn b2">Continuar</div></div>
+</div>
+
+<!-- D: laboratório dentro da lição -->
+<div class="s" id="d-lab">
+ <div class="top"><div class="x">×</div><div class="prog"><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="c"></i><i></i><i></i></div></div>
+ <div style="margin-top:26px"><span class="mono" style="color:var(--cy);font-size:13px">sua vez · postgres de verdade</span>
+ <h2 style="font-size:25px;margin-top:8px">Mostre só os produtos sem estoque</h2></div>
+ <div style="margin-top:20px;border-radius:14px;overflow:hidden;border:1px solid var(--pu);box-shadow:0 0 24px rgba(155,77,255,.2)">
+  <div style="background:var(--p2);padding:8px 12px;display:flex;gap:6px;align-items:center"><i style="width:10px;height:10px;border-radius:50%;background:#ff5f57"></i><i style="width:10px;height:10px;border-radius:50%;background:#febc2e"></i><i style="width:10px;height:10px;border-radius:50%;background:#28c840"></i><span class="mono muted" style="font-size:12px;margin-left:8px">loja.sql</span></div>
+  <div class="code" style="border:0;border-radius:0;font-size:16px"><span class="kw">SELECT</span> nome<br><span class="kw">FROM</span> produtos<br><span class="kw">WHERE</span> estoque = <span class="nu">0</span><span style="display:inline-block;width:9px;height:19px;background:var(--cy);vertical-align:-3px;margin-left:2px"></span></div>
+ </div>
+ <div style="display:flex;gap:8px;margin-top:10px;overflow:hidden"><div class="chip mono" style="font-weight:400">WHERE</div><div class="chip mono" style="font-weight:400">=</div><div class="chip mono" style="font-weight:400">AND</div><div class="chip mono" style="font-weight:400">;</div><div class="chip mono" style="font-weight:400">ORDER BY</div></div>
+ <div class="card" style="margin-top:16px;padding:0;overflow:hidden">
+  <div style="display:flex;justify-content:space-between;padding:10px 14px;font:13px Mono;color:var(--m);border-bottom:1px solid var(--l)"><span>nome</span><span style="color:var(--ok)">1 linha · bateu com o esperado ✓</span></div>
+  <div style="padding:12px 14px;font:16px Mono;color:var(--or)">Teclado Compacto</div></div>
+ <div style="position:absolute;left:20px;right:20px;bottom:26px;display:flex;gap:10px"><div class="btn b3" style="width:40%">Dica</div><div class="btn b1">Rodar ▶</div></div>
+</div>
+
+<!-- E: recompensa -->
+<div class="s" id="e-recompensa" style="background-image:radial-gradient(420px 380px at 50% 28%,rgba(94,231,255,.2),transparent 70%)">
+ <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;padding-bottom:120px">
+  <span class="mono" style="color:var(--cy);font-size:14px">anomalia #127 consertada</span>
+  <div style="font:800 110px/1 Syne;background:linear-gradient(180deg,#fff,var(--cy));-webkit-background-clip:text;color:transparent;text-shadow:0 0 40px rgba(94,231,255,.35);margin-top:6px">5</div>
+  <h1 style="font-size:28px">dias de linha estável</h1>
+  <div class="thread" style="width:100%;margin-top:18px"><div class="line"></div><div class="lit" style="width:71%"></div>
+   <div class="nodes"><div class="nd"><div class="dot on"></div></div><div class="nd"><div class="dot on"></div></div><div class="nd"><div class="dot on"></div></div><div class="nd"><div class="dot on"></div></div><div class="nd"><div class="dot on" style="transform:scale(1.25)"></div></div><div class="nd"><div class="dot"></div></div><div class="nd"><div class="dot" style="border-color:var(--go);border-style:dashed"></div><span style="color:var(--go)">âncora</span></div></div></div>
+  <div style="display:flex;gap:10px;margin-top:20px"><div class="chip" style="color:var(--go);font-size:15px">+30 XP</div><div class="chip" style="color:var(--cy);font-size:15px">+10 ◆</div></div>
+  <p class="muted" style="margin-top:18px;font-size:15px;max-width:290px;line-height:1.5">Mais 2 dias e você ganha uma <b style="color:var(--go)">Âncora Temporal</b>: ela segura a linha num dia que você não puder jogar.</p>
+ </div>
+ <div style="position:absolute;left:20px;right:20px;bottom:26px;display:flex;flex-direction:column;gap:10px"><div class="btn b1">Continuar</div><div class="btn b3">Mandar pra turma</div></div>
+</div>
+
+<!-- F: linha ramificou -->
+<div class="s" id="f-ramificou" style="background-image:radial-gradient(420px 380px at 50% 30%,rgba(255,93,122,.16),transparent 70%)">
+ <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding-bottom:140px">
+  <svg width="330" height="170" viewBox="0 0 330 170"><path d="M10 85 H170" stroke="#5ee7ff" stroke-width="5" stroke-linecap="round" style="filter:drop-shadow(0 0 6px #5ee7ff)"/>
+  <path d="M170 85 C210 85 220 35 320 30" stroke="#ff5d7a" stroke-width="4" fill="none" stroke-dasharray="8 8"/>
+  <path d="M170 85 C210 85 220 135 320 140" stroke="#2c2647" stroke-width="4" fill="none"/>
+  <circle cx="170" cy="85" r="12" fill="#0a0912" stroke="#ff5d7a" stroke-width="4"/>
+  <rect x="270" y="10" width="44" height="40" rx="9" fill="#1a0d14" stroke="#ff5d7a" stroke-width="2.5"/><rect x="280" y="22" width="7" height="10" rx="2" fill="#ff5d7a"/><rect x="297" y="22" width="7" height="10" rx="2" fill="#ff5d7a"/><path d="M282 42 q10 -6 20 0" stroke="#ff5d7a" stroke-width="3" fill="none"/>
+  <text x="292" y="72" fill="#ff5d7a" font-family="Mono" font-size="12" text-anchor="middle">o Eco</text></svg>
+  <h1 style="font-size:28px;margin-top:10px">A linha ramificou</h1>
+  <p class="muted" style="margin-top:12px;font-size:16px;line-height:1.5;max-width:300px">Ontem ninguém consertou a anomalia e o Eco avançou uma era. Seus 12 dias ainda podem ser salvos.</p>
+  <div class="card" style="margin-top:22px;display:flex;align-items:center;gap:12px;text-align:left;border-color:rgba(255,212,121,.5)"><div style="width:40px;height:40px;border-radius:50%;border:2px dashed var(--go);display:grid;place-items:center;color:var(--go);font:700 16px Mono">1</div><div><b>Você tem 1 Âncora Temporal</b><div class="muted" style="font-size:13px">Ela cobre o dia perdido</div></div></div>
+ </div>
+ <div style="position:absolute;left:20px;right:20px;bottom:26px;display:flex;flex-direction:column;gap:10px"><div class="btn" style="background:var(--go);color:#2a1d00">Usar a âncora</div><div class="btn b3">Recomeçar do dia 1</div></div>
+</div>
+
+<!-- G: liga e eventos -->
+<div class="s" id="g-liga">
+ <div class="top"><h2 style="font-size:26px">Liga da TVA</h2><div class="sp"></div><span class="mono muted" style="font-size:12px">zera em 3d 4h</span></div>
+ <div class="card" style="margin-top:12px;padding:16px;border-color:rgba(155,77,255,.6);background:linear-gradient(160deg,#211640,#151225)">
+  <div style="display:flex;justify-content:space-between"><b>Evento Nexus da turma</b><span class="mono" style="color:var(--pus);font-size:13px">até 30/set</span></div>
+  <p class="muted" style="font-size:14px;margin:6px 0 12px">100 anomalias juntos liberam o visual <b style="color:var(--t)">Terminal Dourado</b> para todos.</p>
+  <div style="height:12px;border-radius:6px;background:var(--l);overflow:hidden"><div style="width:64%;height:100%;background:linear-gradient(90deg,var(--pu),var(--go));box-shadow:0 0 12px var(--pu)"></div></div>
+  <div class="mono" style="font-size:13px;margin-top:6px;text-align:right">64 / 100</div></div>
+ <div style="margin-top:16px;display:flex;flex-direction:column;gap:2px" id="rk"></div>
+ <div style="margin:8px 0;border-top:1px dashed var(--ok);position:relative"><span class="mono" style="position:absolute;right:0;top:-9px;background:var(--bg);padding-left:8px;font-size:11px;color:var(--ok)">top 3 sobem de era</span></div>
+ <div id="rk2" style="display:flex;flex-direction:column;gap:2px"></div>
+ <div style="margin-top:12px;padding:12px 14px;border-radius:14px;border:1px solid rgba(255,93,122,.5);display:flex;gap:10px;align-items:center;font-size:14px;background:rgba(255,93,122,.06)"><span style="color:var(--bad);font:700 14px Mono">sex</span><span><b>Variante solta</b> <span class="muted">— mini-chefe com visual raro</span></span></div>
+ <div class="nav"><div><div class="ic"></div>Início</div><div><div class="ic" style="border-radius:50%"></div>Mapa</div><div class="on"><div class="ic"></div>Liga</div><div><div class="ic" style="border-radius:50%"></div>Viajante</div></div>
+</div>
+<script>
+const r=[["1","Ana L.","A","#ff6b1f",820,12],["2","Rafa","R","#5ee7ff",760,9],["3","Gustavo","G","#9b4dff",705,5,1]],r2=[["4","Bia","B","#3ee0a1",540,3],["5","Téo","T","#ffd479",410,7]];
+const row=x=>'<div style="display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:12px;'+(x[6]?'background:rgba(155,77,255,.14);border:1px solid rgba(155,77,255,.5)':'')+'"><span class="mono muted" style="width:14px">'+x[0]+'</span><div class="av" style="width:34px;height:34px;background:'+x[3]+';color:#0a0912">'+x[2]+'</div><b style="flex:1">'+x[1]+'</b><span class="mono muted" style="font-size:12px">'+x[5]+'d</span><span class="mono" style="color:var(--go);width:52px;text-align:right">'+x[4]+'</span></div>';
+document.getElementById('rk').innerHTML=r.map(row).join('');document.getElementById('rk2').innerHTML=r2.map(row).join('');
+</script>
+</body></html>
