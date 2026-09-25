@@ -1,3 +1,4 @@
+import { fillAnswerMatches } from '../progress/quiz';
 import type { Board, Cell, GameResult, Step } from './types';
 
 const LIM = 3;
@@ -60,17 +61,8 @@ export function evaluate(board: Board): GameResult {
   return 'playing';
 }
 
-function normalizeAnswer(s: string): string {
-  return s
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, ' ')
-    .replace(/^['"]|['"]$/g, '');
-}
-
 export function checkBlankAnswer(accept: string[], value: string): boolean {
-  const v = normalizeAnswer(value);
-  return accept.some((a) => normalizeAnswer(a) === v);
+  return fillAnswerMatches(accept, value);
 }
 
 export function isStepComplete(step: Step, answers: string[]): boolean {
