@@ -6,8 +6,24 @@ import type { BossFightConfig, BossFightState, BossRound, BossSequence } from '.
  * não exige sintaxe perfeita, exige os elementos que provam o conceito).
  */
 export function checkSingleShot(round: BossRound, input: string): boolean {
-  const value = input.toLowerCase();
-  return round.check.every((pattern) => new RegExp(pattern).test(value));
+  const value = normalizeAnswer(input);
+  // Cada padrão pode casar no texto como foi digitado (padrões que exigem espaço, como
+  // SQL) ou sem nenhum espaço (padrões ancorados como `^livres\(\)==0$`, que antes davam
+  // erro em quem escrevia `livres() == 0` ou deixava um espaço no fim pelo teclado).
+  const compact = value.replace(/\s+/g, '');
+  return round.check.every((pattern) => {
+    const re = new RegExp(pattern);
+    return re.test(value) || re.test(compact);
+  });
+}
+
+/** Minúsculas, sem espaços nas pontas e com as aspas curvas do teclado do celular retas. */
+function normalizeAnswer(input: string): string {
+  return input
+    .trim()
+    .toLowerCase()
+    .replace(/[\u2018\u2019\u201A\u2032]/g, "'")
+    .replace(/[\u201C\u201D\u201E\u2033]/g, '"');
 }
 
 /**
@@ -17,7 +33,7 @@ export function checkSingleShot(round: BossRound, input: string): boolean {
 export function checkSequenceStep(sequence: BossSequence, stepIndex: number, input: string): boolean {
   const pattern = sequence.steps[stepIndex];
   if (!pattern) return false;
-  return new RegExp(pattern).test(input.trim().toLowerCase());
+  return new RegExp(pattern).test(normalizeAnswer(input));
 }
 
 export function createBossFightState(config: BossFightConfig): BossFightState {

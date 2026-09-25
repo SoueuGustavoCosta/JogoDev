@@ -134,3 +134,30 @@ describe('applyBossHint', () => {
     expect(s2.score).toBe(0);
   });
 });
+
+describe('checkSingleShot: tolerante a espaços do teclado do celular', () => {
+  const round = (check: string[]): BossRound => ({ title: 'R', description: 'd', talk: 't', hint: 'h', check });
+
+  it('resposta ancorada aceita espaços no meio e nas pontas', () => {
+    const r = round(['^\\(?(livres\\(\\)===?0|0===?livres\\(\\)|livres\\(\\)<1|!livres\\(\\))\\)?;?$']);
+    for (const text of ['livres()==0', 'livres() == 0', ' livres() == 0 ', '(livres() === 0)', '0 == livres()', '!livres()', 'Livres() == 0;']) {
+      expect(checkSingleShot(r, text), text).toBe(true);
+    }
+    expect(checkSingleShot(r, 'livre() == 0')).toBe(false);
+    expect(checkSingleShot(r, 'livres() == 1')).toBe(false);
+  });
+
+  it('respostas curtas aceitam o espaço que o teclado põe no fim', () => {
+    expect(checkSingleShot(round(['^123$']), '123 ')).toBe(true);
+    expect(checkSingleShot(round(['^(\\$n\\+\\+|\\$n=\\$n\\+1);?$']), '$n = $n + 1;')).toBe(true);
+  });
+
+  it('padrões que exigem espaço continuam exigindo', () => {
+    expect(checkSingleShot(round(['select\\s+nome']), 'select nome from x')).toBe(true);
+    expect(checkSingleShot(round(['select\\s+nome']), 'selectnome')).toBe(false);
+  });
+
+  it('aspas curvas viram retas', () => {
+    expect(checkSingleShot(round(["^'m'$"]), '‘M’')).toBe(true);
+  });
+});
