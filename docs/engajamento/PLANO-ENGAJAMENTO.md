@@ -701,3 +701,15 @@ Mudança boa é mudança medida: compare os números antes da Etapa 2 com os de 
 As imagens PNG ainda mostram os nomes antigos ("Liga da TVA", "Evento Nexus", "Variante solta"); valem os nomes novos deste documento.
 
 Os mockups são referência de **direção visual**, não um layout para copiar pixel a pixel. Os componentes reais devem usar os tokens de `tokens.css` e o design-system existente.
+
+---
+
+## 7. Pendências (fora das etapas)
+
+Coisas que ficaram para depois. Nenhuma etapa deve fazê-las sem o autor pedir.
+
+| Desde | Pendência | O que falta |
+|---|---|---|
+| Etapa 1 | **Configurar as métricas de eventos** | O código já envia os eventos para o PostHog, mas nada sai enquanto não houver chave. Falta: criar o projeto no PostHog (plano Free), ligar "Discard client IP data" em Settings → Project, criar `VITE_POSTHOG_KEY` e `VITE_POSTHOG_HOST` na Vercel (Production e Preview) e fazer um novo deploy. Também ligar a aba **Analytics** do projeto na Vercel para contar visitas. Detalhes em `.env.example` e `src/config/analytics.ts`. |
+| Etapa 1 | Saídas não contadas no celular | Quem só troca de app e tem a aba fechada pelo sistema em segundo plano pode sair sem gerar `module_left`. |
+| Etapa 1 | `module_left` em telas | Na Etapa 3, o `percent` do `module_left` passa a contar telas vistas, não rolagem. |
