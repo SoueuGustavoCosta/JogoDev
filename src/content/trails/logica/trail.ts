@@ -107,7 +107,7 @@ export const logicaTrail: Trail = {
           'function maquinaJoga() { if ( ??? ) { $_SESSION[\'empate\'] = 1; return; } }  →  Escreva a condição no lugar de ??? usando livres().',
         talk: 'Volte ao farol e estude, viajante.',
         hint: 'Sem casas livres, a máquina para em vez de rodar para sempre: livres() == 0',
-        check: ['^(livres\\(\\)==0|0==livres\\(\\)|!livres\\(\\))$'],
+        check: ['^\\(?(livres\\(\\)===?0|0===?livres\\(\\)|livres\\(\\)<1|!livres\\(\\))\\)?;?$'],
       },
     ],
     badgeId: 'problemas',
