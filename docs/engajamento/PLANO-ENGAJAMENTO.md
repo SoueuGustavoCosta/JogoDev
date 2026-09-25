@@ -33,6 +33,10 @@ O Claude Code deve seguir estas regras em cada etapa, além das seções 3 e 15 
 8. **Mobile primeiro.** Teste cada tela em 390×844. Nada pode ficar coberto por botões flutuantes.
 9. **Se faltar decisão**, deixe `TODO(autor)` e pergunte. Não invente.
 10. **Resposta final de cada etapa:** o que mudou, como testar no celular, o que ficou pendente.
+11. **Projeto 100% gratuito.** Só Vercel Hobby, Supabase Free e PostHog Free. Nenhum serviço pago nem recurso que exija plano pago. Se uma etapa só funcionar pagando, avise o autor **antes** e proponha uma alternativa grátis.
+12. **Dados salvos continuam na versão 1.** Campos novos no progresso são opcionais (sem subir `PROGRESS_SCHEMA_VERSION`), e toda mudança atualiza também `domain/progress/merge.ts` (senão o campo some no próximo login ou backup), com teste.
+13. **SQL do Supabase:** conferir contra o banco real (`information_schema`) antes de entregar. O autor aplica; o Claude Code nunca roda nada no banco.
+14. **Nomes originais.** Nada de nomes, termos ou organizações de obras existentes (regra do `CLAUDE-TEMPO.md`). Usar: Liga dos Viajantes, Eco Solto, Convergência.
 
 ---
 
@@ -117,10 +121,10 @@ Feedback imediato em barra inferior verde ou vermelha, com +XP e contador de ace
 
 Ver `imagens/novo-1-a-hub.png`.
 
-### 2.4 A Linha do Tempo (ofensiva com a história do Loki)
+### 2.4 A Linha do Tempo (ofensiva com a história do Eco)
 
 - Consertou a anomalia do dia: **+1 dia de linha estável**.
-- Faltou um dia: **a linha ramifica** e o **Eco** (a variante com defeito do jogador) avança uma era no mapa. Tensão, sem punição pesada.
+- Faltou um dia: **a linha ramifica** e o **Eco** (a cópia com defeito do jogador) avança uma era no mapa. Tensão, sem punição pesada.
 - A cada 7 dias seguidos: ganha **1 Âncora Temporal**, que protege um dia perdido.
 - Visual: a ofensiva é uma **linha de luz com 7 nós** (dias da semana), não só um número com foguinho.
 
@@ -132,8 +136,8 @@ Ver `imagens/novo-5-e-recompensa.png` e `imagens/novo-6-f-ramificou.png`.
 |---|---|---|
 | **Anomalia do Dia** | Diária | Missão de 3 min, igual para todos |
 | **Surto Temporal** | Fins de semana | XP em dobro |
-| **Variante Solta** | 1x por semana (sexta) | Mini-chefe rápido com prêmio cosmético raro |
-| **Evento Nexus** | Mensal | Meta coletiva da turma (ex.: 100 anomalias juntos) desbloqueia um visual para todos |
+| **Eco Solto** | 1x por semana (sexta) | Mini-chefe rápido com prêmio cosmético raro |
+| **Convergência** | Mensal | Meta coletiva da turma (ex.: 100 anomalias juntos) desbloqueia um visual para todos |
 
 Todos os eventos vêm de **um arquivo de calendário** (configuração), para o autor criar eventos novos sem mexer em código.
 
@@ -153,8 +157,8 @@ Todos os eventos vêm de **um arquivo de calendário** (configuração), para o 
 
 ### 2.8 Social
 
-- **Liga da TVA:** ranking semanal por XP que **zera todo domingo**, para quem começou atrasado ter chance.
-- **Evento Nexus:** meta coletiva (cooperação, não só competição).
+- **Liga dos Viajantes:** ranking semanal por XP que **zera todo domingo**, para quem começou atrasado ter chance.
+- **Convergência:** meta coletiva (cooperação, não só competição).
 - Na Praça da Sintaxe, mostrar a linha do tempo ao lado do avatar de quem está online.
 
 Ver `imagens/novo-7-g-liga.png`.
@@ -192,7 +196,7 @@ Mini projetos curtos em que **o jogador decide como fazer**. Exemplo: "Faça uma
 - **Dois modos:** montar com **blocos** (linhas de código reais da linguagem escolhida, com peças a mais para a pessoa escolher o caminho: `if`, `elseif`, `switch`...) ou **escrever código** livremente. Dá para trocar de modo no meio.
 - **A Senhorita Sintaxe ajuda sem entregar a resposta.** Ela lê quais testes passaram e falharam e fala em linguagem simples. Dicas em 3 níveis: (1) a ideia, (2) a estrutura, (3) um bloco pronto. Cada nível custa um pouco do XP extra.
 - **Depois de acertar:** mostra outras formas certas de resolver (ex.: com `switch`), um **desafio extra** opcional (ex.: não travar com divisão por zero) e o **Mural da turma**, onde cada um publica sua solução e os outros dão estrela.
-- A Oficina também alimenta os eventos: a **Variante Solta** de sexta pode ser um desafio livre, e o **Evento Nexus** pode contar oficinas concluídas.
+- A Oficina também alimenta os eventos: a **Eco Solto** de sexta pode ser um desafio livre, e o **Convergência** pode contar oficinas concluídas.
 
 Ver `imagens/novo-8-h-oficina.png`, `imagens/novo-9-i-blocos.png` e `imagens/novo-10-j-solucoes.png`.
 
@@ -208,13 +212,14 @@ Ordem pensada para entregar valor rápido e com risco baixo primeiro.
 | 1 | Medir onde as pessoas desistem | Pequeno | Baixo |
 | 2 | Ajustes rápidos de visual e primeira impressão | Pequeno | Baixo |
 | 3 | Motor de lição em telas curtas | Grande | Médio |
+| 3.5 | Progresso do quiz por id de pergunta | Médio | Alto (mexe no progresso salvo) |
 | 4 | Novos tipos de desafio | Médio | Médio |
 | 5 | Converter conteúdo, uma ilha por vez | Grande | Médio |
 | 6 | Laboratório dentro da lição | Médio | Médio |
 | 7 | Anomalia do Dia | Grande | Médio |
 | 8 | Linha do Tempo, Âncora e Eco | Médio | Médio |
 | 9 | Fragmentos e cosméticos do avatar | Médio | Baixo |
-| 10 | Liga da TVA semanal | Médio | Médio |
+| 10 | Liga dos Viajantes semanal | Médio | Médio |
 | 11 | Calendário de eventos | Médio | Baixo |
 | 12 | PWA e lembretes | Grande | Alto |
 | 13 | Oficina do Viajante (desafios livres) | Grande | Médio |
@@ -254,24 +259,28 @@ Não comece a Etapa 1. Espere minha confirmação.
 ETAPA 1 — MÉTRICAS. Siga as Regras de ouro de docs/engajamento/PLANO-ENGAJAMENTO.md.
 Branch: etapa-1-metricas.
 
-Hoje o app já envia page_view, prologue_*, island_opened, module_started, lab_opened e eventos de Pix.
-Faltam eventos que o CLAUDE.md seção 6 já pede. Adicione, sempre via AnalyticsPort e sem dados pessoais:
-- quiz_answered {island, module, correct, tries}
-- module_completed {island, module}
-- island_completed {island}
-- lab_query_run {ok}
-- mission_completed {mission}
-- boss_started {island} e boss_finished {island, won}
-- module_left {island, module, percent} quando o jogador sai de um módulo sem concluir (percent = quanto rolou ou quantas telas viu, arredondado de 10 em 10).
+Hoje o app já envia page_view, prologue_*, island_opened, module_started, quiz_answered, module_completed,
+island_completed, lab_opened, lab_query_run, mission_completed, boss_fight_started/won/lost e eventos de Pix
+(conferido na Etapa 0). Os nomes boss_fight_* ficam como estão (decisão do autor).
+
+1. Evento novo, via AnalyticsPort e sem dados pessoais:
+   - module_left {island, module, percent} quando o jogador sai de um módulo sem concluir (percent = quanto rolou, arredondado de 10 em 10).
+2. Provedor de eventos (decisão do autor, 2026-09-25): a Vercel fica SÓ para visitas (page views), porque eventos
+   personalizados exigem plano pago. Os eventos vão para o PostHog (plano gratuito), num adaptador novo em
+   src/infrastructure/analytics atrás do AnalyticsPort:
+   - sem cookies e sem armazenamento persistente (persistence: 'memory'), sem identificar pessoas, sem autocapture,
+     sem gravação de sessão, sem nome/e-mail/telefone/uuid nas props;
+   - chave do projeto em variável de ambiente pública (VITE_POSTHOG_KEY / VITE_POSTHOG_HOST); sem chave, cai no NoopAnalytics;
+   - biblioteca carregada sob demanda para não pesar o bundle inicial;
+   - atualizar a página Privacidade e o CLAUDE.md seção 6 citando o PostHog.
 
 Regras:
-- Não mude nenhuma tela nem texto nesta etapa.
+- Não mude nenhuma tela nem texto nesta etapa (exceto a página Privacidade).
 - Crie testes para qualquer função nova de cálculo (ex.: o percentual).
-- Atualize a página Privacidade só se ela listar eventos um a um.
-Ao final: lint, typecheck, test e build verdes. Me explique como ver esses eventos no painel da Vercel.
+Ao final: lint, typecheck, test e build verdes. Me explique como criar o projeto grátis no PostHog, onde colocar a chave na Vercel e como ver os eventos.
 ```
 
-**Pronto quando:** os eventos aparecem no painel da Vercel (Analytics → Events) depois do deploy de preview.
+**Pronto quando:** os eventos aparecem no painel do PostHog (Activity) depois do deploy de preview, e as visitas continuam na Vercel.
 
 > Dica para o Gustavo: deixe esta etapa rodando alguns dias no ar antes da Etapa 5. Os dados vão mostrar qual ilha converter primeiro.
 
@@ -288,7 +297,7 @@ Branch: etapa-2-ajustes-rapidos. Veja docs/engajamento/imagens/atual-*.png para 
 Faça SOMENTE isto:
 1. Prólogo (src/content/prologue/script.ts): a recomendação final passa a ser a Era da Lógica em vez da Era dos Dados. Mantenha o tom e as outras falas. Atualize o teste do roteiro se ele verificar esse texto.
 2. Mapa: destacar a Era da Lógica como "comece aqui" para quem ainda não concluiu nenhum módulo. As outras eras continuam liberadas (ordem livre).
-3. Botão "Contribua": sai do topo das telas. Fica só como link discreto na aba Viajante/Configurações e no rodapé, como manda o CLAUDE.md seção 9. O SupportModal, o foguete, o confete e o QR continuam iguais.
+3. Botão "Contribua": continua existindo, mas discreto (decisão do autor, 2026-09-25, CLAUDE.md seção 9): sem brilho dourado e sem ficar fixo no topo de todas as telas. Fica na aba Viajante/Configurações e no rodapé. O SupportModal, o foguete, o confete e o QR continuam iguais.
 4. "Salvar progresso": deixa de ser botão flutuante. Vira (a) um item fixo na aba Viajante e (b) um aviso não intrusivo que aparece uma vez depois da primeira insígnia conquistada. Nada pode cobrir texto ou falas da Sintaxe.
 5. Cabeçalho do ModulePage: no máximo 1 linha compacta (voltar, título curto do módulo, XP). Os chips de perfil e o contador de insígnias saem da página do módulo (continuam na aba Viajante).
 6. Troque a fala da Sintaxe "Leia com calma..." por algo que convide a jogar, por exemplo: "Bora, {name}. Cada tela é curtinha e no fim tem um paradoxo pra resolver."
@@ -333,6 +342,33 @@ Ao final: lint, typecheck, test e build verdes + prints de 3 telas seguidas de u
 
 ---
 
+### Etapa 3.5 — Progresso do quiz por id de pergunta
+
+**Objetivo:** hoje as respostas ficam guardadas pela **posição** da pergunta (`quizResults[índice]`). Se uma pergunta for inserida, reordenada ou convertida, o progresso antigo passa a apontar para a pergunta errada. Esta etapa tira esse risco **antes** das Etapas 4 e 5. (Adicionada pelo autor depois da Etapa 0.)
+
+```text
+ETAPA 3.5 — PROGRESSO POR ID DE PERGUNTA. Siga as Regras de ouro de docs/engajamento/PLANO-ENGAJAMENTO.md.
+Branch: etapa-3-5-id-pergunta.
+
+1. Conteúdo: cada QuizItem ganha um id estável (único dentro do módulo). Gere os ids para TODAS as perguntas
+   existentes, sem mudar texto, ordem nem quantidade. Zod passa a exigir o id e a unicidade.
+2. Domínio: quizResults passa a ser indexado por id. O cálculo de XP, desbloqueio, merge (merge.ts) e recap usam o id.
+3. Migração (formato continua v1, regra de ouro 12): ao carregar um progresso antigo indexado por posição,
+   converter cada índice para o id da pergunta que estava naquela posição NO CONTEÚDO ATUAL. Isso vale para
+   localStorage, para o backup da nuvem (progresso_completo) e para códigos de exportação antigos.
+   Deve ser idempotente (rodar duas vezes não muda nada) e nunca apagar resultado que não conseguir converter
+   (guardar à parte em vez de descartar).
+4. Testes: XP de cada jogador igual antes e depois da migração (para um progresso completo de TODAS as ilhas),
+   merge entre um progresso antigo e um novo, importação de código antigo.
+
+Não altere textos, ordem ou quantidade de perguntas nesta etapa.
+Ao final: lint, typecheck, test e build verdes.
+```
+
+**Pronto quando:** um progresso salvo antes da etapa abre com o mesmo XP e os mesmos módulos concluídos.
+
+---
+
 ### Etapa 4 — Novos tipos de desafio
 
 **Objetivo:** ter as ferramentas para trocar múltipla escolha por desafios de código.
@@ -351,6 +387,9 @@ Branch: etapa-4-desafios. Referência: docs/engajamento/imagens/novo-3-c-desafio
    - Desligue ligaduras da fonte mono nos desafios (font-variant-ligatures: none).
 3. Crie UMA pergunta de exemplo de cada formato novo num módulo da ilha Lógica (sem apagar nenhuma pergunta existente), para eu testar.
 4. Atualize a seção 10 do CLAUDE.md explicando os formatos novos para quem for criar conteúdo.
+5. Testes de não regressão (decisão do autor): hoje eles exigem contagens exatas (ex.: Lógica = 54 perguntas,
+   31 alternativas + 23 completar). A regra passa a ser "nenhum conceito sumiu e total ≥ ao atual". ANTES de
+   aplicar, mostre ao autor o diff proposto dos nonRegression.test.ts e espere a aprovação.
 
 Ao final: lint, typecheck, test e build verdes + prints de cada formato.
 ```
@@ -432,7 +471,7 @@ Ao final: lint, typecheck, test e build verdes + prints.
 
 ### Etapa 8 — Linha do Tempo, Âncora Temporal e o Eco
 
-**Objetivo:** transformar a ofensiva em história (tema Loki).
+**Objetivo:** transformar a ofensiva em história (história do Eco, enredo original do CLAUDE-TEMPO.md).
 
 ```text
 ETAPA 8 — LINHA DO TEMPO. Siga as Regras de ouro de docs/engajamento/PLANO-ENGAJAMENTO.md.
@@ -464,7 +503,7 @@ Ao final: lint, typecheck, test e build verdes + testes cobrindo virada de dia, 
 ETAPA 9 — FRAGMENTOS E COSMÉTICOS. Siga as Regras de ouro de docs/engajamento/PLANO-ENGAJAMENTO.md.
 Branch: etapa-9-fragmentos.
 
-1. Domínio: saldo de Fragmentos Temporais (◆) no progresso, com histórico simples de ganhos e gastos. Testes para saldo nunca negativo.
+1. Domínio: Fragmentos Temporais (◆) guardados como HISTÓRICO de ganhos e gastos (cada lançamento com id único); o saldo é sempre calculado a partir do histórico, nunca guardado solto. O merge entre aparelhos faz a união dos lançamentos por id, para não perder nem duplicar ◆ com dois aparelhos (decisão do autor). Testes para saldo nunca negativo e para o merge.
 2. Conteúdo: catálogo de cosméticos em src/content/cosmetics/ (molduras do terminal, cores, acessórios, cabelos), cada um com preço em ◆ e raridade. Alguns itens só saem em eventos (não podem ser comprados).
 3. Integrar com o avatar da Praça da Sintaxe que já existe (não recriar a Praça). Itens equipados salvos no Supabase junto do avatar.
 4. Tela "Loja do Viajante" dentro da aba Viajante.
@@ -475,18 +514,18 @@ Ao final: lint, typecheck, test e build verdes + prints.
 
 ---
 
-### Etapa 10 — Liga da TVA semanal
+### Etapa 10 — Liga dos Viajantes semanal
 
 **Objetivo:** competição leve que recomeça toda semana.
 
 ```text
-ETAPA 10 — LIGA DA TVA. Siga as Regras de ouro de docs/engajamento/PLANO-ENGAJAMENTO.md.
+ETAPA 10 — LIGA DOS VIAJANTES. Siga as Regras de ouro de docs/engajamento/PLANO-ENGAJAMENTO.md.
 Branch: etapa-10-liga. Referência: docs/engajamento/imagens/novo-7-g-liga.png.
 
 1. Supabase: registrar XP ganho por semana (semana começa segunda 00:00 e termina domingo 23:59, fuso America/Sao_Paulo). Pode ser uma tabela xp_semanal ou uma view a partir de eventos de XP. Explique a escolha. Entregue o SQL com RLS para eu aplicar; não rode nada no banco.
 2. Aba Liga: ranking da semana (avatar, nome, dias de linha, XP), com o jogador destacado e contagem regressiva para o reset.
 3. Linha "top 3 ganham o selo da semana" (selo cosmético guardado no perfil). Sem rebaixamento nem punição.
-4. Proteção básica: XP por semana com teto razoável e validação para não aceitar valores absurdos do cliente. Deixe TODO(autor) se precisar de decisão.
+4. Proteção básica (decisão do autor: por enquanto só isso, a turma é pequena): XP por semana com teto razoável validado no servidor, para não aceitar valores absurdos do cliente. Deixe TODO(autor) para o valor do teto.
 
 Ao final: lint, typecheck, test e build verdes + prints.
 ```
@@ -503,10 +542,10 @@ Branch: etapa-11-eventos.
 
 1. Arquivo de configuração src/content/events/calendar.ts com eventos datados. Tipos:
    - 'surto': multiplicador de XP (ex.: 2x) entre duas datas. Padrão: todo fim de semana.
-   - 'variante': mini-chefe rápido (reusar o motor de src/domain/bossFight com 3 rodadas) com prêmio cosmético raro. Padrão: toda sexta.
-   - 'nexus': meta coletiva (ex.: 100 anomalias da turma no mês) que libera um cosmético para todos quando atingida. Contagem pelo Supabase.
-2. Domínio puro para: evento ativo em uma data, multiplicador de XP aplicado, progresso da meta Nexus.
-3. Início e Liga mostram o evento ativo (faixa discreta, como na imagem novo-1-a-hub.png) e o card do Nexus.
+   - 'eco-solto': mini-chefe rápido (reusar o motor de src/domain/bossFight com 3 rodadas) com prêmio cosmético raro. Padrão: toda sexta.
+   - 'convergencia': meta coletiva (ex.: 100 anomalias da turma no mês) que libera um cosmético para todos quando atingida. Contagem pelo Supabase.
+2. Domínio puro para: evento ativo em uma data, multiplicador de XP aplicado, progresso da meta da Convergência.
+3. Início e Liga mostram o evento ativo (faixa discreta, como na imagem novo-1-a-hub.png) e o card da Convergência.
 4. Documente no CLAUDE.md como eu (autor) crio um evento novo só editando calendar.ts.
 
 Ao final: lint, typecheck, test e build verdes.
@@ -523,7 +562,7 @@ ETAPA 12 — PWA E LEMBRETES. Siga as Regras de ouro de docs/engajamento/PLANO-E
 Branch: etapa-12-lembretes.
 
 Parte A (faça primeiro e pare para eu testar):
-- Verifique se o app já é PWA instalável (manifest, ícones, service worker). Complete o que faltar, sem quebrar o funcionamento offline existente.
+- Verifique se o app já é PWA instalável (manifest, ícones, service worker). Complete o que faltar. (Na Etapa 0: existe só o manifest; ainda não há service worker nem modo offline.)
 - Tela curta "Adicionar à tela inicial" com instruções para Android e para iPhone, mostrada uma vez depois da primeira anomalia resolvida (evento install_prompt_shown).
 
 Parte B (só depois que eu aprovar a A):
@@ -586,7 +625,7 @@ Mesma branch da 13A (ou etapa-13b-oficina-blocos). Referência: docs/engajamento
    - Tabela solucoes_oficina (uuid do jogador, workshop_id, linguagem, código, criada_em) e estrelas_solucao (uuid de quem deu, solução). RLS no padrão do schema.sql. Entregue o SQL; não rode no banco.
    - Só aparece no mural quem tocar em "Publicar no mural". Limite de tamanho do código e filtro básico de palavrões.
    - O mural de uma oficina só abre DEPOIS que o jogador resolve ela (para não copiar).
-4. Integração com eventos (Etapa 11), se ela já existir: a Variante Solta pode apontar para uma oficina, e o Nexus pode contar oficinas resolvidas.
+4. Integração com eventos (Etapa 11), se ela já existir: a Eco Solto pode apontar para uma oficina, e a Convergência pode contar oficinas resolvidas.
 
 Ao final: lint, typecheck, test e build verdes + prints do modo blocos no celular (390x844).
 ```
@@ -604,6 +643,21 @@ Ao final: lint, typecheck, test e build verdes + prints do modo blocos no celula
 | Recompensa da Liga | Selo cosmético semanal, sem rebaixamento |
 | Nome da moeda | Fragmentos Temporais (◆) |
 | Lembretes | Começar pelo grupo de WhatsApp enquanto a Etapa 12 não fica pronta |
+
+### Decididas pelo autor depois da Etapa 0 (2026-09-25)
+
+| Decisão | Resposta |
+|---|---|
+| Custos | Projeto 100% gratuito: Vercel Hobby, Supabase Free, PostHog Free (regra de ouro 11) |
+| Métricas | Vercel só para visitas; eventos no PostHog Free, sem cookies e sem dados pessoais, via AnalyticsPort |
+| Nomes | Liga dos Viajantes, Eco Solto e Convergência (nada de nomes de obras existentes) |
+| Pix | O botão continua, mas discreto: sem brilho dourado e sem ficar fixo no topo de todas as telas |
+| Posição das perguntas | Progresso passa a usar id de pergunta, na Etapa 3.5, antes da Etapa 4 |
+| Testes de não regressão | Regra "nenhum conceito sumiu e total ≥ ao atual", mostrada ao autor antes de aplicar |
+| Formato salvo | Continua v1, só com campos opcionais novos |
+| Fragmentos | Histórico de ganhos e gastos, não saldo solto |
+| XP falso na Liga | Por enquanto só teto no servidor |
+| Etapa 1 | Só adicionar module_left; manter os nomes boss_fight_* |
 | Linguagens da Oficina no lançamento | PHP e JavaScript; Python depois; Java no futuro |
 | Mural da turma | Só abre depois de resolver a oficina, e publicar é opcional |
 | Sintaxe com IA de verdade nas dicas | Não no começo (exigiria servidor e custo por uso). Dicas prontas em 3 níveis + leitura dos testes resolvem bem |
@@ -617,7 +671,7 @@ Acompanhe no painel da Vercel e no Supabase:
 - **Quantos voltam no dia seguinte** (principal métrica do Duolingo).
 - **Quantos chegam a 7 dias de linha estável.**
 - **Em qual tela as pessoas saem** (evento `module_left`). Se a saída se concentrar numa tela, o problema é aquela tela.
-- **Anomalias resolvidas por dia** e progresso do Evento Nexus.
+- **Anomalias resolvidas por dia** e progresso do Convergência.
 
 Mudança boa é mudança medida: compare os números antes da Etapa 2 com os de depois da Etapa 8.
 
@@ -637,11 +691,13 @@ Mudança boa é mudança medida: compare os números antes da Etapa 2 com os de 
 | `novo-4-d-lab.png` | Laboratório SQL dentro da lição |
 | `novo-5-e-recompensa.png` | Recompensa depois da anomalia, progresso até a Âncora |
 | `novo-6-f-ramificou.png` | A linha ramificou: o Eco avançou, opção de usar a âncora |
-| `novo-7-g-liga.png` | Liga da TVA semanal com Evento Nexus e Variante Solta |
+| `novo-7-g-liga.png` | Liga dos Viajantes semanal com Convergência e Eco Solto |
 | `novo-8-h-oficina.png` | Oficina: história, testes visíveis, escolha de linguagem e modo |
 | `novo-9-i-blocos.png` | Oficina: montando a calculadora com blocos e a Sintaxe comentando os testes |
 | `novo-10-j-solucoes.png` | Oficina: sucesso, outros jeitos certos, mural da turma e desafio extra |
 | `painel-todas-as-telas.png` | Todas as telas novas lado a lado |
 | `mockups-fonte.html` | Código das telas novas (o Claude Code pode abrir para copiar medidas e cores) |
+
+As imagens PNG ainda mostram os nomes antigos ("Liga da TVA", "Evento Nexus", "Variante solta"); valem os nomes novos deste documento.
 
 Os mockups são referência de **direção visual**, não um layout para copiar pixel a pixel. Os componentes reais devem usar os tokens de `tokens.css` e o design-system existente.
