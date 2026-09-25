@@ -1,12 +1,21 @@
-import { track } from '@vercel/analytics';
-import type { AnalyticsPort, AnalyticsEventName, AnalyticsProps } from '@/application/ports';
+import { inject } from '@vercel/analytics';
+
+let started = false;
 
 /**
- * Adaptador do Vercel Web Analytics: contagem anônima de eventos, sem cookies
- * e sem dados pessoais (regras da seção 6 do CLAUDE.md).
+ * Liga o Vercel Web Analytics só para **contar visitas e páginas vistas** (plano Hobby,
+ * gratuito). Eventos personalizados na Vercel exigem plano pago, então os eventos do app
+ * vão para o PostHog (`PostHogAnalytics`); aqui não passa nenhum `track`.
+ *
+ * O script da Vercel acompanha sozinho as trocas de rota do React Router. Sem cookies e
+ * sem dados pessoais (seção 6 do CLAUDE.md). Chamar mais de uma vez não duplica nada.
  */
-export class VercelAnalytics implements AnalyticsPort {
-  track(event: AnalyticsEventName, props?: AnalyticsProps): void {
-    track(event, props);
+export function startVercelPageViews(): void {
+  if (started) return;
+  started = true;
+  try {
+    inject({ mode: 'production' });
+  } catch {
+    // Métrica nunca derruba o app.
   }
 }

@@ -1,7 +1,8 @@
-import { createContext, useContext, useMemo, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useMemo, type ReactNode } from 'react';
 import type { AnalyticsPort, ClipboardPort, LeaderboardPort, PhpEnginePort, ProgressRepository, SqlEnginePort } from '@/application/ports';
 import { LocalStorageProgressRepository } from '@/infrastructure/storage';
-import { NoopAnalytics, VercelAnalytics } from '@/infrastructure/analytics';
+import { NoopAnalytics, PostHogAnalytics, startVercelPageViews } from '@/infrastructure/analytics';
+import { POSTHOG_HOST, POSTHOG_KEY } from '@/config/analytics';
 import { generateRecoveryCode, NoopLeaderboard, resizeAvatarImage, SupabaseLeaderboard } from '@/infrastructure/leaderboard';
 import { PgliteEngine } from '@/infrastructure/sql';
 import { PhpWasmEngine } from '@/infrastructure/php';
@@ -39,7 +40,11 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
   const services = useMemo<Services>(
     () => ({
       progressRepository: new LocalStorageProgressRepository(),
-      analytics: import.meta.env.PROD ? new VercelAnalytics() : new NoopAnalytics(),
+      // Eventos no PostHog (grátis) só em produção e com a chave configurada; visitas na Vercel (ver abaixo).
+      analytics:
+        import.meta.env.PROD && POSTHOG_KEY
+          ? new PostHogAnalytics({ apiKey: POSTHOG_KEY, host: POSTHOG_HOST })
+          : new NoopAnalytics(),
       sqlEngine: new PgliteEngine(),
       phpEngine: new PhpWasmEngine(),
       clipboard: new NavigatorClipboard(),
@@ -51,6 +56,11 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
     }),
     [],
   );
+
+  // Contagem de visitas (Vercel Web Analytics, plano grátis): só em produção.
+  useEffect(() => {
+    if (import.meta.env.PROD) startVercelPageViews();
+  }, []);
 
   return <ServicesContext.Provider value={services}>{children}</ServicesContext.Provider>;
 }
