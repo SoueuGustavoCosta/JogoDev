@@ -108,6 +108,7 @@ export const modLoops: Module = {
       pre: 'No do-while, a condição é testada',
       post: 'o bloco rodar, ao contrário do while.',
       accept: ['depois de', 'depois', 'apos', 'após'],
+      wrong: ['antes de', 'durante', 'sem'],
       placeholder: 'antes ou depois',
       explain: 'do-while testa a condição só depois de executar o bloco uma vez, garantindo pelo menos uma execução.',
     },

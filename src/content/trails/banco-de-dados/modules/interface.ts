@@ -42,6 +42,7 @@ export const modInterface: Module = {
       pre: "",
       post: "",
       accept: ["\\dt"],
+      wrong: ["\\l", "\\q", "\\c"],
       placeholder: "\\?",
       explain: "\\dt (de \"display tables\") lista as tabelas.",
       hint: "Está na lista de atalhos do psql, logo acima: começa com barra invertida.",

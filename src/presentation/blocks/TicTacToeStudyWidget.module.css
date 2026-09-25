@@ -92,3 +92,38 @@
   font-size: 0.9rem;
   min-height: 1.4em;
 }
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex: 1 1 100%;
+}
+
+.chip {
+  min-height: var(--touch-target);
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--color-line);
+  background: var(--color-panel-2);
+  color: var(--color-text);
+  font: 600 0.9rem var(--font-mono);
+  cursor: pointer;
+  word-break: break-word;
+}
+
+.chip:focus-visible {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 2px;
+}
+
+.chipOn {
+  border-color: var(--color-orange);
+  background: rgba(255, 107, 31, 0.14);
+  color: var(--color-orange-soft);
+}
+
+.blankWrong {
+  color: var(--color-bad);
+  font-weight: 700;
+}

@@ -111,7 +111,7 @@ export const modModulos: Module = {
       q: 'Qual ferramenta é usada para instalar pacotes de fora da biblioteca padrão, vindos do PyPI?',
       options: ['import', 'pip', 'with', 'venv'],
       answer: 1,
-      explain: 'pip install <pacote> baixa e instala bibliotecas publicadas no PyPI (Python Package Index).',
+      explain: 'pip install &lt;pacote&gt; baixa e instala bibliotecas publicadas no PyPI (Python Package Index).',
     },
     {
       q: 'Por que with open("arquivo.txt") as f é preferível a abrir o arquivo sem with?',
@@ -131,6 +131,7 @@ export const modModulos: Module = {
       pre: 'Para abrir um arquivo apagando o conteúdo anterior e escrever nele, o modo usado é "',
       post: '".',
       accept: ['w'],
+      wrong: ['r', 'a', 'x'],
       placeholder: 'letra',
       explain: 'O modo "w" (write) abre para escrita, apagando o conteúdo anterior. "a" adiciona ao final, sem apagar.',
     },

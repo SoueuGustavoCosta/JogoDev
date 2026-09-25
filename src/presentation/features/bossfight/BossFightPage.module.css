@@ -304,3 +304,50 @@
   margin: 0;
   color: var(--color-text);
 }
+
+/* Blocos de escolha: o aluno toca no código certo em vez de digitar. */
+.blocks {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+}
+
+.block {
+  min-height: 52px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--color-line);
+  background: var(--color-panel-2);
+  color: var(--color-text);
+  font: 600 0.92rem/1.5 var(--font-mono);
+  text-align: left;
+  white-space: pre-wrap;
+  word-break: break-word;
+  cursor: pointer;
+  transition: transform 0.12s, border-color 0.15s;
+}
+
+.block:hover:not(:disabled) {
+  border-color: var(--boss-accent, var(--color-purple));
+}
+
+.block:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.block:focus-visible {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 2px;
+}
+
+.blockGone {
+  opacity: 0.3;
+  text-decoration: line-through;
+  cursor: default;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .block {
+    transition: none;
+  }
+}

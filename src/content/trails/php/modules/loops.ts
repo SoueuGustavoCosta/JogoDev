@@ -105,6 +105,7 @@ export const modLoops: Module = {
       pre: 'Para percorrer os itens de um array sem controlar um índice manualmente, PHP usa o laço',
       post: '.',
       accept: ['foreach'],
+      wrong: ['for', 'while', 'do'],
       placeholder: 'nome do laço',
       explain: 'foreach percorre cada item de um array diretamente, sem precisar de um índice manual como no for clássico.',
     },

@@ -104,6 +104,7 @@ export const modLoops: Module = {
       pre: 'A saída, linha por linha, é:',
       post: '',
       accept: ['maçã\nbanana', 'maça\nbanana', 'maçã banana', 'maça banana'],
+      wrong: ['banana\nmaçã', 'maçã, banana', 'fruta\nfruta'],
       placeholder: 'maçã banana',
       explain: 'O for percorre cada item da lista, na ordem: primeiro "maçã", depois "banana".',
     },

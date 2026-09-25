@@ -107,6 +107,7 @@ export const modFuncoes: Module = {
       pre: 'Uma função com valor padrão se escreve como function saudacao($nome, $saudacaoInicial =',
       post: ').',
       accept: ['"olá"', "'olá'", '"ola"', "'ola'"],
+      wrong: ['$olá', '(olá)', '[olá]'],
       placeholder: '"valor padrão" entre aspas',
       explain: 'O valor padrão é escrito diretamente após o =, como uma string entre aspas.',
     },

@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { shuffledOrder } from '@/domain/progress';
 import {
+  checkBlankAnswer,
   emptyBoard,
   evaluate,
   isOccupied,
@@ -35,6 +37,16 @@ export function TicTacToeStudyWidget() {
   const [history, setHistory] = useState({ vitorias: 0, derrotas: 0, empates: 0 });
 
   const step = ticTacToeSteps[stepIndex];
+  // Blocos de cada lacuna, embaralhados de novo a cada passo.
+  const blankBlocks = useMemo(
+    () =>
+      step.blanks.map((blank) => {
+        if (!blank.wrong?.length) return [];
+        const all = [blank.accept[0], ...blank.wrong];
+        return shuffledOrder(all.length, Math.random).map((i) => all[i]);
+      }),
+    [step],
+  );
   const result = evaluate(board);
 
   function updateAnswer(i: number, value: string) {
@@ -101,7 +113,31 @@ export function TicTacToeStudyWidget() {
           <p className={styles.stepCount}>
             Passo {stepIndex + 1} de {ticTacToeSteps.length}
           </p>
-          {step.blanks.map((blank, i) => (
+          {step.blanks.map((blank, i) =>
+            blankBlocks[i].length > 0 ? (
+              <div key={i} className={styles.blankRow} role="radiogroup" aria-label={blank.hint}>
+                <span className={styles.hint}>
+                  {blank.hint}
+                  {wrong && !checkBlankAnswer(blank.accept, answers[i] ?? '') ? (
+                    <b className={styles.blankWrong}> ✗ revise esta</b>
+                  ) : null}
+                </span>
+                <div className={styles.chips}>
+                  {blankBlocks[i].map((block) => (
+                    <button
+                      key={block}
+                      type="button"
+                      role="radio"
+                      aria-checked={answers[i] === block}
+                      className={`${styles.chip} ${answers[i] === block ? styles.chipOn : ''}`}
+                      onClick={() => updateAnswer(i, block)}
+                    >
+                      {block}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
             <label key={i} className={styles.blankRow}>
               <span className={styles.hint}>{blank.hint}</span>
               <input
@@ -115,8 +151,9 @@ export function TicTacToeStudyWidget() {
                 className={styles.blankInput}
               />
             </label>
-          ))}
-          {wrong ? <p className={styles.wrong}>Ainda não é isso — confira a dica de cada lacuna e tente de novo.</p> : null}
+            ),
+          )}
+          {wrong ? <p className={styles.wrong}>Quase! Troque os blocos das lacunas marcadas com ✗ e verifique de novo.</p> : null}
           <Button size="sm" onClick={verifyStep}>
             Verificar
           </Button>

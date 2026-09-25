@@ -125,6 +125,7 @@ export const modOperadores: Module = {
       pre: 'Em vez de && e ||, Python escreve os operadores lógicos como palavras:',
       post: 'e or.',
       accept: ['and'],
+      wrong: ['&&', 'also', 'with'],
       placeholder: 'palavra',
       explain: 'Python usa and, or e not por extenso, no lugar de &&, || e !.',
     },

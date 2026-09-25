@@ -6,6 +6,13 @@
  * CLAUDE.md: `content/` é dado tipado).
  */
 
+/**
+ * Blocos de escolha de uma rodada (ou de um passo): o certo e 2-3 errados, mostrados
+ * embaralhados. Para iniciante, tocar no bloco certo substitui digitar o código; a dica,
+ * nesse modo, elimina um bloco errado em vez de entregar a resposta.
+ */
+export type BossChoice = { correct: string; wrong: string[] };
+
 /** Rodada de "um bloco só": o aluno escreve um texto (ex.: SQL) e todo padrão precisa bater. */
 export type BossRound = {
   title: string;
@@ -15,6 +22,8 @@ export type BossRound = {
   hint: string;
   /** Fontes de regex (case-insensitive, testadas em `input.toLowerCase()`); TODAS precisam casar. */
   check: string[];
+  /** Com blocos, a rodada vira escolha (sem teclado). `correct` precisa passar em `check`. */
+  choices?: BossChoice;
 };
 
 /** Rodada "passo a passo": uma sequência de comandos, um regex por passo, em ordem. */
@@ -25,6 +34,8 @@ export type BossSequence = {
   hint: string;
   /** Uma fonte de regex por passo, testada em ordem contra cada comando digitado. */
   steps: string[];
+  /** Blocos de cada passo, na mesma ordem de `steps`. */
+  stepChoices?: BossChoice[];
 };
 
 export type BossFight =
@@ -34,6 +45,8 @@ export type BossFight =
       intro: string[];
       lifeLabel: string;
       mode: 'single-shot';
+      /** Nome do arquivo mostrado no editor (ex.: `loopus.php`), na linguagem da trilha. */
+      codeFile: string;
       rounds: BossRound[];
       badgeId: string;
       badgeTitle: string;

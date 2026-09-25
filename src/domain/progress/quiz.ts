@@ -42,3 +42,26 @@ export function isQuizAnswerCorrect(item: QuizItem, answer: QuizAnswer): boolean
   }
   return answer.kind === 'choice' && answer.optionIndex === item.answer;
 }
+
+/**
+ * Ordem embaralhada (Fisher-Yates) dos índices 0..length-1. As respostas certas do conteúdo
+ * caíam quase sempre na 2ª opção; a tela mostra as opções nesta ordem, e o índice original
+ * continua sendo o que vale para conferir e para o progresso. `random` vem de quem chama
+ * (o domínio não sorteia sozinho), para os testes serem determinísticos.
+ */
+export function shuffledOrder(length: number, random: () => number): number[] {
+  const order = Array.from({ length }, (_, i) => i);
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return order;
+}
+
+/** Blocos de uma pergunta de completar (certo + errados), já embaralhados; vazio se não tiver blocos. */
+export function fillChoices(item: QuizItem, random: () => number): string[] {
+  if (!('fill' in item) || !item.wrong?.length) return [];
+  const blocks = [item.accept[0], ...item.wrong];
+  return shuffledOrder(blocks.length, random).map((i) => blocks[i]);
+}
+

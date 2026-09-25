@@ -140,6 +140,7 @@ export const modOrigem: Module = {
       pre: '',
       post: ' "Olá!";',
       accept: ['echo', 'print'],
+      wrong: ['say', 'show', 'write'],
       placeholder: '?',
       explain: '<code>echo</code> envia o texto para a saída. (<code>print</code> também funciona.)',
     },

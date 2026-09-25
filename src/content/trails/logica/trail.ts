@@ -29,10 +29,11 @@ export const logicaTrail: Trail = {
     intro: [
       'Ele se escondeu no único lugar onde ninguém procura: dentro de um laço que não termina.',
       'Loopus Infinitus não é um vilão de fora — é um bug que nasceu de um <code>while(true)</code> esquecido, um <code>=</code> no lugar de um <code>==</code>, um contador que nunca foi incrementado. Cada farol que você acendeu ensinou exatamente o que ele explora.',
-      'Você tem <b>3 corações</b>. Respostas erradas custam um coração. Aqui não há alternativas de múltipla escolha: você digita ou monta o código, do jeito que o Estudo Dirigido pede de verdade.',
+      'Você tem <b>3 corações</b>. Em cada rodada, toque no bloco certo: três erros na mesma rodada custam um coração. A dica tira um bloco errado da tela, mas custa pontos.',
     ],
     lifeLabel: '♥',
     mode: 'single-shot',
+    codeFile: 'loopus.php',
     rounds: [
       {
         title: 'Rodada 1 — Contagem simples',
@@ -40,6 +41,7 @@ export const logicaTrail: Trail = {
         talk: 'Haha! Mais uma volta!',
         hint: 'O laço roda com $i = 1, 2 e 3, e imprime cada valor: a resposta é 123.',
         check: ['^123$'],
+        choices: { correct: '123', wrong: ['0123', '321', '12'] },
       },
       {
         title: 'Rodada 2 — A linha que falta',
@@ -48,6 +50,7 @@ export const logicaTrail: Trail = {
         talk: 'while (true)... ninguém sai daqui.',
         hint: 'Sem modificar a variável de controle, o teste nunca fica falso: use $n++;',
         check: ['^(\\$n\\+\\+|\\+\\+\\$n|\\$n\\+=1|\\$n=\\$n\\+1);?$'],
+        choices: { correct: '$n++;', wrong: ['$n--;', '$n = 0;', 'echo $n;'] },
       },
       {
         title: 'Rodada 3 — Monte o laço da máquina',
@@ -56,14 +59,16 @@ export const logicaTrail: Trail = {
         talk: 'Argh! Uma condição de parada!',
         hint: 'do { $l = rand(0, 2); $c = rand(0, 2); } while (posicao($l, $c) == 1);',
         check: ['do\\s*\\{', 'rand\\(0,\\s*2\\)', 'while\\s*\\(posicao\\(\\$l,\\s*\\$c\\)\\s*==\\s*1\\)'],
+        choices: { correct: 'do { $l = rand(0, 2); $c = rand(0, 2); } while (posicao($l, $c) == 1);', wrong: ['do { $l = rand(0, 2); $c = rand(0, 2); } while (posicao($l, $c) == 0);', 'while (posicao($l, $c) == 1) { $l = rand(0, 3); }', 'do { $l = rand(1, 3); $c = rand(1, 3); } while (posicao($l, $c) == 1);'] },
       },
       {
         title: 'Rodada 4 — O bug clássico',
         description:
-          'if ($x = 5) { echo "cinco"; }  →  Esse if tem o bug clássico. Digite o operador que deveria estar no lugar do =.',
+          'if ($x = 5) { echo "cinco"; }  →  Esse if tem o bug clássico. Escolha o operador que deveria estar no lugar do =.',
         talk: 'Erro de sintaxe do seu lado!',
         hint: '= atribui; == compara. O operador certo é ==.',
         check: ['^===?$'],
+        choices: { correct: '==', wrong: ['=', '!=', '=>'] },
       },
       {
         title: 'Rodada 5 — Endereço da matriz',
@@ -71,6 +76,7 @@ export const logicaTrail: Trail = {
         talk: 'Você leu o código melhor do que eu.',
         hint: 'Linha 1 (a segunda), coluna 0 (a primeira): $m[1][0] vale 3.',
         check: ['^3$'],
+        choices: { correct: '3', wrong: ['2', '1', '4'] },
       },
       {
         title: 'Rodada 6 — Laço dentro de laço',
@@ -79,6 +85,7 @@ export const logicaTrail: Trail = {
         talk: 'Impossível... o contador estava certo!',
         hint: '3 voltas de fora x 4 voltas de dentro = 12.',
         check: ['^12$'],
+        choices: { correct: '12', wrong: ['7', '3', '4'] },
       },
       {
         title: 'Rodada 7 — Por referência',
@@ -86,6 +93,7 @@ export const logicaTrail: Trail = {
         talk: 'Meu laço está encolhendo...',
         hint: 'Com &$n, a função recebe a variável de fora, não uma cópia.',
         check: ['^&$'],
+        choices: { correct: '&', wrong: ['*', '$', '@'] },
       },
       {
         title: 'Rodada 8 — A memória do servidor',
@@ -93,6 +101,7 @@ export const logicaTrail: Trail = {
         talk: 'Você leu o código melhor do que eu.',
         hint: 'O HTTP não tem memória; quem lembra por você é o $_SESSION.',
         check: ['^\\$_session$'],
+        choices: { correct: '$_SESSION', wrong: ['$_GET', '$_POST', '$_COOKIE'] },
       },
       {
         title: 'Rodada 9 — Percorrendo o tabuleiro',
@@ -100,6 +109,7 @@ export const logicaTrail: Trail = {
         talk: 'Haha! Mais uma volta!',
         hint: 'for ($i = 0; $i < LIM; $i++) { for ($j = 0; $j < LIM; $j++) { echo $t[$i][$j]; } }',
         check: ['for\\s*\\(\\$i\\s*=\\s*0;\\s*\\$i\\s*<\\s*lim', 'for\\s*\\(\\$j\\s*=\\s*0;\\s*\\$j\\s*<\\s*lim', '\\$t\\[\\$i\\]\\[\\$j\\]'],
+        choices: { correct: 'for ($i = 0; $i < LIM; $i++) { for ($j = 0; $j < LIM; $j++) { echo $t[$i][$j]; } }', wrong: ['for ($i = 0; $i < LIM; $i++) { echo $t[$i]; }', 'for ($i = 1; $i <= LIM; $i++) { for ($j = 1; $j <= LIM; $j++) { echo $t[$i][$j]; } }', 'for ($i = 0; $i < LIM; $i++) { for ($j = 0; $j < LIM; $j++) { echo $t[$j]; } }'] },
       },
       {
         title: 'Rodada 10 — Golpe final',
@@ -108,6 +118,7 @@ export const logicaTrail: Trail = {
         talk: 'Volte ao farol e estude, viajante.',
         hint: 'Sem casas livres, a máquina para em vez de rodar para sempre: livres() == 0',
         check: ['^\\(?(livres\\(\\)===?0|0===?livres\\(\\)|livres\\(\\)<1|!livres\\(\\))\\)?;?$'],
+        choices: { correct: 'livres() == 0', wrong: ['livres() == 1', 'livre() == 0', 'livres() > 0'] },
       },
     ],
     badgeId: 'problemas',

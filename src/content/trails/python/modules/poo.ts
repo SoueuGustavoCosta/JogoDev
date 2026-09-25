@@ -122,6 +122,7 @@ export const modPoo: Module = {
       pre: 'Um atributo definido com self.nome pertence a cada',
       post: 'individualmente, não à classe inteira.',
       accept: ['objeto', 'instancia', 'instância'],
+      wrong: ['classe', 'módulo', 'função'],
       placeholder: 'objeto ou instância',
       explain: 'Atributos com self. são atributos de instância: cada objeto criado a partir da classe tem o seu próprio valor.',
     },

@@ -104,6 +104,7 @@ export const modPoo: Module = {
       pre: 'Para declarar que um método PHP não devolve valor nenhum, usa-se o tipo de retorno',
       post: '.',
       accept: ['void'],
+      wrong: ['none', 'empty', 'nothing'],
       placeholder: 'tipo de retorno',
       explain: ': void indica que o método executa uma ação, mas não devolve nenhum valor.',
     },

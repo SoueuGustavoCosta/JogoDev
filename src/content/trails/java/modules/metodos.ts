@@ -103,6 +103,7 @@ export const modMetodos: Module = {
       pre: 'Em Java, o main() precisa ser',
       post: 'porque ele roda antes de qualquer objeto existir.',
       accept: ['static'],
+      wrong: ['private', 'final', 'abstract'],
       placeholder: 'palavra-chave',
       explain: 'Como nenhum objeto foi criado ainda quando o programa começa, main() precisa ser static para rodar sem instância.',
     },

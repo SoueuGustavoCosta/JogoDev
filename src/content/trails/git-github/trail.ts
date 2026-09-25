@@ -34,6 +34,11 @@ export const gitGithubTrail: Trail = {
         talk: 'Todo repositório começa assim: vazio, esperando um histórico.',
         hint: 'git init  →  git add .  →  git commit -m "primeiro commit"',
         steps: ['git\\s+init', 'git\\s+add', 'git\\s+commit\\s+-m'],
+        stepChoices: [
+          { correct: 'git init', wrong: ['git start', 'git new'] },
+          { correct: 'git add .', wrong: ['git save .', 'git commit .'] },
+          { correct: 'git commit -m "primeiro commit"', wrong: ['git push -m "primeiro commit"', 'git commit "primeiro commit"'] },
+        ],
       },
       {
         title: 'Rodada 2 — Ramifique sem medo',
@@ -41,6 +46,11 @@ export const gitGithubTrail: Trail = {
         talk: 'Ramos que nunca se encontram não servem de nada. Mescle.',
         hint: 'git branch nova-feature  →  git checkout nova-feature  →  git checkout main  →  git merge nova-feature',
         steps: ['git\\s+(branch|checkout\\s+-b|switch\\s+-c)', 'git\\s+(checkout|switch)', 'git\\s+merge'],
+        stepChoices: [
+          { correct: 'git branch nova-feature', wrong: ['git merge nova-feature', 'git push nova-feature'] },
+          { correct: 'git checkout nova-feature', wrong: ['git branch -d nova-feature', 'git init'] },
+          { correct: 'git merge nova-feature', wrong: ['git branch nova-feature', 'git push origin'] },
+        ],
       },
       {
         title: 'Rodada 3 — Resolva o conflito',
@@ -49,6 +59,10 @@ export const gitGithubTrail: Trail = {
         talk: 'Duas versões, um só arquivo. Escolha o que sobrevive.',
         hint: 'git add arquivo-conflitante  →  git commit -m "resolve conflito de merge"',
         steps: ['git\\s+add', 'git\\s+commit'],
+        stepChoices: [
+          { correct: 'git add arquivo.txt', wrong: ['git merge --abort', 'git status'] },
+          { correct: 'git commit -m "resolve conflito"', wrong: ['git add .', 'git push'] },
+        ],
       },
       {
         title: 'Rodada 4 — Suba pro mundo',
@@ -56,6 +70,10 @@ export const gitGithubTrail: Trail = {
         talk: 'De nada adianta se ficar só na sua máquina.',
         hint: 'git remote add origin <url>  →  git push -u origin main',
         steps: ['git\\s+remote\\s+add', 'git\\s+push'],
+        stepChoices: [
+          { correct: 'git remote add origin https://github.com/voce/repo.git', wrong: ['git clone https://github.com/voce/repo.git', 'git remote -v'] },
+          { correct: 'git push -u origin main', wrong: ['git pull origin main', 'git fetch origin'] },
+        ],
       },
     ],
     badgeId: 'git-mestre',
