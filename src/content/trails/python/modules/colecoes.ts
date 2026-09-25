@@ -128,6 +128,7 @@ export const modColecoes: Module = {
       pre: 'A coleção que nunca guarda valores repetidos se chama',
       post: '.',
       accept: ['set', 'conjunto'],
+      wrong: ['list', 'tuple', 'dict'],
       placeholder: 'nome da coleção',
       explain: 'O set (conjunto) elimina automaticamente valores duplicados.',
     },

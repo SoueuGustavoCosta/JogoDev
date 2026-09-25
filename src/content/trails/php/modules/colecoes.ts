@@ -107,6 +107,7 @@ export const modColecoes: Module = {
       pre: 'A função que devolve quantos itens um array tem se chama',
       post: '($array).',
       accept: ['count'],
+      wrong: ['length', 'size', 'strlen'],
       placeholder: 'nome da função',
       explain: 'count($array) retorna o número de elementos do array.',
     },

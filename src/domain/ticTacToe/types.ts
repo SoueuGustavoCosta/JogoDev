@@ -11,6 +11,8 @@ export type StepBlank = {
   /** Dica curta do que a lacuna representa (o comentário do protótipo). */
   hint: string;
   accept: string[];
+  /** Blocos errados mostrados junto com `accept[0]`: a lacuna vira toque, sem teclado. */
+  wrong?: string[];
 };
 
 /** Um dos cinco passos do Estudo Dirigido (uma função do arquivo do professor). */

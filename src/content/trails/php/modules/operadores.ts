@@ -117,6 +117,7 @@ export const modOperadores: Module = {
       pre: 'A regra de ouro é preferir',
       post: 'no lugar de == sempre que possível.',
       accept: ['===', 'triplo igual', 'identico', 'idêntico'],
+      wrong: ['=', '!=', '=>'],
       placeholder: 'operador',
       explain: '=== nunca converte tipos, evitando as comparações inesperadas do malabarismo de tipos.',
     },

@@ -37,6 +37,7 @@ export const modCreate: Module = {
       pre: "CREATE",
       post: "loja;",
       accept: ["database"],
+      wrong: ["table", "index", "view"],
       placeholder: "?",
       explain: "CREATE DATABASE nome; cria o banco.",
     },

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 import {
   getOrCreateTravelerUuid,
@@ -14,10 +14,11 @@ import {
   checkSequenceStep,
   checkSingleShot,
   createBossFightState,
+  type BossChoice,
   type BossFightConfig,
   type BossFightState,
 } from '@/domain/bossFight';
-import { isTrailCompleted } from '@/domain/progress';
+import { isTrailCompleted, shuffledOrder } from '@/domain/progress';
 import type { BossFight, Trail } from '@/domain/trail';
 import { getTrailById } from '@/content/registry';
 import {
@@ -66,6 +67,12 @@ function roundMeta(bossFight: BossFight, roundIndex: number) {
   const round = bossFight.rounds[roundIndex];
   if (!round) return null;
   return { title: round.title, description: round.description, talk: round.talk, hint: round.hint, stepsInRound: 1 };
+}
+
+/** Blocos da rodada (ou do passo) atual, se o conteúdo tiver; senão a rodada é de digitar. */
+function currentChoice(bossFight: BossFight, state: BossFightState): BossChoice | undefined {
+  if (bossFight.mode === 'sequence') return bossFight.rounds[state.roundIndex]?.stepChoices?.[state.stepIndex];
+  return bossFight.rounds[state.roundIndex]?.choices;
 }
 
 function checkAttempt(bossFight: BossFight, state: BossFightState, input: string): boolean {
@@ -131,6 +138,8 @@ function BossFightArena({
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [hint, setHint] = useState<string | null>(null);
   const [lines, setLines] = useState<ConsoleLine[]>([]);
+  // Blocos já descartados nesta rodada/passo: os errados que o aluno tocou e os que a dica tirou.
+  const [eliminated, setEliminated] = useState<string[]>([]);
 
   useEffect(() => {
     consoleRef.current?.scrollTo({ top: consoleRef.current.scrollHeight });
@@ -138,6 +147,17 @@ function BossFightArena({
 
   const meta = roundMeta(bossFight, state.roundIndex);
   const isSequence = bossFight.mode === 'sequence';
+  const choice = currentChoice(bossFight, state);
+  // Sorteados de novo a cada rodada/passo: o bloco certo não fica sempre no mesmo lugar.
+  const blocks = useMemo(() => {
+    if (!choice) return [];
+    const all = [choice.correct, ...choice.wrong];
+    return shuffledOrder(all.length, Math.random).map((i) => all[i]);
+  }, [choice]);
+
+  useEffect(() => {
+    setEliminated([]);
+  }, [state.roundIndex, state.stepIndex, phase]);
 
   function finishWin() {
     const uuid = getOrCreateTravelerUuid({ repository: progressRepository });
@@ -175,16 +195,17 @@ function BossFightArena({
     setLines([]);
   }
 
-  function runAttempt() {
+  function runAttempt(text: string = input) {
     if (!meta || phase !== 'fight') return;
-    const trimmed = input.trim();
+    const trimmed = text.trim();
     if (!trimmed) return;
-    const correct = checkAttempt(bossFight, state, input);
+    const correct = checkAttempt(bossFight, state, text);
+    if (!correct && choice) setEliminated((prev) => [...prev, text]);
 
     if (correct) {
       setLines((prev) => [
         ...prev,
-        { cls: 'ok', text: isSequence ? `$ ${trimmed.toLowerCase()}` : '> consulta aceita.' },
+        { cls: 'ok', text: isSequence ? `$ ${trimmed.toLowerCase()}` : '> resposta aceita.' },
       ]);
       const next = applyBossAttempt(state, config, { correct: true, stepsInRound: meta.stepsInRound });
       setState(next);
@@ -217,7 +238,7 @@ function BossFightArena({
         cls: 'err',
         text: isSequence
           ? `$ ${trimmed.toLowerCase()}  → comando inesperado nesta etapa.`
-          : '> rejeitado: faltou algo essencial na consulta.',
+          : '> rejeitado: não é essa a resposta.',
       },
     ]);
     const next = applyBossAttempt(state, config, { correct: false, stepsInRound: meta.stepsInRound });
@@ -242,8 +263,19 @@ function BossFightArena({
     }
   }
 
+  // Com blocos, a dica não entrega a resposta: tira um bloco errado da tela.
+  const hintableWrong = choice ? choice.wrong.filter((w) => !eliminated.includes(w)) : [];
+
   function askHint() {
     if (!meta) return;
+    if (choice) {
+      const target = hintableWrong[Math.floor(Math.random() * hintableWrong.length)];
+      if (!target) return;
+      setState((s) => applyBossHint(s, config));
+      setEliminated((prev) => [...prev, target]);
+      setLines((prev) => [...prev, { cls: 'info', text: '> dica: um bloco errado saiu da tela (-25 pontos).' }]);
+      return;
+    }
     setState((s) => applyBossHint(s, config));
     setHint(meta.hint);
     setLines((prev) => [...prev, { cls: 'info', text: '> dica solicitada (-25 pontos).' }]);
@@ -288,8 +320,26 @@ function BossFightArena({
               <p>{meta.description}</p>
             </div>
 
-            <NotebookFrame title={isSequence ? 'terminal — repositório' : 'boss-fight.sql'}>
-              {isSequence ? (
+            <NotebookFrame title={isSequence ? 'terminal — repositório' : bossFight.codeFile}>
+              {choice ? (
+                <div className={styles.blocks} role="group" aria-label={isSequence ? 'Escolha o próximo comando' : 'Escolha o bloco certo'}>
+                  {blocks.map((block) => {
+                    const gone = eliminated.includes(block);
+                    return (
+                      <button
+                        key={block}
+                        type="button"
+                        className={`${styles.block} ${gone ? styles.blockGone : ''}`}
+                        disabled={gone}
+                        onClick={() => runAttempt(block)}
+                      >
+                        {isSequence ? <span className={styles.prompt}>$ </span> : null}
+                        {block}
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : isSequence ? (
                 <div className={styles.termLine}>
                   <span className={styles.prompt}>$</span>
                   <input
@@ -315,21 +365,25 @@ function BossFightArena({
                   autoCapitalize="off"
                   autoCorrect="off"
                   spellCheck={false}
-                  placeholder="Digite seu SQL aqui..."
-                  aria-label="SQL do combate"
+                  placeholder="Digite sua resposta aqui..."
+                  aria-label="Resposta do combate"
                   className={styles.textarea}
                 />
               )}
               <div className={styles.actions}>
-                <Button variant="alt" onClick={runAttempt}>
-                  Executar ▶
+                {choice ? null : (
+                  <Button variant="alt" onClick={() => runAttempt()}>
+                    Executar ▶
+                  </Button>
+                )}
+                <Button variant="ghost" onClick={askHint} disabled={Boolean(choice) && hintableWrong.length <= 1}>
+                  {choice ? 'Dica: tirar um errado (-25)' : 'Pedir dica (-25)'}
                 </Button>
-                <Button variant="ghost" onClick={askHint}>
-                  Pedir dica (-25)
-                </Button>
-                <Button variant="ghost" onClick={() => setInput('')}>
-                  Limpar
-                </Button>
+                {choice ? null : (
+                  <Button variant="ghost" onClick={() => setInput('')}>
+                    Limpar
+                  </Button>
+                )}
                 <Button variant="ghost" onClick={restart}>
                   Reiniciar ↺
                 </Button>

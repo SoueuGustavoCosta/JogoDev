@@ -182,3 +182,83 @@
     padding: 16px;
   }
 }
+
+/* "Complete o código": o trecho com a lacuna e os blocos para tocar, sem teclado. */
+.clozeCode {
+  margin: 0 0 14px;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid var(--color-line);
+  background: var(--color-bg);
+  font: 500 0.95rem/1.6 var(--font-mono);
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-x: auto;
+}
+
+.clozeSlot {
+  display: inline-block;
+  min-width: 3.5em;
+  padding: 0 6px;
+  border-radius: 6px;
+  border: 1px dashed var(--color-orange);
+  background: rgba(255, 107, 31, 0.1);
+  color: var(--color-orange-soft);
+  text-align: center;
+}
+
+.clozeSlotOk {
+  border-style: solid;
+  border-color: var(--color-good);
+  background: rgba(62, 224, 161, 0.12);
+  color: var(--color-good);
+}
+
+.blocks {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.block {
+  min-height: 52px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--color-line);
+  background: var(--color-panel-2);
+  color: var(--color-text);
+  font: 600 1rem var(--font-mono);
+  white-space: pre-wrap;
+  word-break: break-word;
+  cursor: pointer;
+  transition: transform 0.12s, border-color 0.15s;
+}
+
+.block:hover:not(:disabled) {
+  border-color: var(--color-purple);
+}
+
+.block:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.block:focus-visible {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 2px;
+}
+
+.block.ok {
+  border-color: var(--color-good);
+  background: rgba(62, 224, 161, 0.12);
+}
+
+.block.no {
+  opacity: 0.35;
+  text-decoration: line-through;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .block {
+    transition: none;
+  }
+}

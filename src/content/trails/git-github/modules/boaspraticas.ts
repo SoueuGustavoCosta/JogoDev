@@ -44,6 +44,7 @@ export const modBoaspraticas: Module = {
       pre: '',
       post: '',
       accept: ['.gitignore'],
+      wrong: ['.gitconfig', 'README.md', '.gitkeep'],
       placeholder: '.____',
       explain: 'O .gitignore lista padrões de arquivos que o Git nunca deve rastrear.',
     },

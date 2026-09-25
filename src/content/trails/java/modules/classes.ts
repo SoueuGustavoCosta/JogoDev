@@ -110,6 +110,7 @@ export const modClasses: Module = {
       pre: 'Um método público que devolve o valor de um atributo privado é chamado de',
       post: '.',
       accept: ['getter', 'get'],
+      wrong: ['setter', 'construtor', 'main'],
       placeholder: 'nome do método de acesso',
       explain: 'Getters (como getNome()) expõem, de forma controlada, o valor de atributos privados.',
     },

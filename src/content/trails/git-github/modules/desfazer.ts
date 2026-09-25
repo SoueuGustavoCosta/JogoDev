@@ -59,6 +59,7 @@ export const modDesfazer: Module = {
       pre: '',
       post: '',
       accept: ['git diff'],
+      wrong: ['git log', 'git status', 'git add'],
       placeholder: 'git ...',
       explain: 'git diff mostra exatamente o que mudou, linha por linha.',
     },

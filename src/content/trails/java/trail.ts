@@ -33,10 +33,11 @@ export const javaTrail: Trail = {
     intro: [
       'Nulo não tem forma: ele é só um espaço onde deveria haver um objeto.',
       'Ele ataca escondido em tipos de referência, em métodos main mal escritos, em comparações == que deveriam ser .equals(), em arrays acessados um passo além do fim.',
-      'Você tem <b>3 corações</b>. Cada resposta errada custa um. Escreva exatamente o que cada farol te ensinou.',
+      'Você tem <b>3 corações</b>. Em cada rodada, toque no bloco certo: três erros na mesma rodada custam um coração. A dica tira um bloco errado da tela, mas custa pontos.',
     ],
     lifeLabel: '♥',
     mode: 'single-shot',
+    codeFile: 'Nulo.java',
     rounds: [
       {
         title: 'Rodada 1 — A assinatura sagrada',
@@ -45,6 +46,7 @@ export const javaTrail: Trail = {
         talk: 'Nem o ponto de entrada escapa de mim...',
         hint: 'A assinatura fixa do método main usa String[] args.',
         check: ['^args$'],
+        choices: { correct: 'args', wrong: ['argv', 'params', 'main'] },
       },
       {
         title: 'Rodada 2 — A divisão que trunca',
@@ -52,6 +54,7 @@ export const javaTrail: Trail = {
         talk: 'Um resultado a menos, e ninguém percebe...',
         hint: 'Divisão entre dois int trunca: 5 / 2 vale 2, sem casas decimais.',
         check: ['^2$'],
+        choices: { correct: '2', wrong: ['2.5', '3', '2.0'] },
       },
       {
         title: 'Rodada 3 — Comparando de verdade',
@@ -60,6 +63,7 @@ export const javaTrail: Trail = {
         talk: '== é a minha arma favorita contra Strings.',
         hint: 'Para conteúdo, sempre .equals(), nunca ==.',
         check: ['^\\.?equals\\(?\\)?$'],
+        choices: { correct: 'equals()', wrong: ['compare()', '==', 'same()'] },
       },
       {
         title: 'Rodada 4 — Um passo além do fim',
@@ -67,6 +71,7 @@ export const javaTrail: Trail = {
         talk: 'Um índice a mais, e o programa é meu!',
         hint: 'Acessar uma posição que não existe lança ArrayIndexOutOfBoundsException.',
         check: ['arrayindexoutofbounds'],
+        choices: { correct: 'ArrayIndexOutOfBoundsException', wrong: ['NullPointerException', 'ArithmeticException', 'ClassCastException'] },
       },
       {
         title: 'Rodada 5 — Sem precisar de objeto',
@@ -74,6 +79,7 @@ export const javaTrail: Trail = {
         talk: 'Um objeto a menos é um erro a mais!',
         hint: 'Métodos static pertencem à classe, não a uma instância.',
         check: ['^static$'],
+        choices: { correct: 'static', wrong: ['public', 'final', 'void'] },
       },
       {
         title: 'Rodada 6 — A queda sem freio',
@@ -82,6 +88,7 @@ export const javaTrail: Trail = {
         talk: 'Uma queda daquelas, direto pro próximo case...',
         hint: 'Esse comportamento se chama fall-through.',
         check: ['fall.?through'],
+        choices: { correct: 'fall-through', wrong: ['overflow', 'deadlock', 'bypass'] },
       },
       {
         title: 'Rodada 7 — A intenção declarada',
@@ -90,14 +97,16 @@ export const javaTrail: Trail = {
         talk: 'Sem essa anotação, o erro passa despercebido...',
         hint: '@Override ajuda o compilador a pegar erros de nome ou parâmetro na sobrescrita.',
         check: ['@?override'],
+        choices: { correct: '@Override', wrong: ['@Deprecated', '@Inherit', '@Super'] },
       },
       {
         title: 'Rodada 8 — Golpe final: quem inventou o vazio',
         description:
-          'Nulo se esconde como se fosse "só um erro comum". Mas ele tem um criador, que décadas depois chamou sua própria invenção de "o erro de um bilhão de dólares". Digite o nome completo dessa pessoa.',
+          'Nulo se esconde como se fosse "só um erro comum". Mas ele tem um criador, que décadas depois chamou sua própria invenção de "o erro de um bilhão de dólares". Quem é essa pessoa?.',
         talk: 'Ninguém prova que eu tenho um criador!',
         hint: 'Tony Hoare inventou a referência nula em 1965, na linguagem ALGOL W, e se arrependeu publicamente em 2009.',
         check: ['tony\\s*hoare'],
+        choices: { correct: 'Tony Hoare', wrong: ['James Gosling', 'Alan Turing', 'Dennis Ritchie'] },
       },
     ],
     badgeId: 'java-nulo',

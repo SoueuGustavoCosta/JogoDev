@@ -27,6 +27,7 @@ export const bancoDeDadosTrail: Trail = {
     ],
     lifeLabel: '☕',
     mode: 'single-shot',
+    codeFile: 'desafio.sql',
     rounds: [
       {
         title: 'Rodada 1 — Modele sem redundância',
@@ -34,6 +35,7 @@ export const bancoDeDadosTrail: Trail = {
         talk: 'Vamos ver se você sabe modelar ou só decorou sintaxe.',
         hint: 'Precisa de CREATE TABLE pedidos (... , FOREIGN KEY (cliente_id) REFERENCES clientes(id));',
         check: ['create\\s+table', 'pedidos', 'foreign\\s+key', 'references'],
+        choices: { correct: 'CREATE TABLE pedidos (id SERIAL PRIMARY KEY, cliente_id INT, FOREIGN KEY (cliente_id) REFERENCES clientes(id));', wrong: ['CREATE TABLE pedidos (id SERIAL PRIMARY KEY, cliente_id INT);', 'SELECT * FROM pedidos JOIN clientes ON pedidos.cliente_id = clientes.id;', 'INSERT INTO pedidos (cliente_id) REFERENCES clientes(id);'] },
       },
       {
         title: 'Rodada 2 — Junte as pontas',
@@ -42,6 +44,7 @@ export const bancoDeDadosTrail: Trail = {
         talk: 'Boa. Mas modelar é fácil — agora prove que sabe consultar.',
         hint: 'SELECT clientes.nome, pedidos.total FROM clientes JOIN pedidos ON ... WHERE pedidos.total > 100 ORDER BY pedidos.total DESC;',
         check: ['select', 'join', 'where', 'order\\s+by'],
+        choices: { correct: 'SELECT clientes.nome, pedidos.total FROM clientes JOIN pedidos ON pedidos.cliente_id = clientes.id WHERE pedidos.total > 100 ORDER BY pedidos.total DESC;', wrong: ['SELECT clientes.nome, pedidos.total FROM clientes JOIN pedidos ON pedidos.cliente_id = clientes.id ORDER BY pedidos.total DESC;', 'SELECT nome, total FROM pedidos WHERE total > 100;', 'SELECT clientes.nome, pedidos.total FROM clientes JOIN pedidos ON pedidos.cliente_id = clientes.id WHERE pedidos.total > 100;'] },
       },
       {
         title: 'Rodada 3 — Corrija com segurança',
@@ -50,6 +53,7 @@ export const bancoDeDadosTrail: Trail = {
         hint: "UPDATE pedidos SET status = 'enviado' WHERE id = 42;",
         // O último padrão é uma negação (lookahead): reprova quem usar DELETE, igual ao protótipo.
         check: ['update', 'set', 'where', '42', '^(?!.*delete)[\\s\\S]*$'],
+        choices: { correct: 'UPDATE pedidos SET status = \'enviado\' WHERE id = 42;', wrong: ['UPDATE pedidos SET status = \'enviado\';', 'DELETE FROM pedidos WHERE id = 42;', 'SELECT status FROM pedidos WHERE id = 42;'] },
       },
     ],
     badgeId: 'sql-mestre',

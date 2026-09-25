@@ -122,6 +122,7 @@ export const modHeranca: Module = {
       pre: 'Diferente de herança de classe, uma classe pode',
       post: 'várias interfaces ao mesmo tempo.',
       accept: ['implementar', 'implements'],
+      wrong: ['estender', 'herdar', 'sobrescrever'],
       placeholder: 'verbo/palavra-chave',
       explain: 'Uma classe usa implements para adotar várias interfaces, cada uma um contrato diferente de métodos.',
     },

@@ -17,6 +17,12 @@ export type QuizItem =
       pre: string;
       post: string;
       accept: string[];
+      /**
+       * Blocos errados (2 ou 3) mostrados junto com a resposta certa (`accept[0]`): com eles
+       * a pergunta vira "toque no bloco que completa o código", sem teclado. Sem eles, cai
+       * no campo de digitar.
+       */
+      wrong?: string[];
       placeholder?: string;
       explain: string;
       /** Dica opcional para perguntas mais difíceis. Some cedo, aparece após o 1º erro e fica automática a partir do 3º. */

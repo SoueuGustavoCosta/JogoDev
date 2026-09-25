@@ -14,6 +14,7 @@ const quizFillSchema = z.object({
   pre: z.string(),
   post: z.string(),
   accept: z.array(z.string().min(1)).min(1),
+  wrong: z.array(z.string().min(1)).min(2).max(3).optional(),
   placeholder: z.string().optional(),
   explain: z.string().min(1),
   hint: z.string().min(1).optional(),
@@ -102,12 +103,18 @@ export const missionSchema = z.discriminatedUnion('kind', [
   missionStateSchema,
 ]);
 
+const bossChoiceSchema = z.object({
+  correct: z.string().min(1),
+  wrong: z.array(z.string().min(1)).min(2).max(3),
+});
+
 const bossRoundSchema = z.object({
   title: z.string().min(1),
   description: z.string().min(1),
   talk: z.string().min(1),
   hint: z.string().min(1),
   check: z.array(z.string().min(1)).min(1),
+  choices: bossChoiceSchema.optional(),
 });
 
 const bossSequenceSchema = z.object({
@@ -116,6 +123,7 @@ const bossSequenceSchema = z.object({
   talk: z.string().min(1),
   hint: z.string().min(1),
   steps: z.array(z.string().min(1)).min(1),
+  stepChoices: z.array(bossChoiceSchema).optional(),
 });
 
 const bossFightBaseSchema = z.object({
@@ -129,7 +137,11 @@ const bossFightBaseSchema = z.object({
 });
 
 export const bossFightSchema = z.discriminatedUnion('mode', [
-  bossFightBaseSchema.extend({ mode: z.literal('single-shot'), rounds: z.array(bossRoundSchema).min(1) }),
+  bossFightBaseSchema.extend({
+    mode: z.literal('single-shot'),
+    codeFile: z.string().min(1),
+    rounds: z.array(bossRoundSchema).min(1),
+  }),
   bossFightBaseSchema.extend({ mode: z.literal('sequence'), rounds: z.array(bossSequenceSchema).min(1) }),
 ]);
 

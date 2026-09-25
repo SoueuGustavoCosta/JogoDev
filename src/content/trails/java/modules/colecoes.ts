@@ -109,6 +109,7 @@ export const modColecoes: Module = {
       pre: 'Para adicionar um item numa ArrayList chamada frutas, o método usado é frutas.',
       post: '(item).',
       accept: ['add'],
+      wrong: ['push', 'append', 'insert'],
       placeholder: 'nome do método',
       explain: 'frutas.add(item) adiciona um novo elemento ao final da ArrayList.',
     },

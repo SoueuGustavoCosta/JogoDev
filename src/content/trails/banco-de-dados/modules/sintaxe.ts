@@ -42,6 +42,7 @@ export const modSintaxe: Module = {
       pre: "SELECT 1",
       post: "",
       accept: [";"],
+      wrong: [".", ",", ":"],
       placeholder: "?",
       explain: "O ponto e vírgula marca o fim do comando.",
     },

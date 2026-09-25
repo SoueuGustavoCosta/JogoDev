@@ -121,6 +121,7 @@ export const modOperadores: Module = {
       pre: 'Os operadores lógicos e, ou e negação em Java são escritos com os símbolos &&, || e',
       post: '.',
       accept: ['!'],
+      wrong: ['~', '?', '^'],
       placeholder: 'símbolo',
       explain: 'Java usa símbolos (&&, ||, !), diferente de Python, que escreve and, or, not por extenso.',
     },

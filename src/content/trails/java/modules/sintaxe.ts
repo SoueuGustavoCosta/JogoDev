@@ -112,6 +112,7 @@ export const modSintaxe: Module = {
       pre: 'Antes de um programa Java rodar na JVM, o compilador',
       post: 'transforma o código-fonte em bytecode.',
       accept: ['javac'],
+      wrong: ['java', 'jvm', 'jar'],
       placeholder: 'nome do comando',
       explain: 'javac compila o .java em .class (bytecode); o comando java depois roda esse bytecode na JVM.',
     },

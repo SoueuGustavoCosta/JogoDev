@@ -162,6 +162,7 @@ export const modVelha: Module = {
       pre: 'function',
       post: '() { ... }',
       accept: ['livres'],
+      wrong: ['vazias', 'contar', 'casas'],
       placeholder: 'l…',
       explain: '<code>livres()</code> devolve quantas posições do tabuleiro ainda estão livres, e protege maquinaJoga() do laço infinito.',
     },

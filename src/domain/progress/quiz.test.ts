@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { QuizItem } from '../trail/types';
-import { fillAnswerMatches, isQuizAnswerCorrect } from './quiz';
+import { fillAnswerMatches, fillChoices, isQuizAnswerCorrect, shuffledOrder } from './quiz';
 
 describe('isQuizAnswerCorrect', () => {
   const mcq: QuizItem = {
@@ -77,3 +77,28 @@ describe('fillAnswerMatches: tolerante ao teclado do celular', () => {
   });
 });
 
+
+describe('shuffledOrder / fillChoices', () => {
+  const seq = (...values: number[]) => {
+    let i = 0;
+    return () => values[i++ % values.length];
+  };
+
+  it('devolve uma permutação dos índices', () => {
+    const order = shuffledOrder(4, seq(0.9, 0.1, 0.5));
+    expect([...order].sort()).toEqual([0, 1, 2, 3]);
+  });
+
+  it('não deixa a resposta sempre no mesmo lugar', () => {
+    let s = 7;
+    const random = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+    const positions = new Set<number>();
+    for (let k = 0; k < 40; k++) positions.add(shuffledOrder(4, random).indexOf(1));
+    expect(positions.size).toBe(4);
+  });
+
+  it('blocos de completar trazem a resposta certa e os errados', () => {
+    const item: QuizItem = { q: 'q', fill: true, pre: '', post: '', accept: ['livres'], wrong: ['vazias', 'contar'], explain: 'e' };
+    expect(fillChoices(item, seq(0.3)).sort()).toEqual(['contar', 'livres', 'vazias']);
+  });
+});

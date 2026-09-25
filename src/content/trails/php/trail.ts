@@ -34,10 +34,11 @@ export const phpTrail: Trail = {
     intro: [
       'Malabari joga tipos para o alto como bolas de malabarismo — número vira texto, texto vira número, e ninguém sabe onde vai cair.',
       'Ele ataca escondido em comparações soltas, em arrays mal acessados, em variáveis $ mal escritas.',
-      'Você tem <b>3 corações</b>. Cada resposta errada custa um. Escreva exatamente o que cada farol te ensinou.',
+      'Você tem <b>3 corações</b>. Em cada rodada, toque no bloco certo: três erros na mesma rodada custam um coração. A dica tira um bloco errado da tela, mas custa pontos.',
     ],
     lifeLabel: '♥',
     mode: 'single-shot',
+    codeFile: 'malabari.php',
     rounds: [
       {
         title: 'Rodada 1 — A porta de entrada',
@@ -45,6 +46,7 @@ export const phpTrail: Trail = {
         talk: 'Sem essa tag, nem eu existiria!',
         hint: 'Todo bloco de código PHP começa com <?php',
         check: ['^<\\?php$'],
+        choices: { correct: '<?php', wrong: ['<php>', '<?', '<script php>'] },
       },
       {
         title: 'Rodada 2 — O símbolo de toda variável',
@@ -52,6 +54,7 @@ export const phpTrail: Trail = {
         talk: 'Sem esse símbolo, suas variáveis nem existem!',
         hint: 'Toda variável PHP é escrita com $ na frente.',
         check: ['^\\$$'],
+        choices: { correct: '$', wrong: ['@', '#', '&'] },
       },
       {
         title: 'Rodada 3 — Sem malabarismo',
@@ -59,6 +62,7 @@ export const phpTrail: Trail = {
         talk: 'Comigo, ninguém escapa da conversão!',
         hint: '=== nunca converte tipos: compara valor e tipo ao mesmo tempo.',
         check: ['^===$'],
+        choices: { correct: '===', wrong: ['==', '!=', '=>'] },
       },
       {
         title: 'Rodada 4 — Argumentos sem limite',
@@ -66,6 +70,7 @@ export const phpTrail: Trail = {
         talk: 'Quantos argumentos você acha que consegue segurar?',
         hint: 'Os três pontos (...) antes do parâmetro recolhem os argumentos extras num array.',
         check: ['^\\.\\.\\.$'],
+        choices: { correct: '...', wrong: ['**', '&&', '[]'] },
       },
       {
         title: 'Rodada 5 — Um valor padrão, sem malabarismo',
@@ -73,6 +78,7 @@ export const phpTrail: Trail = {
         talk: 'Um valor ausente é uma oportunidade para mim!',
         hint: 'O operador ?? (null coalescing) resolve isso numa linha, sem malabarismo.',
         check: ['^\\?\\?$'],
+        choices: { correct: '??', wrong: ['?:', '||', '!!'] },
       },
       {
         title: 'Rodada 6 — Dados de um formulário',
@@ -80,6 +86,7 @@ export const phpTrail: Trail = {
         talk: 'De onde vêm os dados, você nem sabe!',
         hint: '$_POST guarda os dados enviados no corpo de uma requisição POST.',
         check: ['^\\$_post$'],
+        choices: { correct: '$_POST', wrong: ['$_GET', '$_FORM', '$_SESSION'] },
       },
       {
         title: 'Rodada 7 — O próprio objeto',
@@ -87,6 +94,7 @@ export const phpTrail: Trail = {
         talk: 'Nem você sabe quem é "você" aqui dentro!',
         hint: '$this se refere ao objeto atual, dentro de um método de instância.',
         check: ['^\\$this$'],
+        choices: { correct: '$this', wrong: ['$self', '$me', 'this'] },
       },
       {
         title: 'Rodada 8 — Golpe final: quando o malabarismo foi corrigido',
@@ -95,6 +103,7 @@ export const phpTrail: Trail = {
         talk: 'Eu sou eterno! Nenhuma versão me muda!',
         hint: 'O PHP 8 (2020) corrigiu a comparação solta entre número e string não-numérica, que antes convertia a string para 0.',
         check: ['^8$'],
+        choices: { correct: '8', wrong: ['5', '7', '7.4'] },
       },
     ],
     badgeId: 'php-malabari',

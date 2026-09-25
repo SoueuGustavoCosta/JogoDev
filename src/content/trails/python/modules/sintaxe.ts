@@ -119,6 +119,7 @@ export const modSintaxe: Module = {
       pre: 'O jeito moderno de inserir uma variável dentro de um texto é usar uma',
       post: '-string, escrevendo a letra f antes das aspas.',
       accept: ['f', 'f-string', 'fstring'],
+      wrong: ['r', 'b', 'u'],
       placeholder: 'letra',
       explain: 'A f-string (f"...") permite escrever {variavel} diretamente dentro do texto.',
     },

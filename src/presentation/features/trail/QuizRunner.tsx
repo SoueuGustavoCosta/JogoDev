@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { answerQuiz } from '@/application/usecases';
-import type { QuizAnswer } from '@/domain/progress';
+import { fillChoices, shuffledOrder, type QuizAnswer } from '@/domain/progress';
 import type { QuizItem } from '@/domain/trail';
 import { useServices } from '@/presentation/app/ServicesContext';
 import { SintaxeReaction } from './SintaxeReaction';
@@ -28,11 +28,15 @@ export function QuizRunner({
   const [fillTries, setFillTries] = useState(0);
   const [hintRevealed, setHintRevealed] = useState(false);
   const [solved, setSolved] = useState<number | 'fill' | null>(null);
+  const [wrongBlocks, setWrongBlocks] = useState<string[]>([]);
   const [xpGained, setXpGained] = useState(0);
 
   const item = quiz[index];
   const isFill = 'fill' in item;
   const attempts = isFill ? fillTries : wrong.length;
+  // Sorteado de novo a cada pergunta: a resposta certa não pode cair sempre no mesmo lugar.
+  const order = useMemo(() => ('options' in item ? shuffledOrder(item.options.length, Math.random) : []), [item]);
+  const blocks = useMemo(() => fillChoices(item, Math.random), [item]);
 
   function submit(answer: QuizAnswer, choiceIndex?: number) {
     const result = answerQuiz(
@@ -46,6 +50,7 @@ export function QuizRunner({
     } else if (choiceIndex !== undefined) {
       setWrong((w) => [...w, choiceIndex]);
     } else {
+      if (answer.kind === 'fill') setWrongBlocks((b) => [...b, answer.text]);
       setFillWrong(true);
       setFillTries((t) => t + 1);
     }
@@ -58,6 +63,7 @@ export function QuizRunner({
       setFillValue('');
       setFillWrong(false);
       setFillTries(0);
+      setWrongBlocks([]);
       setHintRevealed(false);
       setSolved(null);
       setXpGained(0);
@@ -89,7 +95,34 @@ export function QuizRunner({
         </div>
         <p className={styles.question}>{item.q}</p>
 
-        {isFill ? (
+        {isFill && blocks.length > 0 ? (
+          <>
+            <pre className={styles.clozeCode}>
+              {item.pre ? <span>{item.pre} </span> : null}
+              <span className={`${styles.clozeSlot} ${isSolved ? styles.clozeSlotOk : ''}`}>
+                {isSolved ? item.accept[0] : '____'}
+              </span>
+              {item.post ? <span> {item.post}</span> : null}
+            </pre>
+            <div className={styles.blocks} role="group" aria-label="Blocos para completar">
+              {blocks.map((block) => {
+                const no = wrongBlocks.includes(block);
+                const ok = isSolved && block === item.accept[0];
+                return (
+                  <button
+                    key={block}
+                    type="button"
+                    className={`${styles.block} ${ok ? styles.ok : ''} ${no ? styles.no : ''}`}
+                    disabled={isSolved || no}
+                    onClick={() => submit({ kind: 'fill', text: block })}
+                  >
+                    {block}
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        ) : isFill ? (
           <>
             <form
               className={styles.fillRow}
@@ -119,7 +152,8 @@ export function QuizRunner({
           </>
         ) : (
           <div className={styles.opts}>
-            {item.options.map((option, i) => {
+            {order.map((i, position) => {
+              const option = item.options[i];
               const ok = solved === i;
               const no = wrong.includes(i);
               return (
@@ -130,7 +164,7 @@ export function QuizRunner({
                   disabled={isSolved || no}
                   onClick={() => submit({ kind: 'choice', optionIndex: i }, i)}
                 >
-                  <b>{LETTERS[i]}</b>
+                  <b>{LETTERS[position]}</b>
                   <span>{option}</span>
                 </button>
               );
@@ -161,7 +195,8 @@ export function QuizRunner({
         {isSolved ? (
           <>
             <div className={`${styles.fb} ${styles.good}`} role="status">
-              <b>Paradoxo resolvido.</b> {item.explain}
+              {/* `explain` é conteúdo do próprio projeto (pode ter <code>, <b>), como nas lições. */}
+              <b>Paradoxo resolvido.</b> <span dangerouslySetInnerHTML={{ __html: item.explain }} />
             </div>
             <div className={styles.act}>
               <button type="button" className={styles.next} onClick={next}>

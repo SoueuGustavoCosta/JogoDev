@@ -114,6 +114,7 @@ export const modNascimento: Module = {
       pre: 'O formato intermediário para o qual o código Java compila se chama',
       post: '.',
       accept: ['bytecode', 'byte code'],
+      wrong: ['código de máquina', 'assembly', 'script'],
       placeholder: 'nome do formato',
       explain: 'O compilador javac transforma o código-fonte em bytecode, que a JVM interpreta e executa em qualquer sistema.',
     },

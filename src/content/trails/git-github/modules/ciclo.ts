@@ -42,6 +42,7 @@ export const modCiclo: Module = {
       pre: '',
       post: '',
       accept: ['git status'],
+      wrong: ['git log', 'git push', 'git init'],
       placeholder: 'git ...',
       explain: 'git status é sempre o primeiro passo do ciclo.',
     },

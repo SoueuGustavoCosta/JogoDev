@@ -103,6 +103,7 @@ export const modWeb: Module = {
       pre: 'Nunca se deve confiar direto em dados vindos de $_GET ou $_POST sem antes',
       post: 'o que foi recebido.',
       accept: ['validar', 'validar/sanitizar', 'sanitizar'],
+      wrong: ['imprimir', 'salvar', 'ignorar'],
       placeholder: 'verbo',
       explain: 'Dados de $_GET e $_POST vêm do visitante e podem ser qualquer coisa — validar (e sanitizar) antes de usar é essencial para segurança.',
     },
