@@ -39,9 +39,20 @@ export function PrivacyPage() {
 
       <h2>O que é medido</h2>
       <p>
-        Contagens anônimas de acesso e de uso (por exemplo: quantas pessoas abrem uma era, em qual módulo mais gente
-        para, se o laboratório foi usado), pelo Vercel Web Analytics, sem cookies e sem identificar você.
+        Só contagens anônimas, sem cookies e sem identificar você. Nenhuma das duas ferramentas abaixo recebe seu
+        nome, telefone, e-mail, foto ou o seu progresso.
       </p>
+      <ul>
+        <li>
+          <b>Vercel Web Analytics:</b> quantas visitas e quais páginas são abertas.
+        </li>
+        <li>
+          <b>PostHog:</b> como o app é usado, por exemplo quantas pessoas abrem uma era, em que altura de um módulo
+          mais gente para, quantas perguntas são acertadas e se o laboratório foi usado. Cada visita recebe um código
+          aleatório que só existe enquanto a aba está aberta: não dá para saber quem é você nem juntar visitas
+          diferentes. O endereço IP não é guardado.
+        </li>
+      </ul>
 
       <h2>Seus direitos</h2>
       <p>

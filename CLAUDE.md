@@ -155,10 +155,11 @@ Projete e teste em **360 × 640** primeiro; depois amplie para tablet e desktop.
 
 Objetivo do autor: saber quantas pessoas acessam e como usam.
 
-- Toda medição passa por `AnalyticsPort` com um método `track(event, props?)`. Há um adaptador real (Vercel Analytics e/ou PostHog/Plausible) e um `NoopAnalytics` para testes e desenvolvimento.
+- Toda medição passa por `AnalyticsPort` com um método `track(event, props?)`. Há um adaptador real e um `NoopAnalytics` para testes e desenvolvimento.
+- **Decisão do autor (2026-09-25), projeto 100% gratuito:** o **Vercel Web Analytics** (Hobby) conta só visitas e páginas (`startVercelPageViews`), porque eventos personalizados na Vercel exigem plano pago. Os eventos vão para o **PostHog** (plano gratuito) pelo `PostHogAnalytics`, um POST direto na API de captura, sem a biblioteca oficial: sem cookies nem armazenamento (id aleatório só em memória, por aba), `$process_person_profile: false`, `$geoip_disable: true`, e "Discard client IP data" ligado no projeto do PostHog. A chave fica em `VITE_POSTHOG_KEY`/`VITE_POSTHOG_HOST` (`config/analytics.ts`); sem chave, `NoopAnalytics`.
 - **Sem cookies, sem identificar pessoas, sem coletar nome, e-mail ou IP próprio.** Não adicione banner de cookies; adicione uma página curta "Privacidade" dizendo o que é medido (contagem anônima de acessos e de uso) e citando a LGPD.
 - Eventos mínimos (nomes em `snake_case`, props sem dados pessoais):
-  `page_view`, `island_opened {island}`, `module_started {island, module}`, `quiz_answered {island, module, correct, tries}`, `module_completed {island, module}`, `island_completed {island}`, `lab_opened`, `lab_query_run {ok}`, `mission_completed {mission}`, `support_opened`, `pix_key_copied`, `pix_qr_shown`, `progress_exported`, `install_prompt_shown`.
+  `page_view`, `island_opened {island}`, `module_started {island, module}`, `quiz_answered {island, module, correct, tries}`, `module_completed {island, module}`, `island_completed {island}`, `lab_opened`, `lab_query_run {ok}`, `mission_completed {mission}`, `support_opened`, `pix_key_copied`, `pix_qr_shown`, `progress_exported`, `install_prompt_shown`, `module_left {island, module, percent}` (saiu de um módulo não concluído; `percent` = quanto do módulo viu, de 10 em 10, arredondado para baixo). O chefe de fase usa `boss_fight_started`, `boss_fight_won` e `boss_fight_lost`.
 - Com isso o autor consegue ver: visitantes, ilhas mais abertas, em qual módulo as pessoas desistem, e quantas chegam a contribuir. Não meça o valor de nenhuma contribuição (o app não tem como saber).
 
 ---
