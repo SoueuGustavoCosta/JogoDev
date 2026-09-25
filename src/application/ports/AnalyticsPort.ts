@@ -20,7 +20,8 @@ export type AnalyticsEventName =
   | 'install_prompt_shown'
   | 'boss_fight_started'
   | 'boss_fight_won'
-  | 'boss_fight_lost';
+  | 'boss_fight_lost'
+  | 'module_left';
 
 export type AnalyticsProps = Record<string, string | number | boolean>;
 
