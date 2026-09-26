@@ -18,7 +18,7 @@ import { badgeCatalog } from '@/content/badges/catalog';
 import { SUPPORT_COPY } from '@/domain/support';
 import { DEFAULT_LESSON_MODE } from '@/config/exploration';
 import type { StreakCheckIn } from '@/domain/traveler';
-import { HallIcon, MapIcon, TravelerIcon } from '@/presentation/design-system';
+import { HallIcon, HomeIcon, MapIcon, TravelerIcon } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
 import { SupportModal } from '@/presentation/features/support';
 import { AccountSheetProvider } from '@/presentation/features/account';
@@ -76,7 +76,8 @@ export function Layout() {
   const [streakGrew, setStreakGrew] = useState(false);
   const closeStreak = useCallback(() => setPendingStreak(null), []);
 
-  const isMap = location.pathname === '/';
+  const isMap = location.pathname === '/mapa';
+  const isHome = location.pathname === '/';
   // Telas cheias, sem navegação nem cabeçalho do viajante: o prólogo e as telas de conta.
   const isFullScreen = FULL_SCREEN_PATHS.has(location.pathname);
   const isModule = MODULE_PATH.test(location.pathname);
@@ -164,14 +165,16 @@ export function Layout() {
       <div className={styles.root}>
         {lessonFullScreen ? null : (
           <nav className={styles.nav} aria-label="Navegação principal">
-            <NavItem to="/" end label="Mapa" icon={<MapIcon />} />
+            <NavItem to="/" end label="Início" icon={<HomeIcon />} />
+            <NavItem to="/mapa" label="Mapa" icon={<MapIcon />} />
+            {/* A Liga semanal chega na Etapa 10; até lá a aba abre o Hall dos Viajantes. */}
+            <NavItem to="/hall" label="Liga" icon={<HallIcon />} />
             <NavItem
               to="/configuracoes"
               label="Viajante"
               icon={<TravelerIcon />}
               alert={sessionExpired ? 'entre de novo na sua conta' : undefined}
             />
-            <NavItem to="/hall" label="Hall dos Viajantes" icon={<HallIcon />} />
           </nav>
         )}
 
@@ -182,9 +185,11 @@ export function Layout() {
             {/* Dentro de um salto, o perfil e os contadores saem da frente (continuam na aba Viajante). */}
             {isModule ? null : (
               <header className={styles.top}>
-                <Link to="/" className={styles.back}>
-                  ◂ Voltar ao mapa
-                </Link>
+                {isHome ? null : (
+                  <Link to="/mapa" className={styles.back}>
+                    ◂ Voltar ao mapa
+                  </Link>
+                )}
                 <ProfileHeader summary={summary} onlinePlayers={onlinePlayers} streakGrew={streakGrew} />
               </header>
             )}
@@ -205,9 +210,9 @@ export function Layout() {
           </div>
         )}
 
-        {/* Fora do mapa de propósito: a tela do hub não recebe nada por cima. A comemoração
+        {/* Fora do mapa e do Início de propósito: as telas do hub não recebem nada por cima. A comemoração
             espera o aluno entrar numa trilha/tela interna. */}
-        {pendingStreak && !isMap ? <StreakCelebration checkIn={pendingStreak} onClose={closeStreak} /> : null}
+        {pendingStreak && !isMap && !isHome ? <StreakCelebration checkIn={pendingStreak} onClose={closeStreak} /> : null}
 
         {supportOpen ? <SupportModal onClose={() => setSupportOpen(false)} /> : null}
       </div>

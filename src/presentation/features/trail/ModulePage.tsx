@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useNavigate, useOutletContext, useParams } from 'react-router-dom';
-import { completeModule, getLessonMode, getOrCreateTravelerUuid, getTraveler } from '@/application/usecases';
+import { completeModule, getLessonMode, getOrCreateTravelerUuid, getTraveler, rememberLastLesson } from '@/application/usecases';
 import { getTrailById } from '@/content/registry';
 import { badgeCatalog } from '@/content/badges/catalog';
 import { DEFAULT_LESSON_MODE } from '@/config/exploration';
@@ -32,7 +32,10 @@ export function ModulePage() {
   useEffect(() => {
     setResult(null);
     window.scrollTo({ top: 0 });
-    if (trail && module) analytics.track('module_started', { island: trail.id, module: module.id });
+    if (trail && module) {
+      analytics.track('module_started', { island: trail.id, module: module.id });
+      rememberLastLesson({ repository: progressRepository }, { trailId: trail.id, moduleId: module.id });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [trail?.id, module?.id]);
 

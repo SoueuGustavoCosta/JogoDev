@@ -21,6 +21,10 @@ export function PrivacyPage() {
       <ul>
         <li>o nome que você escolheu, e a foto e o resumo &quot;Sobre você&quot;, se você adicionar;</li>
         <li>os módulos concluídos, as insígnias e a sequência de dias;</li>
+        <li>
+          os dias em que você consertou a Anomalia do Dia (a turma vê só quantas pessoas consertaram, nunca
+          quem);
+        </li>
         <li>o horário da última atividade, para mostrar quem está online agora;</li>
         <li>uma cópia de segurança do seu progresso completo.</li>
       </ul>

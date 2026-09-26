@@ -7,6 +7,8 @@ import { ErrorBoundary } from './ErrorBoundary';
 const ArchipelagoHome = lazy(() =>
   import('@/presentation/features/archipelago').then((m) => ({ default: m.ArchipelagoHome })),
 );
+const HomePage = lazy(() => import('@/presentation/features/home').then((m) => ({ default: m.HomePage })));
+const AnomalyPage = lazy(() => import('@/presentation/features/anomaly').then((m) => ({ default: m.AnomalyPage })));
 const TrailOverview = lazy(() =>
   import('@/presentation/features/trail').then((m) => ({ default: m.TrailOverview })),
 );
@@ -43,7 +45,9 @@ function AppRoutes() {
     <Suspense fallback={<div style={{ padding: 32 }}>Carregando...</div>}>
       <Routes>
         <Route element={<Layout />}>
-          <Route index element={<ArchipelagoHome />} />
+          <Route index element={<HomePage />} />
+          <Route path="mapa" element={<ArchipelagoHome />} />
+          <Route path="anomalia" element={<AnomalyPage />} />
           <Route path="trilhas/:trailId" element={<TrailShell />}>
             <Route index element={<TrailOverview />} />
             <Route path="modulos/:moduleId" element={<ModulePage />} />

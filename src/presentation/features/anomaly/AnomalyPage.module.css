@@ -1,0 +1,81 @@
+.root {
+  display: grid;
+  gap: 14px;
+}
+
+.eyebrow {
+  margin: 0;
+  font: 0.82rem var(--font-mono);
+  color: var(--color-orange);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: 1.6rem;
+  line-height: 1.15;
+}
+
+.say {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--color-line);
+  background: var(--color-panel);
+}
+
+.say p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.challenge {
+  display: grid;
+}
+
+.reward {
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid var(--color-good);
+  background: rgba(62, 224, 161, 0.08);
+}
+
+.reward b {
+  font-family: var(--font-title);
+  font-size: 1.25rem;
+  color: var(--color-good);
+}
+
+.gains {
+  font: 700 1.1rem var(--font-mono);
+}
+
+.xp {
+  color: var(--color-gold);
+}
+
+.fragment {
+  color: var(--color-cyan);
+}
+
+.back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  margin-top: 6px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--color-purple), #7b2ff0);
+  color: #fff;
+  font: 700 1rem var(--font-body);
+  text-decoration: none;
+}
+
+.back:focus-visible {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 3px;
+}

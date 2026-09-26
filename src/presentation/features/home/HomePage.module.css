@@ -1,0 +1,160 @@
+.root {
+  display: grid;
+  gap: 16px;
+}
+
+.anomaly {
+  display: grid;
+  gap: 12px;
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px solid var(--color-orange);
+  background: var(--color-panel);
+  box-shadow: 0 0 36px rgba(255, 107, 31, 0.18);
+}
+
+.anomalySolved {
+  border-color: var(--color-good);
+  box-shadow: none;
+}
+
+.eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  font: 0.82rem var(--font-mono);
+  color: var(--color-orange);
+}
+
+.anomalySolved .eyebrow {
+  color: var(--color-good);
+}
+
+.closes {
+  color: var(--color-muted);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: 1.6rem;
+  line-height: 1.15;
+}
+
+.story {
+  margin: 0;
+  color: var(--color-muted);
+  line-height: 1.5;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--color-line);
+  font-weight: 600;
+}
+
+.chipXp {
+  color: var(--color-gold);
+}
+
+.chipFragment {
+  color: var(--color-cyan);
+}
+
+.cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--color-purple), #7b2ff0);
+  color: #fff;
+  font: 700 1.1rem var(--font-body);
+  text-decoration: none;
+}
+
+.cta:focus-visible,
+.continue:focus-visible {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 3px;
+}
+
+.done {
+  margin: 0;
+  color: var(--color-good);
+  font-weight: 600;
+}
+
+.solvers {
+  margin: 0;
+  text-align: center;
+  color: var(--color-muted);
+  font-size: 0.92rem;
+}
+
+.continue {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 44px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid var(--color-line);
+  background: var(--color-panel);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.continueIcon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  border: 1px solid var(--color-good);
+  background: rgba(62, 224, 161, 0.1);
+  color: var(--color-good);
+  font: 700 1.3rem var(--font-mono);
+}
+
+.continueText {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.continueText b {
+  font-family: var(--font-title);
+  font-size: 1.1rem;
+}
+
+.continueText > span {
+  color: var(--color-muted);
+  font-size: 0.92rem;
+}
+
+.bar {
+  display: block;
+  height: 6px;
+  margin-top: 4px;
+  border-radius: 999px;
+  background: var(--color-line);
+  overflow: hidden;
+}
+
+.bar i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--color-good);
+}

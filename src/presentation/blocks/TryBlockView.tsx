@@ -35,7 +35,14 @@ type EngineState = 'idle' | 'loading' | 'ready' | 'failed';
  * (ou no primeiro "Rodar", se o navegador não souber avisar). Se não carregar (aparelho sem
  * WebAssembly), a lição segue normalmente: o laboratório é um extra.
  */
-export function TryBlockView({ block }: { block: TryBlock }) {
+export function TryBlockView({
+  block,
+  onSolved,
+}: {
+  block: TryBlock;
+  /** Chamado na primeira vez que bate com o esperado, com o número de rodadas até ali. */
+  onSolved?: (runs: number) => void;
+}) {
   const { sqlEngine, phpEngine, analytics } = useServices();
   const deps = { sqlEngine, phpEngine, analytics };
   const [code, setCode] = useState(block.starter);
@@ -48,6 +55,8 @@ export function TryBlockView({ block }: { block: TryBlock }) {
   const loading = useRef<Promise<boolean> | null>(null);
   /** Onde o cursor deve ficar depois de um atalho (aplicado logo após o React atualizar o texto). */
   const pendingCaret = useRef<number | null>(null);
+  const runs = useRef(0);
+  const solved = useRef(false);
 
   useLayoutEffect(() => {
     const el = editorRef.current;
@@ -95,7 +104,13 @@ export function TryBlockView({ block }: { block: TryBlock }) {
     setRunning(true);
     try {
       if (!(await ensureEngine())) return;
-      setResult(await runTryBlock(deps, block, code));
+      const next = await runTryBlock(deps, block, code);
+      runs.current += 1;
+      setResult(next);
+      if (next.verdict.ok && !solved.current) {
+        solved.current = true;
+        onSolved?.(runs.current);
+      }
     } catch {
       setEngine('failed');
     } finally {

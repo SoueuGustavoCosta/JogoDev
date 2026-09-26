@@ -57,7 +57,7 @@
   width: min(440px, calc(100% - 24px));
   height: 64px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   padding: 6px;
   gap: 4px;
   background: rgba(13, 11, 24, 0.82);

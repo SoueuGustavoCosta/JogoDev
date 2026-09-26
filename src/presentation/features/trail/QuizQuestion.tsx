@@ -39,6 +39,8 @@ export function QuizQuestion({
   onNext,
   onChange,
   onAnswered,
+  evaluate,
+  label,
 }: {
   trailId: string;
   moduleId: string;
@@ -53,6 +55,13 @@ export function QuizQuestion({
   onChange?: (state: QuizQuestionState) => void;
   /** Chamado depois de cada resposta gravada (ex.: para o cabeçalho atualizar o XP). */
   onAnswered?: () => void;
+  /**
+   * Conferência própria (ex.: Anomalia do Dia): substitui o `answerQuiz`, que grava a
+   * resposta no módulo. Recebe a resposta e devolve se acertou e quanto XP ganhou.
+   */
+  evaluate?: (answer: QuizAnswer) => { correct: boolean; xpGained: number };
+  /** Troca o cabeçalho "Paradoxo N de M". */
+  label?: string;
 }) {
   const { progressRepository, analytics } = useServices();
   const [wrong, setWrong] = useState<number[]>([]);
@@ -83,7 +92,9 @@ export function QuizQuestion({
   }, [isSolved, attempts]);
 
   function submit(answer: QuizAnswer, choiceIndex?: number) {
-    const result = answerQuiz({ repository: progressRepository, analytics }, { trailId, moduleId, item, answer });
+    const result = evaluate
+      ? evaluate(answer)
+      : answerQuiz({ repository: progressRepository, analytics }, { trailId, moduleId, item, answer });
     onAnswered?.();
     if (result.correct) {
       setXpGained(result.xpGained);
@@ -115,10 +126,8 @@ export function QuizQuestion({
       <SintaxeReaction type={reactionType} signal={reactionSignal} xpGained={isSolved ? xpGained : 0} />
       <div className={inline ? styles.box : styles.lessonBox}>
         <div className={styles.top}>
-          <span>
-            Paradoxo {position} de {total}
-          </span>
-          {inline ? <span>{total - position + (isSolved ? 0 : 1)} restantes</span> : null}
+          <span>{label ?? `Paradoxo ${position} de ${total}`}</span>
+          {inline && !label ? <span>{total - position + (isSolved ? 0 : 1)} restantes</span> : null}
         </div>
         <p className={styles.question}>{item.q}</p>
 

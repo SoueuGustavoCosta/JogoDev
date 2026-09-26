@@ -75,6 +75,11 @@ export function ProfileHeader({
         <span className={styles.pill}>
           <b>{summary.xp}</b> XP
         </span>
+        {summary.fragments > 0 ? (
+          <span className={styles.pill} title="Fragmentos Temporais">
+            <b>{summary.fragments}</b> ◆
+          </span>
+        ) : null}
         <span className={`${styles.pill} ${streakGrew ? styles.pillHot : ''}`} title="Dias seguidos estudando">
           🔥 <b>{summary.streak.current}</b>
         </span>
