@@ -137,3 +137,23 @@ Colunas de formatos: completar / montar a linha / o que aparece / encontre o bug
 - A sequência de formatos de cada módulo é diferente da de Python e da de Java (teste
   "Python, Java e PHP não repetem a sequência de formatos" em `conversionGoals.test.ts`).
 - `afterBlock` em 3 perguntas (Laços q1, Funções q1, Superglobais q1).
+
+## Git e GitHub (branch `etapa-5-conteudo-git-github`)
+
+| Módulo | Palavras (antes → depois) | Alternativas | Outros formatos (completar / montar / saída / bug) |
+|---|---|---|---|
+| origem | 224 → 245 | 3 → 2 | 0 / 0 / 0 / 0 → 1 / 0 / 0 / 0 |
+| conceitos | 150 → 150 | 3 → 1 | 0 / 0 / 0 / 0 → 1 / 1 / 0 / 0 |
+| ciclo | 52 → 52 | 2 → 1 | 1 / 0 / 0 / 0 → 1 / 1 / 0 / 0 |
+| branches | 84 → 84 | 3 → 1 | 0 / 0 / 0 / 0 → 1 / 1 / 0 / 0 |
+| desfazer | 105 → 105 | 2 → 0 | 1 / 0 / 0 / 0 → 2 / 1 / 0 / 0 |
+| github | 134 → 134 | 3 → 2 | 0 / 0 / 0 / 0 → 1 / 0 / 0 / 0 |
+| boaspraticas | 150 → 150 | 2 → 1 | 1 / 0 / 0 / 0 → 1 / 0 / 0 / 1 |
+| **Total** | 899 → 920 | 18/21 (86%) → 8/21 (38%) | |
+
+- 10 conversões: completar (5), montar a linha (4) e encontre o bug (1). Não há "o que
+  aparece" em Git: comandos de terminal não rodam no navegador e a saída depende do
+  repositório de cada um.
+- "Origem" não tinha nenhum comando e ganhou um parágrafo curto com um bloco `git clone` (o
+  "distribuído" na prática), usado pela pergunta convertida `q3`.
+- `afterBlock` em 2 perguntas (Origem q3, Conceitos q1).
