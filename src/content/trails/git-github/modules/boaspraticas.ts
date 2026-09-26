@@ -63,15 +63,11 @@ export const modBoaspraticas: Module = {
     },
     {
       id: 'q3',
-      q: 'Qual é uma boa prática de mensagem de commit?',
-      options: [
-        'Escrever sempre "mudanças"',
-        'Ser curta, no imperativo, e descrever o que a mudança faz',
-        'Nunca escrever nada, deixar em branco',
-        'Copiar a mensagem do commit anterior',
-      ],
-      answer: 1,
-      explain: 'Uma mensagem clara economiza tempo de investigação no futuro.',
+      kind: "bug",
+      q: "O histórico abaixo tem uma mensagem de commit que foge da boa prática. Toque nela.",
+      lines: ["a1b2c3 Adiciona página de contato", "d4e5f6 mudanças", "g7h8i9 Corrige erro no menu do celular"],
+      bugLine: 2,
+      explain: "Boa mensagem é curta, no imperativo, e descreve o que a mudança faz. \"mudanças\" não diz nada a quem lê o histórico.",
     },
   ],
 };

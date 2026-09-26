@@ -49,6 +49,11 @@ export const modOrigem: Module = {
         'Isso significa trabalhar offline, sem depender da internet, e não ter um único ponto de falha.',
       ],
     },
+    {
+      t: 'p',
+      x: 'Na prática, é um comando só: o <code>git clone</code> baixa o projeto inteiro, com todo o histórico, para o seu computador.',
+    },
+    { t: 'code', file: 'terminal — sua cópia completa', x: 'git clone https://github.com/usuario/projeto.git' },
   ],
   quiz: [
     {
@@ -77,15 +82,15 @@ export const modOrigem: Module = {
     },
     {
       id: 'q3',
-      q: 'O que significa um sistema de controle de versão "distribuído"?',
-      options: [
-        'Só existe uma cópia do histórico, no servidor',
-        'Cada cópia local tem o histórico completo, sem depender de um servidor central',
-        'Os arquivos ficam espalhados em vários serviços diferentes',
-        'É um sistema que só funciona conectado à internet',
-      ],
-      answer: 1,
-      explain: 'No modelo distribuído, cada `git clone` carrega o histórico inteiro do projeto.',
+      q: "O Git é distribuído: cada cópia local tem o histórico completo. Complete o comando que baixa essa cópia:",
+      fill: true,
+      pre: "git",
+      post: "https://github.com/usuario/projeto.git",
+      accept: ["clone"],
+      wrong: ["push", "commit", "merge"],
+      placeholder: "?",
+      explain: "Cada <code>git clone</code> traz o histórico completo, sem depender de um servidor central: dá para trabalhar offline e não há um único ponto de falha.",
+      afterBlock: 9,
     },
   ],
 };

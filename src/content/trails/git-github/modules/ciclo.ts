@@ -49,15 +49,11 @@ export const modCiclo: Module = {
     },
     {
       id: 'q2',
-      q: 'O que git add realmente faz?',
-      options: [
-        'Apaga o arquivo do projeto',
-        'Move o arquivo para a staging area, preparando-o para o commit',
-        'Envia o arquivo direto para o GitHub',
-        'Cria um novo repositório',
-      ],
-      answer: 1,
-      explain: 'git add não salva nada de permanente ainda — só prepara.',
+      kind: "order",
+      q: "Monte o ciclo do dia a dia, na ordem",
+      pieces: ["git status", "git add index.html", "git commit -m \"primeira página\"", "git log"],
+      distractors: ["git push --force"],
+      explain: "<code>git add</code> move o arquivo para a staging area, preparando-o para o commit. Só depois vem o <code>git commit</code>.",
     },
     {
       id: 'q3',

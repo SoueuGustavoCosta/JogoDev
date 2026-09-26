@@ -76,10 +76,14 @@ export const modGithub: Module = {
     },
     {
       id: 'q3',
-      q: 'Qual comando envia seus commits locais para o GitHub?',
-      options: ['git pull', 'git push', 'git fetch', 'git clone'],
-      answer: 1,
-      explain: 'git push sincroniza o que você já commitou localmente com o repositório remoto.',
+      q: "Complete o comando que envia seus commits locais para o GitHub:",
+      fill: true,
+      pre: "git",
+      post: "-u origin main",
+      accept: ["push"],
+      wrong: ["pull", "fetch", "clone"],
+      placeholder: "?",
+      explain: "<code>push</code> empurra os commits para o remoto. <code>pull</code> e <code>fetch</code> fazem o caminho contrário.",
     },
   ],
 };
