@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Link, Navigate, Outlet, useLocation, useParams } from 'react-router-dom';
-import { getMyBadges, getTrailProgress } from '@/application/usecases';
+import { getLessonMode, getMyBadges, getTrailProgress } from '@/application/usecases';
 import { getTrailById } from '@/content/registry';
 import { badgeCatalog, BADGE_TRAIL_TO_TRAIL_ID } from '@/content/badges/catalog';
-import { DEFAULT_EXPLORATION_MODE } from '@/config/exploration';
+import { DEFAULT_EXPLORATION_MODE, DEFAULT_LESSON_MODE } from '@/config/exploration';
 import { isModuleUnlocked } from '@/domain/progress';
 import { BadgeMedal, Modal } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
@@ -32,6 +32,11 @@ export function TrailShell() {
   const trailBadges = badgeCatalog.filter((b) => BADGE_TRAIL_TO_TRAIL_ID[b.trail] === trail.id);
   const badgesEarnedCount = trailBadges.filter((b) => Boolean(myBadges[b.id])).length;
   const bossDefeated = Boolean(trailProgress?.bossDefeated);
+
+  // Lição em telas curtas ocupa a tela toda: sem a lista de fases ao lado (nem no desktop).
+  if (moduleId && getLessonMode({ repository: progressRepository }, { fallback: DEFAULT_LESSON_MODE }) === 'telas') {
+    return <Outlet context={{ refresh: () => setTick((t) => t + 1) } satisfies TrailOutletContext} />;
+  }
 
   return (
     <div className={styles.layout}>

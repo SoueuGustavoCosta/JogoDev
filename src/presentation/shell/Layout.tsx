@@ -5,6 +5,7 @@ import {
   bootstrapTravelerIdentity,
   checkInDaily,
   getPresence,
+  getLessonMode,
   getProfileSummary,
   getTraveler,
   needsSignInAgain,
@@ -15,6 +16,7 @@ import type { OnlinePlayer } from '@/application/ports';
 import { trailRegistry } from '@/content/registry';
 import { badgeCatalog } from '@/content/badges/catalog';
 import { SUPPORT_COPY } from '@/domain/support';
+import { DEFAULT_LESSON_MODE } from '@/config/exploration';
 import type { StreakCheckIn } from '@/domain/traveler';
 import { HallIcon, MapIcon, TravelerIcon } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
@@ -78,6 +80,9 @@ export function Layout() {
   // Telas cheias, sem navegação nem cabeçalho do viajante: o prólogo e as telas de conta.
   const isFullScreen = FULL_SCREEN_PATHS.has(location.pathname);
   const isModule = MODULE_PATH.test(location.pathname);
+  // Lição em telas curtas: tela cheia, sem a navegação do app (o × da lição leva de volta à era).
+  const lessonFullScreen =
+    isModule && getLessonMode({ repository: progressRepository }, { fallback: DEFAULT_LESSON_MODE }) === 'telas';
 
   const summary = useMemo(
     () => getProfileSummary({ repository: progressRepository }, { trails: trailRegistry, badgeCatalog }),
@@ -157,18 +162,20 @@ export function Layout() {
   return (
     <AccountSheetProvider>
       <div className={styles.root}>
-        <nav className={styles.nav} aria-label="Navegação principal">
-          <NavItem to="/" end label="Mapa" icon={<MapIcon />} />
-          <NavItem
-            to="/configuracoes"
-            label="Viajante"
-            icon={<TravelerIcon />}
-            alert={sessionExpired ? 'entre de novo na sua conta' : undefined}
-          />
-          <NavItem to="/hall" label="Hall dos Viajantes" icon={<HallIcon />} />
-        </nav>
+        {lessonFullScreen ? null : (
+          <nav className={styles.nav} aria-label="Navegação principal">
+            <NavItem to="/" end label="Mapa" icon={<MapIcon />} />
+            <NavItem
+              to="/configuracoes"
+              label="Viajante"
+              icon={<TravelerIcon />}
+              alert={sessionExpired ? 'entre de novo na sua conta' : undefined}
+            />
+            <NavItem to="/hall" label="Hall dos Viajantes" icon={<HallIcon />} />
+          </nav>
+        )}
 
-        {isMap ? (
+        {isMap || lessonFullScreen ? (
           <Outlet context={{ summary, onlinePlayers } satisfies LayoutOutletContext} />
         ) : (
           <div className={styles.column}>
