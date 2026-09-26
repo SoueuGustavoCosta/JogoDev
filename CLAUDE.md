@@ -104,9 +104,12 @@ src/
 ```ts
 type Trail = { id: string; title: string; tagline: string; symbol: SymbolId; accent: string; modules: Module[]; missions?: Mission[]; lab?: 'sql' | null };
 type Module = { id: string; short: string; title: string; lead: string; level: 'Base' | 'Intermediário' | 'Avançado'; blocks: Block[]; quiz: QuizItem[] };
-type QuizItem =
+type QuizItem =   // todos têm também `id` (ver seção 10) e `hint?`
   | { q: string; options: string[]; answer: number; explain: string }
-  | { q: string; fill: true; pre: string; post: string; accept: string[]; placeholder?: string; explain: string };
+  | { q: string; fill: true; pre: string; post: string; accept: string[]; wrong?: string[]; placeholder?: string; explain: string }
+  | { kind: 'order'; q: string; pieces: string[]; distractors?: string[]; explain: string }
+  | { kind: 'output'; q: string; code: string; lang: string; options: string[]; answer: number; explain: string }
+  | { kind: 'bug'; q: string; lines: string[]; bugLine: number; explain: string };
 type Block =
   | { t: 'h' | 'p'; x: string } | { t: 'note'; k: string; x: string; warn?: boolean }
   | { t: 'cards'; items: { h: string; x: string }[] } | { t: 'ul' | 'ol'; items: string[] }
@@ -247,6 +250,20 @@ Passo a passo que você (Claude Code) deve seguir ao criar uma ilha:
 3. Rodar a validação Zod de conteúdo e os testes (`pnpm test`).
 4. Conferir no celular (Playwright em viewport 360 px) que a nova ilha aparece na home, abre, roda o quiz e conclui.
 5. Nenhum outro arquivo do projeto deve ter sido alterado (exceto docs e ícones/OG da ilha).
+
+### Formatos de pergunta (quiz)
+
+Toda pergunta tem `id` (único no módulo, minúsculas, nunca só dígitos, ex.: `q6`): o progresso do aluno é guardado por ele. Id publicado nunca muda nem é reaproveitado; pergunta nova ganha o próximo id livre. Todos os formatos aceitam `explain` (aparece depois do acerto, pode ter `<code>`/`<b>`) e `hint` opcional. Todos são jogáveis só com toque.
+
+| Formato | Campos | Quando usar |
+|---|---|---|
+| Múltipla escolha (sem `kind`) | `q`, `options`, `answer` (índice, começa em 0) | Conceito, comparação. Prefira os formatos de código quando der. |
+| Completar (sem `kind`, `fill: true`) | `q`, `pre`, `post`, `accept` (1º = o bloco certo), `wrong` (2 ou 3 blocos errados) | Uma lacuna numa linha de código. Sem `wrong` vira campo de digitar (evite). |
+| `kind: 'order'` — montar a linha | `q`, `pieces` (na ordem certa, 2+), `distractors?` (até 4, texto diferente das peças) | Sintaxe de uma linha: o aluno toca nas peças na ordem. Use distratores que confundem de verdade (`=>` × `>=`, `then`). |
+| `kind: 'output'` — o que aparece na tela? | `q`, `code`, `lang`, `options`, `answer` | Ler código real e prever a saída. O `code` precisa rodar e dar exatamente a opção certa. |
+| `kind: 'bug'` — encontre o bug | `q`, `lines` (uma string por linha), `bugLine` (começa em 1, não pode ser linha vazia) | Erro clássico de iniciante; diga no `q` o sintoma ("sempre diz 18 anos"). |
+
+XP e tentativas são iguais em todos os formatos (100 de primeira, 40 depois de errar). Os blocos de código dos desafios não usam ligaduras da fonte (`==` aparece como dois sinais). Exemplo de cada formato novo: `src/content/trails/logica/modules/decisoes.ts` (`q6`, `q7`, `q8`).
 
 Diretrizes de conteúdo: português do Brasil, tom acolhedor e direto, um exemplo real por conceito, exemplos que o aluno consegue **executar**, quiz ao fim de cada módulo (perguntas de múltipla escolha e de completar). O conteúdo é **original**: use materiais da faculdade e vídeos só como inspiração, sem copiar trechos, nem figuras.
 
