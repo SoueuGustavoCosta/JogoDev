@@ -76,6 +76,8 @@ function NavItem({
 
 /** Rota de um salto (módulo): ele desenha o próprio cabeçalho compacto de uma linha. */
 const MODULE_PATH = /^\/trilhas\/[^/]+\/modulos\/[^/]+\/?$/;
+/** Uma oficina aberta (Etapa 13): tela de foco, com o próprio "✕" no topo. */
+const WORKSHOP_PATH = /^\/oficina\/[^/]+\/?$/;
 
 export function Layout() {
   const { progressRepository, leaderboard } = useServices();
@@ -91,6 +93,7 @@ export function Layout() {
   // Telas cheias, sem navegação nem cabeçalho do viajante: o prólogo e as telas de conta.
   const isFullScreen = FULL_SCREEN_PATHS.has(location.pathname);
   const isModule = MODULE_PATH.test(location.pathname);
+  const isWorkshop = WORKSHOP_PATH.test(location.pathname);
   // Lição em telas curtas: tela cheia, sem a navegação do app (o × da lição leva de volta à era).
   const lessonFullScreen =
     isModule && getLessonMode({ repository: progressRepository }, { fallback: DEFAULT_LESSON_MODE }) === 'telas';
@@ -200,7 +203,7 @@ export function Layout() {
         ) : (
           <div className={styles.column}>
             {/* Dentro de um salto, o perfil e os contadores saem da frente (continuam na aba Viajante). */}
-            {isModule ? null : (
+            {isModule || isWorkshop ? null : (
               <header className={styles.top}>
                 {isHome ? null : (
                   <Link to="/mapa" className={styles.back}>

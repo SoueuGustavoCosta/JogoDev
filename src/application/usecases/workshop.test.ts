@@ -72,6 +72,8 @@ describe('Oficina (casos de uso)', () => {
     expect(bad.firstFailure?.test.inputs).toEqual({ n: 5 });
     const loop = await runWorkshopTests({ runner, analytics }, { workshop, lang: 'js', code: 'while (true) {}' });
     expect(loop.firstFailure?.timedOut).toBe(true);
+    expect(loop.results).toHaveLength(1);
+    expect(loop.total).toBe(3);
     expect(analytics.events.map((e) => e.props)).toContainEqual({ workshop: 'dobro', passed: 3, total: 3 });
   });
 

@@ -9,6 +9,7 @@ import { SupportModal } from '@/presentation/features/support';
 import { useServices } from '@/presentation/app/ServicesContext';
 import { TrailIntroDialogue, hasSeenTrailIntro } from './TrailIntroDialogue';
 import styles from './TrailOverview.module.css';
+import { TrailWorkshops } from '@/presentation/features/workshop/WorkshopListPage';
 
 export function TrailOverview() {
   const { trailId } = useParams<{ trailId: string }>();
@@ -125,6 +126,8 @@ function TrailOverviewBody({
           <span>Cada salto concluído vira um cristal. Pratique de verdade na Máquina do Tempo.</span>
         </div>
       </div>
+
+      <TrailWorkshops trailId={trail.id} />
 
       {trophy ? (
         <div className={styles.trophy}>

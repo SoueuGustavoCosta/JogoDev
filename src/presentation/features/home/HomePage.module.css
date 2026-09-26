@@ -182,3 +182,9 @@
   font: 0.95rem var(--font-mono);
   color: var(--color-cyan);
 }
+
+.workshopIcon {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  color: var(--color-orange-soft);
+}

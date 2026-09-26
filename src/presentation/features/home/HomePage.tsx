@@ -118,6 +118,16 @@ export function HomePage() {
         </Link>
       )}
 
+      <Link to="/oficina" className={styles.continue}>
+        <span className={`${styles.continueIcon} ${styles.workshopIcon}`} aria-hidden="true">
+          {'{ }'}
+        </span>
+        <span className={styles.continueText}>
+          <b>Oficina do Viajante</b>
+          <span>Mini projetos para resolver do seu jeito, em PHP ou JS.</span>
+        </span>
+      </Link>
+
       <EventStrip />
       <ConvergenceCard />
     </div>

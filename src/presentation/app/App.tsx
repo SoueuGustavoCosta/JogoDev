@@ -18,6 +18,8 @@ const LabPage = lazy(() => import('@/presentation/features/lab').then((m) => ({ 
 const BossFightPage = lazy(() =>
   import('@/presentation/features/bossfight').then((m) => ({ default: m.BossFightPage })),
 );
+const WorkshopListPage = lazy(() => import('@/presentation/features/workshop').then((m) => ({ default: m.WorkshopListPage })));
+const WorkshopPage = lazy(() => import('@/presentation/features/workshop').then((m) => ({ default: m.WorkshopPage })));
 const EcoSoltoPage = lazy(() => import('@/presentation/features/events').then((m) => ({ default: m.EcoSoltoPage })));
 const LeaguePage = lazy(() => import('@/presentation/features/league').then((m) => ({ default: m.LeaguePage })));
 const ShopPage = lazy(() => import('@/presentation/features/shop').then((m) => ({ default: m.ShopPage })));
@@ -63,6 +65,8 @@ function AppRoutes() {
           <Route path="hall" element={<HallPage />} />
           <Route path="liga" element={<LeaguePage />} />
           <Route path="evento/eco-solto" element={<EcoSoltoPage />} />
+          <Route path="oficina" element={<WorkshopListPage />} />
+          <Route path="oficina/:workshopId" element={<WorkshopPage />} />
           <Route path="redefinir-senha" element={<ResetPasswordPage />} />
           <Route path="prologo" element={<PrologueScreen />} />
           <Route path="entrar" element={<LoginPage />} />

@@ -43,13 +43,16 @@ export async function runWorkshopTests(
   deps: { runner: CodeRunnerPort; analytics: AnalyticsPort },
   params: { workshop: Workshop; lang: WorkshopLang; code: string; withExtra?: boolean },
 ): Promise<WorkshopRun> {
+  const planned = testsToRun(params.workshop, Boolean(params.withExtra));
   const results: WorkshopTestResult[] = [];
-  for (const { test, kind } of testsToRun(params.workshop, Boolean(params.withExtra))) {
+  for (const { test, kind } of planned) {
     const run = await deps.runner.run(params.lang, params.code, test.inputs);
     const passed = !run.timedOut && !run.error && outputMatches(run.output, test.expected);
     results.push({ test, kind, output: run.output, error: run.error, timedOut: run.timedOut, passed });
+    // Laço sem fim quase sempre trava em todos os testes: para no primeiro, sem esperar os outros.
+    if (run.timedOut) break;
   }
-  const summary = summarizeResults(results);
+  const summary = { ...summarizeResults(results), total: planned.length };
   deps.analytics.track('workshop_test_run', { workshop: params.workshop.id, passed: summary.passed, total: summary.total });
   return { results, ...summary };
 }
