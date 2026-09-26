@@ -116,7 +116,8 @@ type Block =
   | { t: 'code'; file: string; x: string; nolab?: boolean }   // botão "Abrir no laboratório" quando aplicável
   | { t: 'table'; cols: string[]; rows: string[][]; file?: string; mac?: boolean }
   | { t: 'flow'; items: string[] } | { t: 'raw'; file: string; x: string }  // SVG/HTML confiável do próprio projeto
-  | { t: 'gui' } | { t: 'syntax' };                            // widgets interativos registrados por id
+  | { t: 'gui' } | { t: 'syntax' }                             // widgets interativos registrados por id
+  | { t: 'try'; engine: 'sql' | 'php' | 'git'; brief: string; starter: string; hint: string; /* ...conferência, ver seção 10 */ };
 ```
 
 Valide todo conteúdo com **Zod** em teste de build: um erro de conteúdo deve quebrar o CI, não a tela do aluno.
@@ -264,6 +265,15 @@ Toda pergunta tem `id` (único no módulo, minúsculas, nunca só dígitos, ex.:
 | `kind: 'bug'` — encontre o bug | `q`, `lines` (uma string por linha), `bugLine` (começa em 1, não pode ser linha vazia) | Erro clássico de iniciante; diga no `q` o sintoma ("sempre diz 18 anos"). |
 
 XP e tentativas são iguais em todos os formatos (100 de primeira, 40 depois de errar). Os blocos de código dos desafios não usam ligaduras da fonte (`==` aparece como dois sinais). Exemplo de cada formato novo: `src/content/trails/logica/modules/decisoes.ts` (`q6`, `q7`, `q8`).
+
+### Laboratório dentro da lição (bloco `try`)
+
+Um bloco `{ t: 'try', engine, brief, starter, hint, ... }` vira uma tela "sua vez": editor curto, atalhos de toque, "Rodar" e a conferência. O motor só carrega quando a tela aparece.
+
+- `engine: 'sql'`: `ds` (`loja` ou `vazio`) e **ou** `solution` (consulta de referência; `ordered: true` exige a mesma ordem) **ou** `verify` + `expect` (estado final), igual às missões.
+- `engine: 'php'`: `solution`; a saída do aluno precisa ser igual à dela.
+- `engine: 'git'`: `repo` (`vazio` ou `projeto`), `mission` (id de `domain/lab/gitMissions`) e `solution` (comandos, um por linha).
+- O teste `src/content/tryBlocks.test.ts` confere que a `solution` passa e o `starter` sozinho não. Pergunta que depende do bloco usa `afterBlock`.
 
 Diretrizes de conteúdo: português do Brasil, tom acolhedor e direto, um exemplo real por conceito, exemplos que o aluno consegue **executar**, quiz ao fim de cada módulo (perguntas de múltipla escolha e de completar). O conteúdo é **original**: use materiais da faculdade e vídeos só como inspiração, sem copiar trechos, nem figuras.
 
