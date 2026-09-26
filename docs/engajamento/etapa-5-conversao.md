@@ -108,7 +108,8 @@ Colunas de formatos: completar / montar a linha / o que aparece / encontre o bug
 | **Total** | 1627 → 1627 | 32/40 (80%) → 16/41 (39%) | |
 
 - 16 conversões: o que aparece (7, rodadas no `java` local e listadas em `conferir-output.md`),
-  completar (4), montar a linha (3) e encontre o bug (3). Nas perguntas "o que aparece" de Java,
+  completar (3), montar a linha (3) e encontre o bug (3). (A mensagem do commit de conteúdo diz
+  "completar (4)" por engano: são 3.) Nas perguntas "o que aparece" de Java,
   o código mostrado é o corpo do `main` (e as classes auxiliares, quando há), para caber no
   celular; a pergunta avisa "código dentro do main".
 - O módulo de história mantém as 4 alternativas e ganha uma pergunta nova de código (`q6`,
