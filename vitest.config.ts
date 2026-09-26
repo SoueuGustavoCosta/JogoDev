@@ -11,7 +11,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: false,
-    include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
+    include: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'pwa/**/*.test.ts'],
     testTimeout: 30000,
     hookTimeout: 30000,
     // Vários testes sobem uma instância real do PGlite (Postgres em WebAssembly).

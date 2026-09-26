@@ -15,6 +15,7 @@ import { DEFAULT_LESSON_MODE } from '@/config/exploration';
 import { SUPPORT_COPY } from '@/domain/support';
 import { Button, isSoundMuted, Modal, playTestSound, setSoundMuted } from '@/presentation/design-system';
 import { BadgePassport } from '@/presentation/features/badges';
+import { InstallSheet } from '@/presentation/features/install';
 import { SupportModal } from '@/presentation/features/support';
 import { useAccountSheet } from '@/presentation/features/account';
 import { useServices } from '@/presentation/app/ServicesContext';
@@ -22,7 +23,8 @@ import type { LayoutOutletContext } from '@/presentation/shell';
 import styles from './SettingsPage.module.css';
 
 export function SettingsPage() {
-  const { progressRepository, leaderboard } = useServices();
+  const { progressRepository, leaderboard, install } = useServices();
+  const [installOpen, setInstallOpen] = useState(false);
   const { openAccount } = useAccountSheet();
   const shopBalance = useOutletContext<LayoutOutletContext>().summary.fragments;
   const [supportOpen, setSupportOpen] = useState(false);
@@ -71,6 +73,19 @@ export function SettingsPage() {
       <section className={styles.section}>
         <BadgePassport />
       </section>
+
+      {install.isStandalone() ? null : (
+        <section className={styles.section}>
+          <button type="button" className={styles.shopCard} onClick={() => setInstallOpen(true)}>
+            <span>
+              <b>Instalar o app</b>
+              <small>Na tela inicial do celular, com as lições funcionando sem internet.</small>
+            </span>
+            <span className={styles.shopBalance}>▸</span>
+          </button>
+          {installOpen ? <InstallSheet onClose={() => setInstallOpen(false)} /> : null}
+        </section>
+      )}
 
       <section className={styles.section}>
         <Link to="/configuracoes/loja" className={styles.shopCard}>

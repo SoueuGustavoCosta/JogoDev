@@ -12,6 +12,13 @@ export default [
     ignores: ['dist/**', 'node_modules/**', 'legacy/**', 'prototypes/**', 'Inspirações/**'],
   },
   {
+    // Service worker (Etapa 12A): roda no escopo do service worker, não na página.
+    files: ['pwa/service-worker.js'],
+    languageOptions: {
+      globals: { ...globals.serviceworker, __PRECACHE__: 'readonly' },
+    },
+  },
+  {
     files: ['*.config.js', '*.config.ts'],
     languageOptions: {
       globals: { ...globals.node },

@@ -1,8 +1,9 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { serviceWorkerPlugin } from './pwa/precache';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), serviceWorkerPlugin({ publicDir: 'public', template: 'pwa/service-worker.js' })],
   resolve: {
     alias: {
       '@': '/src',

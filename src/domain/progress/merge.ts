@@ -73,6 +73,7 @@ export function mergeProgress(primary: Progress, secondary: Progress): Progress 
     xpBonus: mergeBonusXp(primary.xpBonus, secondary.xpBonus),
     ecoSoltoWins: mergeLeagueSeals(primary.ecoSoltoWins, secondary.ecoSoltoWins),
     workshops: mergeWorkshops(primary.workshops, secondary.workshops),
+    installPromptShownAt: primary.installPromptShownAt ?? secondary.installPromptShownAt,
     lastLesson:
       (primary.lastLesson?.at ?? '') >= (secondary.lastLesson?.at ?? '') ? primary.lastLesson : secondary.lastLesson,
     streakCurrent,

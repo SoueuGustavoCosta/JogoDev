@@ -138,3 +138,10 @@
   font-weight: 800;
   color: var(--color-purple-soft);
 }
+
+button.shopCard {
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}

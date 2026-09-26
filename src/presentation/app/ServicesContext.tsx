@@ -20,6 +20,7 @@ import { PhpWasmEngine } from '@/infrastructure/php';
 import { CodeRunner } from '@/infrastructure/runner';
 import { NavigatorClipboard } from '@/infrastructure/clipboard';
 import { shareText } from '@/infrastructure/share';
+import { installPrompt, registerServiceWorker } from '@/infrastructure/pwa';
 
 export type Services = {
   progressRepository: ProgressRepository;
@@ -45,6 +46,8 @@ export type Services = {
   generateRecoveryCode: typeof generateRecoveryCode;
   /** Compartilhar um texto (menu nativo do celular, ou copiar). Mesmo motivo acima: não é porta. */
   shareText: typeof shareText;
+  /** "Adicionar à tela inicial" (PWA). Mesmo motivo acima: não é porta. */
+  install: typeof installPrompt;
 };
 
 const ServicesContext = createContext<Services | null>(null);
@@ -74,12 +77,17 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
       resizeAvatarImage,
       generateRecoveryCode,
       shareText,
+      install: installPrompt,
     };
   }, []);
 
   // Contagem de visitas (Vercel Web Analytics, plano grátis): só em produção.
   useEffect(() => {
-    if (import.meta.env.PROD) startVercelPageViews();
+    if (import.meta.env.PROD) {
+      startVercelPageViews();
+      // Modo offline das lições (Etapa 12A). Em desenvolvimento, não: atrapalharia o recarregar.
+      registerServiceWorker();
+    }
   }, []);
 
   return <ServicesContext.Provider value={services}>{children}</ServicesContext.Provider>;

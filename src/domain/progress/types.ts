@@ -148,6 +148,8 @@ export type Progress = {
   ecoSoltoWins?: string[];
   /** Oficinas do Viajante resolvidas, por id. Opcional (Etapa 13). */
   workshops?: Record<string, WorkshopResult>;
+  /** Quando a tela "Adicionar à tela inicial" apareceu sozinha (uma vez só). Opcional (Etapa 12). */
+  installPromptShownAt?: string;
 };
 
 /** Uma oficina resolvida (Etapa 13). */

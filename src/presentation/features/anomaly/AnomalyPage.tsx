@@ -1,6 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
-import { getDailyAnomaly, getTraveler, openAnomaly, solveAnomaly, type SolveAnomalyResult } from '@/application/usecases';
+import {
+  getDailyAnomaly,
+  getTraveler,
+  markInstallOffered,
+  openAnomaly,
+  shouldOfferInstall,
+  solveAnomaly,
+  type SolveAnomalyResult,
+} from '@/application/usecases';
 import { anomalies } from '@/content/anomalies';
 import { isQuizAnswerCorrect, type QuizAnswer } from '@/domain/progress';
 import { trailRegistry } from '@/content/registry';
@@ -9,12 +17,13 @@ import { SintaxeFace } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
 import { QuizQuestion } from '@/presentation/features/trail';
 import { xpMultiplierNow } from '@/presentation/features/events/multiplier';
+import { InstallSheet } from '@/presentation/features/install';
 import { AnomalyReward } from './AnomalyReward';
 import styles from './AnomalyPage.module.css';
 
 /** A Anomalia do Dia: a história do Eco, o desafio e a recompensa (uma vez por dia). */
 export function AnomalyPage() {
-  const { progressRepository, analytics, leaderboard } = useServices();
+  const { progressRepository, analytics, leaderboard, install } = useServices();
   const traveler = getTraveler({ repository: progressRepository });
   const daily = useMemo(
     () => getDailyAnomaly({ repository: progressRepository }, { pool: anomalies, xpMultiplier: xpMultiplierNow() }),
@@ -22,8 +31,20 @@ export function AnomalyPage() {
   );
   const [reward, setReward] = useState<SolveAnomalyResult | null>(null);
   const [showReward, setShowReward] = useState(false);
+  const [offerInstall, setOfferInstall] = useState(false);
   const tries = useRef(0);
   const navigate = useNavigate();
+
+  // Depois da primeira anomalia consertada, uma única vez: "Adicionar à tela inicial".
+  useEffect(() => {
+    if (!showReward || !shouldOfferInstall({ repository: progressRepository }, { standalone: install.isStandalone() })) return;
+    const id = window.setTimeout(() => {
+      markInstallOffered({ repository: progressRepository, analytics }, { platform: install.platform() });
+      setOfferInstall(true);
+    }, 1800);
+    return () => window.clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showReward]);
 
   useEffect(() => {
     openAnomaly({ analytics }, daily.anomaly.id);
@@ -63,6 +84,7 @@ export function AnomalyPage() {
         <p>{anomaly.story}</p>
       </div>
 
+      {offerInstall ? <InstallSheet onClose={() => setOfferInstall(false)} /> : null}
       {reward?.added && showReward ? (
         <AnomalyReward number={daily.number} reward={reward} />
       ) : alreadySolved ? (

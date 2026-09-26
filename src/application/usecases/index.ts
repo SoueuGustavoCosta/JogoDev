@@ -21,3 +21,4 @@ export * from './cosmetics';
 export * from './league';
 export * from './events';
 export * from './workshop';
+export * from './install';
