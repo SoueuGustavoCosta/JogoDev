@@ -22,6 +22,7 @@ type SelectQuery = {
     maybeSingle(): Promise<{ data: Record<string, unknown> | null; error: { message: string } | null }>;
   };
   gte(column: string, value: string): Promise<SelectResult>;
+  in(column: string, values: unknown[]): Promise<SelectResult>;
 };
 
 type AuthSession = { user: { id: string; is_anonymous?: boolean } };
@@ -143,6 +144,35 @@ export class SupabaseLeaderboard implements LeaderboardPort {
       return data;
     } catch {
       return null;
+    }
+  }
+
+  async saveCosmetics(uuid: string, equipped: Record<string, string>): Promise<void> {
+    try {
+      const client = await this.ensureClient();
+      // Update (não upsert): a linha do jogador já existe desde o primeiro check-in.
+      const { error } = await client.from('jogadores').update({ cosmeticos: equipped }).eq('uuid', uuid);
+      if (error && import.meta.env.DEV) console.warn('[SupabaseLeaderboard] saveCosmetics falhou:', error.message);
+    } catch (e) {
+      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] saveCosmetics falhou:', e);
+    }
+  }
+
+  /**
+   * Consulta à parte (nunca junto das leituras do Hall/presença): enquanto a coluna
+   * `cosmeticos` não existir no banco, só esta leitura falha, e o resto segue igual.
+   */
+  async listCosmetics(uuids: string[]): Promise<Record<string, unknown>> {
+    if (uuids.length === 0) return {};
+    try {
+      const client = await this.ensureClient();
+      const { data, error } = await client.from('jogadores').select('uuid,cosmeticos').in('uuid', uuids.slice(0, 200));
+      if (error || !data) return {};
+      const out: Record<string, unknown> = {};
+      for (const row of data) if (row.cosmeticos) out[String(row.uuid)] = row.cosmeticos;
+      return out;
+    } catch {
+      return {};
     }
   }
 

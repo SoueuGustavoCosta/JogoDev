@@ -285,3 +285,7 @@ grant execute on function public.email_de_login(text, text) to anon, authenticat
 -- PENDENTE (Etapa 7, 2026-09-26): tabela anomalias_resolvidas e a função
 -- contar_anomalias_resolvidas estão em supabase/2026-09-26_anomalias_resolvidas.sql,
 -- esperando o autor aplicar. Depois de aplicado, mover o conteúdo para cá.
+
+-- PENDENTE (Etapa 9, 2026-09-26): coluna jogadores.cosmeticos (itens equipados no avatar)
+-- está em supabase/2026-09-26_cosmeticos.sql, esperando o autor aplicar. Depois de
+-- aplicado, mover o conteúdo para cá.

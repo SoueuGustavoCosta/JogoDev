@@ -87,6 +87,10 @@ class StubLeaderboard implements LeaderboardPort {
   async countAnomalySolved(): Promise<number | null> {
     return null;
   }
+  async saveCosmetics(): Promise<void> {}
+  async listCosmetics(): Promise<Record<string, unknown>> {
+    return {};
+  }
 }
 
 const moduleDone = (trailId: string, moduleId: string) => ({

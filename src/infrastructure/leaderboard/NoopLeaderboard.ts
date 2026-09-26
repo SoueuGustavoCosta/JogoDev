@@ -104,4 +104,12 @@ export class NoopLeaderboard implements LeaderboardPort {
   async signOut(): Promise<void> {
     // Intencionalmente vazio.
   }
+
+  async saveCosmetics(_uuid: string, _equipped: Record<string, string>): Promise<void> {
+    // Intencionalmente vazio.
+  }
+
+  async listCosmetics(_uuids: string[]): Promise<Record<string, unknown>> {
+    return {};
+  }
 }

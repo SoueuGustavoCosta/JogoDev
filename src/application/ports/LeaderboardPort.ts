@@ -198,4 +198,15 @@ export interface LeaderboardPort {
    * `null` quando não dá pra saber (offline, sem Supabase, função ainda não criada).
    */
   countAnomalySolved(day: string): Promise<number | null>;
+  /**
+   * Salva os cosméticos equipados no avatar (Etapa 9), junto do avatar na tabela `jogadores`
+   * (coluna `cosmeticos`: encaixe -> id do item). Falha em silêncio (sem rede, ou coluna
+   * ainda não criada): o visual continua salvo no progresso local.
+   */
+  saveCosmetics(uuid: string, equipped: Record<string, string>): Promise<void>;
+  /**
+   * Lê os cosméticos equipados de outros viajantes (Hall, presença), por uuid. Nunca lança:
+   * sem rede ou sem a coluna, devolve `{}` e os avatares aparecem sem cosméticos.
+   */
+  listCosmetics(uuids: string[]): Promise<Record<string, unknown>>;
 }
