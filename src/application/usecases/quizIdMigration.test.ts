@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildQuizIdIndex, type Progress } from '@/domain/progress';
+import { legacyMergeProgress } from '@/domain/progress/__fixtures__/mergeBeforeQuizIds';
 import type { Trail } from '@/domain/trail';
 import type { LeaderboardPort, ProgressRepository } from '../ports';
 import { importProgress } from './importProgress';
@@ -96,5 +97,52 @@ describe('withQuizIdMigration', () => {
     expect(await syncProgressSafely({ repository, leaderboard })).toBe(true);
     expect(resultsOf(inner.load())).toEqual({ q1: ok1, q2: ok2 });
     expect(resultsOf(uploads[0] as Progress)).toEqual({ q1: ok1, q2: ok2 });
+  });
+});
+
+/**
+ * Aba com o app antigo aberta durante o deploy (decisão do autor: cópia extra na raiz por
+ * 4 semanas). O app antigo lê e grava o JSON cru e junta com o merge de antes da Etapa 3.5.
+ */
+describe('aba antiga aberta junto com o app novo', () => {
+  const clone = (p: Progress | null) => JSON.parse(JSON.stringify(p)) as Progress;
+
+  it('mesmo aparelho: o backup da aba antiga apaga os ids dos módulos, o app novo recupera tudo', () => {
+    const { inner, repository } = setup();
+    repository.save(withResults({ q1: ok1, q2: ok2 })); // aba nova respondeu
+    const cloud = clone(inner.load()); // e já tinha subido para a nuvem
+
+    // Aba antiga: lê o aparelho, junta com a nuvem pelo merge antigo e grava.
+    inner.save(clone(legacyMergeProgress(clone(inner.load()), cloud)));
+    expect(resultsOf(inner.load())).toEqual({});
+
+    expect(resultsOf(repository.load())).toEqual({ q1: ok1, q2: ok2 });
+    expect(repository.load()?.trails.logica.modules.origem.completed).toBe(true);
+  });
+
+  it('aba antiga responde uma pergunta (por posição) depois: as duas coisas ficam', () => {
+    const { inner, repository } = setup();
+    repository.save(withResults({ q1: ok1 }));
+    const old = clone(inner.load());
+    old.trails.logica.modules.origem.quizResults = { ...old.trails.logica.modules.origem.quizResults, 1: ok2 };
+    inner.save(old);
+    expect(resultsOf(repository.load())).toEqual({ q1: ok1, q2: ok2 });
+  });
+
+  it('nuvem: a aba antiga sobe uma cópia sem ids, o outro aparelho (novo) recupera ao entrar', async () => {
+    const other = setup();
+    other.repository.save(withResults({ q1: ok1, q2: ok2 }, { travelerUuid: 'u1' }));
+    let cloud: unknown = clone(other.inner.load());
+
+    // Aparelho com a aba antiga: progresso antigo (por posição), faz backup com o merge antigo.
+    const oldDevice = withResults({ 0: ok2 }, { travelerUuid: 'u1' });
+    cloud = clone(legacyMergeProgress(oldDevice, cloud as Progress));
+    expect(resultsOf(cloud as Progress)).toEqual({ 0: ok2 });
+
+    // Um aparelho novo, vazio, entra na conta.
+    const fresh = setup();
+    adoptAccountProgress({ repository: fresh.repository }, { uuid: 'u1', cloud });
+    expect(resultsOf(fresh.inner.load())).toEqual({ q1: ok1, q2: ok2 });
+    expect(fresh.inner.load()?.quizBackup).toEqual({ logica: { origem: { q1: ok1, q2: ok2 } } });
   });
 });

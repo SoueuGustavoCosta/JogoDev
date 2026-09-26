@@ -1,4 +1,10 @@
-import { migrateQuizResultKeys, type Progress, type QuizIdIndex } from '@/domain/progress';
+import {
+  migrateQuizResultKeys,
+  restoreFromQuizBackup,
+  withQuizBackup,
+  type Progress,
+  type QuizIdIndex,
+} from '@/domain/progress';
 import type { ProgressRepository } from '../ports';
 
 /**
@@ -11,17 +17,22 @@ import type { ProgressRepository } from '../ports';
  * gravam aqui) e o código importado (`importProgress`). Por isso a migração não precisa
  * ser repetida em cada caso de uso. O formato continua v1: nada de subir versão.
  *
+ * Transição (decisão do autor, 2026-09-26): toda gravação também guarda uma cópia dos
+ * resultados na raiz (`quizBackup`), e toda leitura devolve aos módulos o que só estiver
+ * na cópia. Assim, se uma aba com o app antigo juntar cópias com o merge antigo (que
+ * descarta as chaves por id), nada se perde. TODO(autor): remover a partir de 2026-10-24.
+ *
  * `index` vem do conteúdo (`buildQuizIdIndex(trailRegistry)`), que só a apresentação conhece.
  */
 export function withQuizIdMigration(repository: ProgressRepository, index: QuizIdIndex): ProgressRepository {
-  const migrate = (progress: Progress) => migrateQuizResultKeys(progress, index);
+  const migrate = (progress: Progress) => restoreFromQuizBackup(migrateQuizResultKeys(progress, index));
   return {
     load() {
       const progress = repository.load();
       return progress ? migrate(progress) : progress;
     },
     save(progress) {
-      repository.save(migrate(progress));
+      repository.save(withQuizBackup(migrate(progress)));
     },
     clear() {
       repository.clear();

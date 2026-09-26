@@ -1,5 +1,5 @@
 import type { Trail } from '../trail/types';
-import { bestQuizAttempt } from './merge';
+import { bestQuizAttempt } from './attempt';
 import type { ModuleProgress, Progress, QuizAttemptResult, TrailProgress } from './types';
 
 /** Ids das perguntas de cada módulo, na ordem do conteúdo atual: trilha -> módulo -> ids. */

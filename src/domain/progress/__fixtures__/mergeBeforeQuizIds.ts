@@ -1,7 +1,8 @@
-import { PROGRESS_SCHEMA_VERSION } from './factory';
-import { bestQuizAttempt } from './attempt';
-import { mergeQuizBackups } from './quizBackup';
-import type { ModuleProgress, Progress, QuizAttemptResult, TrailProgress } from './types';
+// Cópia fiel de src/domain/progress/merge.ts do commit 09efc21 (app antes da Etapa 3.5),
+// só para testar o que o app antigo faz com o progresso novo. Não use fora de testes.
+// TODO(autor): remover junto com `quizBackup` a partir de 2026-10-24.
+import { PROGRESS_SCHEMA_VERSION } from '../factory';
+import type { ModuleProgress, Progress, QuizAttemptResult, TrailProgress } from '../types';
 
 /**
  * Junta duas cópias do progresso sem nunca perder conquista de nenhuma delas: é a regra
@@ -11,17 +12,15 @@ import type { ModuleProgress, Progress, QuizAttemptResult, TrailProgress } from 
  *
  * - Conquistas somam: módulo, missão, troféu e chefe concluídos em qualquer lado ficam
  *   concluídos; insígnias viram a união (com a data mais antiga).
- * - Quiz: fica a melhor tentativa de cada pergunta, pelo id (acerto > erro; entre acertos,
- *   menos tentativas), então o XP só pode subir. Resultados guardados à parte
- *   (`unmappedQuizResults`) também somam. Chaves antigas (posição) de uma cópia ainda não
- *   migrada são juntadas como estão; `migrateQuizResultKeys` as converte depois.
+ * - Quiz: fica a melhor tentativa de cada pergunta (acerto > erro; entre acertos, menos
+ *   tentativas), então o XP só pode subir.
  * - Sequência: a do dia de acesso mais recente; recorde é o maior já visto.
  * - Perfil (nome, uuid, foto, resumo, código): de `primary`, completando com `secondary`.
  *   Quem chama decide quem é a identidade "dona" (a conta no login; o aparelho no backup).
  * - Preferência de lição (`lessonMode`): de `primary`, completando com `secondary`.
  * - Tela onde parou (`screen`): a mais adiantada das duas cópias.
  */
-export function mergeProgress(primary: Progress, secondary: Progress): Progress {
+export function legacyMergeProgress(primary: Progress, secondary: Progress): Progress {
   const trailIds = new Set([...Object.keys(primary.trails ?? {}), ...Object.keys(secondary.trails ?? {})]);
   const trails: Record<string, TrailProgress> = {};
   for (const id of trailIds) {
@@ -51,8 +50,6 @@ export function mergeProgress(primary: Progress, secondary: Progress): Progress 
     // Estado da sessão deste aparelho, não do jogo: nunca vem de uma das cópias por mistura.
     needsSignIn: primary.needsSignIn,
     badgesEarned: mergeBadges(primary.badgesEarned, secondary.badgesEarned),
-    // TODO(autor): remover junto com `quizBackup` a partir de 2026-10-24.
-    quizBackup: mergeQuizBackups(primary.quizBackup, secondary.quizBackup),
     streakCurrent,
     streakBest,
     ultimoDiaAtivo: recent.ultimoDiaAtivo ?? older.ultimoDiaAtivo,
@@ -86,28 +83,20 @@ function mergeTrail(trailId: string, a: TrailProgress | undefined, b: TrailProgr
 
 function mergeModule(moduleId: string, a: ModuleProgress | undefined, b: ModuleProgress | undefined): ModuleProgress {
   if (!a || !b) return (a ?? b)!;
-  const merged: ModuleProgress = {
-    moduleId,
-    quizResults: mergeQuizResults(a.quizResults, b.quizResults),
-    completed: Boolean(a.completed || b.completed),
-  };
-  if (a.unmappedQuizResults || b.unmappedQuizResults) {
-    merged.unmappedQuizResults = mergeQuizResults(a.unmappedQuizResults, b.unmappedQuizResults);
-  }
+  const indexes = new Set([...Object.keys(a.quizResults ?? {}), ...Object.keys(b.quizResults ?? {})].map(Number));
+  const quizResults: Record<number, QuizAttemptResult> = {};
+  for (const i of indexes) quizResults[i] = bestAttempt(a.quizResults?.[i], b.quizResults?.[i]);
+  const merged: ModuleProgress = { moduleId, quizResults, completed: Boolean(a.completed || b.completed) };
   const screen = Math.max(a.screen ?? -1, b.screen ?? -1);
   if (screen >= 0) merged.screen = screen;
   return merged;
 }
 
-/** Por chave (id da pergunta; posição, no formato antigo), a melhor tentativa das duas cópias. */
-function mergeQuizResults(
-  a: Record<string, QuizAttemptResult> | undefined,
-  b: Record<string, QuizAttemptResult> | undefined,
-): Record<string, QuizAttemptResult> {
-  const keys = new Set([...Object.keys(a ?? {}), ...Object.keys(b ?? {})]);
-  const out: Record<string, QuizAttemptResult> = {};
-  for (const key of keys) out[key] = bestQuizAttempt(a?.[key], b?.[key]);
-  return out;
+function bestAttempt(a: QuizAttemptResult | undefined, b: QuizAttemptResult | undefined): QuizAttemptResult {
+  if (!a || !b) return (a ?? b)!;
+  if (a.correct !== b.correct) return a.correct ? a : b;
+  if (a.correct) return a.triesUsed <= b.triesUsed ? a : b;
+  return a.triesUsed >= b.triesUsed ? a : b;
 }
 
 function mergeBadges(
@@ -123,7 +112,7 @@ function mergeBadges(
 }
 
 /** Aceita o que veio da nuvem ou de um código importado só se tiver o formato de progresso. */
-export function isProgressShape(value: unknown): value is Progress {
+export function legacyIsProgressShape(value: unknown): value is Progress {
   if (typeof value !== 'object' || value === null) return false;
   const candidate = value as Record<string, unknown>;
   return typeof candidate.version === 'number' && typeof candidate.trails === 'object' && candidate.trails !== null;
