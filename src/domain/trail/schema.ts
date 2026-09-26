@@ -10,6 +10,8 @@ const quizIdSchema = z.string().regex(QUIZ_ID_PATTERN);
 
 const quizMultipleChoiceSchema = z.object({
   id: quizIdSchema,
+  // Os formatos originais não têm `kind`: assim um formato novo incompleto não passa por eles.
+  kind: z.undefined().optional(),
   q: z.string().min(1),
   options: z.array(z.string().min(1)).min(2),
   answer: z.number().int().nonnegative(),
@@ -19,6 +21,7 @@ const quizMultipleChoiceSchema = z.object({
 
 const quizFillSchema = z.object({
   id: quizIdSchema,
+  kind: z.undefined().optional(),
   q: z.string().min(1),
   fill: z.literal(true),
   pre: z.string(),
@@ -30,7 +33,58 @@ const quizFillSchema = z.object({
   hint: z.string().min(1).optional(),
 });
 
-export const quizItemSchema = z.union([quizFillSchema, quizMultipleChoiceSchema]);
+/** Montar a linha (Etapa 4): peças na ordem certa + peças que sobram, sem texto repetido entre elas. */
+const quizOrderSchema = z
+  .object({
+    id: quizIdSchema,
+    kind: z.literal('order'),
+    q: z.string().min(1),
+    pieces: z.array(z.string().min(1)).min(2),
+    distractors: z.array(z.string().min(1)).min(1).max(4).optional(),
+    explain: z.string().min(1),
+    hint: z.string().min(1).optional(),
+  })
+  .refine((item) => !(item.distractors ?? []).some((d) => item.pieces.includes(d)), {
+    message: 'Peça que sobra não pode ter o mesmo texto de uma peça certa',
+  });
+
+/** O que aparece na tela? (Etapa 4): escolha sobre um programa de verdade. */
+const quizOutputSchema = z
+  .object({
+    id: quizIdSchema,
+    kind: z.literal('output'),
+    q: z.string().min(1),
+    code: z.string().min(1),
+    lang: z.string().min(1),
+    options: z.array(z.string().min(1)).min(2),
+    answer: z.number().int().nonnegative(),
+    explain: z.string().min(1),
+    hint: z.string().min(1).optional(),
+  })
+  .refine((item) => item.answer < item.options.length, { message: 'answer fora das opções' })
+  .refine((item) => new Set(item.options).size === item.options.length, { message: 'Opções repetidas' });
+
+/** Encontre o bug (Etapa 4): `bugLine` começa em 1 e precisa existir em `lines`. */
+const quizBugSchema = z
+  .object({
+    id: quizIdSchema,
+    kind: z.literal('bug'),
+    q: z.string().min(1),
+    lines: z.array(z.string()).min(2),
+    bugLine: z.number().int().positive(),
+    explain: z.string().min(1),
+    hint: z.string().min(1).optional(),
+  })
+  .refine((item) => item.bugLine <= item.lines.length, { message: 'bugLine fora das linhas' })
+  .refine((item) => item.lines[item.bugLine - 1]?.trim() !== '', { message: 'bugLine aponta para linha vazia' });
+
+export const quizItemSchema = z.union([
+  quizFillSchema,
+  quizMultipleChoiceSchema,
+  quizOrderSchema,
+  quizOutputSchema,
+  quizBugSchema,
+]);
 
 export const blockSchema: z.ZodType = z.discriminatedUnion('t', [
   z.object({ t: z.literal('h'), x: z.string().min(1) }),

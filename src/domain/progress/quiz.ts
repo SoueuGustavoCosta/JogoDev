@@ -1,4 +1,4 @@
-import type { QuizItem } from '../trail/types';
+import type { QuizItem, QuizKind } from '../trail/types';
 
 function normalize(s: string): string {
   return s
@@ -33,14 +33,34 @@ export function fillAnswerMatches(accept: string[], text: string): boolean {
 
 export type QuizAnswer =
   | { kind: 'choice'; optionIndex: number }
-  | { kind: 'fill'; text: string };
+  | { kind: 'fill'; text: string }
+  /** Montar a linha: as peças na ordem em que o aluno tocou. */
+  | { kind: 'order'; pieces: string[] }
+  /** Encontre o bug: a linha tocada (começa em 1). */
+  | { kind: 'line'; line: number };
+
+/** Formato da pergunta. Os dois originais não têm `kind` no conteúdo. */
+export function quizKind(item: QuizItem): QuizKind {
+  if (item.kind) return item.kind;
+  return 'fill' in item ? 'fill' : 'choice';
+}
 
 export function isQuizAnswerCorrect(item: QuizItem, answer: QuizAnswer): boolean {
-  if ('fill' in item) {
-    if (answer.kind !== 'fill') return false;
-    return fillAnswerMatches(item.accept, answer.text);
+  switch (item.kind) {
+    case 'order':
+      return (
+        answer.kind === 'order' &&
+        answer.pieces.length === item.pieces.length &&
+        answer.pieces.every((piece, i) => piece === item.pieces[i])
+      );
+    case 'output':
+      return answer.kind === 'choice' && answer.optionIndex === item.answer;
+    case 'bug':
+      return answer.kind === 'line' && answer.line === item.bugLine;
+    default:
+      if ('fill' in item) return answer.kind === 'fill' && fillAnswerMatches(item.accept, answer.text);
+      return answer.kind === 'choice' && answer.optionIndex === item.answer;
   }
-  return answer.kind === 'choice' && answer.optionIndex === item.answer;
 }
 
 /**
@@ -65,3 +85,13 @@ export function fillChoices(item: QuizItem, random: () => number): string[] {
   return shuffledOrder(blocks.length, random).map((i) => blocks[i]);
 }
 
+
+/**
+ * Peças de "montar a linha" (as certas + as que sobram), embaralhadas. Peças com o mesmo
+ * texto são possíveis (ex.: dois `)`); a tela as distingue pela posição nesta lista.
+ */
+export function orderBank(item: QuizItem, random: () => number): string[] {
+  if (item.kind !== 'order') return [];
+  const bank = [...item.pieces, ...(item.distractors ?? [])];
+  return shuffledOrder(bank.length, random).map((i) => bank[i]);
+}

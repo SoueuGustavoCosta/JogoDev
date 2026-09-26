@@ -7,6 +7,7 @@ import { BlockRenderer } from '@/presentation/blocks';
 import { SintaxeFace } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
 import { QuizQuestion, type QuizQuestionState } from './QuizQuestion';
+import { retryText } from './retryText';
 import styles from './LessonPlayer.module.css';
 
 /**
@@ -197,7 +198,7 @@ export function LessonPlayer({
           <div className={styles.feedbackHead}>
             <b>Ainda não.</b>
           </div>
-          <p className={styles.explain}>Tente outra opção. Errar aqui não tira nada de você.</p>
+          <p className={styles.explain}>{quizItem ? retryText(quizItem) : 'Tente outra opção.'} Errar aqui não tira nada de você.</p>
         </footer>
       ) : null}
     </div>

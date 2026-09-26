@@ -1,8 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { answerQuiz } from '@/application/usecases';
-import { fillChoices, shuffledOrder, type QuizAnswer } from '@/domain/progress';
+import { fillChoices, quizKind, shuffledOrder, type QuizAnswer } from '@/domain/progress';
 import type { QuizItem } from '@/domain/trail';
 import { useServices } from '@/presentation/app/ServicesContext';
+import { BugChallenge } from './BugChallenge';
+import { CodeSnippet } from './CodeSnippet';
+import { OrderChallenge } from './OrderChallenge';
+import { retryText } from './retryText';
 import { SintaxeReaction } from './SintaxeReaction';
 import styles from './QuizRunner.module.css';
 
@@ -53,17 +57,20 @@ export function QuizQuestion({
   const { progressRepository, analytics } = useServices();
   const [wrong, setWrong] = useState<number[]>([]);
   const [fillValue, setFillValue] = useState('');
-  const [fillWrong, setFillWrong] = useState(false);
-  const [fillTries, setFillTries] = useState(0);
+  // Erros das perguntas que não são de escolha (completar, montar a linha, encontre o bug).
+  const [missed, setMissed] = useState(false);
+  const [misses, setMisses] = useState(0);
+  const [wrongLines, setWrongLines] = useState<number[]>([]);
   const [hintRevealed, setHintRevealed] = useState(false);
-  const [solved, setSolved] = useState<number | 'fill' | null>(null);
+  const [solved, setSolved] = useState<number | 'done' | null>(null);
   const [wrongBlocks, setWrongBlocks] = useState<string[]>([]);
   const [xpGained, setXpGained] = useState(0);
 
-  const isFill = 'fill' in item;
-  const attempts = isFill ? fillTries : wrong.length;
+  const kind = quizKind(item);
+  const isChoice = kind === 'choice' || kind === 'output';
+  const attempts = isChoice ? wrong.length : misses;
   // Sorteado de novo a cada pergunta: a resposta certa não pode cair sempre no mesmo lugar.
-  const order = useMemo(() => ('options' in item ? shuffledOrder(item.options.length, Math.random) : []), [item]);
+  const optionOrder = useMemo(() => ('options' in item ? shuffledOrder(item.options.length, Math.random) : []), [item]);
   const blocks = useMemo(() => fillChoices(item, Math.random), [item]);
   const isSolved = solved !== null;
 
@@ -80,14 +87,15 @@ export function QuizQuestion({
     onAnswered?.();
     if (result.correct) {
       setXpGained(result.xpGained);
-      setSolved(choiceIndex ?? 'fill');
-      setFillWrong(false);
+      setSolved(choiceIndex ?? 'done');
+      setMissed(false);
     } else if (choiceIndex !== undefined) {
       setWrong((w) => [...w, choiceIndex]);
     } else {
       if (answer.kind === 'fill') setWrongBlocks((b) => [...b, answer.text]);
-      setFillWrong(true);
-      setFillTries((t) => t + 1);
+      if (answer.kind === 'line') setWrongLines((l) => [...l, answer.line]);
+      setMissed(true);
+      setMisses((t) => t + 1);
     }
   }
 
@@ -98,8 +106,8 @@ export function QuizQuestion({
   // A Sintaxe reage a cada tentativa: "signal" muda mesmo quando o tipo continua "wrong"
   // de novo (outra opção errada, outro fill errado), pra tocar o som e reiniciar a
   // animação em cada uma — não só na primeira vez que o tipo muda.
-  const reactionType: 'correct' | 'wrong' | null = isSolved ? 'correct' : fillWrong || wrong.length > 0 ? 'wrong' : null;
-  const reactionSignal = (isSolved ? 1000 : 0) + wrong.length + fillTries;
+  const reactionType: 'correct' | 'wrong' | null = isSolved ? 'correct' : missed || wrong.length > 0 ? 'wrong' : null;
+  const reactionSignal = (isSolved ? 1000 : 0) + wrong.length + misses;
   const inline = variant === 'inline';
 
   return (
@@ -114,7 +122,23 @@ export function QuizQuestion({
         </div>
         <p className={styles.question}>{item.q}</p>
 
-        {isFill && blocks.length > 0 ? (
+        {item.kind === 'output' ? <CodeSnippet code={item.code} lang={item.lang} /> : null}
+
+        {item.kind === 'order' ? (
+          <OrderChallenge
+            item={item}
+            solved={isSolved}
+            missed={missed}
+            onSubmit={(pieces) => submit({ kind: 'order', pieces })}
+          />
+        ) : item.kind === 'bug' ? (
+          <BugChallenge
+            item={item}
+            solved={isSolved}
+            wrongLines={wrongLines}
+            onPick={(line) => submit({ kind: 'line', line })}
+          />
+        ) : 'fill' in item && blocks.length > 0 ? (
           <>
             <pre className={styles.clozeCode}>
               {item.pre ? <span>{item.pre} </span> : null}
@@ -131,8 +155,9 @@ export function QuizQuestion({
                   <button
                     key={block}
                     type="button"
-                    className={`${styles.block} ${ok ? styles.ok : ''} ${no ? styles.no : ''}`}
+                    className={`${styles.block} ${ok ? styles.used : ''} ${no ? styles.no : ''}`}
                     disabled={isSolved || no}
+                    aria-hidden={ok || undefined}
                     onClick={() => submit({ kind: 'fill', text: block })}
                   >
                     {block}
@@ -141,7 +166,7 @@ export function QuizQuestion({
               })}
             </div>
           </>
-        ) : isFill ? (
+        ) : 'fill' in item ? (
           <form
             className={styles.fillRow}
             onSubmit={(e) => {
@@ -167,9 +192,9 @@ export function QuizQuestion({
               </button>
             ) : null}
           </form>
-        ) : (
+        ) : 'options' in item ? (
           <div className={styles.opts}>
-            {order.map((i, pos) => {
+            {optionOrder.map((i, pos) => {
               const option = item.options[i];
               const ok = solved === i;
               const no = wrong.includes(i);
@@ -187,11 +212,11 @@ export function QuizQuestion({
               );
             })}
           </div>
-        )}
+        ) : null}
 
-        {inline && !isSolved && (fillWrong || wrong.length > 0) ? (
+        {inline && !isSolved && (missed || wrong.length > 0) ? (
           <div className={`${styles.fb} ${styles.bad}`} role="status">
-            Ainda não, tente outra opção.
+            Ainda não. {retryText(item)}
           </div>
         ) : null}
 

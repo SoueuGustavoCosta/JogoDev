@@ -11,6 +11,8 @@ export type QuizItem =
        * antigas, por posição, que a migração converte).
        */
       id: string;
+      /** Os dois formatos originais não têm `kind` (ver `quizKind`). */
+      kind?: undefined;
       q: string;
       options: string[];
       answer: number;
@@ -21,6 +23,7 @@ export type QuizItem =
   | {
       /** Ver o `id` do formato de múltipla escolha acima. */
       id: string;
+      kind?: undefined;
       q: string;
       fill: true;
       pre: string;
@@ -36,7 +39,51 @@ export type QuizItem =
       explain: string;
       /** Dica opcional para perguntas mais difíceis. Some cedo, aparece após o 1º erro e fica automática a partir do 3º. */
       hint?: string;
+    }
+  /**
+   * Montar a linha: o aluno toca nas peças na ordem certa. `pieces` já vem na ordem
+   * correta; a tela embaralha junto com `distractors` (peças que sobram). Etapa 4.
+   */
+  | {
+      id: string;
+      kind: 'order';
+      q: string;
+      pieces: string[];
+      distractors?: string[];
+      explain: string;
+      hint?: string;
+    }
+  /** O que aparece na tela? Escolha sobre código real: `code` é o programa, `lang` o nome da linguagem. Etapa 4. */
+  | {
+      id: string;
+      kind: 'output';
+      q: string;
+      code: string;
+      lang: string;
+      options: string[];
+      answer: number;
+      explain: string;
+      hint?: string;
+    }
+  /** Encontre o bug: o aluno toca na linha errada. `bugLine` começa em 1 (como no editor). Etapa 4. */
+  | {
+      id: string;
+      kind: 'bug';
+      q: string;
+      lines: string[];
+      bugLine: number;
+      explain: string;
+      hint?: string;
     };
+
+/** Formato de uma pergunta: `choice` e `fill` são os originais (sem `kind` no conteúdo). */
+export type QuizKind = 'choice' | 'fill' | 'order' | 'output' | 'bug';
+
+export type ChoiceQuizItem = Extract<QuizItem, { options: string[]; kind?: undefined }>;
+export type FillQuizItem = Extract<QuizItem, { fill: true }>;
+export type OrderQuizItem = Extract<QuizItem, { kind: 'order' }>;
+export type OutputQuizItem = Extract<QuizItem, { kind: 'output' }>;
+export type BugQuizItem = Extract<QuizItem, { kind: 'bug' }>;
 
 export type Block =
   | { t: 'h'; x: string }

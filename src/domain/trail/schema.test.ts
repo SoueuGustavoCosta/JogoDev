@@ -30,3 +30,36 @@ describe('moduleSchema: ids das perguntas', () => {
     expect(moduleSchema.safeParse(mod(['12'])).success).toBe(false);
   });
 });
+
+describe('moduleSchema: formatos novos (Etapa 4)', () => {
+  const withItem = (item: Record<string, unknown>) => ({ ...mod(['q1']), quiz: [{ id: 'q1', q: 'q', explain: 'e', ...item }] });
+  const order = { kind: 'order', pieces: ['echo', '"oi"', ';'], distractors: ['print'] };
+  const output = { kind: 'output', code: 'echo 1;', lang: 'php', options: ['1', '2'], answer: 0 };
+  const bug = { kind: 'bug', lines: ['a', 'b'], bugLine: 2 };
+
+  it('aceita os três formatos completos', () => {
+    for (const item of [order, output, bug]) expect(moduleSchema.safeParse(withItem(item)).success, item.kind).toBe(true);
+  });
+
+  it("'order': precisa de 2+ peças e a peça que sobra não pode repetir uma certa", () => {
+    expect(moduleSchema.safeParse(withItem({ ...order, pieces: ['echo'] })).success).toBe(false);
+    expect(moduleSchema.safeParse(withItem({ ...order, distractors: [';'] })).success).toBe(false);
+  });
+
+  it("'output': precisa de código e da resposta dentro das opções", () => {
+    expect(moduleSchema.safeParse(withItem({ ...output, answer: 2 })).success).toBe(false);
+    expect(moduleSchema.safeParse(withItem({ ...output, code: undefined })).success).toBe(false);
+    expect(moduleSchema.safeParse(withItem({ ...output, options: ['1', '1'] })).success).toBe(false);
+  });
+
+  it("'bug': a linha do bug existe, começa em 1 e não é vazia", () => {
+    expect(moduleSchema.safeParse(withItem({ ...bug, bugLine: 0 })).success).toBe(false);
+    expect(moduleSchema.safeParse(withItem({ ...bug, bugLine: 3 })).success).toBe(false);
+    expect(moduleSchema.safeParse(withItem({ ...bug, lines: ['a', ''], bugLine: 2 })).success).toBe(false);
+  });
+
+  it('formato desconhecido ou formato novo incompleto não passa como múltipla escolha', () => {
+    expect(moduleSchema.safeParse(withItem({ kind: 'drag', options: ['a', 'b'], answer: 0 })).success).toBe(false);
+    expect(moduleSchema.safeParse(withItem({ kind: 'output', options: ['a', 'b'], answer: 0 })).success).toBe(false);
+  });
+});
