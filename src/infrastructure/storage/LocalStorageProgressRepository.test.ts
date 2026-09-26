@@ -28,4 +28,14 @@ describe('LocalStorageProgressRepository: nunca joga fora um progresso que não 
     new LocalStorageProgressRepository().load();
     expect(window.localStorage.getItem(`${KEY}:resgate`)).toBe(future);
   });
+  it('progresso salvo antes das telas curtas (sem screen/lessonMode) é lido igualzinho', () => {
+    const old = {
+      version: 1,
+      travelerName: 'Ana',
+      trails: { logica: { trailId: 'logica', trophyAwarded: false, missionsCompleted: {}, modules: { variaveis: { moduleId: 'variaveis', completed: true, quizResults: { 0: { correct: true, triesUsed: 1 } } } } } },
+    };
+    window.localStorage.setItem(KEY, JSON.stringify(old));
+    expect(new LocalStorageProgressRepository().load()).toEqual(old);
+    expect(window.localStorage.getItem(`${KEY}:resgate`)).toBeNull();
+  });
 });

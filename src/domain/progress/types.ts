@@ -8,6 +8,13 @@ export type ModuleProgress = {
   moduleId: string;
   quizResults: Record<number, QuizAttemptResult>;
   completed: boolean;
+  /**
+   * Tela em que o viajante parou na lição em telas curtas (posição na lista de
+   * `paginateModule`), para voltar de onde parou. Campo novo e opcional (Etapa 3 do plano
+   * de engajamento): progresso salvo antes dele continua válido sem migração (chave
+   * ausente = começa da primeira tela). Só guia a navegação: nunca vale XP nem conclusão.
+   */
+  screen?: number;
 };
 
 export type TrailProgress = {
@@ -76,6 +83,14 @@ export type Progress = {
    * opcional: ausente = sessão ok.
    */
   needsSignIn?: boolean;
+  /**
+   * Preferência do viajante pelo "Modo leitura" (`rolagem`) em vez das telas curtas.
+   * Campo novo e opcional (Etapa 3): ausente = padrão do app (`config/exploration.ts`).
+   */
+  lessonMode?: LessonMode;
 };
 
 export type ExplorationMode = 'sequential' | 'free';
+
+/** Como a lição aparece: em telas curtas intercaladas com perguntas, ou tudo numa página ("Modo leitura"). */
+export type LessonMode = 'telas' | 'rolagem';

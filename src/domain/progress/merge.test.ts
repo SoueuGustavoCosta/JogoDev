@@ -107,6 +107,31 @@ describe('mergeProgress', () => {
   it('juntar com uma cópia igual não muda nada', () => {
     expect(mergeProgress(rich, rich)).toEqual({ ...rich, phoneLinked: false });
   });
+
+  // Etapa 3 (telas curtas): campos novos e opcionais não podem sumir no login/backup.
+  it('tela onde parou: fica a mais adiantada, e progresso antigo sem ela continua sem ela', () => {
+    const withScreen = (screen: number): Progress =>
+      empty({
+        trails: {
+          'banco-de-dados': {
+            trailId: 'banco-de-dados',
+            trophyAwarded: false,
+            missionsCompleted: {},
+            modules: { porque: { moduleId: 'porque', completed: false, quizResults: {}, screen } },
+          },
+        },
+      });
+    expect(mergeProgress(withScreen(2), withScreen(7)).trails['banco-de-dados'].modules.porque.screen).toBe(7);
+    expect(mergeProgress(rich, withScreen(4)).trails['banco-de-dados'].modules.porque.screen).toBe(4);
+    // Dois progressos antigos (sem o campo): o resultado não ganha uma chave vazia.
+    expect('screen' in mergeProgress(rich, rich).trails['banco-de-dados'].modules.porque).toBe(false);
+  });
+
+  it('preferência de lição (Modo leitura) vem do primary, completada pelo secondary', () => {
+    expect(mergeProgress(empty({ lessonMode: 'rolagem' }), empty({ lessonMode: 'telas' })).lessonMode).toBe('rolagem');
+    expect(mergeProgress(empty(), empty({ lessonMode: 'rolagem' })).lessonMode).toBe('rolagem');
+    expect('lessonMode' in mergeProgress(rich, rich)).toBe(false);
+  });
 });
 
 describe('isProgressShape', () => {

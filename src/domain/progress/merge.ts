@@ -14,6 +14,8 @@ import type { ModuleProgress, Progress, QuizAttemptResult, TrailProgress } from 
  * - Sequência: a do dia de acesso mais recente; recorde é o maior já visto.
  * - Perfil (nome, uuid, foto, resumo, código): de `primary`, completando com `secondary`.
  *   Quem chama decide quem é a identidade "dona" (a conta no login; o aparelho no backup).
+ * - Preferência de lição (`lessonMode`): de `primary`, completando com `secondary`.
+ * - Tela onde parou (`screen`): a mais adiantada das duas cópias.
  */
 export function mergeProgress(primary: Progress, secondary: Progress): Progress {
   const trailIds = new Set([...Object.keys(primary.trails ?? {}), ...Object.keys(secondary.trails ?? {})]);
@@ -41,6 +43,7 @@ export function mergeProgress(primary: Progress, secondary: Progress): Progress 
     recoveryCode: primary.recoveryCode || secondary.recoveryCode,
     prologueSeen: Boolean(primary.prologueSeen || secondary.prologueSeen),
     phoneLinked: Boolean(primary.phoneLinked || secondary.phoneLinked),
+    lessonMode: primary.lessonMode ?? secondary.lessonMode,
     // Estado da sessão deste aparelho, não do jogo: nunca vem de uma das cópias por mistura.
     needsSignIn: primary.needsSignIn,
     badgesEarned: mergeBadges(primary.badgesEarned, secondary.badgesEarned),
@@ -80,7 +83,10 @@ function mergeModule(moduleId: string, a: ModuleProgress | undefined, b: ModuleP
   const indexes = new Set([...Object.keys(a.quizResults ?? {}), ...Object.keys(b.quizResults ?? {})].map(Number));
   const quizResults: Record<number, QuizAttemptResult> = {};
   for (const i of indexes) quizResults[i] = bestAttempt(a.quizResults?.[i], b.quizResults?.[i]);
-  return { moduleId, quizResults, completed: Boolean(a.completed || b.completed) };
+  const merged: ModuleProgress = { moduleId, quizResults, completed: Boolean(a.completed || b.completed) };
+  const screen = Math.max(a.screen ?? -1, b.screen ?? -1);
+  if (screen >= 0) merged.screen = screen;
+  return merged;
 }
 
 function bestAttempt(a: QuizAttemptResult | undefined, b: QuizAttemptResult | undefined): QuizAttemptResult {
