@@ -78,7 +78,10 @@ export const modArrays: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'Dado $cursos = ["Informática", "Sistemas", "Redes"]; o que mostra  echo $cursos[0]; ?',
+      kind: 'output',
+      q: 'O que aparece na tela?',
+      lang: 'php',
+      code: '<?php\n$cursos = ["Informática", "Sistemas", "Redes"];\necho $cursos[0];',
       options: ['Sistemas', 'Informática', 'Redes', 'Erro'],
       answer: 1,
       explain: 'O primeiro elemento fica na posição 0.',

@@ -30,7 +30,12 @@ export const modOperadores: Module = {
     },
     {
       t: 'p',
-      x: 'Ordem de precedência: parênteses primeiro, depois multiplicação e divisão, e por último soma e subtração. Em <code>2 + 3 * 4</code> o resultado é 14; para forçar a soma antes, use <code>(2 + 3) * 4</code>, que dá 20. (A apostila simplifica dizendo que a divisão vem antes da multiplicação; na prática as duas têm a mesma força e são resolvidas da esquerda para a direita.)',
+      x: 'Ordem de precedência: parênteses primeiro, depois multiplicação e divisão, e por último soma e subtração. Em <code>2 + 3 * 4</code> o resultado é 14. Para forçar a soma antes, use <code>(2 + 3) * 4</code>, que dá 20.',
+    },
+    {
+      t: 'note',
+      k: 'Curiosidade',
+      x: 'A apostila simplifica dizendo que a divisão vem antes da multiplicação. Na prática as duas têm a mesma força e são resolvidas da esquerda para a direita.',
     },
     {
       t: 'note',
@@ -78,7 +83,10 @@ export const modOperadores: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'Quanto vale  2 + 3 * 4 ?',
+      kind: 'output',
+      q: 'O que aparece na tela?',
+      lang: 'php',
+      code: '<?php\necho 2 + 3 * 4;',
       options: ['20', '14', '24', '9'],
       answer: 1,
       explain: 'A multiplicação vem antes: 3 * 4 = 12, mais 2 = 14.',
@@ -114,10 +122,13 @@ export const modOperadores: Module = {
     },
     {
       id: 'q5',
-      q: 'O que faz  if ($x = 5)  em vez de  if ($x == 5) ?',
-      options: ['Compara x com 5', 'Atribui 5 a x e a condição vira verdadeira', 'Dá erro de sintaxe', 'Compara tipos'],
-      answer: 1,
-      explain: 'É um bug clássico: atribuição no lugar de comparação.',
+      kind: 'output',
+      q: 'O $x vale 2, mas o if usa um = só. O que aparece na tela?',
+      lang: 'php',
+      code: '<?php\n$x = 2;\nif ($x = 5) {\n    echo "cinco";\n} else {\n    echo "outro";\n}',
+      options: ['cinco', 'outro', 'Erro', '2'],
+      answer: 0,
+      explain: 'É um bug clássico: atribuição no lugar de comparação. <code>$x = 5</code> guarda 5 em <code>$x</code> e a condição vira verdadeira. Para comparar, <code>==</code>.',
     },
     {
       id: 'q6',

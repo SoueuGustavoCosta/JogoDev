@@ -135,6 +135,7 @@ export const modVelha: Module = {
   quiz: [
     {
       id: 'q1',
+      afterBlock: 12,
       q: 'Na função posicao($l, $c), o que ela devolve quando a casa já está ocupada?',
       options: ['0', '1', "'0'", 'null'],
       answer: 1,

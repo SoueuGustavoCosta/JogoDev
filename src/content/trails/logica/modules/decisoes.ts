@@ -121,8 +121,11 @@ export const modDecisoes: Module = {
     },
     {
       id: 'q5',
-      q: 'Quanto vale $x em  $x = (5 > 3) ? "A" : "B"; ?',
-      options: ['A', 'B', 'true', 'erro'],
+      kind: 'output',
+      q: 'O que aparece na tela?',
+      lang: 'php',
+      code: '<?php\n$x = (5 > 3) ? "A" : "B";\necho $x;',
+      options: ['A', 'B', '1', 'Erro'],
       answer: 0,
       explain: '5 > 3 é verdadeiro, então o ternário devolve o valor depois do <code>?</code>: "A".',
     },

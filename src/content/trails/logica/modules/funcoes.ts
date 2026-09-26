@@ -82,7 +82,11 @@ export const modFuncoes: Module = {
     },
     {
       id: 'q2',
-      q: 'function f($x) { $x = 10; }  $a = 1; f($a); echo $a;  O que aparece?',
+      afterBlock: 9,
+      kind: 'output',
+      q: 'A função muda o $x para 10. O que aparece na tela?',
+      lang: 'php',
+      code: '<?php\nfunction f($x) {\n    $x = 10;\n}\n$a = 1;\nf($a);\necho $a;',
       options: ['1', '10', '0', 'Erro'],
       answer: 0,
       explain: 'Passagem por valor: a função mexeu numa cópia. <code>$a</code> continua 1.',

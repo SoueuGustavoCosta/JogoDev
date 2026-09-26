@@ -92,6 +92,7 @@ export const modWeb: Module = {
   quiz: [
     {
       id: 'q1',
+      afterBlock: 5,
       q: 'Onde o código PHP é executado?',
       options: ['No navegador', 'No servidor', 'No celular do usuário', 'Dentro do HTML, sem servidor'],
       answer: 1,
@@ -99,6 +100,7 @@ export const modWeb: Module = {
     },
     {
       id: 'q2',
+      afterBlock: 13,
       q: 'O HTTP guarda memória entre uma requisição e outra?',
       options: ['Sim, guarda tudo', 'Não: cada requisição é independente', 'Só nas requisições GET', 'Só nos formulários'],
       answer: 1,
@@ -106,6 +108,7 @@ export const modWeb: Module = {
     },
     {
       id: 'q3',
+      afterBlock: 14,
       q: 'Complete: qual função liga a sessão no topo do arquivo?',
       fill: true,
       pre: '',
@@ -129,15 +132,14 @@ export const modWeb: Module = {
     },
     {
       id: 'q5',
-      q: 'Por que o arquivo do professor escreve (int)$_GET["l"] ?',
-      options: [
-        'Para deixar o código mais bonito',
-        'Para converter para inteiro e evitar valores estranhos vindos da URL',
-        'Para somar 1 à linha',
-        'Porque $_GET só aceita números',
-      ],
-      answer: 1,
-      explain: 'Nunca confie na entrada do usuário: o cast <code>(int)</code> garante um número.',
+      afterBlock: 15,
+      kind: 'output',
+      q: 'Alguém digitou na URL  ?l=2abc . O arquivo do professor usa (int). O que aparece na tela?',
+      lang: 'php',
+      code: '<?php\n// "2abc" é o que veio em $_GET["l"]\n$l = (int) "2abc";\necho $l;',
+      options: ['2', '2abc', '0', 'Erro'],
+      answer: 0,
+      explain: 'Nunca confie na entrada do usuário: o cast <code>(int)</code> garante um número (aqui, 2) e joga fora o lixo que veio junto.',
     },
   ],
 };
