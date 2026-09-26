@@ -123,5 +123,16 @@ export const modNascimento: Module = {
       placeholder: 'nome do formato',
       explain: 'O compilador javac transforma o código-fonte em bytecode, que a JVM interpreta e executa em qualquer sistema.',
     },
+    {
+      id: 'q6',
+      q: "Complete o comando do terminal que compila o código-fonte em bytecode (gera o Main.class):",
+      fill: true,
+      pre: "",
+      post: "Main.java",
+      accept: ["javac"],
+      wrong: ["java", "jvm", "run"],
+      placeholder: "?",
+      explain: "<code>javac</code> é o compilador: transforma o .java em bytecode (.class). Depois, <code>java Main</code> pede à JVM para rodar.",
+    },
   ],
 };

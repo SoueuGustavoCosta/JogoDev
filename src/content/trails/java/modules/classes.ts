@@ -61,15 +61,11 @@ export const modClasses: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'O que é o construtor de uma classe Java?',
-      options: [
-        'Um método qualquer, com qualquer nome',
-        'Um método especial, com o mesmo nome da classe, chamado com new',
-        'Um comentário no topo da classe',
-        'O primeiro atributo declarado',
-      ],
-      answer: 1,
-      explain: 'O construtor tem o mesmo nome da classe, não declara tipo de retorno, e roda automaticamente ao usar new.',
+      kind: "order",
+      q: "O construtor é chamado com new. Monte a linha que cria uma viajante chamada Ana",
+      pieces: ["Viajante", "v", "=", "new", "Viajante(\"Ana\");"],
+      distractors: ["create"],
+      explain: "O construtor é um método especial, com o mesmo nome da classe, chamado com <code>new</code>.",
     },
     {
       id: 'q2',
@@ -85,15 +81,13 @@ export const modClasses: Module = {
     },
     {
       id: 'q3',
-      q: 'O que this.nome = nome; faz dentro de um construtor?',
-      options: [
-        'Cria uma variável nova chamada nome',
-        'Atribui o valor do parâmetro nome ao atributo nome do objeto atual',
-        'Apaga o atributo nome',
-        'Gera um erro de compilação',
-      ],
+      kind: "output",
+      q: "O construtor escreve nome = nome; sem o this. O que aparece na tela?",
+      lang: "java",
+      code: "class Viajante {\n  String nome;\n  Viajante(String nome) {\n    nome = nome;\n  }\n}\n// no main:\nViajante v = new Viajante(\"Ana\");\nSystem.out.println(v.nome);",
+      options: ["Ana", "null", "nome", "erro de compilação"],
       answer: 1,
-      explain: 'this se refere ao próprio objeto, diferenciando o atributo da classe do parâmetro recebido, que têm o mesmo nome.',
+      explain: "Sem o this, <code>nome = nome</code> copia o parâmetro nele mesmo e o atributo continua null. <code>this.nome = nome</code> atribui ao atributo do objeto atual.",
     },
     {
       id: 'q4',

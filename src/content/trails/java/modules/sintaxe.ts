@@ -73,22 +73,19 @@ export const modSintaxe: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'Onde todo código Java precisa estar, obrigatoriamente?',
-      options: ['Dentro de uma função solta', 'Dentro de uma classe', 'Dentro de um comentário', 'Não precisa de nenhuma estrutura'],
-      answer: 1,
-      explain: 'Diferente de Python, todo código Java vive dentro de uma classe — não existe instrução solta no arquivo.',
+      kind: "order",
+      q: "Todo código Java mora dentro de uma classe. Monte a primeira linha do arquivo Main.java",
+      pieces: ["public", "class", "Main", "{"],
+      distractors: ["function", "def"],
+      explain: "Em Java não existe código solto: tudo fica dentro de uma classe, e o arquivo Main.java precisa da <code>public class Main</code>.",
     },
     {
       id: 'q2',
-      q: 'O que acontece se você esquecer um ponto e vírgula no final de uma instrução Java?',
-      options: [
-        'Nada, Java ignora',
-        'O programa roda mais devagar',
-        'Erro de compilação: o programa nem chega a rodar',
-        'Só um aviso, sem impedir a execução',
-      ],
-      answer: 2,
-      explain: 'Java exige ponto e vírgula ao final de cada instrução; sem ele, o compilador recusa o código antes mesmo de rodar.',
+      kind: "bug",
+      q: "Este programa nem chega a rodar: o compilador reclama. Toque na linha com o bug.",
+      lines: ["public class Main {", "  public static void main(String[] args) {", "    int idade = 27", "    System.out.println(idade);", "  }", "}"],
+      bugLine: 3,
+      explain: "Faltou o ponto e vírgula no fim da instrução: erro de compilação, e o programa nem chega a rodar.",
     },
     {
       id: 'q3',

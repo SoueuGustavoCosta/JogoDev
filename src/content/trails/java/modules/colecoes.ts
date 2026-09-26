@@ -66,15 +66,11 @@ export const modColecoes: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'O que acontece ao acessar numeros[4] num array int[] numeros = {10, 20, 30, 40}?',
-      options: [
-        'Retorna null',
-        'Retorna 0',
-        'ArrayIndexOutOfBoundsException: o programa quebra',
-        'Java cria a posição automaticamente',
-      ],
-      answer: 2,
-      explain: 'Arrays em Java têm tamanho fixo; acessar uma posição fora do intervalo lança ArrayIndexOutOfBoundsException.',
+      kind: "bug",
+      q: "Este programa quebra com ArrayIndexOutOfBoundsException. Toque na linha com o bug.",
+      lines: ["int[] numeros = {10, 20, 30, 40};", "System.out.println(numeros[0]);", "System.out.println(numeros[4]);"],
+      bugLine: 3,
+      explain: "Com 4 elementos, os índices vão de 0 a 3. <code>numeros[4]</code> não existe, e o programa quebra.",
     },
     {
       id: 'q2',
@@ -102,10 +98,14 @@ export const modColecoes: Module = {
     },
     {
       id: 'q4',
-      q: 'Como você descobre o tamanho de um array chamado numeros?',
-      options: ['numeros.size()', 'numeros.length()', 'numeros.length', 'len(numeros)'],
-      answer: 2,
-      explain: 'Em array, length é uma propriedade (sem parênteses). Em ArrayList, é size() (um método, com parênteses).',
+      q: "Complete para mostrar o tamanho do array numeros:",
+      fill: true,
+      pre: "System.out.println(numeros.",
+      post: ");",
+      accept: ["length"],
+      wrong: ["size()", "count", "len"],
+      placeholder: "?",
+      explain: "Em array é <code>numeros.length</code>, sem parênteses (é um atributo). <code>size()</code> é da ArrayList e <code>length()</code> é da String.",
     },
     {
       id: 'q5',

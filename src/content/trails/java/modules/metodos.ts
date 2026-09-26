@@ -59,10 +59,14 @@ export const modMetodos: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'O que o tipo void indica na declaração de um método?',
-      options: ['Que ele é privado', 'Que ele não devolve nenhum valor', 'Que ele é estático', 'Que ele sempre falha'],
-      answer: 1,
-      explain: 'void significa que o método não tem valor de retorno — ele executa uma ação, mas não devolve nada com return.',
+      q: "Complete: este método só mostra uma mensagem e não devolve nenhum valor.",
+      fill: true,
+      pre: "public static",
+      post: "saudar() {\n  System.out.println(\"Oi\");\n}",
+      accept: ["void"],
+      wrong: ["int", "String", "return"],
+      placeholder: "?",
+      explain: "<code>void</code> indica que o método não devolve nenhum valor.",
     },
     {
       id: 'q2',
@@ -78,15 +82,13 @@ export const modMetodos: Module = {
     },
     {
       id: 'q3',
-      q: 'O que é sobrecarga (overloading) de métodos?',
-      options: [
-        'Ter vários métodos com o mesmo nome, mas parâmetros diferentes',
-        'Ter um método que nunca termina',
-        'Sobrescrever um método herdado',
-        'Um erro comum em Java',
-      ],
+      kind: "output",
+      q: "Dois métodos com o mesmo nome, parâmetros diferentes. O que aparece na tela?",
+      lang: "java",
+      code: "class Calc {\n  static int somar(int a, int b) { return a + b; }\n  static double somar(double a, double b) { return a + b; }\n}\n// no main:\nSystem.out.println(Calc.somar(2, 3) + \" e \" + Calc.somar(1.5, 1.5));",
+      options: ["5 e 3.0", "5 e 3", "5.0 e 3.0", "erro de compilação"],
       answer: 0,
-      explain: 'Sobrecarga permite reusar o mesmo nome de método para versões que aceitam parâmetros diferentes.',
+      explain: "Sobrecarga (overloading): vários métodos com o mesmo nome e parâmetros diferentes. Java escolhe a versão pelos tipos: int + int dá 5; double + double dá 3.0.",
     },
     {
       id: 'q4',
