@@ -11,3 +11,4 @@ export * from './quizBackup';
 export * from './anomalies';
 export * from './timeline';
 export * from './fragments';
+export * from './weeklyXp';

@@ -135,6 +135,13 @@ export type Progress = {
   fragmentLedger?: FragmentEntry[];
   /** Cosméticos equipados no avatar: encaixe (moldura, cor, acessório, cabelo) -> id do item. Opcional (Etapa 9). */
   equippedCosmetics?: Record<string, string>;
+  /**
+   * XP por semana da Liga (Etapa 10): segunda-feira (AAAA-MM-DD) -> fonte -> XP. Só as
+   * últimas semanas ficam guardadas. Opcional: ausente = nada ganho desde a Etapa 10.
+   */
+  weeklyXp?: Record<string, Record<string, number>>;
+  /** Semanas (segunda-feira) em que o viajante ficou no top 3 e ganhou o selo. Opcional (Etapa 10). */
+  leagueSeals?: string[];
 };
 
 /** Um lançamento de Fragmentos Temporais: `amount` positivo = ganho, negativo = gasto. */

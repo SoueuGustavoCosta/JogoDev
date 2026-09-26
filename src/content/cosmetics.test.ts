@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { COSMETIC_SLOTS, cosmeticItemSchema } from '@/domain/cosmetics';
+import { LEAGUE_SEAL_ITEM_ID } from '@/domain/league';
 import { cosmetics } from './cosmetics';
 
 describe('catálogo de cosméticos', () => {
@@ -23,5 +24,9 @@ describe('catálogo de cosméticos', () => {
     const min = (r: string) => Math.min(...cosmetics.filter((c) => c.rarity === r && c.price !== null).map((c) => c.price ?? 0));
     expect(max('comum')).toBeLessThan(min('raro'));
     expect(max('raro')).toBeLessThan(min('lendario'));
+  });
+
+  it('o selo da Liga existe e é item de evento da Liga', () => {
+    expect(cosmetics.find((c) => c.id === LEAGUE_SEAL_ITEM_ID)).toMatchObject({ price: null, event: 'liga' });
   });
 });
