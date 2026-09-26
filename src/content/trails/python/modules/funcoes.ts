@@ -81,10 +81,14 @@ export const modFuncoes: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'O que uma função Python retorna se não tiver nenhum return explícito?',
-      options: ['0', '""', 'None', 'Um erro de sintaxe'],
-      answer: 2,
-      explain: 'Sem return, a função devolve None automaticamente, sem gerar erro.',
+      afterBlock: 14,
+      kind: "output",
+      q: "A função não tem return. O que aparece na tela?",
+      lang: "python",
+      code: "def cumprimentar():\n    texto = \"oi\"\n\nprint(cumprimentar())",
+      options: ["oi", "None", "\"\"", "erro"],
+      answer: 1,
+      explain: "Sem <code>return</code> explícito, toda função Python devolve <code>None</code>.",
     },
     {
       id: 'q2',
@@ -100,16 +104,13 @@ export const modFuncoes: Module = {
     },
     {
       id: 'q3',
-      q: 'Por que def adicionar_item(item, carrinho=[]) é uma armadilha conhecida em Python?',
-      options: [
-        'Porque listas não podem ser parâmetros',
-        'Porque a lista padrão é criada uma vez só e compartilhada entre chamadas',
-        'Porque o Python trava ao rodar esse código',
-        'Porque falta o tipo do parâmetro',
-      ],
+      kind: "output",
+      q: "Por que carrinho=[] é uma armadilha? Veja o que aparece na tela:",
+      lang: "python",
+      code: "def adicionar(item, carrinho=[]):\n    carrinho.append(item)\n    return carrinho\n\nadicionar(\"pão\")\nprint(adicionar(\"leite\"))",
+      options: ["['leite']", "['pão', 'leite']", "['pão']", "[]"],
       answer: 1,
-      explain: 'Valores padrão mutáveis (como listas) são criados uma única vez, quando a função é definida — não a cada chamada, o que causa dados vazando entre chamadas diferentes.',
-      hint: 'Pense em quando o valor padrão [] é criado: uma vez, ou toda vez que a função roda?',
+      explain: "A lista padrão é criada uma vez só e compartilhada entre chamadas: o \"pão\" da primeira chamada ainda está lá.",
     },
     {
       id: 'q4',

@@ -93,11 +93,14 @@ export const modLoops: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'O que range(3) gera?',
-      options: ['1, 2, 3', '0, 1, 2', '0, 1, 2, 3', '3, 2, 1'],
+      afterBlock: 4,
+      kind: "output",
+      q: "O que aparece na tela?",
+      lang: "python",
+      code: "print(list(range(3)))",
+      options: ["[1, 2, 3]", "[0, 1, 2]", "[0, 1, 2, 3]", "[3, 2, 1]"],
       answer: 1,
-      explain: 'range(3) gera 3 números começando em 0 e parando antes de 3: 0, 1, 2.',
-      hint: 'range sempre para antes de chegar no número final.',
+      explain: "<code>range(3)</code> começa no 0 e para antes do 3: 0, 1, 2.",
     },
     {
       id: 'q2',
@@ -126,11 +129,11 @@ export const modLoops: Module = {
     },
     {
       id: 'q5',
-      q: 'O que [n * n for n in range(3)] produz?',
-      options: ['[0, 1, 4]', '[1, 4, 9]', '[0, 1, 2]', '[0, 2, 4]'],
-      answer: 0,
-      explain: 'range(3) gera 0, 1, 2; elevando cada um ao quadrado: 0*0=0, 1*1=1, 2*2=4.',
-      hint: 'Lembre que range(3) começa em 0.',
+      kind: "order",
+      q: "Monte a list comprehension que produz [0, 1, 4]",
+      pieces: ["[", "n * n", "for", "n", "in", "range(3)", "]"],
+      distractors: ["foreach", "of"],
+      explain: "Primeiro o que entra na lista (<code>n * n</code>), depois de onde vem cada n (<code>for n in range(3)</code>).",
     },
   ],
 };

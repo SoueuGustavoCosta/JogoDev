@@ -78,10 +78,14 @@ export const modPoo: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'Qual método roda automaticamente quando um objeto é criado a partir de uma classe?',
-      options: ['__main__', '__init__', '__new__', 'start()'],
-      answer: 1,
-      explain: '__init__ é chamado automaticamente ao criar um objeto novo, servindo para preparar seus dados iniciais.',
+      q: "Complete com o método que roda automaticamente quando um objeto é criado:",
+      fill: true,
+      pre: "class Viajante:\n    def",
+      post: "(self, nome):\n        self.nome = nome",
+      accept: ["__init__"],
+      wrong: ["__main__", "__new__", "start"],
+      placeholder: "?",
+      explain: "<code>__init__</code> inicializa cada objeto novo, logo depois de ele ser criado.",
     },
     {
       id: 'q2',
@@ -110,15 +114,13 @@ export const modPoo: Module = {
     },
     {
       id: 'q4',
-      q: 'class ViajanteVIP(Viajante): o que essa linha significa?',
-      options: [
-        'ViajanteVIP e Viajante são a mesma classe',
-        'ViajanteVIP herda de Viajante',
-        'Viajante herda de ViajanteVIP',
-        'Erro de sintaxe',
-      ],
-      answer: 1,
-      explain: 'Escrever a classe-mãe entre parênteses após o nome da classe nova estabelece herança: ViajanteVIP herda de Viajante.',
+      kind: "output",
+      q: "ViajanteVIP não define saudar(). O que aparece na tela?",
+      lang: "python",
+      code: "class Viajante:\n    def saudar(self):\n        return \"Olá\"\n\nclass ViajanteVIP(Viajante):\n    pass\n\nprint(ViajanteVIP().saudar())",
+      options: ["Olá", "None", "erro", "ViajanteVIP"],
+      answer: 0,
+      explain: "<code>class ViajanteVIP(Viajante)</code> significa que ViajanteVIP herda de Viajante: ganha o método saudar() da classe-mãe.",
     },
     {
       id: 'q5',

@@ -54,7 +54,11 @@ export const modNascimento: Module = {
     { t: 'h', x: 'De onde vem o nome "Python"?' },
     {
       t: 'p',
-      x: 'Aqui está o golpe de Onduluk: ele quer que você acredite que Python foi batizada em homenagem à cobra. <b>Não foi.</b> Guido van Rossum era fã do grupo de comédia britânico <b>Monty Python\'s Flying Circus</b>, e escolheu o nome porque queria algo curto, um pouco misterioso e divertido de dizer em reuniões de trabalho. A cobra na logomarca veio muito depois, quando a comunidade abraçou o trocadilho.',
+      x: 'Aqui está o golpe de Onduluk: ele quer que você acredite que Python foi batizada em homenagem à cobra. <b>Não foi.</b> Guido van Rossum era fã do grupo de comédia britânico <b>Monty Python\'s Flying Circus</b>, e escolheu o nome porque queria algo curto, um pouco misterioso e divertido de dizer em reuniões de trabalho.',
+    },
+    {
+      t: 'p',
+      x: 'A cobra na logomarca veio muito depois, quando a comunidade abraçou o trocadilho.',
     },
     {
       t: 'note',
@@ -145,6 +149,14 @@ export const modNascimento: Module = {
       placeholder: 'sigla ou nome do cargo',
       explain: 'BDFL: "Benevolent Dictator For Life" — o "ditador benevolente vitalício", responsável final por toda decisão sobre a linguagem, até 2018.',
       hint: 'É uma sigla de quatro letras, em inglês.',
+    },
+    {
+      id: 'q6',
+      kind: "order",
+      q: "Monte o easter egg que imprime as 19 frases do Zen de Python",
+      pieces: ["import", "this"],
+      distractors: ["zen", "from"],
+      explain: "Ao rodar <code>import this</code> em qualquer Python instalado, a linguagem imprime o Zen na tela.",
     },
   ],
 };

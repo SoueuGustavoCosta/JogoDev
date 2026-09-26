@@ -85,10 +85,11 @@ export const modSintaxe: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'Como Python marca o início e o fim de um bloco de código (dentro de um if, por exemplo)?',
-      options: ['Com chaves { }', 'Com a indentação (o recuo da linha)', 'Com ponto e vírgula', 'Com a palavra "begin" e "end"'],
-      answer: 1,
-      explain: 'Python usa indentação consistente (geralmente 4 espaços) para marcar blocos, no lugar de chaves.',
+      kind: "bug",
+      q: "Este código dá erro antes mesmo de rodar. Toque na linha com o bug.",
+      lines: ["idade = 20", "if idade >= 18:", "print(\"Pode votar\")"],
+      bugLine: 3,
+      explain: "Python marca o bloco com a indentação (o recuo da linha), não com chaves. O print precisa estar recuado para ficar dentro do if; sem isso, vem um IndentationError.",
     },
     {
       id: 'q2',
@@ -104,10 +105,13 @@ export const modSintaxe: Module = {
     },
     {
       id: 'q3',
-      q: 'Qual é o valor de type(idade) depois de idade = 27?',
+      kind: "output",
+      q: "O que aparece na tela?",
+      lang: "python",
+      code: "idade = 27\nprint(type(idade))",
       options: ["<class 'str'>", "<class 'int'>", "<class 'float'>", "<class 'bool'>"],
       answer: 1,
-      explain: '27 é um número inteiro, então idade recebe o tipo int automaticamente (tipagem dinâmica).',
+      explain: "27 é um número inteiro: <code>int</code>. Com 27.0 seria <code>float</code>; com \"27\", <code>str</code>.",
     },
     {
       id: 'q4',
