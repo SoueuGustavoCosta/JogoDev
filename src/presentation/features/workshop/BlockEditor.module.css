@@ -1,0 +1,180 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.program {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg);
+  list-style: none;
+  min-width: 0;
+}
+
+.row {
+  display: flex;
+  align-items: stretch;
+  min-height: 48px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-line);
+  min-width: 0;
+}
+
+.rowBrace {
+  border-color: var(--color-purple);
+  background: var(--color-panel);
+}
+
+.rowLine {
+  border-color: var(--color-cyan);
+  background: var(--color-panel-2);
+}
+
+.dragging {
+  outline: 2px solid var(--color-orange);
+  opacity: 0.85;
+}
+
+.handle,
+.remove {
+  flex-shrink: 0;
+  width: 40px;
+  min-height: 46px;
+  border: 0;
+  background: transparent;
+  color: var(--color-muted);
+  font: 700 0.95rem var(--font-mono);
+  cursor: grab;
+  touch-action: none;
+}
+
+.remove {
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.code {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 4px;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  font: 500 0.95rem/1.4 var(--font-mono);
+  font-variant-ligatures: none;
+  text-align: left;
+  overflow-wrap: anywhere;
+  -webkit-touch-callout: none;
+  user-select: none;
+  cursor: pointer;
+}
+
+.drop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  border: 1px dashed var(--color-line);
+  border-radius: var(--radius-md);
+  color: var(--color-muted);
+  font: 0.84rem var(--font-mono);
+}
+
+.paletteTitle {
+  margin: 4px 0 0;
+  color: var(--color-muted);
+  font: 0.8rem var(--font-mono);
+}
+
+.palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.piece {
+  max-width: 100%;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid var(--color-purple);
+  border-radius: 999px;
+  background: var(--color-panel);
+  color: var(--color-text);
+  font: 500 0.88rem var(--font-mono);
+  font-variant-ligatures: none;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.sheetTitle {
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+}
+
+.preview {
+  margin: 0 0 12px;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  font: 0.92rem var(--font-mono);
+  font-variant-ligatures: none;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.sheetHint {
+  color: var(--color-muted);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+  font-size: 0.86rem;
+  color: var(--color-muted);
+}
+
+.field input {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-panel-2);
+  color: var(--color-text);
+  font: 1rem var(--font-mono);
+}
+
+.sheetActions {
+  display: flex;
+  gap: 10px;
+}
+
+.danger,
+.save {
+  flex: 1;
+  min-height: 48px;
+  border-radius: var(--radius-md);
+  font: 700 0.95rem var(--font-body);
+  cursor: pointer;
+}
+
+.danger {
+  border: 1px solid var(--color-bad);
+  background: transparent;
+  color: var(--color-bad);
+}
+
+.save {
+  border: 0;
+  background: var(--color-purple);
+  color: var(--color-text);
+}

@@ -3,8 +3,12 @@ import { Link, Navigate, useOutletContext, useParams } from 'react-router-dom';
 import { runWorkshopTests, solveWorkshop, startWorkshop, type WorkshopRun } from '@/application/usecases';
 import { workshops } from '@/content/workshops';
 import {
+  blocksToCode,
+  codeToBlocks,
   describeInputs,
   explainFailure,
+  passingSummary,
+  type PlacedBlock,
   WORKSHOP_EXTRA_XP,
   WORKSHOP_HINT_COST,
   workshopXp,
@@ -15,12 +19,14 @@ import {
 import { Confetti, SintaxeFace } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
 import type { LayoutOutletContext } from '@/presentation/shell';
+import { BlockEditor } from './BlockEditor';
 import { CodeEditor } from './CodeEditor';
 import styles from './Workshop.module.css';
 
 const LANG_LABEL: Record<WorkshopLang, string> = { php: 'PHP', js: 'JS', python: 'Python' };
 
 type Phase = 'choose' | 'code' | 'solved';
+type Mode = 'blocks' | 'write';
 
 /** Código inicial: só um comentário lembrando as variáveis que já chegam prontas. */
 function starterFor(workshop: Workshop, lang: WorkshopLang): string {
@@ -57,6 +63,9 @@ function WorkshopScreen({ workshop }: { workshop: Workshop }) {
   const [phase, setPhase] = useState<Phase>('choose');
   const [lang, setLang] = useState<WorkshopLang>(available[0] ?? 'php');
   const [codes, setCodes] = useState<Partial<Record<WorkshopLang, string>>>({});
+  const [blocks, setBlocks] = useState<Partial<Record<WorkshopLang, PlacedBlock[]>>>({});
+  const [mode, setMode] = useState<Mode>(workshop.palettes ? 'blocks' : 'write');
+  const [modeWarning, setModeWarning] = useState<string | null>(null);
   const [withExtra, setWithExtra] = useState(false);
   const [running, setRunning] = useState(false);
   const [run, setRun] = useState<WorkshopRun | null>(null);
@@ -64,7 +73,34 @@ function WorkshopScreen({ workshop }: { workshop: Workshop }) {
   const [gained, setGained] = useState<{ xp: number; extra: boolean } | null>(null);
   const [engineError, setEngineError] = useState<string | null>(null);
   const prepared = useRef<Set<WorkshopLang>>(new Set());
-  const code = codes[lang] ?? starterFor(workshop, lang);
+  const palette = workshop.palettes?.[lang];
+  const blocksMode = mode === 'blocks' && Boolean(palette);
+  const placed = blocks[lang] ?? [];
+  const code = blocksMode && palette ? blocksToCode(lang, palette, placed) : (codes[lang] ?? starterFor(workshop, lang));
+
+  /** Troca blocos ↔ escrever sem perder nada: blocos viram texto sempre; texto vira blocos só se couber. */
+  function switchMode(next: Mode) {
+    setModeWarning(null);
+    if (next === mode) return;
+    if (next === 'write') {
+      if (palette && placed.length > 0) setCodes((all) => ({ ...all, [lang]: blocksToCode(lang, palette, placed) }));
+      setMode('write');
+      return;
+    }
+    if (!palette) return;
+    const text = codes[lang];
+    if (text === undefined || text.trim() === starterFor(workshop, lang).trim()) {
+      setMode('blocks');
+      return;
+    }
+    const converted = codeToBlocks(palette, text);
+    if (converted.ok) {
+      setBlocks((all) => ({ ...all, [lang]: converted.placed }));
+      setMode('blocks');
+    } else {
+      setModeWarning(`A linha ${converted.line} (${converted.text}) não existe nos blocos. Continue escrevendo, ou apague essa linha para voltar aos blocos.`);
+    }
+  }
 
   useEffect(() => {
     if (phase !== 'code' || prepared.current.has(lang)) return;
@@ -147,6 +183,16 @@ function WorkshopScreen({ workshop }: { workshop: Workshop }) {
               );
             })}
           </div>
+          {workshop.palettes?.[lang] ? (
+            <div className={styles.modes} role="radiogroup" aria-label="Jeito de montar">
+              <button type="button" role="radio" aria-checked={mode === 'blocks'} className={`${styles.mode} ${mode === 'blocks' ? styles.modeOn : ''}`} onClick={() => setMode('blocks')}>
+                Montar com blocos
+              </button>
+              <button type="button" role="radio" aria-checked={mode === 'write'} className={`${styles.mode} ${mode === 'write' ? styles.modeOn : ''}`} onClick={() => setMode('write')}>
+                Escrever código
+              </button>
+            </div>
+          ) : null}
           {already ? <p className={styles.done}>Você já resolveu esta oficina ✓ Pode fazer de novo, em outra linguagem ou de outro jeito.</p> : null}
           <button type="button" className={styles.primary} onClick={begin}>
             {already ? 'Abrir o editor' : `Começar · +${potentialXp} XP`}
@@ -162,7 +208,22 @@ function WorkshopScreen({ workshop }: { workshop: Workshop }) {
             <summary>O que vou testar</summary>
             <TestsBox visible={visible} hidden={workshop.hiddenTests.length} />
           </details>
-          <CodeEditor lang={lang} code={code} onChange={(c) => setCodes((all) => ({ ...all, [lang]: c }))} />
+          {palette ? (
+            <div className={styles.modes} role="radiogroup" aria-label="Jeito de montar">
+              <button type="button" role="radio" aria-checked={blocksMode} className={`${styles.mode} ${blocksMode ? styles.modeOn : ''}`} onClick={() => switchMode('blocks')}>
+                Blocos
+              </button>
+              <button type="button" role="radio" aria-checked={!blocksMode} className={`${styles.mode} ${!blocksMode ? styles.modeOn : ''}`} onClick={() => switchMode('write')}>
+                Escrever
+              </button>
+            </div>
+          ) : null}
+          {modeWarning ? <p className={styles.fail} role="status">{modeWarning}</p> : null}
+          {blocksMode && palette ? (
+            <BlockEditor palette={palette} placed={placed} onChange={(next) => setBlocks((all) => ({ ...all, [lang]: next }))} />
+          ) : (
+            <CodeEditor lang={lang} code={code} onChange={(c) => setCodes((all) => ({ ...all, [lang]: c }))} />
+          )}
           <div className={styles.actions}>
             <button
               type="button"
@@ -181,7 +242,7 @@ function WorkshopScreen({ workshop }: { workshop: Workshop }) {
             <ol className={styles.hints}>
               {workshop.hints.slice(0, hintsUsed).map((h, i) => (
                 <li key={i}>
-                  <b>{['Ideia', 'Estrutura', 'Quase pronto'][i]}:</b> {h}
+                  <b>{['Ideia', 'Estrutura', 'Bloco pronto'][i]}:</b> {h}
                 </li>
               ))}
             </ol>
@@ -190,7 +251,8 @@ function WorkshopScreen({ workshop }: { workshop: Workshop }) {
             <div className={styles.sintaxe} role="status">
               <SintaxeFace size={36} />
               <p>
-                {run.passed > 0 ? `${run.passed} de ${run.total} testes já passam. ` : ''}
+                <b>Sintaxe · </b>
+                {passingSummary(lang, run.results) || (run.passed > 0 ? `${run.passed} de ${run.total} testes já passam.` : '')}{' '}
                 {explainFailure(lang, run.firstFailure)}
               </p>
             </div>
