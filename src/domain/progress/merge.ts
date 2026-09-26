@@ -1,6 +1,7 @@
 import { PROGRESS_SCHEMA_VERSION } from './factory';
 import { bestQuizAttempt } from './attempt';
 import { mergeAnomalies } from './anomalies';
+import { mergeFragmentLedgers } from './fragments';
 import { mergeQuizBackups } from './quizBackup';
 import type { ModuleProgress, Progress, QuizAttemptResult, TrailProgress } from './types';
 
@@ -23,6 +24,8 @@ import type { ModuleProgress, Progress, QuizAttemptResult, TrailProgress } from 
  * - Tela onde parou (`screen`): a mais adiantada das duas cópias.
  * - Anomalias do Dia: união por dia (fica a consertada primeiro). Última lição: a mais recente.
  * - Linha do Tempo: âncoras e ramificação da cópia do dia mais recente; Eco = o mais avançado.
+ * - Fragmentos Temporais: união dos lançamentos por id (nada se perde nem se duplica).
+ *   Cosméticos equipados: de `primary`, completando com `secondary`.
  */
 export function mergeProgress(primary: Progress, secondary: Progress): Progress {
   const trailIds = new Set([...Object.keys(primary.trails ?? {}), ...Object.keys(secondary.trails ?? {})]);
@@ -57,6 +60,8 @@ export function mergeProgress(primary: Progress, secondary: Progress): Progress 
     // TODO(autor): remover junto com `quizBackup` a partir de 2026-10-24.
     quizBackup: mergeQuizBackups(primary.quizBackup, secondary.quizBackup),
     anomalies: mergeAnomalies(primary.anomalies, secondary.anomalies),
+    fragmentLedger: mergeFragmentLedgers(primary.fragmentLedger, secondary.fragmentLedger),
+    equippedCosmetics: primary.equippedCosmetics ?? secondary.equippedCosmetics,
     lastLesson:
       (primary.lastLesson?.at ?? '') >= (secondary.lastLesson?.at ?? '') ? primary.lastLesson : secondary.lastLesson,
     streakCurrent,

@@ -1,4 +1,4 @@
-import { anomalyXpTotal, createEmptyProgress, fragmentsEarned, xpForTrail } from '@/domain/progress';
+import { anomalyXpTotal, createEmptyProgress, fragmentBalance, xpForTrail } from '@/domain/progress';
 import { travelerLevel } from '@/domain/traveler';
 import type { Badge } from '@/domain/badges';
 import type { Trail } from '@/domain/trail';
@@ -15,7 +15,7 @@ export type ProfileSummary = {
   badgesEarnedCount: number;
   badgesTotal: number;
   streak: { current: number; best: number };
-  /** Fragmentos Temporais ganhos (Anomalia do Dia; a loja entra na Etapa 9). */
+  /** Saldo de Fragmentos Temporais (ganhos menos gastos na Loja do Viajante). */
   fragments: number;
 };
 
@@ -54,7 +54,7 @@ export function getProfileSummary(
     badgesEarnedCount: Object.keys(progress.badgesEarned ?? {}).length,
     badgesTotal: params.badgeCatalog.length,
     streak: { current: progress.streakCurrent ?? 0, best: progress.streakBest ?? 0 },
-    fragments: fragmentsEarned(progress),
+    fragments: fragmentBalance(progress),
   };
 }
 

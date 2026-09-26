@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { anomalyXpTotal, fragmentsEarned, recordAnomaly } from './anomalies';
+import { anomalyXpTotal, recordAnomaly } from './anomalies';
+import { fragmentsEarned } from './fragments';
 import { mergeProgress } from './merge';
 import type { AnomalyResult, Progress } from './types';
 

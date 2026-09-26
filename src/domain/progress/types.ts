@@ -127,6 +127,24 @@ export type Progress = {
   lineBrokenOn?: string;
   /** Última lição aberta, para o "Continuar de onde parou" da tela Início. Opcional (Etapa 7). */
   lastLesson?: { trailId: string; moduleId: string; at: string };
+  /**
+   * Fragmentos Temporais (Etapa 9): histórico de ganhos e gastos, cada lançamento com id
+   * único. O saldo nunca é guardado, é calculado daqui (ver `fragments.ts`). Os ganhos das
+   * anomalias não entram aqui: vêm de `anomalies`. Campo novo e opcional.
+   */
+  fragmentLedger?: FragmentEntry[];
+  /** Cosméticos equipados no avatar: encaixe (moldura, cor, acessório, cabelo) -> id do item. Opcional (Etapa 9). */
+  equippedCosmetics?: Record<string, string>;
+};
+
+/** Um lançamento de Fragmentos Temporais: `amount` positivo = ganho, negativo = gasto. */
+export type FragmentEntry = {
+  id: string;
+  amount: number;
+  /** Instante ISO. */
+  at: string;
+  /** Item comprado ou ganho (compras e prêmios de evento). */
+  itemId?: string;
 };
 
 export type AnomalyResult = {

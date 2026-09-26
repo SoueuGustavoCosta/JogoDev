@@ -5,11 +5,6 @@ export function anomalyXpTotal(progress: Progress): number {
   return Object.values(progress.anomalies ?? {}).reduce((sum, r) => sum + (r?.xp ?? 0), 0);
 }
 
-/** Fragmentos Temporais ganhos (soma do histórico de ganhos; gastos entram na Etapa 9). */
-export function fragmentsEarned(progress: Progress): number {
-  return Object.values(progress.anomalies ?? {}).reduce((sum, r) => sum + (r?.fragments ?? 0), 0);
-}
-
 /**
  * Registra a anomalia do dia como consertada. Idempotente: se o dia já tem registro, nada
  * muda (a recompensa é uma por dia) e devolve `added: false`.
