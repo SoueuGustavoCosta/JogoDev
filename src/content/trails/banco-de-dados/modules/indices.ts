@@ -10,7 +10,8 @@ export const modIndices: Module = {
   lead: "Como o banco acha uma linha entre milhões sem ler tudo, e como você enxerga o que ele está fazendo.",
   level: "Avançado",
   blocks: [
-    { t: 'p', x: "Sem índice, para achar um cliente por e-mail o banco lê a tabela inteira, linha por linha (<b>varredura sequencial</b>). Um <b>índice</b> é como o índice remissivo de um livro: uma estrutura auxiliar ordenada que aponta direto para o lugar certo. O tipo padrão do PostgreSQL é a <b>B-tree</b>, uma árvore balanceada que encontra qualquer valor em poucos passos, mesmo com milhões de linhas." },
+    { t: 'p', x: "Sem índice, para achar um cliente por e-mail o banco lê a tabela inteira, linha por linha (<b>varredura sequencial</b>). Um <b>índice</b> é como o índice remissivo de um livro: uma estrutura auxiliar ordenada que aponta direto para o lugar certo." },
+    { t: 'p', x: "O tipo padrão do PostgreSQL é a <b>B-tree</b>, uma árvore balanceada que encontra qualquer valor em poucos passos, mesmo com milhões de linhas." },
     { t: 'code', file: "18_indice.sql", x: "CREATE INDEX idx_clientes_nome\n    ON clientes (nome);\n\n-- índice único: além de acelerar, impede repetição\nCREATE UNIQUE INDEX idx_produtos_nome\n    ON produtos (nome);" },
     { t: 'h', x: "Veja o índice trabalhando com EXPLAIN" },
     { t: 'p', x: "<code>EXPLAIN</code> mostra o <b>plano de execução</b>: o caminho que o banco escolheu. Rode este bloco no laboratório. Ele cria 50 mil linhas de teste, pede o plano sem índice, cria o índice e pede o plano de novo." },
@@ -24,9 +25,13 @@ export const modIndices: Module = {
   quiz: [
     {
       id: 'q1',
-      q: "Para que serve um índice?",
-      options: ["Apagar dados duplicados","Acelerar buscas em uma coluna","Criar backup","Proteger com senha"],
-      answer: 1,
+      q: "Complete para acelerar as buscas de clientes por nome:",
+      fill: true,
+      pre: "CREATE",
+      post: "idx_clientes_nome\n  ON clientes (nome);",
+      accept: ["INDEX"],
+      wrong: ["TABLE", "VIEW", "BACKUP"],
+      placeholder: "?",
       explain: "O índice permite achar linhas sem ler a tabela inteira.",
     },
     {
@@ -38,9 +43,13 @@ export const modIndices: Module = {
     },
     {
       id: 'q3',
-      q: "Qual comando mostra o plano de execução de uma consulta?",
-      options: ["SHOW PLAN","EXPLAIN","DESCRIBE INDEX","PROFILE"],
-      answer: 1,
+      q: "Complete para ver o plano de execução da consulta:",
+      fill: true,
+      pre: "",
+      post: "SELECT * FROM clientes WHERE nome = 'Ana';",
+      accept: ["EXPLAIN"],
+      wrong: ["SHOW PLAN", "DESCRIBE", "PROFILE"],
+      placeholder: "?",
       explain: "EXPLAIN mostra como o banco pretende executar. EXPLAIN ANALYZE executa e mede.",
     },
     {

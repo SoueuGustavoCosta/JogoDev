@@ -32,10 +32,11 @@ export const modNorm: Module = {
   quiz: [
     {
       id: 'q1',
-      q: "Guardar \"Mouse, Teclado\" numa única célula fere qual forma normal?",
-      options: ["1FN","2FN","3FN","Nenhuma"],
-      answer: 0,
-      explain: "A 1FN exige valores atômicos: um valor por célula.",
+      kind: "bug",
+      q: "Uma destas linhas fere a 1FN. Toque nela.",
+      lines: ["INSERT INTO pedido (id_pedido, cliente, produtos)", "VALUES (1, 'Ana', 'Mouse, Teclado');"],
+      bugLine: 2,
+      explain: "A 1FN exige valores atômicos: um valor por célula. \"Mouse, Teclado\" são dois produtos numa célula só.",
     },
     {
       id: 'q2',

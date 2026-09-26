@@ -51,10 +51,13 @@ export const modArquitetura: Module = {
     },
     {
       id: 'q4',
-      q: "Metadados são...",
-      options: ["Dados que descrevem outros dados","Dados sigilosos","Cópias de segurança","Dados duplicados"],
+      kind: "output",
+      q: "O catálogo guarda metadados: dados que descrevem outros dados. O que esta consulta devolve?",
+      lang: "sql",
+      code: "SELECT data_type\nFROM information_schema.columns\nWHERE table_name = 'produtos'\n  AND column_name = 'preco';",
+      options: ["numeric", "249.90", "preco", "produtos"],
       answer: 0,
-      explain: "Metadados descrevem a estrutura do banco, como nomes de tabelas, colunas e tipos. Ficam no catálogo do sistema.",
-    }
+      explain: "Metadados descrevem a estrutura do banco, como nomes de tabelas, colunas e tipos. O catálogo responde o <b>tipo</b> da coluna preco (numeric), não os preços.",
+    },
   ],
 };

@@ -30,10 +30,10 @@ export const modProjeto: Module = {
     },
     {
       id: 'q2',
-      q: "Qual é a ordem correta das etapas de um projeto de banco?",
-      options: ["DDL, DER, requisitos, normalização","Requisitos, DER, tabelas, normalização, DDL","Normalização, DDL, requisitos, DER","DER, DDL, requisitos, tabelas"],
-      answer: 1,
-      explain: "Do abstrato ao concreto: requisitos, modelo conceitual, lógico, normalização e só então o SQL.",
+      kind: "order",
+      q: "Monte a ordem das etapas de um projeto de banco",
+      pieces: ["Requisitos", "DER", "Tabelas", "Normalização", "DDL"],
+      explain: "Do abstrato ao concreto: requisitos, modelo conceitual (DER), lógico (tabelas), normalização e só então o SQL (DDL).",
     },
     {
       id: 'q3',
@@ -44,10 +44,11 @@ export const modProjeto: Module = {
     },
     {
       id: 'q4',
-      q: "Qual consulta acha os empréstimos ainda em aberto?",
-      options: ["WHERE devolucao = NULL","WHERE devolucao IS NULL","WHERE devolucao > 0","WHERE NOT devolucao"],
-      answer: 1,
-      explain: "NULL só se testa com IS NULL.",
-    }
+      kind: "bug",
+      q: "Esta consulta deveria achar os empréstimos ainda em aberto, mas nunca devolve nada. Toque na linha com o bug.",
+      lines: ["SELECT a.nome, e.codigo", "FROM emprestimos em", "JOIN alunos a ON a.id = em.aluno_id", "JOIN exemplares e ON e.id = em.exemplar_id", "WHERE em.devolucao = NULL;"],
+      bugLine: 5,
+      explain: "NULL só se testa com IS NULL: <code>WHERE em.devolucao IS NULL</code>.",
+    },
   ],
 };

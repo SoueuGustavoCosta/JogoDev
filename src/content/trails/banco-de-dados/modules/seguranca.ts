@@ -29,9 +29,13 @@ export const modSeguranca: Module = {
   quiz: [
     {
       id: 'q1',
-      q: "Qual comando retira uma permissão que foi concedida?",
-      options: ["DROP","DENY","REVOKE","ROLLBACK"],
-      answer: 2,
+      q: "Complete para retirar a permissão que foi concedida:",
+      fill: true,
+      pre: "",
+      post: "SELECT ON produtos FROM analista;",
+      accept: ["REVOKE"],
+      wrong: ["DROP", "DENY", "ROLLBACK"],
+      placeholder: "?",
       explain: "REVOKE retira. O DENY existe no SQL Server, mas não no PostgreSQL.",
     },
     {
@@ -43,10 +47,11 @@ export const modSeguranca: Module = {
     },
     {
       id: 'q3',
-      q: "O princípio do menor privilégio diz que...",
-      options: ["Todos devem ser administradores","Cada usuário recebe apenas as permissões de que precisa","Só o DBA acessa o banco","Nenhum usuário tem senha"],
-      answer: 1,
-      explain: "Permissões mínimas reduzem o estrago de erros e ataques.",
+      kind: "order",
+      q: "Menor privilégio: o analista só precisa ler a tabela produtos. Monte a permissão.",
+      pieces: ["GRANT", "SELECT", "ON produtos", "TO analista;"],
+      distractors: ["ALL PRIVILEGES", "DELETE"],
+      explain: "Permissões mínimas reduzem o estrago de erros e ataques: só SELECT, só em produtos.",
     },
     {
       id: 'q4',

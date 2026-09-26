@@ -38,17 +38,19 @@ export const modRelacional: Module = {
     },
     {
       id: 'q3',
-      q: "Inserir um pedido com cliente_id = 999, que não existe em clientes, viola qual integridade?",
-      options: ["De entidade","De domínio","Referencial","Nenhuma"],
-      answer: 2,
-      explain: "A chave estrangeira aponta para um registro inexistente: integridade referencial.",
+      kind: "bug",
+      q: "O banco recusa este INSERT por integridade referencial. Toque na linha que causa isso.",
+      lines: ["-- clientes cadastrados: 1 Ana, 2 Bruno, 3 Carla", "INSERT INTO pedidos (id, cliente_id, total)", "VALUES (104, 999, 50.00);"],
+      bugLine: 3,
+      explain: "A chave estrangeira <code>cliente_id = 999</code> aponta para um cliente que não existe: integridade referencial.",
     },
     {
       id: 'q4',
-      q: "Um CHECK (preco >= 0) protege qual tipo de integridade?",
-      options: ["De domínio","De entidade","Referencial","De backup"],
-      answer: 0,
-      explain: "CHECK restringe os valores permitidos na coluna, isto é, o domínio.",
-    }
+      kind: "order",
+      q: "Monte a regra de domínio que proíbe preço negativo na coluna preco",
+      pieces: ["CHECK", "(", "preco", ">=", "0", ")"],
+      distractors: ["UNIQUE", "<"],
+      explain: "CHECK restringe os valores permitidos na coluna, isto é, o domínio (integridade de domínio).",
+    },
   ],
 };

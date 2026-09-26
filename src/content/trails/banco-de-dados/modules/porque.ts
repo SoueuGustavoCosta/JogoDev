@@ -22,6 +22,8 @@ export const modPorque: Module = {
     { t: 'flow', items: ["Dado","Processamento","Informação","Decisão","Conhecimento"] },
     { t: 'h', x: "As quatro operações básicas (CRUD)" },
     { t: 'table', cols: ["Operação","Em inglês","Comando SQL"], rows: [["Inserir","Create","<code>INSERT</code>"],["Consultar","Read","<code>SELECT</code>"],["Atualizar","Update","<code>UPDATE</code>"],["Remover","Delete","<code>DELETE</code>"]], mac: false },
+    { t: 'p', x: "No SGBD, cada uma dessas operações é um comando de SQL. O Read, por exemplo, é o <code>SELECT</code>: você diz quais colunas quer e de qual tabela. Não precisa decorar agora, é só para ver a cara:" },
+    { t: 'code', file: "primeira_consulta.sql", x: "-- \"quero o nome e o preço de todos os produtos\"\nSELECT nome, preco\nFROM produtos;" },
     { t: 'h', x: "Quando um SGBD vale a pena" },
     { t: 'ul', items: ["<b>Menos redundância</b>: cada dado é guardado uma vez e compartilhado, em vez de copiado em vários arquivos.","<b>Mais consistência</b>: como o dado existe em um só lugar, não há versões diferentes da mesma informação.","<b>Compartilhamento</b>: várias pessoas e programas usam os mesmos dados ao mesmo tempo, com controle.","<b>Segurança</b>: cada perfil vê e altera só o que tem permissão.","<b>Integridade</b>: o banco recusa dados que quebram as regras (nota 37 quando o máximo é 10).","<b>Backup e recuperação</b>: existem rotinas para restaurar os dados depois de uma falha.","<b>Múltiplas visões</b>: os mesmos dados aparecem de formas diferentes para cada tipo de usuário."] },
     { t: 'h', x: "Quem trabalha com bancos de dados" },
@@ -55,6 +57,17 @@ export const modPorque: Module = {
       options: ["Dado","SGBD","Informação","Conhecimento"],
       answer: 2,
       explain: "O número 37,5 é o dado. Com o contexto (de quem, em que unidade) ele vira informação. Decidir ir ao médico já é conhecimento.",
-    }
+    },
+    {
+      id: 'q5',
+      q: "Complete a consulta que lê (o R do CRUD) o nome dos clientes:",
+      fill: true,
+      pre: "",
+      post: "nome FROM clientes;",
+      accept: ["SELECT"],
+      wrong: ["INSERT", "UPDATE", "DELETE"],
+      placeholder: "?",
+      explain: "<code>SELECT</code> é o R (Read) do CRUD. <code>INSERT</code> cria, <code>UPDATE</code> atualiza e <code>DELETE</code> remove.",
+    },
   ],
 };

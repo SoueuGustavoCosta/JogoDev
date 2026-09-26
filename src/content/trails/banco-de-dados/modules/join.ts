@@ -30,6 +30,7 @@ export const modJoin: Module = {
   quiz: [
     {
       id: 'q1',
+      afterBlock: 2,
       q: "Na tabela pedidos, a coluna cliente_id é...",
       options: ["Chave primária","Chave estrangeira","Um tipo de dado","Um índice"],
       answer: 1,
@@ -37,10 +38,14 @@ export const modJoin: Module = {
     },
     {
       id: 'q2',
-      q: "Qual JOIN mostraria a Carla mesmo sem pedidos?",
-      options: ["INNER JOIN","LEFT JOIN de clientes para pedidos","DROP JOIN","Nenhum"],
-      answer: 1,
-      explain: "LEFT JOIN mantém todas as linhas da tabela da esquerda.",
+      q: "A Carla não fez pedidos. Complete para ela aparecer mesmo assim:",
+      fill: true,
+      pre: "SELECT c.nome, p.id\nFROM clientes c",
+      post: "JOIN pedidos p ON p.cliente_id = c.id;",
+      accept: ["LEFT"],
+      wrong: ["INNER", "CROSS", "DROP"],
+      placeholder: "?",
+      explain: "LEFT JOIN mantém todas as linhas da tabela da esquerda (clientes). O INNER JOIN deixaria a Carla de fora.",
     },
     {
       id: 'q3',
@@ -51,10 +56,14 @@ export const modJoin: Module = {
     },
     {
       id: 'q4',
-      q: "Em um autorrelacionamento (funcionário e seu gerente), como o SQL resolve?",
-      options: ["Com dois bancos de dados","Com UNION","Com um JOIN da tabela com ela mesma, usando apelidos","Não é possível"],
-      answer: 2,
-      explain: "A mesma tabela é usada duas vezes no FROM, com apelidos diferentes, ligadas pela FK.",
-    }
+      q: "Cada funcionário tem um gerente, que também é funcionário. Complete o JOIN da tabela com ela mesma:",
+      fill: true,
+      pre: "SELECT f.nome, g.nome AS gerente\nFROM funcionarios f\nJOIN funcionarios g ON g.id = f.",
+      post: ";",
+      accept: ["gerente_id"],
+      wrong: ["id", "nome", "cliente_id"],
+      placeholder: "?",
+      explain: "A mesma tabela é usada duas vezes no FROM, com apelidos diferentes (f e g), ligadas pela FK gerente_id.",
+    },
   ],
 };

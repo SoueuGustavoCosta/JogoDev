@@ -16,6 +16,8 @@ export const modTipos: Module = {
     { t: 'ul', items: ["É <b>gratuito e open source</b>, com mais de 30 anos de história e uma comunidade enorme.","É muito <b>confiável</b>: respeita as propriedades ACID, que garantem que seus dados não ficam pela metade quando algo dá errado (veremos no módulo avançado).","Tem <b>tipos ricos</b>: JSONB, arrays, UUID, datas com fuso horário. Você aprende o básico agora e cresce sem trocar de banco.","Combina com o caminho de Java (Spring/JPA) e Python (FastAPI), e é o banco por trás de serviços como o Supabase."] },
     { t: 'h', x: "SQL, PostgreSQL, pgAdmin e psql: quem é quem?" },
     { t: 'table', cols: ["Nome","O que é"], rows: [["SQL","A <b>linguagem</b> usada para conversar com bancos relacionais."],["PostgreSQL","O <b>SGBD</b>: o motor que guarda e processa os dados."],["pgAdmin","Uma <b>interface visual</b> para usar o PostgreSQL com cliques."],["psql","O <b>terminal</b> do PostgreSQL: você digita comandos SQL nele."]], mac: false },
+    { t: 'p', x: "A linguagem SQL é a mesma no pgAdmin e no psql. Esta linha, por exemplo, pede ao PostgreSQL o nome de todas as categorias da loja:" },
+    { t: 'code', file: "quem_e_quem.sql", x: "SELECT nome FROM categorias;" },
     { t: 'h', x: "Um pouco de história: modelos de dados" },
     { t: 'cards', items: [{"h":"Hierárquico","x":"Dados em árvore: cada registro filho tem um único pai. Rápido para caminhos fixos, ruim quando o mesmo dado pertence a dois lugares. Exemplo clássico: o IMS da IBM."},{"h":"Em rede","x":"Evolução do hierárquico: um registro pode ter vários pais, formando um grafo. Mais flexível, mas o programador precisa navegar pelos caminhos."},{"h":"Relacional","x":"Tabelas ligadas por valores, sem caminhos fixos e com base matemática (álgebra relacional). Trouxe a independência entre dados e programas."},{"h":"Objeto-relacional","x":"Relacional com recursos de objetos: tipos próprios, herança entre tabelas. O PostgreSQL se descreve assim."}] },
     { t: 'h', x: "Bancos que você vai encontrar por aí" },
@@ -49,6 +51,14 @@ export const modTipos: Module = {
       options: ["Relacional","Em rede","Chave-valor","Hierárquico"],
       answer: 3,
       explain: "No modelo hierárquico, os registros formam uma árvore de pais e filhos. O modelo em rede permitiu vários pais.",
-    }
+    },
+    {
+      id: 'q5',
+      kind: 'order',
+      q: "Monte o comando SQL que pede ao PostgreSQL o nome de todas as categorias",
+      pieces: ["SELECT", "nome", "FROM", "categorias", ";"],
+      distractors: ["GET", "psql"],
+      explain: "SQL é a linguagem: <code>SELECT</code> (o quê) e <code>FROM</code> (de onde). psql e pgAdmin são só o lugar onde você digita.",
+    },
   ],
 };
