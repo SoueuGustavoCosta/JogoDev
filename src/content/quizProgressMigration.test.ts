@@ -136,9 +136,11 @@ describe('progresso salvo antes da Etapa 3.5 abre igual, em todas as ilhas', () 
 
       it('gravar de novo não muda nada (idempotente)', () => {
         const repository = withQuizIdMigration(new LocalStorageProgressRepository(), index);
-        const migrated = openInNewApp();
-        repository.save(migrated);
-        expect(repository.load()).toEqual(migrated);
+        repository.save(openInNewApp());
+        const once = repository.load();
+        repository.save(once!);
+        expect(repository.load()).toEqual(once);
+        expect(once!.trails).toEqual(openInNewApp().trails);
       });
     });
   }

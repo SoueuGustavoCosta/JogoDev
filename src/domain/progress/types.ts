@@ -99,7 +99,19 @@ export type Progress = {
    * Campo novo e opcional (Etapa 3): ausente = padrão do app (`config/exploration.ts`).
    */
   lessonMode?: LessonMode;
+  /**
+   * Cópia de segurança dos resultados do quiz por id (trilha -> módulo -> id da pergunta),
+   * na raiz do progresso. Existe só para a transição da Etapa 3.5: o app antigo (aba
+   * aberta durante o deploy) junta cópias com um merge que descarta as chaves por id de
+   * dentro dos módulos, mas preserva campos da raiz que não conhece. O app novo restaura
+   * daqui o que tiver sumido (ver `quizBackup.ts`). Campo opcional.
+   * TODO(autor): remover a partir de 2026-10-24 (4 semanas depois da Etapa 3.5).
+   */
+  quizBackup?: QuizBackup;
 };
+
+/** Resultados do quiz por trilha -> módulo -> id da pergunta. */
+export type QuizBackup = Record<string, Record<string, Record<string, QuizAttemptResult>>>;
 
 export type ExplorationMode = 'sequential' | 'free';
 
