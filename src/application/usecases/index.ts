@@ -14,3 +14,4 @@ export * from './phoneAuth';
 export * from './reportModuleLeft';
 export * from './lesson';
 export * from './quizIdMigration';
+export * from './tryBlock';
