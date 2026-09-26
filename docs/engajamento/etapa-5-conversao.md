@@ -116,3 +116,24 @@ Colunas de formatos: completar / montar a linha / o que aparece / encontre o bug
   completar `javac Main.java`).
 - A sequência de formatos de cada módulo é diferente da de Python.
 - `afterBlock` em 1 pergunta (Laços q1, do-while).
+
+## PHP (branch `etapa-5-conteudo-php`)
+
+| Módulo | Palavras (antes → depois) | Alternativas | Outros formatos (completar / montar / saída / bug) |
+|---|---|---|---|
+| nascimento-php | 406 → 406 | 4 → 4 | 1 / 0 / 0 / 0 → 1 / 0 / 1 / 0 |
+| sintaxe-tipos-php | 172 → 172 | 4 → 2 | 1 / 0 / 0 / 0 → 2 / 0 / 1 / 0 |
+| operadores-condicoes-php | 159 → 159 | 4 → 2 | 1 / 0 / 0 / 0 → 1 / 0 / 2 / 0 |
+| loops-php | 39 → 39 | 4 → 2 | 1 / 0 / 0 / 0 → 1 / 1 / 1 / 0 |
+| arrays-php | 146 → 146 | 4 → 1 | 1 / 0 / 0 / 0 → 2 / 0 / 1 / 1 |
+| funcoes-php | 149 → 149 | 4 → 1 | 1 / 0 / 0 / 0 → 2 / 0 / 2 / 0 |
+| poo-php | 130 → 130 | 4 → 1 | 1 / 0 / 0 / 0 → 2 / 1 / 0 / 1 |
+| superglobais-web-php | 179 → 179 | 4 → 2 | 1 / 0 / 0 / 0 → 2 / 0 / 0 / 1 |
+| **Total** | 1380 → 1380 | 32/40 (80%) → 15/41 (37%) | |
+
+- 17 conversões: o que aparece (7, conferidas automaticamente no PHP do laboratório),
+  completar (5), montar a linha (2) e encontre o bug (3). O módulo de história mantém as 4
+  alternativas e ganha uma pergunta nova de código (`q6`, o contador de visitas de Rasmus).
+- A sequência de formatos de cada módulo é diferente da de Python e da de Java (teste
+  "Python, Java e PHP não repetem a sequência de formatos" em `conversionGoals.test.ts`).
+- `afterBlock` em 3 perguntas (Laços q1, Funções q1, Superglobais q1).
