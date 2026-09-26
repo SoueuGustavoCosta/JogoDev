@@ -42,6 +42,7 @@ const leaderboard = {
     calls.push([uuid, id, day]);
   },
   countAnomalySolved: async () => 38,
+  checkIn: async () => undefined,
 } as unknown as LeaderboardPort;
 
 const now = new Date('2026-09-26T15:00:00Z');
@@ -62,12 +63,16 @@ describe('Anomalia do Dia (casos de uso)', () => {
     const analytics = new Recording();
     const daily = getDailyAnomaly({ repository }, { pool, now });
     const first = solveAnomaly({ repository, analytics, leaderboard }, { day: daily.day, anomaly: daily.anomaly, tries: 2, now });
-    expect(first).toEqual({ added: true, xp: 30, fragments: 10 });
+    expect(first).toMatchObject({ added: true, xp: 30, fragments: 10 });
     const again = solveAnomaly({ repository, analytics, leaderboard }, { day: daily.day, anomaly: daily.anomaly, tries: 1, now });
     expect(again.added).toBe(false);
     expect(analytics.events).toEqual([{ event: 'anomaly_solved', props: { anomaly: daily.anomaly.id, tries: 2 } }]);
     expect(calls).toEqual([['u1', daily.anomaly.id, '2026-09-26']]);
     expect(getDailyAnomaly({ repository }, { pool, now }).solved?.tries).toBe(2);
+
+    // Consertar a anomalia conta como dia jogado na Linha do Tempo (Etapa 8).
+    expect(first.timeline).toMatchObject({ counted: true, current: 1 });
+    expect(repository.load()?.ultimoDiaAtivo).toBe('2026-09-26');
 
     const summary = getProfileSummary({ repository }, { trails: [], badgeCatalog: [] });
     expect(summary.xp).toBe(30);
