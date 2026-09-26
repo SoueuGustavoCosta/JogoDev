@@ -44,6 +44,7 @@ create or replace function public.semana_atual()
 returns date
 language sql
 stable
+set search_path = public
 as $$
   select date_trunc('week', now() at time zone 'America/Sao_Paulo')::date;
 $$;
@@ -83,6 +84,8 @@ $$;
 
 revoke all on function public.registrar_xp_semanal(date, integer) from public;
 grant execute on function public.registrar_xp_semanal(date, integer) to authenticated;
+-- O Supabase dá EXECUTE ao anon por padrão em funções novas: sem sessão não há o que gravar.
+revoke execute on function public.registrar_xp_semanal(date, integer) from anon;
 
 -- Ranking de uma semana (padrão: a atual): nome, foto, dias de linha e XP. Sem telefone,
 -- e-mail nem backup. Empate: quem chegou primeiro ao XP fica na frente.

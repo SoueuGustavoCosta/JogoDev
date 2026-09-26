@@ -282,22 +282,18 @@ $$;
 revoke all on function public.email_de_login(text, text) from public;
 grant execute on function public.email_de_login(text, text) to anon, authenticated;
 
--- PENDENTE (Etapa 7, 2026-09-26): tabela anomalias_resolvidas e a função
--- contar_anomalias_resolvidas estão em supabase/2026-09-26_anomalias_resolvidas.sql,
--- esperando o autor aplicar. Depois de aplicado, mover o conteúdo para cá.
+-- APLICADO em 2026-09-26 (Etapa 7): tabela anomalias_resolvidas e função
+-- contar_anomalias_resolvidas. Conteúdo em supabase/2026-09-26_anomalias_resolvidas.sql.
 
--- PENDENTE (Etapa 9, 2026-09-26): coluna jogadores.cosmeticos (itens equipados no avatar)
--- está em supabase/2026-09-26_cosmeticos.sql, esperando o autor aplicar. Depois de
--- aplicado, mover o conteúdo para cá.
+-- APLICADO em 2026-09-26 (Etapa 9): coluna jogadores.cosmeticos. Conteúdo em
+-- supabase/2026-09-26_cosmeticos.sql.
 
--- PENDENTE (Etapa 10, 2026-09-26): tabela xp_semanal e as funções semana_atual,
--- registrar_xp_semanal e liga_da_semana estão em supabase/2026-09-26_xp_semanal.sql,
--- esperando o autor aplicar. Depois de aplicado, mover o conteúdo para cá.
+-- APLICADO em 2026-09-26 (Etapa 10): tabela xp_semanal e funções semana_atual,
+-- registrar_xp_semanal e liga_da_semana. Conteúdo em supabase/2026-09-26_xp_semanal.sql.
 
--- PENDENTE (Etapa 11, 2026-09-26): função contar_anomalias_periodo (meta da Convergência)
--- está em supabase/2026-09-26_convergencia.sql (depende da tabela da Etapa 7), esperando o
--- autor aplicar. Depois de aplicado, mover o conteúdo para cá.
+-- APLICADO em 2026-09-26 (Etapa 11): função contar_anomalias_periodo. Conteúdo em
+-- supabase/2026-09-26_convergencia.sql.
 
--- PENDENTE (Etapa 13B, 2026-09-26): tabelas solucoes_oficina, estrelas_solucao e
--- oficinas_resolvidas e as funções mural_oficina e contar_oficinas_periodo estão em
--- supabase/2026-09-26_oficina.sql, esperando o autor aplicar. Depois, mover para cá.
+-- APLICADO em 2026-09-26 (Etapa 13B): tabelas solucoes_oficina, estrelas_solucao e
+-- oficinas_resolvidas, funções mural_oficina e contar_oficinas_periodo. Conteúdo em
+-- supabase/2026-09-26_oficina.sql.
