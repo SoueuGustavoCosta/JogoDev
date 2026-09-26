@@ -56,7 +56,7 @@ const PUBLISHED_QUIZ_COUNT: Record<string, number> = {
   'python/funcoes-python': 5,
   'python/modulos-e-arquivos': 5,
   'python/poo-python': 5,
-  'java/nascimento-java': 5,
+  'java/nascimento-java': 6,
   'java/sintaxe-tipos-java': 5,
   'java/operadores-condicoes-java': 5,
   'java/loops-java': 5,
