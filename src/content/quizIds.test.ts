@@ -35,7 +35,7 @@ const PUBLISHED_QUIZ_COUNT: Record<string, number> = {
   'logica/ola': 5,
   'logica/variaveis': 6,
   'logica/operadores': 6,
-  'logica/decisoes': 5,
+  'logica/decisoes': 8,
   'logica/loops': 6,
   'logica/arrays': 6,
   'logica/funcoes': 6,
