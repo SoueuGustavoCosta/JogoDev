@@ -6,6 +6,7 @@ type PhpWebInstance = {
   addEventListener(type: 'output' | 'error', cb: (e: PhpOutputEvent) => void): void;
   removeEventListener(type: 'output' | 'error', cb: (e: PhpOutputEvent) => void): void;
   run(code: string): Promise<number>;
+  refresh(): Promise<unknown>;
 };
 
 /**
@@ -35,6 +36,11 @@ export class PhpWasmEngine implements PhpEnginePort {
       })();
     }
     return this.loading;
+  }
+
+  async reset(): Promise<void> {
+    const php = await this.ensurePhp();
+    await php.refresh();
   }
 
   async run(code: string): Promise<PhpRunResult> {

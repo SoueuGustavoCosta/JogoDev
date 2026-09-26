@@ -86,6 +86,8 @@ export class CodeRunner implements CodeRunnerPort {
     const start = Date.now();
     if (lang === 'php') {
       try {
+        // Cada teste num PHP novo: nada do teste anterior (funções, guarda de tempo) sobra.
+        await this.php.reset();
         const { stdout, stderr } = await this.php.run(buildPhpProgram(code, inputs, this.timeoutMs / 1000));
         return { ...parsePhpOutput(stdout, stderr), timeMs: Date.now() - start };
       } catch (e) {

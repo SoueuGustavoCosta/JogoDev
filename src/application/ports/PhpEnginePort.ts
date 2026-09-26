@@ -15,4 +15,10 @@ export interface PhpEnginePort {
   init(): Promise<void>;
   /** Executa um script PHP completo (com `<?php`) e devolve tudo que ele imprimiu. */
   run(code: string): Promise<PhpRunResult>;
+  /**
+   * Recria o PHP do zero (funções, classes e variáveis de execuções anteriores somem). A
+   * Oficina chama antes de cada teste: sem isso, uma função declarada no primeiro teste dá
+   * "Cannot redeclare" no segundo.
+   */
+  reset(): Promise<void>;
 }

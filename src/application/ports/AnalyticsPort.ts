@@ -32,7 +32,10 @@ export type AnalyticsEventName =
   | 'eco_solto_started'
   | 'eco_solto_won'
   | 'eco_solto_lost'
-  | 'convergence_unlocked';
+  | 'convergence_unlocked'
+  | 'workshop_started'
+  | 'workshop_test_run'
+  | 'workshop_solved';
 
 export type AnalyticsProps = Record<string, string | number | boolean>;
 

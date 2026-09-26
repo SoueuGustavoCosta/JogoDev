@@ -14,6 +14,7 @@ class RecordingAnalytics implements AnalyticsPort {
 /** PHP falso: "roda" devolvendo o que vier depois de echo, entre aspas. */
 class FakePhp implements PhpEnginePort {
   async init() {}
+  async reset() {}
   async run(code: string) {
     if (code.includes('erro')) return { stdout: 'PHP Parse error: syntax error', stderr: '' };
     return { stdout: /echo "([^"]*)"/.exec(code)?.[1] ?? '', stderr: '' };

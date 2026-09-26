@@ -8,6 +8,7 @@ type PhpNodeInstance = {
   addEventListener(type: 'output' | 'error', cb: (e: { detail: string[] }) => void): void;
   removeEventListener(type: 'output' | 'error', cb: (e: { detail: string[] }) => void): void;
   run(code: string): Promise<number>;
+  refresh(): Promise<unknown>;
 };
 
 /** O mesmo PHP 8.3 em WebAssembly do laboratório, na versão para Node. */
@@ -19,6 +20,10 @@ function nodePhp(): PhpEnginePort {
       const { PhpNode } = await import('php-wasm/PhpNode');
       php = new PhpNode({ version: '8.3' }) as unknown as PhpNodeInstance;
       await php.run('<?php');
+    },
+    async reset() {
+      await this.init();
+      await php!.refresh();
     },
     async run(code: string) {
       await this.init();

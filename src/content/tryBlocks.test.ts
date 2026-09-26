@@ -30,6 +30,9 @@ class NodePhpEngine implements PhpEnginePort {
     this.php = new PhpNode({ version: '8.3' }) as unknown as PhpNodeInstance;
     await this.php.run('<?php');
   }
+  async reset() {
+    // O laboratório dentro da lição não recria o PHP entre execuções.
+  }
   async run(code: string) {
     await this.init();
     let stdout = '';
