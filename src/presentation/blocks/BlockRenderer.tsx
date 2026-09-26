@@ -15,6 +15,7 @@ import { ByRefWidget } from './ByRefWidget';
 import { HttpRequestWidget } from './HttpRequestWidget';
 import { CreateTableBuilderWidget } from './CreateTableBuilderWidget';
 import { SqlStyleCompareWidget } from './SqlStyleCompareWidget';
+import { TryBlockView } from './TryBlockView';
 import styles from './BlockRenderer.module.css';
 
 const GUI_WIDGETS: Record<string, () => ReactElement> = {
@@ -232,6 +233,9 @@ export function BlockRenderer({
           <div className={styles.outLine}>{block.x}</div>
         </NotebookFrame>
       );
+
+    case 'try':
+      return <TryBlockView block={block} />;
 
     default:
       return null;

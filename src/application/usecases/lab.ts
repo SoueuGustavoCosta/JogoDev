@@ -116,7 +116,7 @@ export async function checkSqlResult(
   blocks: SqlResultBlock[],
 ): Promise<VerifyMissionResult> {
   if (blocks.some((b) => b.kind === 'err')) {
-    return { ok: false, message: 'Sua consulta deu erro. Leia a mensagem acima, corrija e verifique de novo.' };
+    return { ok: false, message: 'Sua consulta deu erro. Leia a mensagem do banco, corrija e verifique de novo.' };
   }
 
   let gotRows: unknown[][];

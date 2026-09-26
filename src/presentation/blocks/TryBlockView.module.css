@@ -1,0 +1,220 @@
+/* Laboratório dentro da lição (mockup novo-4-d-lab): editor curto, atalhos, Rodar e resultado. */
+
+.root {
+  display: grid;
+  gap: 12px;
+}
+
+.eyebrow {
+  margin: 0;
+  font: 0.8rem var(--font-mono);
+  letter-spacing: 0.04em;
+  color: var(--color-cyan);
+}
+
+.brief {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: 1.45rem;
+  line-height: 1.2;
+}
+
+.editor {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 7.5em;
+  padding: 12px 14px;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  /* 16px ou mais: o iOS não dá zoom ao focar. */
+  font: 500 1rem/1.6 var(--font-mono);
+  font-variant-ligatures: none;
+  resize: vertical;
+  outline: none;
+}
+
+.editor:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--color-purple);
+}
+
+.shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  min-height: var(--touch-target);
+  min-width: var(--touch-target);
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--color-line);
+  background: var(--color-panel-2);
+  color: var(--color-text);
+  font: 600 0.9rem var(--font-mono);
+  font-variant-ligatures: none;
+  cursor: pointer;
+}
+
+.chip:hover {
+  border-color: var(--color-purple);
+}
+
+.chip:focus-visible,
+.run:focus-visible,
+.hintBtn:focus-visible {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 2px;
+}
+
+.status {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.92rem;
+}
+
+.result {
+  border: 1px solid var(--color-line);
+  border-radius: 14px;
+  background: var(--color-panel);
+  overflow: hidden;
+}
+
+.verdict {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--color-line);
+  font: 0.86rem/1.4 var(--font-mono);
+}
+
+.ok {
+  color: var(--color-good);
+}
+
+.no {
+  color: var(--color-orange-soft);
+}
+
+.tableScroll {
+  overflow-x: auto;
+}
+
+.table {
+  border-collapse: collapse;
+  width: 100%;
+  font: 0.95rem var(--font-mono);
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--color-line);
+  white-space: nowrap;
+}
+
+.table th {
+  color: var(--color-muted);
+  font-weight: 500;
+}
+
+.table td {
+  color: var(--color-orange);
+}
+
+.terminal {
+  margin: 0;
+  padding: 12px 14px;
+  font: 0.9rem/1.5 var(--font-mono);
+  font-variant-ligatures: none;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.t_cmd {
+  color: var(--color-cyan);
+}
+
+.t_ok {
+  color: var(--color-good);
+}
+
+.t_err {
+  color: var(--color-bad);
+}
+
+.t_info,
+.t_log {
+  color: var(--color-muted);
+}
+
+.t_diffnew {
+  color: var(--color-good);
+}
+
+.t_diffmod {
+  color: var(--color-orange-soft);
+}
+
+.error {
+  margin: 0;
+  padding: 10px 14px;
+  color: var(--color-bad);
+  font: 0.88rem/1.4 var(--font-mono);
+}
+
+.errorHint {
+  display: block;
+  margin-top: 6px;
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+
+.okLine {
+  margin: 0;
+  padding: 10px 14px;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.hint {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(255, 212, 121, 0.1);
+  border: 1px solid rgba(255, 212, 121, 0.4);
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.hintBtn {
+  flex: 0 0 auto;
+  min-height: 52px;
+  padding: 0 22px;
+  border-radius: 14px;
+  border: 1px solid var(--color-line);
+  background: transparent;
+  color: var(--color-text);
+  font: 700 1rem var(--font-body);
+  cursor: pointer;
+}
+
+.run {
+  flex: 1;
+  min-height: 52px;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--color-purple), #7b2ff0);
+  color: #fff;
+  font: 700 1.05rem var(--font-body);
+  cursor: pointer;
+}
+
+.run:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

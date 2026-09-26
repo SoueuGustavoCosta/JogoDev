@@ -86,7 +86,7 @@ describe('verifyMission (integração com PGlite)', () => {
 
     expect(result).toEqual({
       ok: false,
-      message: 'Sua consulta deu erro. Leia a mensagem acima, corrija e verifique de novo.',
+      message: 'Sua consulta deu erro. Leia a mensagem do banco, corrija e verifique de novo.',
     });
   });
 
