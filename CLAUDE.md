@@ -277,6 +277,23 @@ Um bloco `{ t: 'try', engine, brief, starter, hint, ... }` vira uma tela "sua ve
 
 Diretrizes de conteúdo: português do Brasil, tom acolhedor e direto, um exemplo real por conceito, exemplos que o aluno consegue **executar**, quiz ao fim de cada módulo (perguntas de múltipla escolha e de completar). O conteúdo é **original**: use materiais da faculdade e vídeos só como inspiração, sem copiar trechos, nem figuras.
 
+### Eventos: como o autor cria um evento só editando `calendar.ts`
+
+Todos os eventos vivem em `src/content/events/calendar.ts` (lista `eventCalendar`). Nenhum outro arquivo precisa mudar.
+
+1. Copie um evento da lista e troque o `id` (novo, minúsculas e hífens, nunca repetido).
+2. Escolha quando ele acontece em `when`:
+   - toda semana: `when: { weekly: ['sab', 'dom'] }` (dias: `seg`, `ter`, `qua`, `qui`, `sex`, `sab`, `dom`);
+   - entre duas datas: `when: { from: '2026-12-20', to: '2026-12-31' }` (fuso de São Paulo, `to` incluído).
+3. Escolha o tipo (`kind`):
+   - `'surto'`: XP multiplicado. Ex.: `{ id: 'surto-natal', kind: 'surto', title: 'Surto de Natal', description: 'XP triplo', multiplier: 3, when: { from: '2026-12-24', to: '2026-12-25' } }`. Dois Surtos no mesmo dia não somam: vale o maior.
+   - `'eco-solto'`: mini-chefe de 3 rodadas (as rodadas ficam em `src/content/events/ecoSolto.ts`). `rewardItemId` é o cosmético da primeira vitória; `bonusFragments`, os ◆ das vitórias seguintes (uma por dia).
+   - `'convergencia'`: meta da turma. `target` = quantas Anomalias do Dia a turma toda precisa consertar entre `from` e `to`; batida a meta, `rewardItemId` fica liberado para todos.
+4. O prêmio (`rewardItemId`) precisa existir em `src/content/cosmetics/index.ts` como item só de evento (`price: null`) com o mesmo `event` (`'eco-solto'` ou `'convergencia'`). Para um prêmio novo, acrescente o item lá.
+5. Rode `npm test`: o teste `src/content/events.test.ts` recusa data inválida, `from` depois de `to`, id repetido e prêmio que não existe ou está à venda. Com o teste verde, é só fazer o push.
+
+Para tirar um evento, apague-o da lista (ou encerre a data em `to`). Mudar título, descrição ou datas não afeta o progresso de ninguém.
+
 ---
 
 ## 11. Qualidade e testes

@@ -136,3 +136,14 @@
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+.events {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.events:empty {
+  display: none;
+}

@@ -6,6 +6,7 @@ import type { AvatarLook } from '@/domain/cosmetics';
 import { LEAGUE_SEAL_TOP } from '@/domain/league';
 import { Avatar } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
+import { ConvergenceCard, EventStrip } from '@/presentation/features/events';
 import type { LayoutOutletContext } from '@/presentation/shell';
 import styles from './LeaguePage.module.css';
 
@@ -83,6 +84,11 @@ export function LeaguePage() {
       <p className={styles.lead}>
         XP ganho de segunda a domingo. Toda segunda recomeça do zero, então quem chegou agora também tem chance.
       </p>
+
+      <div className={styles.events}>
+        <EventStrip />
+        <ConvergenceCard onUnlocked={refreshSummary} />
+      </div>
 
       {seal ? (
         <p className={styles.seal} role="status">

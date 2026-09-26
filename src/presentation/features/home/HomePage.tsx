@@ -5,6 +5,8 @@ import { anomalies } from '@/content/anomalies';
 import { trailRegistry } from '@/content/registry';
 import { TimelineNodes } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
+import { ConvergenceCard, EventStrip } from '@/presentation/features/events';
+import { xpMultiplierNow } from '@/presentation/features/events/multiplier';
 import styles from './HomePage.module.css';
 
 function closesIn(ms: number): string {
@@ -22,7 +24,10 @@ function eraName(id: string): string {
 export function HomePage() {
   const { progressRepository, leaderboard, analytics } = useServices();
   const traveler = getTraveler({ repository: progressRepository });
-  const daily = useMemo(() => getDailyAnomaly({ repository: progressRepository }, { pool: anomalies }), [progressRepository]);
+  const daily = useMemo(
+    () => getDailyAnomaly({ repository: progressRepository }, { pool: anomalies, xpMultiplier: xpMultiplierNow() }),
+    [progressRepository],
+  );
   const next = useMemo(() => getContinueLesson({ repository: progressRepository }, { trails: trailRegistry }), [progressRepository]);
   const timeline = useMemo(() => getTimeline({ repository: progressRepository }), [progressRepository]);
   const [solvers, setSolvers] = useState<number | null>(null);
@@ -112,6 +117,9 @@ export function HomePage() {
           </span>
         </Link>
       )}
+
+      <EventStrip />
+      <ConvergenceCard />
     </div>
   );
 }

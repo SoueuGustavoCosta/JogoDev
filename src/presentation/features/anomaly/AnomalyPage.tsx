@@ -8,6 +8,7 @@ import { TryBlockView } from '@/presentation/blocks';
 import { SintaxeFace } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
 import { QuizQuestion } from '@/presentation/features/trail';
+import { xpMultiplierNow } from '@/presentation/features/events/multiplier';
 import { AnomalyReward } from './AnomalyReward';
 import styles from './AnomalyPage.module.css';
 
@@ -15,7 +16,10 @@ import styles from './AnomalyPage.module.css';
 export function AnomalyPage() {
   const { progressRepository, analytics, leaderboard } = useServices();
   const traveler = getTraveler({ repository: progressRepository });
-  const daily = useMemo(() => getDailyAnomaly({ repository: progressRepository }, { pool: anomalies }), [progressRepository]);
+  const daily = useMemo(
+    () => getDailyAnomaly({ repository: progressRepository }, { pool: anomalies, xpMultiplier: xpMultiplierNow() }),
+    [progressRepository],
+  );
   const [reward, setReward] = useState<SolveAnomalyResult | null>(null);
   const [showReward, setShowReward] = useState(false);
   const tries = useRef(0);
@@ -32,14 +36,14 @@ export function AnomalyPage() {
   const era = trailRegistry.find((t) => t.id === anomaly.era)?.title ?? anomaly.era;
 
   function solve(totalTries: number) {
-    setReward(solveAnomaly({ repository: progressRepository, analytics, leaderboard }, { day: daily.day, anomaly, tries: totalTries }));
+    setReward(solveAnomaly({ repository: progressRepository, analytics, leaderboard }, { day: daily.day, anomaly, tries: totalTries, xpMultiplier: xpMultiplierNow() }));
   }
 
   function evaluate(answer: QuizAnswer) {
     tries.current += 1;
     const correct = !('t' in anomaly.challenge) && isQuizAnswerCorrect(anomaly.challenge, answer);
     if (correct) {
-      const result = solveAnomaly({ repository: progressRepository, analytics, leaderboard }, { day: daily.day, anomaly, tries: tries.current });
+      const result = solveAnomaly({ repository: progressRepository, analytics, leaderboard }, { day: daily.day, anomaly, tries: tries.current, xpMultiplier: xpMultiplierNow() });
       setReward(result);
       return { correct, xpGained: result.xp };
     }

@@ -10,6 +10,7 @@ import { LessonPlayer } from './LessonPlayer';
 import { ModuleCompletion, type ModuleResult } from './ModuleCompletion';
 import { ScrollLesson } from './ScrollLesson';
 import type { TrailOutletContext } from './TrailShell';
+import { xpMultiplierNow } from '@/presentation/features/events/multiplier';
 
 /**
  * Um salto (módulo). Mostra a lição em telas curtas (`LessonPlayer`, padrão) ou tudo numa
@@ -46,7 +47,7 @@ export function ModulePage() {
     const { name } = getTraveler({ repository: progressRepository });
     const outcome = completeModule(
       { repository: progressRepository, analytics, leaderboard },
-      { trail: trail!, moduleId: module!.id, traveler: { uuid, name }, badgeCatalog },
+      { trail: trail!, moduleId: module!.id, traveler: { uuid, name }, badgeCatalog, xpMultiplier: xpMultiplierNow() },
     );
     setResult({
       fresh: !outcome.alreadyCompleted,

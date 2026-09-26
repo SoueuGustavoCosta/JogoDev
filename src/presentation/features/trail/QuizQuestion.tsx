@@ -3,6 +3,7 @@ import { answerQuiz } from '@/application/usecases';
 import { fillChoices, quizKind, shuffledOrder, type QuizAnswer } from '@/domain/progress';
 import type { QuizItem } from '@/domain/trail';
 import { useServices } from '@/presentation/app/ServicesContext';
+import { xpMultiplierNow } from '@/presentation/features/events/multiplier';
 import { BugChallenge } from './BugChallenge';
 import { CodeSnippet } from './CodeSnippet';
 import { OrderChallenge } from './OrderChallenge';
@@ -94,7 +95,7 @@ export function QuizQuestion({
   function submit(answer: QuizAnswer, choiceIndex?: number) {
     const result = evaluate
       ? evaluate(answer)
-      : answerQuiz({ repository: progressRepository, analytics }, { trailId, moduleId, item, answer });
+      : answerQuiz({ repository: progressRepository, analytics }, { trailId, moduleId, item, answer, xpMultiplier: xpMultiplierNow() });
     onAnswered?.();
     if (result.correct) {
       setXpGained(result.xpGained);
