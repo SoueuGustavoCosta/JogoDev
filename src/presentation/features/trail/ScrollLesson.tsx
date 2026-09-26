@@ -64,8 +64,8 @@ export function ScrollLesson({
       <div className={styles.sintaxe}>
         <SintaxeFace size={44} />
         <p>
-          <b>Senhorita Sintaxe</b> · Bora, {travelerName}. Cada bloco é curtinho e no fim tem um paradoxo pra
-          resolver.
+          <b>Senhorita Sintaxe</b> · Modo leitura, {travelerName}: o salto inteiro numa página só, no seu ritmo. Os
+          paradoxos te esperam lá no fim.
         </p>
       </div>
 
