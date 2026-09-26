@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   describeInputs,
+  passingSummary,
   explainFailure,
   inputsPreamble,
   outputMatches,
@@ -104,5 +105,21 @@ describe('Oficina: testes e esquema', () => {
     expect(workshopSchema.safeParse(sample).success).toBe(true);
     expect(workshopSchema.safeParse({ ...sample, tests: [{ inputs: { m: 1 }, expected: '1' }] }).success).toBe(false);
     expect(workshopSchema.safeParse({ ...sample, languages: ['php', 'js'] }).success).toBe(false);
+  });
+});
+
+describe('Oficina: progresso a partir dos testes', () => {
+  const r = (op: string, passed: boolean): WorkshopTestResult => ({
+    test: { inputs: { a: 1, b: 1, op }, expected: 'x' },
+    kind: 'visible',
+    output: '',
+    error: null,
+    timedOut: false,
+    passed,
+  });
+  it('diz o que já funciona, mostrando só o que muda entre os testes', () => {
+    expect(passingSummary('php', [r('+', true), r('-', true), r('*', false)])).toBe('Já funciona com $op = "+" e com $op = "-".');
+    expect(passingSummary('php', [r('+', false), r('-', false)])).toBe('');
+    expect(passingSummary('php', [r('+', true)])).toBe('');
   });
 });

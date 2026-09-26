@@ -1,3 +1,5 @@
+import type { PaletteBlock } from './blocks';
+
 /**
  * Oficina do Viajante (Etapa 13): mini projetos em que o viajante escolhe a linguagem e o
  * jeito de resolver. Princípio: o jogo confere o RESULTADO (a saída), nunca a forma do
@@ -42,6 +44,8 @@ export type Workshop = {
   solutions: Partial<Record<WorkshopLang, WorkshopSolution[]>>;
   /** Escada de dicas: ideia, estrutura, quase pronto. */
   hints: [string, string, string];
+  /** Modo blocos (13B): peças de código por linguagem (ver `blocks.ts`). */
+  palettes?: Partial<Record<WorkshopLang, PaletteBlock[]>>;
   /** Módulo relacionado: a oficina aparece na ilha depois dele. */
   after?: { trailId: string; moduleId: string };
 };

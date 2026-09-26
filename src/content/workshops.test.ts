@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { beforeAll, describe, expect, it } from 'vitest';
 import type { PhpEnginePort } from '@/application/ports';
-import { outputMatches, testsToRun, workshopSchema, type WorkshopLang } from '@/domain/workshop';
+import { blocksToCode, codeToBlocks, outputMatches, testsToRun, workshopSchema, type WorkshopLang } from '@/domain/workshop';
 import { CodeRunner } from '@/infrastructure/runner';
 import { jsSandboxMain } from '@/infrastructure/runner/jsSandbox';
 import { trailRegistry } from './registry';
@@ -107,6 +107,19 @@ describe('Oficinas do Viajante (content/workshops)', () => {
           expect(ok).toBe(true);
         }, 30000);
       }
+
+      it(`${w.id} (${lang}): a paleta de blocos monta uma solução que passa em tudo`, async () => {
+        const palette = w.palettes?.[lang];
+        expect(palette, 'sem paleta de blocos').toBeDefined();
+        const fits = (w.solutions[lang] ?? []).map((s) => codeToBlocks(palette!, s.code)).find((r) => r.ok);
+        expect(fits, 'nenhuma solução de referência cabe na paleta').toBeDefined();
+        if (!fits?.ok) return;
+        const code = blocksToCode(lang, palette!, fits.placed);
+        for (const { test } of testsToRun(w, false)) {
+          const r = await runner.run(lang, code, test.inputs);
+          expect(outputMatches(r.output, test.expected), `${JSON.stringify(test.inputs)}: ${JSON.stringify(r.output)} ${r.error}`).toBe(true);
+        }
+      }, 30000);
 
       it(`${w.id} (${lang}): um código vazio não passa (o teste protege de verdade)`, async () => {
         const r = await runner.run(lang, '', w.tests[0].inputs);

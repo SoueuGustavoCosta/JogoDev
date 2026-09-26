@@ -19,6 +19,9 @@ export const workshopSchema = z
     extra: z.object({ prompt: z.string().min(1).max(160), tests: z.array(test).min(1) }).strict().optional(),
     solutions: z.record(lang, z.array(solution).min(1)),
     hints: z.tuple([z.string().min(1), z.string().min(1), z.string().min(1)]),
+    palettes: z
+      .record(lang, z.array(z.object({ id: z.string().regex(/^[a-z0-9-]+$/), text: z.string().min(1) }).strict()).min(3))
+      .optional(),
     after: z.object({ trailId: z.string().min(1), moduleId: z.string().min(1) }).strict().optional(),
   })
   .strict()
@@ -29,6 +32,10 @@ export const workshopSchema = z
       if (keys.length !== names.size || keys.some((k) => !names.has(k))) {
         ctx.addIssue({ code: z.ZodIssueCode.custom, message: `${w.id}: teste com entradas diferentes das declaradas` });
       }
+    }
+    for (const [l, palette] of Object.entries(w.palettes ?? {})) {
+      const ids = palette?.map((b) => b.id) ?? [];
+      if (new Set(ids).size !== ids.length) ctx.addIssue({ code: z.ZodIssueCode.custom, message: `${w.id}: peça repetida na paleta ${l}` });
     }
     for (const l of w.languages) {
       if (!w.solutions[l]?.length) ctx.addIssue({ code: z.ZodIssueCode.custom, message: `${w.id}: falta solução de referência em ${l}` });

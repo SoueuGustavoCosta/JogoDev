@@ -120,3 +120,20 @@ export function testsToRun(
     ...(withExtra && workshop.extra ? workshop.extra.tests.map((test) => ({ test, kind: 'extra' as const })) : []),
   ];
 }
+
+/**
+ * O que já funciona, para a Sintaxe comentar o progresso a partir dos testes (ex.: "Já
+ * funciona com $op = "+" e com $op = "-"."). Mostra só as entradas que mudam entre os testes
+ * visíveis, para a frase ficar curta.
+ */
+export function passingSummary(lang: WorkshopLang, results: readonly WorkshopTestResult[]): string {
+  const visible = results.filter((r) => r.kind === 'visible');
+  const passed = visible.filter((r) => r.passed);
+  if (passed.length === 0 || passed.length === visible.length) return '';
+  const keys = Object.keys(visible[0]?.test.inputs ?? {});
+  const varying = keys.filter((k) => new Set(visible.map((r) => String(r.test.inputs[k]))).size > 1);
+  const shown = varying.length > 0 && varying.length < keys.length ? varying : keys;
+  const describe = (r: WorkshopTestResult) =>
+    describeInputs(lang, Object.fromEntries(shown.map((k) => [k, r.test.inputs[k]])));
+  return `Já funciona com ${passed.map(describe).join(' e com ')}.`;
+}
