@@ -72,6 +72,7 @@ export const modHeranca: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'O que super(nome) faz dentro do construtor de uma classe filha?',
       options: [
         'Cria uma variável chamada super',
@@ -83,6 +84,7 @@ export const modHeranca: Module = {
       explain: 'super(nome) chama o construtor da classe-mãe, passando os argumentos necessários — evita reescrever o que ela já faz.',
     },
     {
+      id: 'q2',
       q: 'O que a anotação @Override indica?',
       options: [
         'Que o método é privado',
@@ -94,6 +96,7 @@ export const modHeranca: Module = {
       explain: '@Override avisa o compilador que a intenção é sobrescrever um método herdado, ajudando a pegar erros de nome ou parâmetro.',
     },
     {
+      id: 'q3',
       q: 'O que é polimorfismo, no exemplo Viajante v = new ViajanteVip(...)?',
       options: [
         'Um erro de tipos',
@@ -106,6 +109,7 @@ export const modHeranca: Module = {
       hint: 'Pense em "o mesmo comando, comportamento diferente dependendo do objeto real".',
     },
     {
+      id: 'q4',
       q: 'O que causa um NullPointerException?',
       options: [
         'Declarar uma variável sem valor inicial',
@@ -117,6 +121,7 @@ export const modHeranca: Module = {
       explain: 'NullPointerException acontece ao tentar usar (chamar método, acessar campo) uma referência que aponta para null.',
     },
     {
+      id: 'q5',
       q: 'Complete: diferente de herança de classe (extends, uma só por vez), uma classe pode ___ várias interfaces ao mesmo tempo.',
       fill: true,
       pre: 'Diferente de herança de classe, uma classe pode',

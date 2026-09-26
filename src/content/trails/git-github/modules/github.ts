@@ -51,6 +51,7 @@ export const modGithub: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'Quem fundou o GitHub, e em que ano?',
       options: [
         'Linus Torvalds, sozinho, em 2005',
@@ -62,6 +63,7 @@ export const modGithub: Module = {
       explain: 'O time original lançou o GitHub publicamente em abril de 2008, após meses de beta privado.',
     },
     {
+      id: 'q2',
       q: 'O que é um Pull Request?',
       options: [
         'Um comando que apaga um branch',
@@ -73,6 +75,7 @@ export const modGithub: Module = {
       explain: 'É o mecanismo central de colaboração e revisão de código no GitHub.',
     },
     {
+      id: 'q3',
       q: 'Qual comando envia seus commits locais para o GitHub?',
       options: ['git pull', 'git push', 'git fetch', 'git clone'],
       answer: 1,

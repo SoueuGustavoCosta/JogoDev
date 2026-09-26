@@ -111,24 +111,28 @@ export const modVariaveis: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'Em PHP, qual é o tipo de $idade = 25; ?',
       options: ['String', 'Float', 'Integer', 'Boolean'],
       answer: 2,
       explain: '25 é um número inteiro: Integer.',
     },
     {
+      id: 'q2',
       q: 'Qual nome de variável é válido em PHP?',
       options: ['$1nome', '$nome aluno', 'nome', '$nome_aluno'],
       answer: 3,
       explain: 'Precisa começar com $, não pode ter espaço e não pode começar com número.',
     },
     {
+      id: 'q3',
       q: "Se $nome = \"Ana\";, o que exibe  echo 'Olá, $nome';  ?",
       options: ['Olá, Ana', 'Olá, $nome', 'Erro', 'Nada'],
       answer: 1,
       explain: 'Aspas simples não substituem a variável: mostram o texto literal.',
     },
     {
+      id: 'q4',
       q: 'Complete para criar a constante LIM valendo 3:',
       fill: true,
       pre: '',
@@ -139,6 +143,7 @@ export const modVariaveis: Module = {
       explain: "<code>define('LIM', 3);</code> cria a constante. Repare que ela não usa o $.",
     },
     {
+      id: 'q5',
       q: 'Qual é o tipo de dado de 19.90 em PHP? (uma palavra em inglês)',
       fill: true,
       pre: '',
@@ -149,6 +154,7 @@ export const modVariaveis: Module = {
       explain: 'Números com casas decimais são <code>float</code>.',
     },
     {
+      id: 'q6',
       q: 'Em PHP, $Nome e $nome são...',
       options: ['A mesma variável', 'Variáveis diferentes', 'Um erro', 'Constantes'],
       answer: 1,

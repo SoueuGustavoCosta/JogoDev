@@ -65,6 +65,7 @@ export const modColecoes: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'O que acontece ao acessar numeros[4] num array int[] numeros = {10, 20, 30, 40}?',
       options: [
         'Retorna null',
@@ -76,6 +77,7 @@ export const modColecoes: Module = {
       explain: 'Arrays em Java têm tamanho fixo; acessar uma posição fora do intervalo lança ArrayIndexOutOfBoundsException.',
     },
     {
+      id: 'q2',
       q: 'Qual a principal diferença entre array e ArrayList?',
       options: [
         'Não há diferença',
@@ -87,6 +89,7 @@ export const modColecoes: Module = {
       explain: 'array precisa de tamanho definido na criação; ArrayList permite adicionar e remover itens livremente.',
     },
     {
+      id: 'q3',
       q: 'O que <String> em ArrayList<String> representa?',
       options: [
         'Um comentário',
@@ -98,12 +101,14 @@ export const modColecoes: Module = {
       hint: 'Pense em "que tipo de coisa esta lista guarda".',
     },
     {
+      id: 'q4',
       q: 'Como você descobre o tamanho de um array chamado numeros?',
       options: ['numeros.size()', 'numeros.length()', 'numeros.length', 'len(numeros)'],
       answer: 2,
       explain: 'Em array, length é uma propriedade (sem parênteses). Em ArrayList, é size() (um método, com parênteses).',
     },
     {
+      id: 'q5',
       q: 'Complete: para adicionar um item numa ArrayList chamada frutas, o método usado é frutas.___(item).',
       fill: true,
       pre: 'Para adicionar um item numa ArrayList chamada frutas, o método usado é frutas.',

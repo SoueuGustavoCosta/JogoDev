@@ -81,12 +81,14 @@ export const modOperadores: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'O que 5 / 2 retorna em Java, se os dois lados são int?',
       options: ['2.5', '2', '3', 'erro de compilação'],
       answer: 1,
       explain: 'Divisão entre dois int trunca o resultado: 5 / 2 vale 2, sem arredondar.',
     },
     {
+      id: 'q2',
       q: 'Por que a == b pode retornar false mesmo quando a e b são duas Strings com o mesmo texto?',
       options: [
         'Porque Strings não podem ser comparadas',
@@ -99,12 +101,14 @@ export const modOperadores: Module = {
       hint: 'Pense na diferença entre "é o mesmo objeto" e "tem o mesmo conteúdo".',
     },
     {
+      id: 'q3',
       q: 'Qual é o jeito certo de comparar o conteúdo de duas Strings em Java?',
       options: ['a == b', 'a.equals(b)', 'a === b', 'a.compare(b)'],
       answer: 1,
       explain: '.equals() compara o conteúdo dos objetos; == compara se são o mesmo objeto na memória.',
     },
     {
+      id: 'q4',
       q: 'O que acontece se você esquecer o break dentro de um case do switch?',
       options: [
         'Erro de compilação',
@@ -116,6 +120,7 @@ export const modOperadores: Module = {
       explain: 'Sem break, o switch continua executando os cases seguintes, mesmo que a condição deles não bata — o fall-through.',
     },
     {
+      id: 'q5',
       q: 'Complete: os operadores lógicos e, ou e negação em Java são escritos com os símbolos &&, || e ___.',
       fill: true,
       pre: 'Os operadores lógicos e, ou e negação em Java são escritos com os símbolos &&, || e',

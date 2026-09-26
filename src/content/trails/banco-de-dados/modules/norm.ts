@@ -31,30 +31,35 @@ export const modNorm: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: "Guardar \"Mouse, Teclado\" numa única célula fere qual forma normal?",
       options: ["1FN","2FN","3FN","Nenhuma"],
       answer: 0,
       explain: "A 1FN exige valores atômicos: um valor por célula.",
     },
     {
+      id: 'q2',
       q: "A chave é (cod_venda, cod_produto), mas nome_produto depende só de cod_produto. Qual forma é violada?",
       options: ["1FN","2FN","3FN","BCNF"],
       answer: 1,
       explain: "Dependência parcial da chave composta viola a 2FN.",
     },
     {
+      id: 'q3',
       q: "O salário depende da categoria, que depende do funcionário. Isso é...",
       options: ["Dependência transitiva (3FN)","Valor não atômico (1FN)","Chave duplicada","Um tipo de JOIN"],
       answer: 0,
       explain: "Dependência de um atributo não-chave em outro atributo não-chave: 3FN.",
     },
     {
+      id: 'q4',
       q: "Ler \"cpf → nome\" significa que...",
       options: ["O nome determina o CPF","Duas linhas com o mesmo CPF têm o mesmo nome","O CPF é uma chave estrangeira","O nome é obrigatório"],
       answer: 1,
       explain: "X → Y: o valor de X determina o de Y. Mesmo CPF, mesmo nome.",
     },
     {
+      id: 'q5',
       q: "Uma tabela em 3FN garante estar em BCNF?",
       options: ["Sim, sempre","Não: a BCNF é mais rigorosa","Só se tiver PK composta","Só em PostgreSQL"],
       answer: 1,

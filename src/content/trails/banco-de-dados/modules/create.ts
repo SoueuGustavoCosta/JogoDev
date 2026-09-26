@@ -32,6 +32,7 @@ export const modCreate: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: "Complete o comando para criar um banco chamado loja:",
       fill: true,
       pre: "CREATE",
@@ -42,24 +43,28 @@ export const modCreate: Module = {
       explain: "CREATE DATABASE nome; cria o banco.",
     },
     {
+      id: 'q2',
       q: "Qual regra impede dois clientes com o mesmo e-mail?",
       options: ["NOT NULL","DEFAULT","UNIQUE","CHECK"],
       answer: 2,
       explain: "UNIQUE não aceita valores repetidos na coluna.",
     },
     {
+      id: 'q3',
       q: "O que faz a linha  estoque INTEGER NOT NULL DEFAULT 0 ?",
       options: ["Estoque é opcional e começa em 0","Estoque é obrigatório e, se não informado, vale 0","Estoque só aceita o número 0","Estoque é texto"],
       answer: 1,
       explain: "NOT NULL torna obrigatório e DEFAULT 0 preenche o valor quando você não informa.",
     },
     {
+      id: 'q4',
       q: "Ao apagar um aluno, você quer que as matrículas dele sumam automaticamente. Qual cláusula usar na FK?",
       options: ["ON DELETE RESTRICT","ON DELETE CASCADE","ON UPDATE CASCADE","UNIQUE"],
       answer: 1,
       explain: "CASCADE propaga a exclusão do pai para os filhos.",
     },
     {
+      id: 'q5',
       q: "Qual é o equivalente PostgreSQL do AUTO_INCREMENT do MySQL?",
       options: ["SERIAL / IDENTITY","TOP","DENY","MODIFY"],
       answer: 0,

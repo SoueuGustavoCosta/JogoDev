@@ -28,24 +28,28 @@ export const modTransacoes: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: "O que garante a Atomicidade em uma transferência bancária?",
       options: ["Os dois passos acontecem ou nenhum acontece","Só um usuário pode usar o banco","O saldo é sempre positivo","O banco tem backup"],
       answer: 0,
       explain: "Atomicidade é tudo ou nada.",
     },
     {
+      id: 'q2',
       q: "Duas transações leem o mesmo saldo (100), cada uma soma 10 e grava 110. O resultado deveria ser 120. Esse problema é...",
       options: ["Leitura suja","Leitura fantasma","Atualização perdida","Deadlock"],
       answer: 2,
       explain: "A segunda gravação sobrescreveu a primeira: atualização perdida. FOR UPDATE ou SERIALIZABLE evitam.",
     },
     {
+      id: 'q3',
       q: "Qual é o nível de isolamento padrão do PostgreSQL?",
       options: ["READ UNCOMMITTED","READ COMMITTED","REPEATABLE READ","SERIALIZABLE"],
       answer: 1,
       explain: "READ COMMITTED é o padrão: cada comando vê os dados já confirmados.",
     },
     {
+      id: 'q4',
       q: "Qual comando desfaz tudo o que foi feito desde o BEGIN?",
       options: ["COMMIT","SAVEPOINT","ROLLBACK","FOR UPDATE"],
       answer: 2,

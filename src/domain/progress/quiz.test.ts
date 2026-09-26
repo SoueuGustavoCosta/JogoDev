@@ -4,6 +4,7 @@ import { fillAnswerMatches, fillChoices, isQuizAnswerCorrect, shuffledOrder } fr
 
 describe('isQuizAnswerCorrect', () => {
   const mcq: QuizItem = {
+    id: 'q1',
     q: 'Qual é a capital?',
     options: ['A', 'B', 'C'],
     answer: 1,
@@ -23,6 +24,7 @@ describe('isQuizAnswerCorrect', () => {
   });
 
   const fill: QuizItem = {
+    id: 'q2',
     q: 'Complete:',
     fill: true,
     pre: 'SELECT 1',
@@ -98,7 +100,7 @@ describe('shuffledOrder / fillChoices', () => {
   });
 
   it('blocos de completar trazem a resposta certa e os errados', () => {
-    const item: QuizItem = { q: 'q', fill: true, pre: '', post: '', accept: ['livres'], wrong: ['vazias', 'contar'], explain: 'e' };
+    const item: QuizItem = { id: 'q1', q: 'q', fill: true, pre: '', post: '', accept: ['livres'], wrong: ['vazias', 'contar'], explain: 'e' };
     expect(fillChoices(item, seq(0.3)).sort()).toEqual(['contar', 'livres', 'vazias']);
   });
 });

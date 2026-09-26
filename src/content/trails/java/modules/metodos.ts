@@ -58,12 +58,14 @@ export const modMetodos: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'O que o tipo void indica na declaração de um método?',
       options: ['Que ele é privado', 'Que ele não devolve nenhum valor', 'Que ele é estático', 'Que ele sempre falha'],
       answer: 1,
       explain: 'void significa que o método não tem valor de retorno — ele executa uma ação, mas não devolve nada com return.',
     },
     {
+      id: 'q2',
       q: 'Qual a diferença entre um método static e um de instância?',
       options: [
         'Não há diferença',
@@ -75,6 +77,7 @@ export const modMetodos: Module = {
       explain: 'Métodos static são chamados direto pela classe (Calculadora.dobro(5)); métodos de instância exigem um objeto (c.somar(3)).',
     },
     {
+      id: 'q3',
       q: 'O que é sobrecarga (overloading) de métodos?',
       options: [
         'Ter vários métodos com o mesmo nome, mas parâmetros diferentes',
@@ -86,6 +89,7 @@ export const modMetodos: Module = {
       explain: 'Sobrecarga permite reusar o mesmo nome de método para versões que aceitam parâmetros diferentes.',
     },
     {
+      id: 'q4',
       q: 'Se um método é declarado como retornando int, o que o compilador exige?',
       options: [
         'Nada em especial',
@@ -98,6 +102,7 @@ export const modMetodos: Module = {
       hint: 'Pense no tipo de retorno como uma promessa que o compilador cobra.',
     },
     {
+      id: 'q5',
       q: 'Complete: em Java, o main() precisa ser ___ porque ele roda antes de qualquer objeto existir.',
       fill: true,
       pre: 'Em Java, o main() precisa ser',

@@ -21,8 +21,8 @@ const module: Module = {
   level: 'Base',
   blocks: [{ t: 'p', x: 'x' }],
   quiz: [
-    { q: 'q1', options: ['a', 'b'], answer: 0, explain: '' },
-    { q: 'q2', options: ['a', 'b'], answer: 0, explain: '' },
+    { id: 'q1', q: 'q1', options: ['a', 'b'], answer: 0, explain: '' },
+    { id: 'q2', q: 'q2', options: ['a', 'b'], answer: 0, explain: '' },
   ],
 };
 

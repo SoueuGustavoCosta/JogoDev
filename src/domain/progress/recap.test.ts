@@ -3,7 +3,7 @@ import type { Module, Trail } from '../trail/types';
 import type { TrailProgress } from './types';
 import { moduleRecap } from './recap';
 
-const quiz = [0, 1, 2, 3].map((i) => ({ q: `p${i}`, options: ['a', 'b'], answer: 0, explain: '' }));
+const quiz = [0, 1, 2, 3].map((i) => ({ id: `p${i}`, q: `p${i}`, options: ['a', 'b'], answer: 0, explain: '' }));
 const mod = (id: string): Module => ({ id, short: id, title: id, lead: '', level: 'Base', blocks: [], quiz });
 const trail = { id: 't', title: 't', tagline: '', symbol: 'db', accent: '', modules: [mod('a'), mod('b'), mod('c')] } as unknown as Trail;
 

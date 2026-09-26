@@ -74,12 +74,14 @@ export const modLoops: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'Qual laço em Java garante rodar o bloco pelo menos uma vez, mesmo que a condição já comece falsa?',
       options: ['for', 'while', 'do-while', 'for-each'],
       answer: 2,
       explain: 'No do-while, a condição só é testada depois do bloco rodar, então ele sempre executa pelo menos uma vez.',
     },
     {
+      id: 'q2',
       q: 'O que for (String fruta : frutas) representa?',
       options: [
         'Um erro de sintaxe',
@@ -91,18 +93,21 @@ export const modLoops: Module = {
       explain: 'É a sintaxe do for-each de Java, percorrendo cada item da coleção diretamente, sem índice.',
     },
     {
+      id: 'q3',
       q: 'No for (int i = 0; i < 3; i++), quantas vezes o bloco roda?',
       options: ['2', '3', '4', 'infinitas'],
       answer: 1,
       explain: 'i começa em 0 e roda enquanto i < 3: 0, 1, 2 — três voltas.',
     },
     {
+      id: 'q4',
       q: 'Qual comando interrompe o laço imediatamente, sem terminar a volta atual?',
       options: ['continue', 'break', 'return', 'stop'],
       answer: 1,
       explain: 'break interrompe o laço na hora. continue pula só o resto da volta atual.',
     },
     {
+      id: 'q5',
       q: 'Complete: no do-while, a condição é testada ___ o bloco rodar, ao contrário do while.',
       fill: true,
       pre: 'No do-while, a condição é testada',

@@ -77,12 +77,14 @@ export const modArrays: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'Dado $cursos = ["Informática", "Sistemas", "Redes"]; o que mostra  echo $cursos[0]; ?',
       options: ['Sistemas', 'Informática', 'Redes', 'Erro'],
       answer: 1,
       explain: 'O primeiro elemento fica na posição 0.',
     },
     {
+      id: 'q2',
       q: 'Em um array de 10 posições, qual é o último índice?',
       fill: true,
       pre: 'Último índice:',
@@ -93,6 +95,7 @@ export const modArrays: Module = {
       explain: 'Os índices vão de 0 a 9.',
     },
     {
+      id: 'q3',
       q: 'Dado $m = [[1,2,3],[4,5,6],[7,8,9]]; qual é o valor de $m[1][2] ?',
       fill: true,
       pre: '$m[1][2] =',
@@ -103,6 +106,7 @@ export const modArrays: Module = {
       explain: 'Linha 1 (a segunda) e coluna 2 (a terceira): 6.',
     },
     {
+      id: 'q4',
       q: 'A declaração int valores[3][4]; cria quantas posições?',
       fill: true,
       pre: 'Posições:',
@@ -113,6 +117,7 @@ export const modArrays: Module = {
       explain: '3 linhas x 4 colunas = 12.',
     },
     {
+      id: 'q5',
       q: 'Qual função do PHP conta quantos elementos há em um array?',
       fill: true,
       pre: '',
@@ -124,6 +129,7 @@ export const modArrays: Module = {
       hint: 'Apareceu no código lá em cima, junto do array $cursos — é o nome em inglês de "contar".',
     },
     {
+      id: 'q6',
       q: 'Como funciona a busca sequencial?',
       options: ['Divide a lista ao meio a cada passo', 'Percorre os elementos um a um até achar', 'Ordena e depois procura', 'Sorteia posições'],
       answer: 1,

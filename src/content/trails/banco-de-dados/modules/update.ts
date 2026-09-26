@@ -19,18 +19,21 @@ export const modUpdate: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: "O que acontece com  UPDATE produtos SET preco = 0;  ?",
       options: ["Erro: falta o WHERE","Altera só a primeira linha","Zera o preço de todas as linhas","Nada, precisa de COMMIT"],
       answer: 2,
       explain: "Sem WHERE, todas as linhas são atingidas.",
     },
     {
+      id: 'q2',
       q: "Qual é uma boa forma de conferir o que um DELETE vai apagar?",
       options: ["Rodar e torcer","Rodar um SELECT com o mesmo WHERE antes","Trocar DELETE por DROP","Apagar o banco e recriar"],
       answer: 1,
       explain: "O SELECT mostra exatamente as linhas que seriam afetadas.",
     },
     {
+      id: 'q3',
       q: "Qual comando desfaz as mudanças de uma transação aberta?",
       options: ["COMMIT","BEGIN","ROLLBACK","SELECT"],
       answer: 2,

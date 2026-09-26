@@ -1,6 +1,15 @@
 import { z } from 'zod';
 
+/**
+ * Id de pergunta: minúsculas, dígitos e hífen, começando por letra. Nunca só dígitos,
+ * porque chaves só com dígitos são as posições do progresso antigo (ver
+ * domain/progress/quizIds.ts).
+ */
+export const QUIZ_ID_PATTERN = /^[a-z][a-z0-9-]*$/;
+const quizIdSchema = z.string().regex(QUIZ_ID_PATTERN);
+
 const quizMultipleChoiceSchema = z.object({
+  id: quizIdSchema,
   q: z.string().min(1),
   options: z.array(z.string().min(1)).min(2),
   answer: z.number().int().nonnegative(),
@@ -9,6 +18,7 @@ const quizMultipleChoiceSchema = z.object({
 });
 
 const quizFillSchema = z.object({
+  id: quizIdSchema,
   q: z.string().min(1),
   fill: z.literal(true),
   pre: z.string(),
@@ -73,7 +83,12 @@ export const moduleSchema = z.object({
   lead: z.string().min(1),
   level: z.enum(['Base', 'Intermediário', 'Avançado']),
   blocks: z.array(blockSchema).min(1),
-  quiz: z.array(quizItemSchema).min(1),
+  quiz: z
+    .array(quizItemSchema)
+    .min(1)
+    .refine((quiz) => new Set(quiz.map((item) => item.id)).size === quiz.length, {
+      message: 'Ids de pergunta repetidos no mesmo módulo',
+    }),
 });
 
 const missionSelectSchema = z.object({

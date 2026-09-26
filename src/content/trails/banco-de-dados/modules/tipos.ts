@@ -23,24 +23,28 @@ export const modTipos: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: "O Redis pertence a qual família de bancos?",
       options: ["Relacional","Chave-valor","Grafo","Documento"],
       answer: 1,
       explain: "Redis guarda pares chave-valor e é muito usado como cache.",
     },
     {
+      id: 'q2',
       q: "Qual tipo de banco é o mais indicado para clientes, pedidos e produtos ligados entre si?",
       options: ["Chave-valor","Grafo","Relacional","Nenhum, use uma planilha"],
       answer: 2,
       explain: "Dados com relações bem definidas combinam com o modelo relacional.",
     },
     {
+      id: 'q3',
       q: "Qual afirmação está correta?",
       options: ["SQL é o programa que guarda os dados","PostgreSQL é uma linguagem de programação","pgAdmin é uma interface visual para o PostgreSQL","psql é um tipo de dado"],
       answer: 2,
       explain: "SQL é a linguagem, PostgreSQL é o SGBD, pgAdmin é a interface visual e psql é o terminal.",
     },
     {
+      id: 'q4',
       q: "Em qual modelo cada registro filho tem um único pai, formando uma árvore?",
       options: ["Relacional","Em rede","Chave-valor","Hierárquico"],
       answer: 3,

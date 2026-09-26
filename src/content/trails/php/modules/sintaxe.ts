@@ -76,6 +76,7 @@ export const modSintaxe: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'O que acontece com o texto escrito fora de <?php ... ?> num arquivo PHP?',
       options: [
         'É ignorado completamente',
@@ -87,12 +88,14 @@ export const modSintaxe: Module = {
       explain: 'PHP foi criado para se misturar com HTML: tudo fora das tags de PHP é enviado como está, direto para a saída.',
     },
     {
+      id: 'q2',
       q: 'O que precede toda variável em PHP, tanto ao declarar quanto ao usar?',
       options: ['@', '$', '#', '&'],
       answer: 1,
       explain: 'PHP usa o $ na frente de toda variável, sempre — diferente de Python e Java, que não usam prefixo.',
     },
     {
+      id: 'q3',
       q: 'Qual a diferença entre aspas duplas e aspas simples em PHP?',
       options: [
         'Não há diferença',
@@ -105,12 +108,14 @@ export const modSintaxe: Module = {
       hint: 'Pense em qual delas "olha para dentro" do texto em busca de variáveis.',
     },
     {
+      id: 'q4',
       q: 'Qual operador PHP usa para concatenar (juntar) textos?',
       options: ['+', '&', '.', '++'],
       answer: 2,
       explain: 'PHP usa o ponto (.) para concatenação, diferente de outras linguagens que usam +.',
     },
     {
+      id: 'q5',
       q: 'Complete: assim como Python, PHP tem tipagem ___ — a variável assume o tipo do valor atribuído, e pode mudar depois.',
       fill: true,
       pre: 'Assim como Python, PHP tem tipagem',

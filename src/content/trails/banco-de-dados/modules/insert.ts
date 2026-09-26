@@ -24,18 +24,21 @@ export const modInsert: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: "Por que o id não aparece no INSERT de produtos?",
       options: ["Porque o id é proibido","Porque o SERIAL preenche o id sozinho","Porque o id é sempre zero","Porque é um erro do exemplo"],
       answer: 1,
       explain: "SERIAL gera 1, 2, 3... automaticamente.",
     },
     {
+      id: 'q2',
       q: "Qual consulta traz apenas as colunas nome e preco?",
       options: ["SELECT nome, preco FROM produtos;","SELECT produtos FROM nome, preco;","GET nome, preco IN produtos;","FROM produtos SELECT *;"],
       answer: 0,
       explain: "A ordem é sempre SELECT (o quê) e FROM (de onde).",
     },
     {
+      id: 'q3',
       q: "Para que serve o AS em  nome AS produto ?",
       options: ["Apagar a coluna","Somar valores","Dar um apelido à coluna no resultado","Ordenar o resultado"],
       answer: 2,

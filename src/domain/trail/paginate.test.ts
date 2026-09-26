@@ -5,7 +5,7 @@ import type { Block, QuizItem } from './types';
 const words = (n: number) => Array.from({ length: n }, (_, i) => `w${i}`).join(' ');
 const p = (n: number): Block => ({ t: 'p', x: words(n) });
 const code: Block = { t: 'code', file: 'a.sql', x: 'SELECT 1;' };
-const q = (id: number): QuizItem => ({ q: `q${id}`, options: ['a', 'b'], answer: 0, explain: '' });
+const q = (id: number): QuizItem => ({ id: `q${id}`, q: `q${id}`, options: ['a', 'b'], answer: 0, explain: '' });
 
 function contentScreens(screens: LessonScreen[]): number[][] {
   return screens.flatMap((s) => (s.kind === 'content' ? [s.blocks] : []));

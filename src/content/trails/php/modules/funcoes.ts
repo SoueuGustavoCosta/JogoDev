@@ -69,6 +69,7 @@ export const modFuncoes: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'O que ...$numeros faz na declaração de uma função PHP?',
       options: [
         'Recebe um único argumento obrigatório',
@@ -80,18 +81,21 @@ export const modFuncoes: Module = {
       explain: 'Os três pontos (...) antes do parâmetro recolhem todos os argumentos extras num array, dentro da função.',
     },
     {
+      id: 'q2',
       q: 'O que $nome ?? "Viajante" retorna, se $nome for null?',
       options: ['null', 'Um erro', '"Viajante"', '""'],
       answer: 2,
       explain: 'O operador ?? (null coalescing) devolve o valor da direita quando o da esquerda é null (ou não existe).',
     },
     {
+      id: 'q3',
       q: 'Qual palavra-chave declara uma arrow function em PHP?',
       options: ['function', 'fn', 'arrow', 'lambda'],
       answer: 1,
       explain: 'Arrow functions usam fn($param) => expressão, sempre com uma única expressão.',
     },
     {
+      id: 'q4',
       q: 'Qual é a vantagem do operador ?? sobre checar isset() manualmente?',
       options: [
         'Não há vantagem nenhuma',
@@ -102,6 +106,7 @@ export const modFuncoes: Module = {
       explain: 'O ?? simplifica a checagem de valores possivelmente ausentes numa expressão curta e segura.',
     },
     {
+      id: 'q5',
       q: 'Complete: uma função com valor padrão se escreve como function saudacao($nome, $saudacaoInicial = ___).',
       fill: true,
       pre: 'Uma função com valor padrão se escreve como function saudacao($nome, $saudacaoInicial =',

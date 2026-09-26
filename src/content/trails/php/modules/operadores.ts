@@ -77,6 +77,7 @@ export const modOperadores: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'O que 0 == "abc" costumava avaliar em versões antigas de PHP, antes das correções de comparação?',
       options: ['false', 'true', 'erro de sintaxe', 'null'],
       answer: 1,
@@ -84,12 +85,14 @@ export const modOperadores: Module = {
       hint: 'Pense no "malabarismo de tipos": PHP tentava converter a string para número.',
     },
     {
+      id: 'q2',
       q: 'Qual operador compara valor E tipo, sem nenhuma conversão automática?',
       options: ['==', '===', '=', '<>'],
       answer: 1,
       explain: '=== (idêntico) exige mesmo tipo e mesmo valor, sem malabarismo.',
     },
     {
+      id: 'q3',
       q: 'O que "type juggling" (malabarismo de tipos) significa em PHP?',
       options: [
         'Um erro de sintaxe comum',
@@ -101,6 +104,7 @@ export const modOperadores: Module = {
       explain: 'Type juggling é a conversão automática de tipos que PHP faz em certas operações, especialmente com ==.',
     },
     {
+      id: 'q4',
       q: 'O que o match (PHP 8) faz de diferente do switch tradicional?',
       options: [
         'Nada, são idênticos',
@@ -112,6 +116,7 @@ export const modOperadores: Module = {
       explain: 'match usa comparação estrita (===) e retorna um valor, sem precisar de break nem sofrer fall-through.',
     },
     {
+      id: 'q5',
       q: 'Complete: a regra de ouro para evitar os golpes de Malabari é preferir ___ no lugar de == sempre que possível.',
       fill: true,
       pre: 'A regra de ouro é preferir',

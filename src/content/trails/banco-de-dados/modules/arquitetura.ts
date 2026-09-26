@@ -29,24 +29,28 @@ export const modArquitetura: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: "Qual camada de uma aplicação é responsável por guardar os dados de forma permanente?",
       options: ["Apresentação","Persistência","Negócio","Rede"],
       answer: 1,
       explain: "A camada de persistência é a que grava e recupera dados. O banco de dados vive nela.",
     },
     {
+      id: 'q2',
       q: "No PostgreSQL, quem controla concorrência e recuperação de falhas?",
       options: ["O cliente (o navegador)","O servidor do banco","O sistema operacional do usuário","O arquivo CSV"],
       answer: 1,
       explain: "Na arquitetura cliente-servidor, o servidor faz o trabalho pesado: acessos, transações, concorrência e recuperação.",
     },
     {
+      id: 'q3',
       q: "Adicionar um índice sem precisar mexer nas tabelas nem nos programas demonstra...",
       options: ["Independência lógica","Independência física","Redundância","Normalização"],
       answer: 1,
       explain: "Mudou o nível interno (armazenamento) sem afetar os níveis acima: independência física de dados.",
     },
     {
+      id: 'q4',
       q: "Metadados são...",
       options: ["Dados que descrevem outros dados","Dados sigilosos","Cópias de segurança","Dados duplicados"],
       answer: 0,

@@ -27,24 +27,28 @@ export const modMer: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: "Qual é a relação entre CLIENTE e PEDIDO (um cliente faz vários pedidos; cada pedido é de um cliente) e onde fica a FK?",
       options: ["N:N, tabela associativa","1:N, FK em pedidos","1:1, FK em clientes","1:N, FK em clientes"],
       answer: 1,
       explain: "É 1:N. A FK (cliente_id) fica no lado N, isto é, na tabela pedidos.",
     },
     {
+      id: 'q2',
       q: "Alunos cursam várias disciplinas e disciplinas têm vários alunos. Para implementar em SQL você precisa de...",
       options: ["Uma coluna com lista de disciplinas","Duas FKs em alunos","Uma tabela associativa entre as duas","Um atributo derivado"],
       answer: 2,
       explain: "Relação N:N vira uma tabela no meio, com FK para cada lado.",
     },
     {
+      id: 'q3',
       q: "A idade, calculada a partir da data de nascimento, é um atributo...",
       options: ["Multivalorado","Composto","Derivado","Identificador"],
       answer: 2,
       explain: "Derivado: pode ser calculado de outro atributo, então normalmente não é armazenado.",
     },
     {
+      id: 'q4',
       q: "Na notação (mín, máx), o que significa (1,N)?",
       options: ["Opcional e no máximo um","Obrigatório e no máximo um","Opcional e vários","Pelo menos um e no máximo vários"],
       answer: 3,

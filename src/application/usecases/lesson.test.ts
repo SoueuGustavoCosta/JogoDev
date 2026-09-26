@@ -45,8 +45,8 @@ const decisoes: Module = {
   level: 'Base',
   blocks: [{ t: 'p', x: 'x' }],
   quiz: [
-    { q: 'a', options: ['1', '2'], answer: 0, explain: '' },
-    { q: 'b', options: ['1', '2'], answer: 0, explain: '' },
+    { id: 'q1', q: 'a', options: ['1', '2'], answer: 0, explain: '' },
+    { id: 'q2', q: 'b', options: ['1', '2'], answer: 0, explain: '' },
   ],
 };
 

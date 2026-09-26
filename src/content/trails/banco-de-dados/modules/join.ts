@@ -29,24 +29,28 @@ export const modJoin: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: "Na tabela pedidos, a coluna cliente_id é...",
       options: ["Chave primária","Chave estrangeira","Um tipo de dado","Um índice"],
       answer: 1,
       explain: "Ela aponta para o id da tabela clientes: é uma chave estrangeira.",
     },
     {
+      id: 'q2',
       q: "Qual JOIN mostraria a Carla mesmo sem pedidos?",
       options: ["INNER JOIN","LEFT JOIN de clientes para pedidos","DROP JOIN","Nenhum"],
       answer: 1,
       explain: "LEFT JOIN mantém todas as linhas da tabela da esquerda.",
     },
     {
+      id: 'q3',
       q: "Alunos fazem várias disciplinas e disciplinas têm vários alunos. Como modelar?",
       options: ["Uma coluna com lista de disciplinas no aluno","Uma tabela associativa entre alunos e disciplinas","Duas tabelas idênticas","Não é possível"],
       answer: 1,
       explain: "Relações N:N viram uma tabela no meio, com FK para cada lado.",
     },
     {
+      id: 'q4',
       q: "Em um autorrelacionamento (funcionário e seu gerente), como o SQL resolve?",
       options: ["Com dois bancos de dados","Com UNION","Com um JOIN da tabela com ela mesma, usando apelidos","Não é possível"],
       answer: 2,

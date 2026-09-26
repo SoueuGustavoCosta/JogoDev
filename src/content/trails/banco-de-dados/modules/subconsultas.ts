@@ -32,18 +32,21 @@ export const modSubconsultas: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: "Qual palavra introduz uma CTE (resultado temporário com nome)?",
       options: ["CASE","WITH","OVER","EXISTS"],
       answer: 1,
       explain: "WITH nome AS ( ... ) define a CTE, que pode ser usada na consulta principal.",
     },
     {
+      id: 'q2',
       q: "Qual a diferença central entre GROUP BY e uma função de janela?",
       options: ["Nenhuma","A janela mantém todas as linhas; o GROUP BY as agrupa","O GROUP BY é mais novo","A janela só funciona com texto"],
       answer: 1,
       explain: "GROUP BY colapsa em uma linha por grupo. A função de janela calcula sem perder as linhas.",
     },
     {
+      id: 'q3',
       q: "O que faz  WHERE NOT EXISTS (SELECT 1 FROM pedidos p WHERE p.cliente_id = c.id) ?",
       options: ["Traz clientes que têm pedido","Traz clientes sem nenhum pedido","Apaga pedidos","Cria um índice"],
       answer: 1,

@@ -17,18 +17,21 @@ export const modTiposdados: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: "Qual tipo é o mais indicado para o preço de um produto?",
       options: ["VARCHAR(10)","NUMERIC(10,2)","BOOLEAN","DATE"],
       answer: 1,
       explain: "NUMERIC guarda decimais de forma exata, o que importa para dinheiro.",
     },
     {
+      id: 'q2',
       q: "Por que o CPF deve ser VARCHAR e não INTEGER?",
       options: ["Porque INTEGER é lento","Porque CPF tem zero à esquerda e não fazemos conta com ele","Porque INTEGER não existe no PostgreSQL","Porque CPF é sempre texto longo"],
       answer: 1,
       explain: "Um INTEGER descartaria o zero inicial. CPF é identificador, não número para somar.",
     },
     {
+      id: 'q3',
       q: "Qual tipo numera sozinho 1, 2, 3... a cada nova linha?",
       options: ["SERIAL","VARCHAR","TIMESTAMP","JSONB"],
       answer: 0,

@@ -37,6 +37,7 @@ export const modCiclo: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'Complete: qual comando mostra o que mudou antes de decidir o que fazer?',
       fill: true,
       pre: '',
@@ -47,6 +48,7 @@ export const modCiclo: Module = {
       explain: 'git status é sempre o primeiro passo do ciclo.',
     },
     {
+      id: 'q2',
       q: 'O que git add realmente faz?',
       options: [
         'Apaga o arquivo do projeto',
@@ -58,6 +60,7 @@ export const modCiclo: Module = {
       explain: 'git add não salva nada de permanente ainda — só prepara.',
     },
     {
+      id: 'q3',
       q: 'Depois de um git commit, onde essa mudança fica gravada?',
       options: [
         'Só na memória RAM, e some ao fechar o terminal',

@@ -27,18 +27,21 @@ export const modViews: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: "Uma view guarda os dados em disco?",
       options: ["Sim, uma cópia completa","Não: guarda a consulta e a executa a cada uso","Só se for temporária","Sim, mas só as chaves"],
       answer: 1,
       explain: "A view comum é uma consulta salva. Só a MATERIALIZED VIEW guarda o resultado.",
     },
     {
+      id: 'q2',
       q: "Qual é um uso clássico de trigger?",
       options: ["Criar tabelas","Auditoria: registrar mudanças automaticamente","Instalar o PostgreSQL","Fazer backup"],
       answer: 1,
       explain: "Triggers reagem a INSERT/UPDATE/DELETE, ótimo para logs de auditoria.",
     },
     {
+      id: 'q3',
       q: "Como uma view ajuda na segurança?",
       options: ["Criptografa a tabela","Mostra só as colunas e linhas que o usuário pode ver","Apaga dados sensíveis","Impede JOINs"],
       answer: 1,

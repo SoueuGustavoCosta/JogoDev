@@ -95,24 +95,28 @@ export const modOperadores: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'O que 7 / 2 retorna em Python?',
       options: ['3', '3.5', '3.0', 'erro'],
       answer: 1,
       explain: 'Em Python, / sempre faz divisão de ponto flutuante e retorna float: 7 / 2 é 3.5.',
     },
     {
+      id: 'q2',
       q: 'Qual operador retorna só a parte inteira da divisão, sem casas decimais?',
       options: ['/', '//', '%', '**'],
       answer: 1,
       explain: '// é a divisão inteira (floor division): 7 // 2 vale 3.',
     },
     {
+      id: 'q3',
       q: 'Qual é a palavra usada em Python para "senão se"?',
       options: ['elseif', 'else if', 'elif', 'otherwise'],
       answer: 2,
       explain: 'Python usa elif, uma contração de "else if", diferente de outras linguagens.',
     },
     {
+      id: 'q4',
       q: 'Qual dessas expressões é válida em Python (comparação encadeada)?',
       options: ['0 <= idade <= 17', 'idade in (0 to 17)', '0 -> idade -> 17', '0..17 == idade'],
       answer: 0,
@@ -120,6 +124,7 @@ export const modOperadores: Module = {
       hint: 'Pense em como você leria a condição em voz alta.',
     },
     {
+      id: 'q5',
       q: 'Complete: em vez de && e ||, Python escreve os operadores lógicos como palavras: ___ e or.',
       fill: true,
       pre: 'Em vez de && e ||, Python escreve os operadores lógicos como palavras:',

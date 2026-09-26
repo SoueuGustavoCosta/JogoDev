@@ -67,6 +67,7 @@ export const modColecoes: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'O que $numeros[] = 50; faz num array PHP?',
       options: [
         'Substitui todos os itens por 50',
@@ -78,12 +79,14 @@ export const modColecoes: Module = {
       explain: 'Colchetes vazios [] dizem para PHP adicionar o item na próxima posição disponível, automaticamente.',
     },
     {
+      id: 'q2',
       q: 'Como se cria um par chave-valor num array associativo PHP?',
       options: ['"chave": valor', '"chave" => valor', 'chave = valor', '{"chave": valor}'],
       answer: 1,
       explain: 'PHP usa a seta => para associar uma chave a um valor dentro de um array.',
     },
     {
+      id: 'q3',
       q: 'Por que PHP consegue usar o mesmo tipo array tanto como lista quanto como dicionário?',
       options: [
         'É mágica, sem explicação técnica',
@@ -95,6 +98,7 @@ export const modColecoes: Module = {
       explain: 'Um array PHP guarda pares chave-valor; quando você não escreve a chave, ela vira automaticamente um índice numérico.',
     },
     {
+      id: 'q4',
       q: 'Qual função verifica se uma chave existe num array, sem gerar aviso?',
       options: ['exists()', 'has()', 'isset()', 'contains()'],
       answer: 2,
@@ -102,6 +106,7 @@ export const modColecoes: Module = {
       hint: 'A função começa com "is".',
     },
     {
+      id: 'q5',
       q: 'Complete: função que devolve quantos itens um array tem se chama ___($array).',
       fill: true,
       pre: 'A função que devolve quantos itens um array tem se chama',

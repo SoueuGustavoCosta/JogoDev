@@ -134,18 +134,21 @@ export const modVelha: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'Na função posicao($l, $c), o que ela devolve quando a casa já está ocupada?',
       options: ['0', '1', "'0'", 'null'],
       answer: 1,
       explain: "posicao() devolve 1 quando $_SESSION['jv'][$l][$c] é diferente de '0' (ocupada) e 0 quando está livre.",
     },
     {
+      id: 'q2',
       q: 'Quantas verificações a função velha($jog) faz para saber se alguém ganhou?',
       options: ['Só as 3 linhas', '3 linhas, 3 colunas e 2 diagonais (8 no total)', 'Só as diagonais', 'Uma por casa do tabuleiro (9)'],
       answer: 1,
       explain: 'Um laço cobre as 3 linhas e as 3 colunas (testadas juntas a cada volta) e mais dois testes cobrem as duas diagonais: 8 formas de vencer.',
     },
     {
+      id: 'q3',
       q: 'Por que o do...while de maquinaJoga() sozinho é perigoso quando o tabuleiro está cheio?',
       options: [
         'Porque ele nunca executa',
@@ -157,6 +160,7 @@ export const modVelha: Module = {
       explain: 'Sem checar se ainda há casas livres (livres() == 0), o laço continua sorteando posições ocupadas indefinidamente.',
     },
     {
+      id: 'q4',
       q: 'Complete: a função que conta quantas casas do tabuleiro ainda estão vazias (valor 0, o número zero) se chama...',
       fill: true,
       pre: 'function',

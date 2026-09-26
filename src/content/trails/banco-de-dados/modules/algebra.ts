@@ -28,24 +28,28 @@ export const modAlgebra: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: "Qual operação da álgebra relacional corresponde ao WHERE?",
       options: ["Projeção (π)","Seleção (σ)","União (∪)","Renomeação (ρ)"],
       answer: 1,
       explain: "Seleção escolhe linhas por um predicado. Projeção escolhe colunas.",
     },
     {
+      id: 'q2',
       q: "A tabela A tem 4 linhas e a B tem 5. Quantas linhas tem A × B?",
       options: ["9","5","20","4"],
       answer: 2,
       explain: "n(A × B) = n(A) · n(B) = 4 · 5 = 20.",
     },
     {
+      id: 'q3',
       q: "Para dois SELECTs poderem ser unidos com UNION, é preciso que...",
       options: ["Venham da mesma tabela","Tenham o mesmo número de colunas e tipos compatíveis","Tenham o mesmo nome de coluna","Não tenham WHERE"],
       answer: 1,
       explain: "As relações precisam ser compatíveis: mesmo grau e domínios parecidos, na mesma ordem.",
     },
     {
+      id: 'q4',
       q: "Qual expressão dá os clientes que NUNCA fizeram pedido?",
       options: ["clientes UNION pedidos","clientes INTERSECT pedidos","clientes EXCEPT (clientes com pedido)","clientes CROSS JOIN pedidos"],
       answer: 2,

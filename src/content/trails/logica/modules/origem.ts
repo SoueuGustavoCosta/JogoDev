@@ -101,12 +101,14 @@ export const modOrigem: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'A palavra "algoritmo" vem do nome de qual matemático?',
       options: ['Ada Lovelace', 'al-Khwarizmi', 'Brian Kernighan', 'Charles Babbage'],
       answer: 1,
       explain: 'Traduções latinas dos textos de al-Khwarizmi começavam com "Dixit Algoritmi". Daí veio "algoritmo".',
     },
     {
+      id: 'q2',
       q: 'Qual afirmação define melhor um algoritmo?',
       options: [
         'Um programa escrito em PHP',
@@ -118,12 +120,14 @@ export const modOrigem: Module = {
       explain: 'Algoritmo é a ideia (a sequência lógica). O programa é essa ideia traduzida para uma linguagem.',
     },
     {
+      id: 'q3',
       q: 'Em "somar dois números e mostrar o resultado", qual parte é "mostrar o resultado"?',
       options: ['Entrada', 'Processamento', 'Saída', 'Variável'],
       answer: 2,
       explain: 'Mostrar o resultado é a saída. Receber os números é a entrada e somar é o processamento.',
     },
     {
+      id: 'q4',
       q: 'Ada Lovelace é lembrada em 1843 por ter escrito...',
       options: [
         'O primeiro programa de computador publicado (Nota G)',
@@ -135,6 +139,7 @@ export const modOrigem: Module = {
       explain: 'A Nota G descreve como a Máquina Analítica calcularia números de Bernoulli.',
     },
     {
+      id: 'q5',
       q: 'Complete: em PHP, o comando que exibe um texto na tela é...',
       fill: true,
       pre: '',

@@ -70,6 +70,7 @@ export const modFuncoes: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'Qual palavra devolve um valor de dentro de uma função?',
       fill: true,
       pre: 'function dobro($n) {',
@@ -80,12 +81,14 @@ export const modFuncoes: Module = {
       explain: '<code>return</code> entrega o resultado a quem chamou.',
     },
     {
+      id: 'q2',
       q: 'function f($x) { $x = 10; }  $a = 1; f($a); echo $a;  O que aparece?',
       options: ['1', '10', '0', 'Erro'],
       answer: 0,
       explain: 'Passagem por valor: a função mexeu numa cópia. <code>$a</code> continua 1.',
     },
     {
+      id: 'q3',
       q: 'Qual símbolo faz o parâmetro ser passado por referência?',
       fill: true,
       pre: 'function f(',
@@ -97,12 +100,14 @@ export const modFuncoes: Module = {
       hint: 'É o mesmo símbolo que apareceu na aba "Por referência" do jogo ali em cima.',
     },
     {
+      id: 'q4',
       q: 'Uma variável criada dentro de uma função é...',
       options: ['Global', 'Constante', 'Local', 'Um array'],
       answer: 2,
       explain: 'Local: só existe dentro daquele bloco.',
     },
     {
+      id: 'q5',
       q: 'Com  function aumentarPreco(&$valor, $taxa) { $valor += $taxa; }  e  $notebook = 3000; aumentarPreco($notebook, 500);  quanto vale $notebook?',
       fill: true,
       pre: '$notebook =',
@@ -114,6 +119,7 @@ export const modFuncoes: Module = {
       hint: 'O <code>&amp;$valor</code> na função significa que ela mexe direto na variável de fora, não numa cópia.',
     },
     {
+      id: 'q6',
       q: 'Em PHP, uma função consegue usar uma constante definida fora dela?',
       options: ['Não, nunca', 'Sim, constantes são visíveis em qualquer lugar', 'Só com a palavra global', 'Só se for passada como parâmetro'],
       answer: 1,

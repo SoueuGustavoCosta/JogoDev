@@ -24,7 +24,7 @@ class RecordingAnalytics implements AnalyticsPort {
   }
 }
 
-const item: QuizItem = { q: 'q', options: ['a', 'b'], answer: 0, explain: '' };
+const item: QuizItem = { id: 'q1', q: 'q', options: ['a', 'b'], answer: 0, explain: '' };
 
 describe('answerQuiz', () => {
   let repository: InMemoryProgressRepository;

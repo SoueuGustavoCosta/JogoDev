@@ -92,6 +92,7 @@ export const modLoops: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'O que range(3) gera?',
       options: ['1, 2, 3', '0, 1, 2', '0, 1, 2, 3', '3, 2, 1'],
       answer: 1,
@@ -99,6 +100,7 @@ export const modLoops: Module = {
       hint: 'range sempre para antes de chegar no número final.',
     },
     {
+      id: 'q2',
       q: 'O que este código imprime? for fruta in ["maçã", "banana"]: print(fruta)',
       fill: true,
       pre: 'A saída, linha por linha, é:',
@@ -109,18 +111,21 @@ export const modLoops: Module = {
       explain: 'O for percorre cada item da lista, na ordem: primeiro "maçã", depois "banana".',
     },
     {
+      id: 'q3',
       q: 'No exemplo while.py deste farol, o que faria o laço nunca terminar se fosse removido?',
       options: ['A linha print(n)', 'A linha n += 1', 'A linha n = 0', 'A condição n < 3'],
       answer: 1,
       explain: 'Sem uma linha como n += 1 dentro do while, a condição n < 3 nunca muda, e o laço roda para sempre.',
     },
     {
+      id: 'q4',
       q: 'Qual comando interrompe o laço imediatamente, sem terminar a volta atual?',
       options: ['continue', 'break', 'pass', 'return'],
       answer: 1,
       explain: 'break sai do laço na hora. continue pula só o resto da volta atual e segue para a próxima.',
     },
     {
+      id: 'q5',
       q: 'O que [n * n for n in range(3)] produz?',
       options: ['[0, 1, 4]', '[1, 4, 9]', '[0, 1, 2]', '[0, 2, 4]'],
       answer: 0,

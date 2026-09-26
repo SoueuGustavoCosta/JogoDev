@@ -86,18 +86,21 @@ export const modOla: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'Quem escreveu o mais antigo "hello, world" documentado, em 1972?',
       options: ['Rasmus Lerdorf', 'Guido van Rossum', 'Brian Kernighan', 'James Gosling'],
       answer: 2,
       explain: 'Kernighan, no tutorial da linguagem B, nos Bell Labs.',
     },
     {
+      id: 'q2',
       q: 'Qual destas linguagens NÃO usa ponto e vírgula para terminar comandos?',
       options: ['PHP', 'Python', 'Java', 'C'],
       answer: 1,
       explain: 'Em Python, a quebra de linha termina o comando e os blocos são marcados por indentação.',
     },
     {
+      id: 'q3',
       q: 'Complete o Olá, Mundo em PHP:',
       fill: true,
       pre: '',
@@ -108,12 +111,14 @@ export const modOla: Module = {
       explain: '<code>echo</code> exibe o texto. Não esqueça o <code>;</code> no final.',
     },
     {
+      id: 'q4',
       q: 'Qual é a principal finalidade do "Hello, World"?',
       options: ['Ensinar variáveis', 'Testar se o ambiente e a ferramenta funcionam', 'Medir a velocidade do computador', 'Criar um site'],
       answer: 1,
       explain: 'É um teste de sanidade: se a frase aparece, o editor, o compilador ou interpretador e o ambiente estão funcionando.',
     },
     {
+      id: 'q5',
       q: 'Em Java e em C o "Olá, Mundo" precisa de uma função de partida. Qual é o nome dela?',
       fill: true,
       pre: '',

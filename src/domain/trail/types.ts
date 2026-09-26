@@ -4,6 +4,13 @@ export type SymbolId = string;
 
 export type QuizItem =
   | {
+      /**
+       * Identidade estável da pergunta dentro do módulo: é a chave do progresso
+       * (`quizResults`). Nunca muda depois de publicada, mesmo que a pergunta mude de lugar
+       * ou de formato; pergunta nova ganha id novo. Nunca só dígitos (esses são as chaves
+       * antigas, por posição, que a migração converte).
+       */
+      id: string;
       q: string;
       options: string[];
       answer: number;
@@ -12,6 +19,8 @@ export type QuizItem =
       hint?: string;
     }
   | {
+      /** Ver o `id` do formato de múltipla escolha acima. */
+      id: string;
       q: string;
       fill: true;
       pre: string;

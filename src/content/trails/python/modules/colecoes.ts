@@ -93,18 +93,21 @@ export const modColecoes: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'Dada a lista numeros = [10, 20, 30, 40], o que numeros[-1] retorna?',
       options: ['10', '40', 'erro', '-1'],
       answer: 1,
       explain: 'Índice -1 acessa o último item da lista: 40.',
     },
     {
+      id: 'q2',
       q: 'Qual coleção é imutável (não pode ser alterada depois de criada)?',
       options: ['list', 'dict', 'tuple', 'set'],
       answer: 2,
       explain: 'A tupla, criada com parênteses ( ), não permite alterar seus valores depois de criada.',
     },
     {
+      id: 'q3',
       q: 'O que numeros[1:3] retorna, para numeros = [10, 20, 30, 40, 50]?',
       options: ['[20, 30]', '[20, 30, 40]', '[10, 20, 30]', '[30, 40]'],
       answer: 0,
@@ -112,6 +115,7 @@ export const modColecoes: Module = {
       hint: 'A mesma regra do range(): para antes do índice final.',
     },
     {
+      id: 'q4',
       q: 'Em um dict, qual é a diferença entre usar colchetes e usar .get() para uma chave que não existe?',
       options: [
         'Não há diferença',
@@ -123,6 +127,7 @@ export const modColecoes: Module = {
       explain: 'dicionario["chave"] gera KeyError se a chave não existir; dicionario.get("chave") devolve None com segurança.',
     },
     {
+      id: 'q5',
       q: 'Complete: a coleção que nunca guarda valores repetidos, usando { } mas sem pares de chave e valor, se chama ___.',
       fill: true,
       pre: 'A coleção que nunca guarda valores repetidos se chama',

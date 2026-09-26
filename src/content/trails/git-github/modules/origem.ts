@@ -52,6 +52,7 @@ export const modOrigem: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'Por que Linus Torvalds criou o Git do zero, em 2005?',
       options: [
         'Por diversão, sem motivo real',
@@ -63,6 +64,7 @@ export const modOrigem: Module = {
       explain: 'Sem o BitKeeper gratuito, a equipe do kernel Linux precisava urgentemente de um sistema próprio.',
     },
     {
+      id: 'q2',
       q: 'Qual é a diferença entre Git e GitHub?',
       options: [
         'São a mesma coisa, com nomes diferentes',
@@ -74,6 +76,7 @@ export const modOrigem: Module = {
       explain: 'Git nasceu em 2005 como ferramenta; GitHub nasceu em 2008 como plataforma de hospedagem.',
     },
     {
+      id: 'q3',
       q: 'O que significa um sistema de controle de versão "distribuído"?',
       options: [
         'Só existe uma cópia do histórico, no servidor',

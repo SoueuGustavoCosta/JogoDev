@@ -72,12 +72,14 @@ export const modSintaxe: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'Onde todo código Java precisa estar, obrigatoriamente?',
       options: ['Dentro de uma função solta', 'Dentro de uma classe', 'Dentro de um comentário', 'Não precisa de nenhuma estrutura'],
       answer: 1,
       explain: 'Diferente de Python, todo código Java vive dentro de uma classe — não existe instrução solta no arquivo.',
     },
     {
+      id: 'q2',
       q: 'O que acontece se você esquecer um ponto e vírgula no final de uma instrução Java?',
       options: [
         'Nada, Java ignora',
@@ -89,12 +91,14 @@ export const modSintaxe: Module = {
       explain: 'Java exige ponto e vírgula ao final de cada instrução; sem ele, o compilador recusa o código antes mesmo de rodar.',
     },
     {
+      id: 'q3',
       q: 'Em int idade = 27;, o que representa "int"?',
       options: ['O nome da variável', 'O valor da variável', 'O tipo da variável, declarado explicitamente', 'Um comentário'],
       answer: 2,
       explain: 'Java usa tipagem estática: você declara o tipo (int, aqui) explicitamente antes do nome da variável.',
     },
     {
+      id: 'q4',
       q: 'Qual a diferença entre um tipo primitivo (como int) e um tipo de referência (como String) em Java?',
       options: [
         'Não há diferença nenhuma',
@@ -107,6 +111,7 @@ export const modSintaxe: Module = {
       hint: 'Pense em "aponta para" versus "é o próprio valor".',
     },
     {
+      id: 'q5',
       q: 'Complete: antes de um programa Java rodar na JVM, o compilador ___ transforma o código-fonte em bytecode.',
       fill: true,
       pre: 'Antes de um programa Java rodar na JVM, o compilador',

@@ -64,18 +64,21 @@ export const modPoo: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'Como se chama o método construtor de uma classe PHP?',
       options: ['construct()', '__construct()', 'new()', 'init()'],
       answer: 1,
       explain: '__construct(), com dois underscores dos dois lados, é o construtor padrão de classes PHP, chamado automaticamente por new.',
     },
     {
+      id: 'q2',
       q: 'Qual símbolo é usado para acessar uma propriedade ou método de um objeto PHP?',
       options: ['.', '->', '::', '=>'],
       answer: 1,
       explain: 'Objetos usam -> (seta), como em $ana->getNome(). O ponto (.) é reservado para concatenar texto.',
     },
     {
+      id: 'q3',
       q: 'O que parent::__construct($nome) faz dentro do construtor de uma classe filha?',
       options: [
         'Cria uma nova classe do zero',
@@ -87,6 +90,7 @@ export const modPoo: Module = {
       explain: 'parent:: dá acesso à classe-mãe de dentro da classe filha, permitindo reaproveitar (em vez de reescrever) seu construtor.',
     },
     {
+      id: 'q4',
       q: 'Quem pode acessar uma propriedade declarada como protected?',
       options: [
         'Qualquer código, de qualquer lugar',
@@ -99,6 +103,7 @@ export const modPoo: Module = {
       hint: 'Pense nele como "de família": a classe e quem herda dela.',
     },
     {
+      id: 'q5',
       q: 'Complete: para declarar como um método PHP não devolve valor nenhum, usa-se o tipo de retorno ___.',
       fill: true,
       pre: 'Para declarar que um método PHP não devolve valor nenhum, usa-se o tipo de retorno',

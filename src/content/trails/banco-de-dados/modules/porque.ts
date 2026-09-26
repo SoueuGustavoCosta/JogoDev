@@ -29,24 +29,28 @@ export const modPorque: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: "Qual é o papel do SGBD?",
       options: ["Ser o arquivo onde os dados ficam escritos","Ser o programa que guarda, protege e consulta os dados","Ser a linguagem usada para escrever consultas","Ser o computador onde o banco roda"],
       answer: 1,
       explain: "SGBD é o software gerenciador. O PostgreSQL é um SGBD; SQL é a linguagem que usamos para conversar com ele.",
     },
     {
+      id: 'q2',
       q: "O nome de um cliente escrito de três formas diferentes em planilhas separadas é qual problema?",
       options: ["Escala","Segurança","Inconsistência","Concorrência"],
       answer: 2,
       explain: "Dados que deveriam ser iguais aparecem diferentes: isso é inconsistência.",
     },
     {
+      id: 'q3',
       q: "Quem propôs o modelo relacional em 1970?",
       options: ["Edgar F. Codd","Bill Gates","Linus Torvalds","Larry Ellison"],
       answer: 0,
       explain: "Codd, da IBM. O modelo relacional organiza dados em tabelas.",
     },
     {
+      id: 'q4',
       q: "\"A temperatura da Ana é 37,5 °C\" é um exemplo de...",
       options: ["Dado","SGBD","Informação","Conhecimento"],
       answer: 2,

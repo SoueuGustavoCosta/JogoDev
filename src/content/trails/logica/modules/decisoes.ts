@@ -84,18 +84,21 @@ export const modDecisoes: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'Com $media = 6, qual mensagem aparece no exemplo do if/elseif/else (7 aprova, 5 recupera)?',
       options: ['Aprovado!', 'Recuperação.', 'Reprovado.', 'Nenhuma'],
       answer: 1,
       explain: '6 não é >= 7, mas é >= 5: cai no <code>elseif</code>.',
     },
     {
+      id: 'q2',
       q: 'Quando o bloco do else executa?',
       options: ['Sempre', 'Quando a condição do if é falsa (e nenhum elseif casou)', 'Nunca', 'Só se houver um switch'],
       answer: 1,
       explain: '<code>else</code> é o "senão": tudo que as condições anteriores deixaram passar.',
     },
     {
+      id: 'q3',
       q: 'Complete a segunda condição da escada:',
       fill: true,
       pre: '',
@@ -106,6 +109,7 @@ export const modDecisoes: Module = {
       explain: '<code>elseif</code> testa outra condição quando a anterior foi falsa.',
     },
     {
+      id: 'q4',
       q: 'Qual comando impede o switch de "cair" no case seguinte?',
       fill: true,
       pre: '',
@@ -116,6 +120,7 @@ export const modDecisoes: Module = {
       explain: '<code>break</code> sai do <code>switch</code>.',
     },
     {
+      id: 'q5',
       q: 'Quanto vale $x em  $x = (5 > 3) ? "A" : "B"; ?',
       options: ['A', 'B', 'true', 'erro'],
       answer: 0,

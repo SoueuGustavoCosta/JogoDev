@@ -42,6 +42,7 @@ export const modBranches: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'O que acontece quando você cria um branch novo?',
       options: [
         'O código antigo é apagado imediatamente',
@@ -53,12 +54,14 @@ export const modBranches: Module = {
       explain: 'O branch é isolado: mudanças nele não afetam os outros branches até um merge.',
     },
     {
+      id: 'q2',
       q: 'Qual comando funde um branch dentro de outro?',
       options: ['git branch', 'git merge', 'git clone', 'git status'],
       answer: 1,
       explain: 'git merge une o histórico de duas linhas do tempo em uma só.',
     },
     {
+      id: 'q3',
       q: 'O que é um conflito de merge?',
       options: [
         'Um erro fatal que apaga o projeto inteiro',

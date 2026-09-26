@@ -91,18 +91,21 @@ export const modWeb: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'Onde o código PHP é executado?',
       options: ['No navegador', 'No servidor', 'No celular do usuário', 'Dentro do HTML, sem servidor'],
       answer: 1,
       explain: 'O PHP roda no servidor e devolve HTML pronto ao navegador.',
     },
     {
+      id: 'q2',
       q: 'O HTTP guarda memória entre uma requisição e outra?',
       options: ['Sim, guarda tudo', 'Não: cada requisição é independente', 'Só nas requisições GET', 'Só nos formulários'],
       answer: 1,
       explain: 'Por isso usamos <code>$_SESSION</code> para lembrar coisas, como o tabuleiro.',
     },
     {
+      id: 'q3',
       q: 'Complete: qual função liga a sessão no topo do arquivo?',
       fill: true,
       pre: '',
@@ -114,6 +117,7 @@ export const modWeb: Module = {
       hint: 'Está comentado como "liga a sessão" no session.php lá em cima.',
     },
     {
+      id: 'q4',
       q: 'Na URL  jogo.php?acao=jogar&l=1&c=2  os valores chegam ao PHP em qual superglobal?',
       fill: true,
       pre: '',
@@ -124,6 +128,7 @@ export const modWeb: Module = {
       explain: 'Dados na URL chegam em <code>$_GET</code>.',
     },
     {
+      id: 'q5',
       q: 'Por que o arquivo do professor escreve (int)$_GET["l"] ?',
       options: [
         'Para deixar o código mais bonito',

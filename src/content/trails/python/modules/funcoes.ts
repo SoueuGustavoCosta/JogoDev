@@ -80,12 +80,14 @@ export const modFuncoes: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'O que uma função Python retorna se não tiver nenhum return explícito?',
       options: ['0', '""', 'None', 'Um erro de sintaxe'],
       answer: 2,
       explain: 'Sem return, a função devolve None automaticamente, sem gerar erro.',
     },
     {
+      id: 'q2',
       q: 'O que *args faz na definição de uma função?',
       options: [
         'Recebe um único argumento obrigatório',
@@ -97,6 +99,7 @@ export const modFuncoes: Module = {
       explain: '*args recolhe quantos argumentos posicionais forem passados numa tupla dentro da função.',
     },
     {
+      id: 'q3',
       q: 'Por que def adicionar_item(item, carrinho=[]) é uma armadilha conhecida em Python?',
       options: [
         'Porque listas não podem ser parâmetros',
@@ -109,6 +112,7 @@ export const modFuncoes: Module = {
       hint: 'Pense em quando o valor padrão [] é criado: uma vez, ou toda vez que a função roda?',
     },
     {
+      id: 'q4',
       q: 'Qual é o jeito seguro de ter um parâmetro de lista opcional em Python?',
       options: [
         'carrinho=[] direto no parâmetro',
@@ -120,6 +124,7 @@ export const modFuncoes: Module = {
       explain: 'Usar None como padrão e criar carrinho = [] dentro do corpo da função evita o compartilhamento indesejado entre chamadas.',
     },
     {
+      id: 'q5',
       q: 'Complete: **kwargs recolhe os argumentos nomeados extras dentro de um ___.',
       fill: true,
       pre: '**kwargs recolhe os argumentos nomeados extras dentro de um',

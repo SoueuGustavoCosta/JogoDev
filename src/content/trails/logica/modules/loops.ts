@@ -102,6 +102,7 @@ export const modLoops: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'Quantas vezes executa  for ($i = 1; $i <= 5; $i++) ?',
       fill: true,
       pre: 'Voltas:',
@@ -112,6 +113,7 @@ export const modLoops: Module = {
       explain: 'De 1 até 5 contando de 1 em 1: 5 voltas.',
     },
     {
+      id: 'q2',
       q: 'Complete a modificação do laço para contar de 0 a 2:',
       fill: true,
       pre: 'for ($i = 0; $i < 3;',
@@ -123,24 +125,28 @@ export const modLoops: Module = {
       hint: 'É a terceira peça do laço: o que muda a variável a cada volta. Olhe o for.php lá em cima.',
     },
     {
+      id: 'q3',
       q: 'Qual laço garante executar o corpo pelo menos uma vez?',
       options: ['for', 'while', 'do ... while', 'foreach'],
       answer: 2,
       explain: 'O <code>do...while</code> testa no final, então executa antes de perguntar.',
     },
     {
+      id: 'q4',
       q: 'Qual destes laços NUNCA termina?',
       options: ['for ($i=1; $i<=10; $i++)', 'for ($i=1; $i<=10; $i--)', 'while ($i < 3) { $i++; }', 'foreach ($lista as $x)'],
       answer: 1,
       explain: '<code>$i--</code> faz o <code>$i</code> descer e o teste <code>$i &lt;= 10</code> nunca fica falso.',
     },
     {
+      id: 'q5',
       q: 'O que faz o comando break dentro de um laço?',
       options: ['Pula uma volta', 'Sai do laço', 'Reinicia o laço', 'Apaga a variável'],
       answer: 1,
       explain: '<code>break</code> encerra o laço na hora. Já <code>continue</code> só pula a volta atual.',
     },
     {
+      id: 'q6',
       q: 'Um laço externo roda 3 vezes e, dentro dele, um laço interno roda 3 vezes. Quantas vezes o corpo interno executa?',
       fill: true,
       pre: 'Total:',

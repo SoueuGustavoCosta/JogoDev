@@ -84,12 +84,14 @@ export const modSintaxe: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'Como Python marca o início e o fim de um bloco de código (dentro de um if, por exemplo)?',
       options: ['Com chaves { }', 'Com a indentação (o recuo da linha)', 'Com ponto e vírgula', 'Com a palavra "begin" e "end"'],
       answer: 1,
       explain: 'Python usa indentação consistente (geralmente 4 espaços) para marcar blocos, no lugar de chaves.',
     },
     {
+      id: 'q2',
       q: 'O que acontece se a indentação de um bloco Python estiver errada?',
       options: [
         'Nada, Python ignora espaços',
@@ -101,12 +103,14 @@ export const modSintaxe: Module = {
       explain: 'Indentação errada é um erro de sintaxe real em Python: IndentationError, e o programa não roda.',
     },
     {
+      id: 'q3',
       q: 'Qual é o valor de type(idade) depois de idade = 27?',
       options: ["<class 'str'>", "<class 'int'>", "<class 'float'>", "<class 'bool'>"],
       answer: 1,
       explain: '27 é um número inteiro, então idade recebe o tipo int automaticamente (tipagem dinâmica).',
     },
     {
+      id: 'q4',
       q: 'O que representa None em Python?',
       options: ['O número zero', 'Uma string vazia', 'A ausência de valor', 'Sempre um erro'],
       answer: 2,
@@ -114,6 +118,7 @@ export const modSintaxe: Module = {
       hint: 'Não é numérico nem texto.',
     },
     {
+      id: 'q5',
       q: 'Complete: para inserir o valor de uma variável dentro de um texto, o jeito moderno em Python é usar uma ___-string, escrevendo a letra f antes das aspas.',
       fill: true,
       pre: 'O jeito moderno de inserir uma variável dentro de um texto é usar uma',

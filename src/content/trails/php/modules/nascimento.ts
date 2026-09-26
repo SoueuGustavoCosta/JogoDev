@@ -68,6 +68,7 @@ export const modNascimento: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'Qual era o propósito original das "Personal Home Page Tools", criadas por Rasmus Lerdorf?',
       options: [
         'Construir um banco de dados',
@@ -79,12 +80,14 @@ export const modNascimento: Module = {
       explain: 'Lerdorf escreveu os scripts originais em 1994 só para saber quantas pessoas visitavam sua página pessoal (o currículo).',
     },
     {
+      id: 'q2',
       q: 'Quem reescreveu o motor de PHP, criando o que hoje se chama Zend Engine?',
       options: ['Rasmus Lerdorf sozinho', 'James Gosling', 'Andi Gutmans e Zeev Suraski', 'Guido van Rossum'],
       answer: 2,
       explain: 'Em 1997, os estudantes Andi Gutmans e Zeev Suraski reescreveram o interpretador, dando origem ao Zend Engine (nome que vem da junção dos dois primeiros nomes).',
     },
     {
+      id: 'q3',
       q: 'O que significa a sigla PHP hoje?',
       options: [
         'Personal Home Page (o nome original, sem mudar)',
@@ -96,12 +99,14 @@ export const modNascimento: Module = {
       explain: 'Depois da reescrita de 1997-98, a sigla virou recursiva: "PHP: Hypertext Preprocessor", contendo a própria sigla dentro do significado.',
     },
     {
+      id: 'q4',
       q: 'Qual grande sistema de gerenciamento de sites é famosamente escrito em PHP?',
       options: ['WordPress', 'Photoshop', 'Windows', 'Excel'],
       answer: 0,
       explain: 'WordPress, usado por uma parcela enorme dos sites do mundo, é escrito em PHP.',
     },
     {
+      id: 'q5',
       q: 'Complete: você já tinha visto PHP em ação antes desta lua, sem saber: o chefe Loopus Infinitus, da Era da ___, foi escrito nessa linguagem.',
       fill: true,
       pre: 'O chefe Loopus Infinitus, da Era da',

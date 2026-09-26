@@ -60,6 +60,7 @@ export const modClasses: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'O que é o construtor de uma classe Java?',
       options: [
         'Um método qualquer, com qualquer nome',
@@ -71,6 +72,7 @@ export const modClasses: Module = {
       explain: 'O construtor tem o mesmo nome da classe, não declara tipo de retorno, e roda automaticamente ao usar new.',
     },
     {
+      id: 'q2',
       q: 'Por que declarar atributos como private, com getters e setters em vez de deixá-los public?',
       options: [
         'Não faz diferença nenhuma',
@@ -82,6 +84,7 @@ export const modClasses: Module = {
       explain: 'Encapsulamento protege os dados: a classe pode validar ou restringir como os atributos são lidos e alterados.',
     },
     {
+      id: 'q3',
       q: 'O que this.nome = nome; faz dentro de um construtor?',
       options: [
         'Cria uma variável nova chamada nome',
@@ -93,6 +96,7 @@ export const modClasses: Module = {
       explain: 'this se refere ao próprio objeto, diferenciando o atributo da classe do parâmetro recebido, que têm o mesmo nome.',
     },
     {
+      id: 'q4',
       q: 'O que acontece com o construtor padrão (sem parâmetros) se você escrever qualquer outro construtor na classe?',
       options: [
         'Ele continua existindo junto com o novo',
@@ -105,6 +109,7 @@ export const modClasses: Module = {
       hint: 'Pense no que acontece quando você já "assume o controle" de como o objeto nasce.',
     },
     {
+      id: 'q5',
       q: 'Complete: um método público que devolve o valor de um atributo privado é chamado de ___.',
       fill: true,
       pre: 'Um método público que devolve o valor de um atributo privado é chamado de',

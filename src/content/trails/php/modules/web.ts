@@ -69,12 +69,14 @@ export const modWeb: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'Por onde chegam os dados guardados no array $_GET?',
       options: ['No corpo de um formulário POST', 'Na própria URL, depois do ?', 'No banco de dados', 'Numa variável de sessão'],
       answer: 1,
       explain: '$_GET recolhe automaticamente os parâmetros que vêm na URL, como pagina.php?busca=python.',
     },
     {
+      id: 'q2',
       q: 'Por que um script PHP precisa de $_SESSION para "lembrar" algo entre duas páginas?',
       options: [
         'Porque PHP não tem variáveis',
@@ -86,18 +88,21 @@ export const modWeb: Module = {
       explain: 'Cada requisição HTTP é independente; o script PHP "nasce e morre" a cada uma. $_SESSION é o jeito de manter dados entre requisições do mesmo visitante.',
     },
     {
+      id: 'q3',
       q: 'O que precisa ser chamado antes de usar $_SESSION num script PHP?',
       options: ['session_start()', 'session_init()', 'new Session()', 'Nada, funciona direto'],
       answer: 0,
       explain: 'session_start() precisa ser chamado (geralmente no início do script) para habilitar o uso de $_SESSION.',
     },
     {
+      id: 'q4',
       q: 'Qual superglobal guarda os dados enviados por um formulário HTML com method="post"?',
       options: ['$_GET', '$_POST', '$_SESSION', '$_FORM'],
       answer: 1,
       explain: '$_POST recebe os dados enviados no corpo de uma requisição POST, como um formulário submetido.',
     },
     {
+      id: 'q5',
       q: 'Complete: nunca se deve confiar direto em dados vindos de $_GET ou $_POST sem antes ___ o que foi recebido.',
       fill: true,
       pre: 'Nunca se deve confiar direto em dados vindos de $_GET ou $_POST sem antes',

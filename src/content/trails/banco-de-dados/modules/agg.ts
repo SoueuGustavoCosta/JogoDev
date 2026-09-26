@@ -26,24 +26,28 @@ export const modAgg: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: "Qual função conta quantas linhas existem?",
       options: ["SUM","COUNT","AVG","MAX"],
       answer: 1,
       explain: "COUNT(*) conta linhas.",
     },
     {
+      id: 'q2',
       q: "Você quer só os clientes que gastaram mais de 200 no total. Onde colocar a condição?",
       options: ["No WHERE","No HAVING","No LIMIT","No FROM"],
       answer: 1,
       explain: "A soma só existe depois do GROUP BY, então o filtro vai no HAVING.",
     },
     {
+      id: 'q3',
       q: "Qual é o primeiro passo na ordem de execução do banco?",
       options: ["SELECT","ORDER BY","FROM / JOIN","LIMIT"],
       answer: 2,
       explain: "O banco primeiro descobre de onde vêm as linhas (FROM e JOIN).",
     },
     {
+      id: 'q4',
       q: "Na tabela produtos, a coluna descricao está NULL em todas as linhas. O que retorna  SELECT COUNT(descricao) FROM produtos ?",
       options: ["4","1","NULL","0"],
       answer: 3,

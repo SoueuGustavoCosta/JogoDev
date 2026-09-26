@@ -91,6 +91,7 @@ export const modNascimento: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'Quem começou a escrever Python, e onde?',
       options: [
         'Guido van Rossum, no CWI, em Amsterdã',
@@ -102,6 +103,7 @@ export const modNascimento: Module = {
       explain: 'Guido van Rossum começou Python em dezembro de 1989, como projeto de hobby no CWI (Centrum Wiskunde & Informatica), na Holanda.',
     },
     {
+      id: 'q2',
       q: 'De onde vem o nome "Python"?',
       options: [
         'Da cobra píton, escolhida como mascote desde o início',
@@ -113,12 +115,14 @@ export const modNascimento: Module = {
       explain: 'Guido era fã do programa de comédia Monty Python\'s Flying Circus. A cobra na identidade visual veio depois, por trocadilho da comunidade.',
     },
     {
+      id: 'q3',
       q: 'Em que ano a primeira versão pública de Python (0.9.0) foi publicada?',
       options: ['1985', '1991', '1995', '2008'],
       answer: 1,
       explain: 'Guido publicou o código-fonte em fevereiro de 1991, no grupo alt.sources da Usenet.',
     },
     {
+      id: 'q4',
       q: 'O que é o "Zen de Python"?',
       options: [
         'Um manual oficial de instalação',
@@ -131,6 +135,7 @@ export const modNascimento: Module = {
       hint: 'Pense no comando que aparece no bloco de código deste farol.',
     },
     {
+      id: 'q5',
       q: 'Complete: Guido van Rossum foi conhecido por quase 30 anos como o ___ de Python, até renunciar ao cargo em 2018.',
       fill: true,
       pre: 'Guido van Rossum foi conhecido por quase 30 anos como o',

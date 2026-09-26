@@ -37,12 +37,14 @@ export const modDesfazer: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'Qual comando é seguro para desfazer um commit que já foi compartilhado com o time?',
       options: ['git reset --hard', 'git revert', 'git rm', 'git clone'],
       answer: 1,
       explain: 'git revert cria um novo commit "de correção", sem reescrever o histórico já compartilhado.',
     },
     {
+      id: 'q2',
       q: 'Para que serve o git stash?',
       options: [
         'Apagar de vez as mudanças não commitadas',
@@ -54,6 +56,7 @@ export const modDesfazer: Module = {
       explain: 'É como colocar o trabalho no bolso: git stash pop traz de volta depois.',
     },
     {
+      id: 'q3',
       q: 'Complete: qual comando mostra as diferenças linha a linha antes de commitar?',
       fill: true,
       pre: '',

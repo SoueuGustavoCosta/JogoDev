@@ -22,24 +22,28 @@ export const modProjeto: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: "Na biblioteca, por que EXEMPLAR é considerada uma entidade fraca?",
       options: ["Porque tem poucos atributos","Porque só existe por causa de um livro","Porque não tem chave","Porque é opcional"],
       answer: 1,
       explain: "Um exemplar depende de um livro para existir: entidade fraca.",
     },
     {
+      id: 'q2',
       q: "Qual é a ordem correta das etapas de um projeto de banco?",
       options: ["DDL, DER, requisitos, normalização","Requisitos, DER, tabelas, normalização, DDL","Normalização, DDL, requisitos, DER","DER, DDL, requisitos, tabelas"],
       answer: 1,
       explain: "Do abstrato ao concreto: requisitos, modelo conceitual, lógico, normalização e só então o SQL.",
     },
     {
+      id: 'q3',
       q: "A tabela emprestimos liga alunos a exemplares. Que papel ela cumpre?",
       options: ["Entidade forte independente","Tabela associativa de uma relação N:N","Dicionário de dados","View"],
       answer: 1,
       explain: "Um aluno pega vários exemplares e um exemplar é pego por vários alunos ao longo do tempo: N:N resolvido por uma tabela associativa.",
     },
     {
+      id: 'q4',
       q: "Qual consulta acha os empréstimos ainda em aberto?",
       options: ["WHERE devolucao = NULL","WHERE devolucao IS NULL","WHERE devolucao > 0","WHERE NOT devolucao"],
       answer: 1,

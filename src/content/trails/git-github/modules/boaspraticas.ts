@@ -39,6 +39,7 @@ export const modBoaspraticas: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'Complete: qual arquivo especial diz ao Git quais arquivos e pastas ignorar?',
       fill: true,
       pre: '',
@@ -49,6 +50,7 @@ export const modBoaspraticas: Module = {
       explain: 'O .gitignore lista padrões de arquivos que o Git nunca deve rastrear.',
     },
     {
+      id: 'q2',
       q: 'Por que a pasta node_modules normalmente não deve ir para o repositório?',
       options: [
         'Porque o Git não aceita pastas com esse nome',
@@ -60,6 +62,7 @@ export const modBoaspraticas: Module = {
       explain: 'Se pode ser recriada com um comando de instalação, não precisa de histórico versionado.',
     },
     {
+      id: 'q3',
       q: 'Qual é uma boa prática de mensagem de commit?',
       options: [
         'Escrever sempre "mudanças"',

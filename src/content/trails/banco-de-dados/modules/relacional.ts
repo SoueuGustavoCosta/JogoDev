@@ -23,24 +23,28 @@ export const modRelacional: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: "Na terminologia formal, uma linha de tabela é chamada de...",
       options: ["Atributo","Domínio","Relação","Tupla"],
       answer: 3,
       explain: "Tupla é a linha, atributo é a coluna e relação é a tabela.",
     },
     {
+      id: 'q2',
       q: "Uma tabela tem CPF e e-mail, ambos únicos. Você escolhe o CPF como PK. O e-mail é uma chave...",
       options: ["Estrangeira","Alternativa","Composta","Primária"],
       answer: 1,
       explain: "O e-mail é uma chave candidata que não foi escolhida como primária: chave alternativa (UNIQUE).",
     },
     {
+      id: 'q3',
       q: "Inserir um pedido com cliente_id = 999, que não existe em clientes, viola qual integridade?",
       options: ["De entidade","De domínio","Referencial","Nenhuma"],
       answer: 2,
       explain: "A chave estrangeira aponta para um registro inexistente: integridade referencial.",
     },
     {
+      id: 'q4',
       q: "Um CHECK (preco >= 0) protege qual tipo de integridade?",
       options: ["De domínio","De entidade","Referencial","De backup"],
       answer: 0,

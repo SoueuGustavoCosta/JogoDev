@@ -91,12 +91,14 @@ export const modModulos: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'O que é um "módulo" em Python?',
       options: ['Um comentário especial', 'Um arquivo .py que pode ser importado', 'Um tipo de variável', 'Um tipo de erro'],
       answer: 1,
       explain: 'Qualquer arquivo .py pode ser importado como módulo em outro arquivo com import.',
     },
     {
+      id: 'q2',
       q: 'O que significa a frase "batteries included" sobre Python?',
       options: [
         'Python precisa de hardware especial para rodar',
@@ -108,12 +110,14 @@ export const modModulos: Module = {
       explain: '"Pilhas incluídas" descreve como a biblioteca padrão de Python já resolve tarefas comuns (math, datetime, os) sem depender de pacotes externos.',
     },
     {
+      id: 'q3',
       q: 'Qual ferramenta é usada para instalar pacotes de fora da biblioteca padrão, vindos do PyPI?',
       options: ['import', 'pip', 'with', 'venv'],
       answer: 1,
       explain: 'pip install &lt;pacote&gt; baixa e instala bibliotecas publicadas no PyPI (Python Package Index).',
     },
     {
+      id: 'q4',
       q: 'Por que with open("arquivo.txt") as f é preferível a abrir o arquivo sem with?',
       options: [
         'É mais rápido de digitar',
@@ -126,6 +130,7 @@ export const modModulos: Module = {
       hint: 'Pense no que acontece se o programa quebrar no meio da leitura.',
     },
     {
+      id: 'q5',
       q: 'Complete: para abrir um arquivo apagando o conteúdo anterior e escrever nele, o modo usado em open() é "___".',
       fill: true,
       pre: 'Para abrir um arquivo apagando o conteúdo anterior e escrever nele, o modo usado é "',

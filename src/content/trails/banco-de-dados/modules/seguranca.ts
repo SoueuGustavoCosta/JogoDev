@@ -28,24 +28,28 @@ export const modSeguranca: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: "Qual comando retira uma permissão que foi concedida?",
       options: ["DROP","DENY","REVOKE","ROLLBACK"],
       answer: 2,
       explain: "REVOKE retira. O DENY existe no SQL Server, mas não no PostgreSQL.",
     },
     {
+      id: 'q2',
       q: "Qual é a melhor defesa contra SQL Injection?",
       options: ["Usar aspas duplas","Consultas parametrizadas","Deixar o banco sem senha","Usar só letras minúsculas"],
       answer: 1,
       explain: "Enviar o comando e os valores separados impede que texto do usuário vire código SQL.",
     },
     {
+      id: 'q3',
       q: "O princípio do menor privilégio diz que...",
       options: ["Todos devem ser administradores","Cada usuário recebe apenas as permissões de que precisa","Só o DBA acessa o banco","Nenhum usuário tem senha"],
       answer: 1,
       explain: "Permissões mínimas reduzem o estrago de erros e ataques.",
     },
     {
+      id: 'q4',
       q: "Na regra 3-2-1 de backup, o \"1\" significa...",
       options: ["Um usuário","Uma cópia fora do local","Um banco","Uma senha"],
       answer: 1,

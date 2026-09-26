@@ -77,12 +77,14 @@ export const modPoo: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'Qual método roda automaticamente quando um objeto é criado a partir de uma classe?',
       options: ['__main__', '__init__', '__new__', 'start()'],
       answer: 1,
       explain: '__init__ é chamado automaticamente ao criar um objeto novo, servindo para preparar seus dados iniciais.',
     },
     {
+      id: 'q2',
       q: 'O que self representa dentro de um método?',
       options: [
         'O nome da classe',
@@ -94,6 +96,7 @@ export const modPoo: Module = {
       explain: 'self é uma referência ao próprio objeto (instância) que está executando o método.',
     },
     {
+      id: 'q3',
       q: 'O que super().__init__(nome) faz dentro de uma classe filha?',
       options: [
         'Cria uma nova classe do zero',
@@ -106,6 +109,7 @@ export const modPoo: Module = {
       hint: 'Pense em "super" como um atalho para a classe de onde esta herda.',
     },
     {
+      id: 'q4',
       q: 'class ViajanteVIP(Viajante): o que essa linha significa?',
       options: [
         'ViajanteVIP e Viajante são a mesma classe',
@@ -117,6 +121,7 @@ export const modPoo: Module = {
       explain: 'Escrever a classe-mãe entre parênteses após o nome da classe nova estabelece herança: ViajanteVIP herda de Viajante.',
     },
     {
+      id: 'q5',
       q: 'Complete: um atributo definido com self.nome dentro do __init__ pertence a cada ___ individualmente, não à classe inteira.',
       fill: true,
       pre: 'Um atributo definido com self.nome pertence a cada',

@@ -25,18 +25,21 @@ export const modSintaxe: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: "Qual a forma correta de escrever um texto em SQL?",
       options: ["\"Ana\"","'Ana'","(Ana)","Ana;"],
       answer: 1,
       explain: "Textos (strings) usam aspas simples.",
     },
     {
+      id: 'q2',
       q: "A indentação e as quebras de linha mudam o resultado da consulta?",
       options: ["Sim, o banco lê só a primeira linha","Sim, mas só em consultas grandes","Não, servem para facilitar a leitura","Só mudam se estiver em minúsculas"],
       answer: 2,
       explain: "O SQL ignora espaços extras. A indentação é um cuidado com quem vai ler.",
     },
     {
+      id: 'q3',
       q: "Complete: todo comando SQL termina com...",
       fill: true,
       pre: "SELECT 1",
@@ -47,6 +50,7 @@ export const modSintaxe: Module = {
       explain: "O ponto e vírgula marca o fim do comando.",
     },
     {
+      id: 'q4',
       q: "GRANT e REVOKE pertencem a qual grupo do SQL?",
       options: ["DDL","DML","TCL","DCL"],
       answer: 3,

@@ -30,24 +30,28 @@ export const modWhere: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: "Com os 4 produtos que inserimos, qual produto volta em  WHERE estoque = 0 ?",
       options: ["Mouse Gamer","Teclado Mecânico","Teclado Compacto","Monitor 24 pol"],
       answer: 2,
       explain: "Só o Teclado Compacto foi cadastrado com estoque 0.",
     },
     {
+      id: 'q2',
       q: "Como procurar produtos sem descrição preenchida?",
       options: ["WHERE descricao = NULL","WHERE descricao IS NULL","WHERE descricao = ''","WHERE NOT descricao"],
       answer: 1,
       explain: "NULL só se compara com IS NULL / IS NOT NULL.",
     },
     {
+      id: 'q3',
       q: "O que faz  ORDER BY preco DESC  ?",
       options: ["Ordena do menor para o maior","Ordena do maior para o menor","Remove os preços","Descreve a tabela"],
       answer: 1,
       explain: "DESC é decrescente: do maior para o menor.",
     },
     {
+      id: 'q4',
       q: "Com os nossos produtos, quantas linhas retorna  WHERE categoria_id = 1 OR categoria_id = 2 AND estoque > 0 ?",
       options: ["2","4","3","1"],
       answer: 2,

@@ -23,24 +23,28 @@ export const modIndices: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: "Para que serve um índice?",
       options: ["Apagar dados duplicados","Acelerar buscas em uma coluna","Criar backup","Proteger com senha"],
       answer: 1,
       explain: "O índice permite achar linhas sem ler a tabela inteira.",
     },
     {
+      id: 'q2',
       q: "Qual é o principal custo de ter muitos índices?",
       options: ["Deixam as leituras lentas","Deixam INSERT, UPDATE e DELETE mais lentos e ocupam espaço","Impedem JOINs","Apagam dados"],
       answer: 1,
       explain: "Toda escrita precisa atualizar também os índices.",
     },
     {
+      id: 'q3',
       q: "Qual comando mostra o plano de execução de uma consulta?",
       options: ["SHOW PLAN","EXPLAIN","DESCRIBE INDEX","PROFILE"],
       answer: 1,
       explain: "EXPLAIN mostra como o banco pretende executar. EXPLAIN ANALYZE executa e mede.",
     },
     {
+      id: 'q4',
       q: "Em qual coluna um índice traz MENOS benefício?",
       options: ["Uma FK muito usada em JOIN","Um e-mail único","Uma coluna ativo (só true ou false) em tabela pequena","Uma data usada em ORDER BY"],
       answer: 2,

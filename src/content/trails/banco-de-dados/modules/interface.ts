@@ -25,18 +25,21 @@ export const modInterface: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: "Quando você cria uma tabela clicando no pgAdmin, o que acontece por baixo dos panos?",
       options: ["Nada: o pgAdmin guarda em um arquivo próprio","O pgAdmin gera e executa um comando SQL","O Windows cria a tabela","O banco é reiniciado"],
       answer: 1,
       explain: "A interface só facilita: ela monta o SQL e envia para o PostgreSQL.",
     },
     {
+      id: 'q2',
       q: "Qual é uma vantagem de criar o banco por scripts de código?",
       options: ["É impossível errar","Não precisa de senha","Pode ser repetido e versionado no Git","Só funciona no Mac"],
       answer: 2,
       explain: "Scripts são repetíveis e podem ser guardados e revisados como qualquer código.",
     },
     {
+      id: 'q3',
       q: "Complete: qual comando do psql lista as tabelas do banco atual?",
       fill: true,
       pre: "",

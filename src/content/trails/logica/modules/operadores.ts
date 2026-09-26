@@ -77,12 +77,14 @@ export const modOperadores: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'Quanto vale  2 + 3 * 4 ?',
       options: ['20', '14', '24', '9'],
       answer: 1,
       explain: 'A multiplicação vem antes: 3 * 4 = 12, mais 2 = 14.',
     },
     {
+      id: 'q2',
       q: 'Quanto vale o resto de  10 % 3 ?',
       fill: true,
       pre: '10 % 3 =',
@@ -93,6 +95,7 @@ export const modOperadores: Module = {
       explain: '10 dividido por 3 dá 3 e sobra 1.',
     },
     {
+      id: 'q3',
       q: 'Qual operador compara se dois valores são iguais?',
       fill: true,
       pre: '$x',
@@ -103,18 +106,21 @@ export const modOperadores: Module = {
       explain: '<code>==</code> compara. Um <code>=</code> sozinho atribui.',
     },
     {
+      id: 'q4',
       q: 'Quanto vale  true && false ?',
       options: ['true', 'false', 'erro', 'null'],
       answer: 1,
       explain: 'O "E" só é verdadeiro se as duas partes forem verdadeiras.',
     },
     {
+      id: 'q5',
       q: 'O que faz  if ($x = 5)  em vez de  if ($x == 5) ?',
       options: ['Compara x com 5', 'Atribui 5 a x e a condição vira verdadeira', 'Dá erro de sintaxe', 'Compara tipos'],
       answer: 1,
       explain: 'É um bug clássico: atribuição no lugar de comparação.',
     },
     {
+      id: 'q6',
       q: 'Complete: $i++ equivale a  $i = $i +',
       fill: true,
       pre: '$i = $i +',

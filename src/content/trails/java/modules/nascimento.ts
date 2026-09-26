@@ -69,6 +69,7 @@ export const modNascimento: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'Qual era o objetivo original do Green Project, que deu origem a Java?',
       options: [
         'Criar sites para a internet',
@@ -80,6 +81,7 @@ export const modNascimento: Module = {
       explain: 'O Green Project, na Sun Microsystems, mirava eletrônicos de consumo — a linguagem só foi direcionada à internet depois.',
     },
     {
+      id: 'q2',
       q: 'Qual era o primeiro nome da linguagem, antes de virar "Java"?',
       options: ['Oak', 'Silk', 'DNA', 'Green'],
       answer: 0,
@@ -87,6 +89,7 @@ export const modNascimento: Module = {
       hint: 'É o nome de uma árvore em inglês.',
     },
     {
+      id: 'q3',
       q: 'De onde veio o nome "Java"?',
       options: [
         'De uma sigla técnica da Sun Microsystems',
@@ -98,6 +101,7 @@ export const modNascimento: Module = {
       explain: 'O nome veio do café (Java também é o nome de uma ilha indonésia famosa por sua produção de café), escolhido entre outras opções como "Silk" e "DNA".',
     },
     {
+      id: 'q4',
       q: 'O que significa "Write Once, Run Anywhere"?',
       options: [
         'Todo código Java precisa ser reescrito para cada sistema operacional',
@@ -109,6 +113,7 @@ export const modNascimento: Module = {
       explain: 'Graças à JVM (Java Virtual Machine), o mesmo bytecode compilado roda em qualquer sistema operacional que tenha a JVM.',
     },
     {
+      id: 'q5',
       q: 'Complete: o formato intermediário para o qual o código Java compila, entendido pela JVM, se chama ___.',
       fill: true,
       pre: 'O formato intermediário para o qual o código Java compila se chama',

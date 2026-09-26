@@ -71,6 +71,7 @@ export const modLoops: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'O que foreach ($viajante as $chave => $valor) permite fazer?',
       options: [
         'Percorrer um array pegando a chave e o valor ao mesmo tempo',
@@ -82,24 +83,28 @@ export const modLoops: Module = {
       explain: 'A sintaxe chave => valor no foreach permite acessar tanto a chave quanto o valor de cada item de um array associativo.',
     },
     {
+      id: 'q2',
       q: 'Qual laço garante rodar o bloco pelo menos uma vez, mesmo que a condição já comece falsa?',
       options: ['for', 'while', 'do-while', 'foreach'],
       answer: 2,
       explain: 'No do-while, a condição só é testada depois do bloco rodar, garantindo pelo menos uma execução.',
     },
     {
+      id: 'q3',
       q: 'O que for ($i = 0; $i < 3; $i++) { echo $i; } imprime?',
       options: ['0 1 2', '012', '123', '0123'],
       answer: 1,
       explain: 'echo sem separador junta os valores sem espaço: 0, 1, 2 saem colados como "012".',
     },
     {
+      id: 'q4',
       q: 'Qual comando pula o resto da volta atual, sem sair do laço inteiro?',
       options: ['break', 'continue', 'return', 'exit'],
       answer: 1,
       explain: 'continue pula direto para a próxima volta; break sai do laço inteiro.',
     },
     {
+      id: 'q5',
       q: 'Complete: para percorrer os itens de um array sem controlar um índice manualmente, PHP usa o laço ___.',
       fill: true,
       pre: 'Para percorrer os itens de um array sem controlar um índice manualmente, PHP usa o laço',

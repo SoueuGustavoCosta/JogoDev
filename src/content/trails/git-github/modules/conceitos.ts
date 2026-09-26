@@ -37,6 +37,7 @@ export const modConceitos: Module = {
   ],
   quiz: [
     {
+      id: 'q1',
       q: 'O que fica gravado permanentemente na pasta .git (o repositório)?',
       options: [
         'Só os arquivos abertos no editor no momento',
@@ -48,6 +49,7 @@ export const modConceitos: Module = {
       explain: 'O repositório é onde o histórico de commits vive de fato.',
     },
     {
+      id: 'q2',
       q: 'Qual é a função da Staging Area?',
       options: [
         'Apagar arquivos definitivamente',
@@ -59,6 +61,7 @@ export const modConceitos: Module = {
       explain: 'A staging area é o "envelope": você decide o que entra antes de lacrar o commit.',
     },
     {
+      id: 'q3',
       q: 'Além da mensagem, o que um commit guarda?',
       options: [
         'Nada além do texto digitado',
