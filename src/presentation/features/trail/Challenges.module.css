@@ -24,7 +24,10 @@
 .program {
   margin: 0;
   padding: 10px 14px 14px;
-  white-space: pre;
+  /* Quebra linhas longas em vez de esconder o fim numa rolagem lateral: no celular, a parte
+     escondida era justamente a que decidia a resposta (ex.: o AND de um WHERE). */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
   font: inherit;
 }
 
@@ -143,7 +146,7 @@
 
 .bugLine {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: 12px;
   width: 100%;
   min-height: var(--touch-target);
@@ -176,7 +179,8 @@
 }
 
 .lineText {
-  white-space: pre;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .bugOk {
