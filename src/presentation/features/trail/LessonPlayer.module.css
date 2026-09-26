@@ -93,7 +93,8 @@
 
 .body {
   flex: 1;
-  padding: 18px 0 calc(170px + env(safe-area-inset-bottom));
+  /* Espaço para a barra fixa de baixo: com explicação de 3 linhas ela passa de 200px. */
+  padding: 18px 0 calc(240px + env(safe-area-inset-bottom));
   animation: screenIn 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
