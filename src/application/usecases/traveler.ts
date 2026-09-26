@@ -10,7 +10,7 @@ const MAX_NAME_LENGTH = 20;
  * e `jogadores.nome` é único (índice `jogadores_nome_unique_ci`, sem diferenciar
  * maiúsculas/minúsculas). Descoberto numa auditoria rodando o app de verdade contra o
  * banco: o SEGUNDO viajante a nunca ter escolhido nome já falha (409, chave duplicada)
- * em todo envio pra nuvem — checkInDaily, upsertPlayer (a cada módulo/insígnia/chefe) e
+ * em todo envio pra nuvem — openTimeline/recordPlayedDay, upsertPlayer (a cada módulo/insígnia/chefe) e
  * o backup do progresso — silenciosamente, porque essas chamadas nunca propagam erro pra
  * tela. Sufixo derivado do próprio `travelerUuid` (já único) resolve isso sem pedir nada
  * a mais do aluno: cada aparelho que nunca nomeou o viajante ganha um nome padrão só

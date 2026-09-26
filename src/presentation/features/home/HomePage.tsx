@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
-import { countAnomalySolvers, getContinueLesson, getDailyAnomaly, getTraveler } from '@/application/usecases';
+import { countAnomalySolvers, getContinueLesson, getDailyAnomaly, getTimeline, getTraveler } from '@/application/usecases';
 import { anomalies } from '@/content/anomalies';
 import { trailRegistry } from '@/content/registry';
+import { TimelineNodes } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
 import styles from './HomePage.module.css';
 
@@ -23,6 +24,7 @@ export function HomePage() {
   const traveler = getTraveler({ repository: progressRepository });
   const daily = useMemo(() => getDailyAnomaly({ repository: progressRepository }, { pool: anomalies }), [progressRepository]);
   const next = useMemo(() => getContinueLesson({ repository: progressRepository }, { trails: trailRegistry }), [progressRepository]);
+  const timeline = useMemo(() => getTimeline({ repository: progressRepository }), [progressRepository]);
   const [solvers, setSolvers] = useState<number | null>(null);
 
   useEffect(() => {
@@ -41,6 +43,17 @@ export function HomePage() {
 
   return (
     <div className={styles.root}>
+      <section className={styles.timeline} aria-labelledby="linha-titulo">
+        <div className={styles.timelineHead}>
+          <h2 id="linha-titulo">Linha do tempo</h2>
+          <span>
+            {timeline.state.current === 1 ? '1 dia estável' : `${timeline.state.current} dias estável`}
+            {timeline.state.anchors > 0 ? ` · ${timeline.state.anchors} ⚓` : ''}
+          </span>
+        </div>
+        <TimelineNodes nodes={timeline.week} />
+      </section>
+
       <section className={`${styles.anomaly} ${solved ? styles.anomalySolved : ''}`} aria-labelledby="anomalia-titulo">
         <div className={styles.eyebrow}>
           <span>

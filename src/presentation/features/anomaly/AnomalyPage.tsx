@@ -8,6 +8,7 @@ import { TryBlockView } from '@/presentation/blocks';
 import { SintaxeFace } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
 import { QuizQuestion } from '@/presentation/features/trail';
+import { AnomalyReward } from './AnomalyReward';
 import styles from './AnomalyPage.module.css';
 
 /** A Anomalia do Dia: a história do Eco, o desafio e a recompensa (uma vez por dia). */
@@ -16,6 +17,7 @@ export function AnomalyPage() {
   const traveler = getTraveler({ repository: progressRepository });
   const daily = useMemo(() => getDailyAnomaly({ repository: progressRepository }, { pool: anomalies }), [progressRepository]);
   const [reward, setReward] = useState<SolveAnomalyResult | null>(null);
+  const [showReward, setShowReward] = useState(false);
   const tries = useRef(0);
   const navigate = useNavigate();
 
@@ -57,7 +59,9 @@ export function AnomalyPage() {
         <p>{anomaly.story}</p>
       </div>
 
-      {alreadySolved ? (
+      {reward?.added && showReward ? (
+        <AnomalyReward number={daily.number} reward={reward} />
+      ) : alreadySolved ? (
         <div className={styles.reward} role="status">
           <b>Você já consertou a anomalia de hoje ✓</b>
           <span>A linha está estável. Amanhã surge outra.</span>
@@ -79,28 +83,16 @@ export function AnomalyPage() {
                 position={1}
                 total={1}
                 label="Anomalia do Dia"
-                nextLabel="Voltar ao início"
-                onNext={() => navigate('/')}
+                nextLabel="Ver recompensa ▸"
+                onNext={() => (reward?.added ? setShowReward(true) : navigate('/'))}
                 evaluate={evaluate}
               />
             )}
           </div>
-          {reward ? (
-            <div className={styles.reward} role="status">
-              <b>Anomalia consertada!</b>
-              {reward.added ? (
-                <span className={styles.gains}>
-                  <span className={styles.xp}>+{reward.xp} XP</span> <span className={styles.fragment}>+{reward.fragments} ◆</span>
-                </span>
-              ) : null}
-              <span>A linha do tempo ficou estável por hoje.</span>
-              {/* Na pergunta, o próprio botão dela já volta ao início. */}
-              {'t' in anomaly.challenge ? (
-                <Link to="/" className={styles.back}>
-                  Voltar ao início
-                </Link>
-              ) : null}
-            </div>
+          {reward?.added && 't' in anomaly.challenge ? (
+            <button type="button" className={styles.back} onClick={() => setShowReward(true)}>
+              Ver recompensa ▸
+            </button>
           ) : null}
         </>
       )}

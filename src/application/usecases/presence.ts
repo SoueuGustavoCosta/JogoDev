@@ -1,5 +1,5 @@
 import { anomalyXpTotal, createEmptyProgress, fragmentsEarned, xpForTrail } from '@/domain/progress';
-import { checkInStreak, localDateISO, travelerLevel, type StreakCheckIn } from '@/domain/traveler';
+import { travelerLevel } from '@/domain/traveler';
 import type { Badge } from '@/domain/badges';
 import type { Trail } from '@/domain/trail';
 import type { LeaderboardPort, OnlinePlayer, ProgressRepository } from '../ports';
@@ -56,38 +56,6 @@ export function getProfileSummary(
     streak: { current: progress.streakCurrent ?? 0, best: progress.streakBest ?? 0 },
     fragments: fragmentsEarned(progress),
   };
-}
-
-/**
- * Check-in diário: só abrir o app num dia já conta como "jogou aquele dia" (decisão
- * do autor). Chamar uma vez por sessão do app (não em intervalo). Atualiza o cache
- * local imediatamente e sincroniza com o Supabase em segundo plano, sem bloquear.
- */
-export function checkInDaily(
-  deps: { repository: ProgressRepository; leaderboard: LeaderboardPort },
-  now: Date = new Date(),
-): StreakCheckIn {
-  const progress = deps.repository.load() ?? createEmptyProgress();
-  const today = localDateISO(now);
-  const checkIn = checkInStreak(
-    progress.ultimoDiaAtivo ?? null,
-    today,
-    progress.streakCurrent ?? 0,
-    progress.streakBest ?? 0,
-  );
-  const { current, best } = checkIn;
-
-  deps.repository.save({ ...progress, streakCurrent: current, streakBest: best, ultimoDiaAtivo: today });
-
-  const uuid = getOrCreateTravelerUuid({ repository: deps.repository });
-  const name = getTraveler({ repository: deps.repository }).name;
-  void deps.leaderboard.checkIn(uuid, {
-    nome: name,
-    sequenciaAtual: current,
-    sequenciaRecorde: best,
-    ultimoDiaAtivo: today,
-  });
-  return checkIn;
 }
 
 /** Batimento de presença ("estou aqui"): chamado uma vez ao montar e depois a cada ~90s. */

@@ -1,0 +1,145 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));
+  background: radial-gradient(circle at 50% 35%, rgba(255, 93, 122, 0.18), transparent 60%), var(--color-bg);
+  overflow-y: auto;
+}
+
+.panel {
+  width: min(460px, 100%);
+  display: grid;
+  gap: 16px;
+  text-align: center;
+}
+
+.art {
+  width: 100%;
+  height: auto;
+}
+
+.lineOn {
+  stroke: var(--color-cyan);
+  stroke-width: 6;
+  stroke-linecap: round;
+  fill: none;
+}
+
+.lineOff {
+  stroke: var(--color-line);
+  stroke-width: 4;
+  fill: none;
+}
+
+.lineEco {
+  stroke: var(--color-bad);
+  stroke-width: 4;
+  stroke-dasharray: 8 8;
+  fill: none;
+}
+
+.knot {
+  fill: var(--color-bg);
+  stroke: var(--color-bad);
+  stroke-width: 5;
+}
+
+.eco {
+  fill: none;
+  stroke: var(--color-bad);
+  stroke-width: 3;
+}
+
+.ecoEye {
+  fill: var(--color-bad);
+}
+
+.ecoMouth {
+  fill: none;
+  stroke: var(--color-bad);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.ecoLabel {
+  fill: var(--color-bad);
+  font: 12px var(--font-mono);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: 1.9rem;
+}
+
+.text {
+  margin: 0;
+  color: var(--color-muted);
+  line-height: 1.5;
+}
+
+.anchor {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: 18px;
+  border: 1px solid var(--color-gold);
+  background: var(--color-panel);
+  text-align: left;
+}
+
+.anchor span:last-child {
+  display: grid;
+}
+
+.anchor small {
+  color: var(--color-muted);
+}
+
+.anchorCount {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px dashed var(--color-gold);
+  color: var(--color-gold);
+  font: 700 1.1rem var(--font-mono);
+}
+
+.actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.gold,
+.ghost {
+  min-height: 52px;
+  border-radius: 14px;
+  font: 700 1.05rem var(--font-body);
+  cursor: pointer;
+}
+
+.gold {
+  border: 0;
+  background: var(--color-gold);
+  color: var(--color-bg);
+}
+
+.ghost {
+  border: 1px solid var(--color-line);
+  background: transparent;
+  color: var(--color-text);
+}
+
+.gold:focus-visible,
+.ghost:focus-visible {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 3px;
+}

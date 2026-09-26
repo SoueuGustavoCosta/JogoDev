@@ -69,6 +69,7 @@ export function TimeMap({
   progress,
   startHereEraId,
   onEnterEra,
+  ecoEra = 0,
 }: {
   summary: ProfileSummary;
   onlinePlayers: OnlinePlayer[];
@@ -76,6 +77,8 @@ export function TimeMap({
   /** Era com o selo "Comece aqui" (só para quem ainda não concluiu nenhum módulo). */
   startHereEraId?: string;
   onEnterEra: (era: MapEra) => void;
+  /** Em que era o Eco está (Linha do Tempo, Etapa 8): aparece como um terminal vermelho perto dela. */
+  ecoEra?: number;
 }) {
   const travelerName = summary.name;
   const startHereEra = VISIBLE_ERAS.find((e) => e.id === startHereEraId);
@@ -456,6 +459,23 @@ export function TimeMap({
               </g>
             );
           })}
+
+          {(() => {
+            // O Eco (a cópia com defeito do viajante) avança uma era a cada linha ramificada.
+            const era = VISIBLE_ERAS[Math.min(ecoEra, VISIBLE_ERAS.length - 1)];
+            if (!era) return null;
+            return (
+              <g transform={`translate(${era.x - 140} ${era.y + 20})`} aria-label={`O Eco está perto da ${era.name}`} role="img">
+                <rect x={-26} y={-24} width={52} height={46} rx={11} fill="#0a0912" stroke="#ff5d7a" strokeWidth={4} />
+                <circle cx={-9} cy={-6} r={4} fill="#ff5d7a" />
+                <circle cx={9} cy={-6} r={4} fill="#ff5d7a" />
+                <path d="M-10 12 Q0 4 10 12" fill="none" stroke="#ff5d7a" strokeWidth={4} strokeLinecap="round" />
+                <text y={44} textAnchor="middle" fontSize={17} fill="#ff5d7a" fontFamily="JetBrains Mono, monospace">
+                  o Eco
+                </text>
+              </g>
+            );
+          })()}
 
           {VISIBLE_ERAS.flatMap((e) =>
             (e.satellites ?? []).map((sat, i) => {

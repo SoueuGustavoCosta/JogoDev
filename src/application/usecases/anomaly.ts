@@ -10,6 +10,7 @@ import {
 import { createEmptyProgress, recordAnomaly, type AnomalyResult, type Progress } from '@/domain/progress';
 import { paginateModule, type Trail } from '@/domain/trail';
 import type { AnalyticsPort, LeaderboardPort, ProgressRepository } from '../ports';
+import { recordPlayedDay, type PlayedDay } from './timeline';
 
 export type DailyAnomaly = {
   day: string;
@@ -59,7 +60,13 @@ export function openAnomaly(deps: { analytics: AnalyticsPort }, anomalyId: strin
   deps.analytics.track('anomaly_opened', { anomaly: anomalyId });
 }
 
-export type SolveAnomalyResult = { added: boolean; xp: number; fragments: number };
+export type SolveAnomalyResult = {
+  added: boolean;
+  xp: number;
+  fragments: number;
+  /** Como ficou a Linha do Tempo (consertar a anomalia conta como dia jogado). */
+  timeline?: PlayedDay;
+};
 
 /**
  * Registra a anomalia do dia como consertada: recompensa no progresso (uma vez por dia),
@@ -85,7 +92,8 @@ export function solveAnomaly(
   if (next.travelerUuid) {
     void deps.leaderboard.recordAnomalySolved(next.travelerUuid, params.anomaly.id, params.day).catch(() => undefined);
   }
-  return { added: true, xp: result.xp, fragments: result.fragments };
+  const timeline = recordPlayedDay(deps, params.now);
+  return { added: true, xp: result.xp, fragments: result.fragments, timeline };
 }
 
 /** "N viajantes já consertaram" (sem nomes). `null` = não dá pra saber (offline). */

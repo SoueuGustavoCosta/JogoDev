@@ -297,7 +297,7 @@ export class SupabaseLeaderboard implements LeaderboardPort {
    * do próprio comando UPDATE (quantas linhas afetou), não de nenhuma leitura — por isso
    * também não precisa de SELECT.
    *
-   * Update-então-insere não é atômico: `checkInDaily` e o batimento de presença disparam
+   * Update-então-insere não é atômico: `openTimeline` e o batimento de presença disparam
    * juntos, sem esperar um pelo outro (ver `Layout.tsx`), e ambos podem tentar criar a
    * linha do jogador pela primeira vez ao mesmo tempo. Se o UPDATE daqui não achar
    * nenhuma linha (`count === 0`) mas, entre isso e o INSERT, o outro lado já tiver

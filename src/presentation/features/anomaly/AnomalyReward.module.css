@@ -1,0 +1,98 @@
+.root {
+  display: grid;
+  gap: 14px;
+  justify-items: center;
+  text-align: center;
+  padding: 24px 4px;
+}
+
+.eyebrow {
+  margin: 0;
+  font: 0.95rem var(--font-mono);
+  color: var(--color-cyan);
+}
+
+.big {
+  margin: 0;
+  font: 800 6rem/1 var(--font-title);
+  color: var(--color-cyan);
+  text-shadow: 0 0 36px rgba(94, 231, 255, 0.45);
+}
+
+.caption {
+  margin: -6px 0 6px;
+  font: 700 1.6rem var(--font-title);
+}
+
+.chips {
+  display: flex;
+  gap: 10px;
+}
+
+.chips span {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--color-line);
+  font-weight: 700;
+}
+
+.xp {
+  color: var(--color-gold);
+}
+
+.fragment {
+  color: var(--color-cyan);
+}
+
+.text {
+  margin: 0;
+  max-width: 34ch;
+  color: var(--color-muted);
+  line-height: 1.5;
+}
+
+.text b {
+  color: var(--color-gold);
+}
+
+.actions {
+  width: 100%;
+  display: grid;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.primary,
+.ghost {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  border-radius: 14px;
+  font: 700 1.05rem var(--font-body);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.primary {
+  background: linear-gradient(135deg, var(--color-purple), #7b2ff0);
+  color: #fff;
+}
+
+.ghost {
+  border: 1px solid var(--color-line);
+  background: transparent;
+  color: var(--color-text);
+}
+
+.primary:focus-visible,
+.ghost:focus-visible {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 3px;
+}
+
+.shared {
+  margin: 0;
+  color: var(--color-good);
+  font-size: 0.92rem;
+}

@@ -73,6 +73,8 @@
   color: #fff;
   font: 700 1rem var(--font-body);
   text-decoration: none;
+  border: 0;
+  cursor: pointer;
 }
 
 .back:focus-visible {

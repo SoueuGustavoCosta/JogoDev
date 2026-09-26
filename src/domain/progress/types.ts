@@ -57,7 +57,7 @@ export type Progress = {
   badgesEarned?: Record<string, string>;
   /**
    * Cache local do cabeçalho do viajante (avatar + sequência diária), preenchido pelas
-   * sincronizações com o Supabase (ver LeaderboardPort/checkInDaily/uploadAvatarPhoto) e
+   * sincronizações com o Supabase (ver LeaderboardPort/openTimeline/uploadAvatarPhoto) e
    * lido primeiro pela UI, sem esperar rede. Campos novos e opcionais: progresso salvo
    * antes deles continua válido sem migração (chaves simplesmente ausentes).
    */

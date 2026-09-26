@@ -158,3 +158,27 @@
   border-radius: 999px;
   background: var(--color-good);
 }
+
+.timeline {
+  display: grid;
+  gap: 14px;
+}
+
+.timelineHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+}
+
+.timelineHead h2 {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: 1.5rem;
+}
+
+.timelineHead span {
+  font: 0.95rem var(--font-mono);
+  color: var(--color-cyan);
+}

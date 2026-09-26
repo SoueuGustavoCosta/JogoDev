@@ -12,10 +12,13 @@ export function ProfileHeader({
   summary,
   onlinePlayers,
   streakGrew = false,
+  hideStreak = false,
 }: {
   summary: ProfileSummary;
   onlinePlayers: OnlinePlayer[];
   streakGrew?: boolean;
+  /** No Início a Linha do Tempo substitui o foguinho (Etapa 8). */
+  hideStreak?: boolean;
 }) {
   const { progressRepository, leaderboard, resizeAvatarImage } = useServices();
   const [avatarOverride, setAvatarOverride] = useState<string | null>(null);
@@ -80,9 +83,11 @@ export function ProfileHeader({
             <b>{summary.fragments}</b> ◆
           </span>
         ) : null}
-        <span className={`${styles.pill} ${streakGrew ? styles.pillHot : ''}`} title="Dias seguidos estudando">
-          🔥 <b>{summary.streak.current}</b>
-        </span>
+        {hideStreak ? null : (
+          <span className={`${styles.pill} ${streakGrew ? styles.pillHot : ''}`} title="Dias seguidos da Linha do Tempo">
+            🔥 <b>{summary.streak.current}</b>
+          </span>
+        )}
         <span className={styles.pill}>
           <b>
             {summary.badgesEarnedCount}/{summary.badgesTotal}

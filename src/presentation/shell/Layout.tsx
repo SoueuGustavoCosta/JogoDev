@@ -3,12 +3,12 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import {
   backupProgress,
   bootstrapTravelerIdentity,
-  checkInDaily,
   getPresence,
   getLessonMode,
   getProfileSummary,
   getTraveler,
   needsSignInAgain,
+  openTimeline,
   sendHeartbeat,
 } from '@/application/usecases';
 import type { ProfileSummary } from '@/application/usecases';
@@ -17,13 +17,13 @@ import { trailRegistry } from '@/content/registry';
 import { badgeCatalog } from '@/content/badges/catalog';
 import { SUPPORT_COPY } from '@/domain/support';
 import { DEFAULT_LESSON_MODE } from '@/config/exploration';
-import type { StreakCheckIn } from '@/domain/traveler';
+import type { TimelineStatus } from '@/domain/traveler';
 import { HallIcon, HomeIcon, MapIcon, TravelerIcon } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
 import { SupportModal } from '@/presentation/features/support';
 import { AccountSheetProvider } from '@/presentation/features/account';
 import { ProfileHeader } from './ProfileHeader';
-import { StreakCelebration } from './StreakCelebration';
+import { LineBranched } from './LineBranched';
 import styles from './Layout.module.css';
 
 /** Batimento de presença ("estou aqui"): a cada ~90s enquanto o app está aberto. */
@@ -71,10 +71,9 @@ export function Layout() {
   const location = useLocation();
   const [supportOpen, setSupportOpen] = useState(false);
   const [onlinePlayers, setOnlinePlayers] = useState<OnlinePlayer[]>([]);
-  // Check-in do dia que ainda não foi comemorado; null depois de fechar (uma vez por sessão).
-  const [pendingStreak, setPendingStreak] = useState<StreakCheckIn | null>(null);
-  const [streakGrew, setStreakGrew] = useState(false);
-  const closeStreak = useCallback(() => setPendingStreak(null), []);
+  // Linha do Tempo conferida ao abrir (uma vez por sessão): dia perdido abre "A linha ramificou".
+  const [branch, setBranch] = useState<Extract<TimelineStatus, { kind: 'can-anchor' | 'broken' }> | null>(null);
+  const closeBranch = useCallback(() => setBranch(null), []);
 
   const isMap = location.pathname === '/mapa';
   const isHome = location.pathname === '/';
@@ -135,11 +134,9 @@ export function Layout() {
     // navegável enquanto isto roda em segundo plano.
     bootstrapTravelerIdentity({ repository: progressRepository, leaderboard }).finally(() => {
       if (cancelled) return;
-      const checkIn = checkInDaily({ repository: progressRepository, leaderboard });
-      if (checkIn.kind !== 'same-day') {
-        setPendingStreak(checkIn);
-        setStreakGrew(true);
-      }
+      // Abrir o app não conta como dia jogado (Etapa 8); só confere a linha e sincroniza.
+      const status = openTimeline({ repository: progressRepository, leaderboard });
+      if (status.kind === 'can-anchor' || status.kind === 'broken') setBranch(status);
       refreshPresence();
     });
 
@@ -190,7 +187,7 @@ export function Layout() {
                     ◂ Voltar ao mapa
                   </Link>
                 )}
-                <ProfileHeader summary={summary} onlinePlayers={onlinePlayers} streakGrew={streakGrew} />
+                <ProfileHeader summary={summary} onlinePlayers={onlinePlayers} hideStreak={isHome} />
               </header>
             )}
             <main className={`${styles.main} ${isModule ? styles.mainBare : ''}`}>
@@ -210,9 +207,8 @@ export function Layout() {
           </div>
         )}
 
-        {/* Fora do mapa e do Início de propósito: as telas do hub não recebem nada por cima. A comemoração
-            espera o aluno entrar numa trilha/tela interna. */}
-        {pendingStreak && !isMap && !isHome ? <StreakCelebration checkIn={pendingStreak} onClose={closeStreak} /> : null}
+        {/* A linha ramificou: única tela que pode aparecer por cima do hub (é sobre o dia perdido). */}
+        {branch && !lessonFullScreen ? <LineBranched status={branch} onClose={closeBranch} /> : null}
 
         {supportOpen ? <SupportModal onClose={() => setSupportOpen(false)} /> : null}
       </div>

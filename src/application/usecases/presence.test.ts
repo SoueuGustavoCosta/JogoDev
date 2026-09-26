@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { Progress } from '@/domain/progress';
 import type { LeaderboardPort, OnlinePlayer, PlayerProfile, HallOfTravelersEntry, SignInResult, SignUpResult } from '../ports';
 import type { ProgressRepository } from '../ports';
-import { backupProgress, BIO_MAX_LENGTH, checkInDaily, generateAndSaveRecoveryCode, getCachedBio, restoreProgress, saveBio } from './presence';
+import { backupProgress, BIO_MAX_LENGTH, generateAndSaveRecoveryCode, getCachedBio, restoreProgress, saveBio } from './presence';
 
 class Memory implements ProgressRepository {
   data: Progress | null = null;
@@ -288,23 +288,5 @@ describe('getCachedBio', () => {
     const repository = new Memory();
     repository.save({ version: 1, trails: {}, bio: 'Oi' });
     expect(getCachedBio({ repository })).toBe('Oi');
-  });
-});
-
-describe('checkInDaily', () => {
-  it('grava a data local e devolve o check-in para a tela comemorar', () => {
-    const repo = new Memory();
-    repo.data = { version: 1, trails: {}, streakCurrent: 2, streakBest: 2, ultimoDiaAtivo: '2026-09-20' };
-    const result = checkInDaily({ repository: repo, leaderboard: new StubLeaderboard() }, new Date(2026, 8, 21, 22, 30));
-    expect(result).toEqual({ current: 3, best: 3, kind: 'continued', newRecord: true });
-    expect(repo.data?.ultimoDiaAtivo).toBe('2026-09-21');
-    expect(repo.data?.streakCurrent).toBe(3);
-  });
-
-  it('segunda abertura no mesmo dia não comemora de novo', () => {
-    const repo = new Memory();
-    const deps = { repository: repo, leaderboard: new StubLeaderboard() };
-    checkInDaily(deps, new Date(2026, 8, 21, 9));
-    expect(checkInDaily(deps, new Date(2026, 8, 21, 18)).kind).toBe('same-day');
   });
 });

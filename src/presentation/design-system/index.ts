@@ -11,3 +11,4 @@ export * from './Confetti';
 export * from './BadgeMedal';
 export * from './Badge3D';
 export * from './sound';
+export * from './TimelineNodes';

@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { Navigate, useNavigate, useOutletContext } from 'react-router-dom';
-import { getTraveler, getTrailProgress } from '@/application/usecases';
+import { getTimeline, getTraveler, getTrailProgress } from '@/application/usecases';
 import { trailRegistry } from '@/content/registry';
 import { isEraRestored } from '@/domain/progress';
 import { useServices } from '@/presentation/app/ServicesContext';
@@ -56,6 +56,7 @@ export function ArchipelagoHome() {
       progress={progress}
       startHereEraId={firstSteps ? START_HERE_ERA_ID : undefined}
       onEnterEra={(era: MapEra) => era.trailId && navigate(`/trilhas/${era.trailId}`)}
+      ecoEra={getTimeline({ repository: progressRepository }).state.ecoEra}
     />
   );
 }

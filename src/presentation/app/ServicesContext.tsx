@@ -10,6 +10,7 @@ import { generateRecoveryCode, NoopLeaderboard, resizeAvatarImage, SupabaseLeade
 import { PgliteEngine } from '@/infrastructure/sql';
 import { PhpWasmEngine } from '@/infrastructure/php';
 import { NavigatorClipboard } from '@/infrastructure/clipboard';
+import { shareText } from '@/infrastructure/share';
 
 export type Services = {
   progressRepository: ProgressRepository;
@@ -31,6 +32,8 @@ export type Services = {
    * passa por aqui para respeitar a fronteira de camadas.
    */
   generateRecoveryCode: typeof generateRecoveryCode;
+  /** Compartilhar um texto (menu nativo do celular, ou copiar). Mesmo motivo acima: não é porta. */
+  shareText: typeof shareText;
 };
 
 const ServicesContext = createContext<Services | null>(null);
@@ -57,6 +60,7 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
       leaderboard: import.meta.env.PROD ? new SupabaseLeaderboard() : new NoopLeaderboard(),
       resizeAvatarImage,
       generateRecoveryCode,
+      shareText,
     }),
     [],
   );

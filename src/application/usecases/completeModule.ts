@@ -10,6 +10,7 @@ import type { Trail } from '@/domain/trail';
 import type { Badge } from '@/domain/badges';
 import type { AnalyticsPort, LeaderboardPort, ProgressRepository } from '../ports';
 import { awardBadge, awardBadgesForModule } from './badges';
+import { recordPlayedDay } from './timeline';
 
 export type CompleteModuleParams = {
   trail: Trail;
@@ -96,6 +97,10 @@ export function completeModule(
       awardBadge(deps, { badgeId: params.trail.completionBadgeId, traveler: params.traveler });
     }
   }
+
+  // Concluir uma lição inteira conta como dia jogado na Linha do Tempo (Etapa 8). Por
+  // último: as gravações acima partem de uma cópia anterior do progresso.
+  recordPlayedDay(deps);
 
   return {
     alreadyCompleted: false,

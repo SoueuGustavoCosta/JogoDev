@@ -16,3 +16,4 @@ export * from './lesson';
 export * from './quizIdMigration';
 export * from './tryBlock';
 export * from './anomaly';
+export * from './timeline';
