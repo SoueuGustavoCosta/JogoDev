@@ -153,10 +153,9 @@ export function LessonPlayer({
             </>
           ) : screen?.kind === 'quiz' && quizItem ? (
             <QuizQuestion
-              key={screen.quizIndex}
+              key={quizItem.id}
               trailId={trail.id}
               moduleId={module.id}
-              quizIndex={screen.quizIndex}
               item={quizItem}
               variant="lesson"
               position={screen.quizIndex + 1}

@@ -1,6 +1,9 @@
 import { createContext, useContext, useEffect, useMemo, type ReactNode } from 'react';
 import type { AnalyticsPort, ClipboardPort, LeaderboardPort, PhpEnginePort, ProgressRepository, SqlEnginePort } from '@/application/ports';
 import { LocalStorageProgressRepository } from '@/infrastructure/storage';
+import { withQuizIdMigration } from '@/application/usecases';
+import { buildQuizIdIndex } from '@/domain/progress';
+import { trailRegistry } from '@/content/registry';
 import { NoopAnalytics, PostHogAnalytics, startVercelPageViews } from '@/infrastructure/analytics';
 import { POSTHOG_HOST, POSTHOG_KEY } from '@/config/analytics';
 import { generateRecoveryCode, NoopLeaderboard, resizeAvatarImage, SupabaseLeaderboard } from '@/infrastructure/leaderboard';
@@ -39,7 +42,8 @@ const ServicesContext = createContext<Services | null>(null);
 export function ServicesProvider({ children }: { children: ReactNode }) {
   const services = useMemo<Services>(
     () => ({
-      progressRepository: new LocalStorageProgressRepository(),
+      // Converte o progresso antigo do quiz (por posição) para id da pergunta, em toda leitura e gravação.
+      progressRepository: withQuizIdMigration(new LocalStorageProgressRepository(), buildQuizIdIndex(trailRegistry)),
       // Eventos no PostHog (grátis) só em produção e com a chave configurada; visitas na Vercel (ver abaixo).
       analytics:
         import.meta.env.PROD && POSTHOG_KEY

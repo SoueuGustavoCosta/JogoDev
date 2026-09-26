@@ -24,10 +24,9 @@ export function QuizRunner({
   return (
     <section className={styles.quiz} aria-label="Paradoxo do salto">
       <QuizQuestion
-        key={index}
+        key={quiz[index].id}
         trailId={trailId}
         moduleId={moduleId}
-        quizIndex={index}
         item={quiz[index]}
         variant="inline"
         position={index + 1}

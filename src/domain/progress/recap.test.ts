@@ -8,7 +8,7 @@ const mod = (id: string): Module => ({ id, short: id, title: id, lead: '', level
 const trail = { id: 't', title: 't', tagline: '', symbol: 'db', accent: '', modules: [mod('a'), mod('b'), mod('c')] } as unknown as Trail;
 
 function progressWith(tries: number[], completed: string[] = ['a']): TrailProgress {
-  const quizResults = Object.fromEntries(tries.map((t, i) => [i, { correct: true, triesUsed: t }]));
+  const quizResults = Object.fromEntries(tries.map((t, i) => [`p${i}`, { correct: true, triesUsed: t }]));
   const modules = Object.fromEntries(
     ['a', 'b', 'c'].map((id) => [id, { moduleId: id, quizResults: id === 'a' ? quizResults : {}, completed: completed.includes(id) }]),
   );

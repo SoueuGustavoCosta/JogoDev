@@ -11,10 +11,7 @@ export function xpForQuizAttempt(result: QuizAttemptResult | undefined): number 
 }
 
 export function xpForModule(module: Module, progress: ModuleProgress | undefined): number {
-  const quizXp = module.quiz.reduce(
-    (sum, _item, index) => sum + xpForQuizAttempt(progress?.quizResults[index]),
-    0,
-  );
+  const quizXp = module.quiz.reduce((sum, item) => sum + xpForQuizAttempt(progress?.quizResults[item.id]), 0);
   const bonus = progress?.completed ? XP_MODULE_COMPLETION_BONUS : 0;
   return quizXp + bonus;
 }

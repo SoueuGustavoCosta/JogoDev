@@ -6,7 +6,18 @@ export type QuizAttemptResult = {
 
 export type ModuleProgress = {
   moduleId: string;
-  quizResults: Record<number, QuizAttemptResult>;
+  /**
+   * Resultado de cada pergunta, pelo `id` dela (ver QuizItem). Até a Etapa 3.5 a chave era
+   * a posição da pergunta ("0", "1"...); `migrateQuizResultKeys` converte esse formato
+   * antigo ao ler o progresso (formato continua v1).
+   */
+  quizResults: Record<string, QuizAttemptResult>;
+  /**
+   * Resultados do formato antigo (por posição) que não correspondem a nenhuma pergunta do
+   * conteúdo atual. Guardados intactos, pela posição, em vez de descartados. Não valem XP.
+   * Campo opcional (Etapa 3.5): ausente = nada a guardar.
+   */
+  unmappedQuizResults?: Record<string, QuizAttemptResult>;
   completed: boolean;
   /**
    * Tela em que o viajante parou na lição em telas curtas (posição na lista de

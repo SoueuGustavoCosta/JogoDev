@@ -5,3 +5,4 @@ export * from './quiz';
 export * from './factory';
 export * from './recap';
 export * from './merge';
+export * from './quizIds';

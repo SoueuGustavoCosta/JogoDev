@@ -52,7 +52,7 @@ describe('xpForModule / maxXpForModule', () => {
   it('sums quiz xp without the completion bonus when the module is not completed', () => {
     const progress: ModuleProgress = {
       moduleId: 'm1',
-      quizResults: { 0: { correct: true, triesUsed: 1 }, 1: { correct: true, triesUsed: 2 } },
+      quizResults: { q1: { correct: true, triesUsed: 1 }, q2: { correct: true, triesUsed: 2 } },
       completed: false,
     };
     expect(xpForModule(module, progress)).toBe(XP_FIRST_TRY + XP_RETRY);
@@ -61,7 +61,7 @@ describe('xpForModule / maxXpForModule', () => {
   it('adds the completion bonus once the module is completed', () => {
     const progress: ModuleProgress = {
       moduleId: 'm1',
-      quizResults: { 0: { correct: true, triesUsed: 1 }, 1: { correct: true, triesUsed: 1 } },
+      quizResults: { q1: { correct: true, triesUsed: 1 }, q2: { correct: true, triesUsed: 1 } },
       completed: true,
     };
     expect(xpForModule(module, progress)).toBe(2 * XP_FIRST_TRY + XP_MODULE_COMPLETION_BONUS);
@@ -96,5 +96,23 @@ describe('xpForTrail / maxXpForTrail', () => {
       trophyAwarded: false,
     };
     expect(xpForTrail(trail, progress)).toBe(XP_MODULE_COMPLETION_BONUS);
+  });
+});
+
+describe('xpForModule: resultado pelo id da pergunta', () => {
+  it('segue a pergunta pelo id, não pela posição (pergunta que muda de lugar leva o resultado junto)', () => {
+    const reordered: Module = { ...module, quiz: [module.quiz[1], module.quiz[0]] };
+    const progress: ModuleProgress = { moduleId: 'm1', completed: false, quizResults: { q1: { correct: true, triesUsed: 1 } } };
+    expect(xpForModule(reordered, progress)).toBe(XP_FIRST_TRY);
+  });
+
+  it('chave antiga (posição) e resultados guardados à parte não valem XP', () => {
+    const progress: ModuleProgress = {
+      moduleId: 'm1',
+      completed: false,
+      quizResults: { 0: { correct: true, triesUsed: 1 } },
+      unmappedQuizResults: { 5: { correct: true, triesUsed: 1 } },
+    };
+    expect(xpForModule(module, progress)).toBe(0);
   });
 });

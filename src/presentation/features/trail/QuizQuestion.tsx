@@ -27,7 +27,6 @@ export type QuizQuestionState =
 export function QuizQuestion({
   trailId,
   moduleId,
-  quizIndex,
   item,
   variant,
   position,
@@ -39,7 +38,6 @@ export function QuizQuestion({
 }: {
   trailId: string;
   moduleId: string;
-  quizIndex: number;
   item: QuizItem;
   variant: 'inline' | 'lesson';
   /** Número da pergunta (a partir de 1) e total, para o cabeçalho "Paradoxo N de M". */
@@ -78,7 +76,7 @@ export function QuizQuestion({
   }, [isSolved, attempts]);
 
   function submit(answer: QuizAnswer, choiceIndex?: number) {
-    const result = answerQuiz({ repository: progressRepository, analytics }, { trailId, moduleId, quizIndex, item, answer });
+    const result = answerQuiz({ repository: progressRepository, analytics }, { trailId, moduleId, item, answer });
     onAnswered?.();
     if (result.correct) {
       setXpGained(result.xpGained);

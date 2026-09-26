@@ -19,13 +19,13 @@ export type ModuleRecap = {
 /** Resumo de como o aluno foi num módulo, para a Sintaxe comentar ao concluir. */
 export function moduleRecap(trail: Trail, moduleId: string, progress: TrailProgress | undefined): ModuleRecap {
   const module = trail.modules.find((m) => m.id === moduleId);
-  const total = module?.quiz.length ?? 0;
+  const quiz = module?.quiz ?? [];
+  const total = quiz.length;
   const results = progress?.modules[moduleId]?.quizResults ?? {};
-  let firstTry = 0;
-  for (let i = 0; i < total; i++) {
-    const r = results[i];
-    if (r?.correct && r.triesUsed <= 1) firstTry++;
-  }
+  const firstTry = quiz.filter((item) => {
+    const r = results[item.id];
+    return r?.correct && r.triesUsed <= 1;
+  }).length;
   let tier: ModuleRecapTier;
   if (firstTry === total) tier = 'perfect';
   else if (firstTry * 2 >= total) tier = 'good';

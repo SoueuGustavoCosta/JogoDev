@@ -12,7 +12,7 @@ import type { AnalyticsPort, ProgressRepository } from '../ports';
 export type AnswerQuizParams = {
   trailId: string;
   moduleId: string;
-  quizIndex: number;
+  /** A pergunta respondida; o resultado fica guardado pelo `item.id`. */
   item: QuizItem;
   answer: QuizAnswer;
 };
@@ -31,7 +31,7 @@ export function answerQuiz(
   const trailProgress = getOrCreateTrailProgress(progress, params.trailId);
   const moduleProgress = getOrCreateModuleProgress(trailProgress, params.moduleId);
 
-  const existing = moduleProgress.quizResults[params.quizIndex];
+  const existing = moduleProgress.quizResults[params.item.id];
   if (existing?.correct) {
     return { correct: true, alreadyAnswered: true, xpGained: 0 };
   }
@@ -54,7 +54,7 @@ export function answerQuiz(
             ...moduleProgress,
             quizResults: {
               ...moduleProgress.quizResults,
-              [params.quizIndex]: { correct, triesUsed },
+              [params.item.id]: { correct, triesUsed },
             },
           },
         },

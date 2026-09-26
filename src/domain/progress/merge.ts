@@ -9,8 +9,10 @@ import type { ModuleProgress, Progress, QuizAttemptResult, TrailProgress } from 
  *
  * - Conquistas somam: módulo, missão, troféu e chefe concluídos em qualquer lado ficam
  *   concluídos; insígnias viram a união (com a data mais antiga).
- * - Quiz: fica a melhor tentativa de cada pergunta (acerto > erro; entre acertos, menos
- *   tentativas), então o XP só pode subir.
+ * - Quiz: fica a melhor tentativa de cada pergunta, pelo id (acerto > erro; entre acertos,
+ *   menos tentativas), então o XP só pode subir. Resultados guardados à parte
+ *   (`unmappedQuizResults`) também somam. Chaves antigas (posição) de uma cópia ainda não
+ *   migrada são juntadas como estão; `migrateQuizResultKeys` as converte depois.
  * - Sequência: a do dia de acesso mais recente; recorde é o maior já visto.
  * - Perfil (nome, uuid, foto, resumo, código): de `primary`, completando com `secondary`.
  *   Quem chama decide quem é a identidade "dona" (a conta no login; o aparelho no backup).
@@ -80,16 +82,32 @@ function mergeTrail(trailId: string, a: TrailProgress | undefined, b: TrailProgr
 
 function mergeModule(moduleId: string, a: ModuleProgress | undefined, b: ModuleProgress | undefined): ModuleProgress {
   if (!a || !b) return (a ?? b)!;
-  const indexes = new Set([...Object.keys(a.quizResults ?? {}), ...Object.keys(b.quizResults ?? {})].map(Number));
-  const quizResults: Record<number, QuizAttemptResult> = {};
-  for (const i of indexes) quizResults[i] = bestAttempt(a.quizResults?.[i], b.quizResults?.[i]);
-  const merged: ModuleProgress = { moduleId, quizResults, completed: Boolean(a.completed || b.completed) };
+  const merged: ModuleProgress = {
+    moduleId,
+    quizResults: mergeQuizResults(a.quizResults, b.quizResults),
+    completed: Boolean(a.completed || b.completed),
+  };
+  if (a.unmappedQuizResults || b.unmappedQuizResults) {
+    merged.unmappedQuizResults = mergeQuizResults(a.unmappedQuizResults, b.unmappedQuizResults);
+  }
   const screen = Math.max(a.screen ?? -1, b.screen ?? -1);
   if (screen >= 0) merged.screen = screen;
   return merged;
 }
 
-function bestAttempt(a: QuizAttemptResult | undefined, b: QuizAttemptResult | undefined): QuizAttemptResult {
+/** Por chave (id da pergunta; posição, no formato antigo), a melhor tentativa das duas cópias. */
+function mergeQuizResults(
+  a: Record<string, QuizAttemptResult> | undefined,
+  b: Record<string, QuizAttemptResult> | undefined,
+): Record<string, QuizAttemptResult> {
+  const keys = new Set([...Object.keys(a ?? {}), ...Object.keys(b ?? {})]);
+  const out: Record<string, QuizAttemptResult> = {};
+  for (const key of keys) out[key] = bestQuizAttempt(a?.[key], b?.[key]);
+  return out;
+}
+
+/** A melhor de duas tentativas da mesma pergunta: acerto > erro; entre acertos, menos tentativas. */
+export function bestQuizAttempt(a: QuizAttemptResult | undefined, b: QuizAttemptResult | undefined): QuizAttemptResult {
   if (!a || !b) return (a ?? b)!;
   if (a.correct !== b.correct) return a.correct ? a : b;
   if (a.correct) return a.triesUsed <= b.triesUsed ? a : b;
