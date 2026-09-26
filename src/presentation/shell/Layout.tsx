@@ -11,6 +11,7 @@ import {
   needsSignInAgain,
   openTimeline,
   sendHeartbeat,
+  syncWeeklyXp,
 } from '@/application/usecases';
 import type { ProfileSummary } from '@/application/usecases';
 import type { OnlinePlayer } from '@/application/ports';
@@ -131,6 +132,9 @@ export function Layout() {
 
     const refreshPresence = () => {
       sendHeartbeat({ repository: progressRepository, leaderboard });
+      // XP da semana (Liga dos Viajantes) sobe junto do batimento: perguntas respondidas
+      // desde o último envio entram no ranking sem uma chamada por resposta.
+      syncWeeklyXp({ repository: progressRepository, leaderboard });
       void backupProgress({ repository: progressRepository, leaderboard });
       getPresence({ leaderboard })
         .then((players) => {
@@ -181,8 +185,7 @@ export function Layout() {
           <nav className={styles.nav} aria-label="Navegação principal">
             <NavItem to="/" end label="Início" icon={<HomeIcon />} />
             <NavItem to="/mapa" label="Mapa" icon={<MapIcon />} />
-            {/* A Liga semanal chega na Etapa 10; até lá a aba abre o Hall dos Viajantes. */}
-            <NavItem to="/hall" label="Liga" icon={<HallIcon />} />
+            <NavItem to="/liga" label="Liga" icon={<HallIcon />} />
             <NavItem
               to="/configuracoes"
               label="Viajante"
