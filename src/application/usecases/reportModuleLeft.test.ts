@@ -68,4 +68,10 @@ describe('reportModuleLeft', () => {
     reportModuleLeft({ repository, analytics: new RecordingAnalytics() }, params);
     expect(JSON.stringify(repository.load())).toBe(before);
   });
+
+  it('na lição em telas, informa também a tela em que saiu', () => {
+    const analytics = new RecordingAnalytics();
+    reportModuleLeft({ repository: new InMemoryProgressRepository(null), analytics }, { ...params, percent: 20, screen: 3 });
+    expect(analytics.events[0].props).toEqual({ island: 'logica', module: 'variaveis', percent: 20, screen: 3 });
+  });
 });

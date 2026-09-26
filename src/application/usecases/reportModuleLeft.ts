@@ -5,15 +5,21 @@ import type { AnalyticsPort, ProgressRepository } from '../ports';
  * de desistência que mostra em que altura do módulo as pessoas param. Quem sai de um módulo
  * já concluído (revisão) não é desistência e não gera evento.
  *
- * `percent` é quanto do módulo a pessoa viu, já arredondado (ver `scrollDepthPercent`).
+ * `percent` é quanto do módulo a pessoa viu, já arredondado (ver `scrollDepthPercent` e
+ * `screenDepthPercent`). Na lição em telas curtas, `screen` é a tela (a partir de 1) em que saiu.
  * Devolve `true` se o evento foi enviado.
  */
 export function reportModuleLeft(
   deps: { repository: ProgressRepository; analytics: AnalyticsPort },
-  params: { trailId: string; moduleId: string; percent: number },
+  params: { trailId: string; moduleId: string; percent: number; screen?: number },
 ): boolean {
   const completed = deps.repository.load()?.trails[params.trailId]?.modules[params.moduleId]?.completed;
   if (completed) return false;
-  deps.analytics.track('module_left', { island: params.trailId, module: params.moduleId, percent: params.percent });
+  deps.analytics.track('module_left', {
+    island: params.trailId,
+    module: params.moduleId,
+    percent: params.percent,
+    ...(params.screen === undefined ? {} : { screen: params.screen }),
+  });
   return true;
 }

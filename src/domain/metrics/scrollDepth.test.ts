@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { scrollDepthPercent } from './scrollDepth';
+import { screenDepthPercent, scrollDepthPercent } from './scrollDepth';
 
 describe('scrollDepthPercent', () => {
   it('no topo de uma página longa conta só o que está visível', () => {
@@ -33,5 +33,20 @@ describe('scrollDepthPercent', () => {
     expect(scrollDepthPercent({ scrollTop: -120, viewportHeight: 800, contentHeight: 8000 })).toBe(10);
     expect(scrollDepthPercent({ scrollTop: 9999, viewportHeight: 800, contentHeight: 8000 })).toBe(100);
     expect(scrollDepthPercent({ scrollTop: Number.NaN, viewportHeight: 800, contentHeight: 8000 })).toBe(0);
+  });
+});
+
+describe('screenDepthPercent', () => {
+  it('conta a tela atual como vista e arredonda para baixo', () => {
+    expect(screenDepthPercent(1, 14)).toBe(0);
+    expect(screenDepthPercent(3, 14)).toBe(20);
+    expect(screenDepthPercent(7, 14)).toBe(50);
+    expect(screenDepthPercent(14, 14)).toBe(100);
+  });
+
+  it('nunca sai de 0–100', () => {
+    expect(screenDepthPercent(20, 14)).toBe(100);
+    expect(screenDepthPercent(-1, 14)).toBe(0);
+    expect(screenDepthPercent(3, 0)).toBe(0);
   });
 });

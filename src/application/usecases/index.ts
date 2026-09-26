@@ -12,3 +12,4 @@ export * from './traveler';
 export * from './presence';
 export * from './phoneAuth';
 export * from './reportModuleLeft';
+export * from './lesson';

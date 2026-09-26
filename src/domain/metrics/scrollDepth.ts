@@ -23,3 +23,13 @@ export function scrollDepthPercent(measures: {
   if (percent >= 99.5) return 100;
   return Math.floor(percent / 10) * 10;
 }
+
+/**
+ * Mesma ideia de `scrollDepthPercent`, para a lição em telas curtas: quantas telas o aluno
+ * já viu (contando a atual) de um total, arredondado para baixo de 10 em 10.
+ */
+export function screenDepthPercent(screensSeen: number, totalScreens: number): number {
+  if (!Number.isFinite(screensSeen) || !Number.isFinite(totalScreens) || totalScreens <= 0) return 0;
+  const percent = Math.min(100, Math.max(0, (screensSeen / totalScreens) * 100));
+  return Math.floor(percent / 10) * 10;
+}
