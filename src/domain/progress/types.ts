@@ -114,6 +114,17 @@ export type Progress = {
    * Etapa 9 usa como base da moeda. Campo novo e opcional (Etapa 7).
    */
   anomalies?: Record<string, AnomalyResult>;
+  /**
+   * Linha do Tempo (Etapa 8). A sequência continua em streakCurrent/streakBest/ultimoDiaAtivo
+   * (agora contada só em dias jogados); estes campos novos e opcionais guardam o resto:
+   * âncoras guardadas, a era em que o Eco está, os dias jogados e ancorados recentes e o dia
+   * em que a linha ramificou.
+   */
+  anchors?: number;
+  ecoEra?: number;
+  playedDays?: string[];
+  anchoredDays?: string[];
+  lineBrokenOn?: string;
   /** Última lição aberta, para o "Continuar de onde parou" da tela Início. Opcional (Etapa 7). */
   lastLesson?: { trailId: string; moduleId: string; at: string };
 };

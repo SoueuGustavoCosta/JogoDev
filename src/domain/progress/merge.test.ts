@@ -142,3 +142,19 @@ describe('isProgressShape', () => {
     expect(isProgressShape('texto')).toBe(false);
   });
 });
+
+describe('mergeProgress: Linha do Tempo (Etapa 8)', () => {
+  it('âncoras e ramificação vêm da cópia do dia mais recente; Eco não recua; dias somam', () => {
+    const older = empty({ ultimoDiaAtivo: '2026-09-20', streakCurrent: 4, anchors: 2, ecoEra: 3, playedDays: ['2026-09-19', '2026-09-20'] });
+    const recent = empty({ ultimoDiaAtivo: '2026-09-25', streakCurrent: 1, anchors: 0, ecoEra: 1, lineBrokenOn: '2026-09-24', playedDays: ['2026-09-25'], anchoredDays: ['2026-09-22'] });
+    for (const m of [mergeProgress(older, recent), mergeProgress(recent, older)]) {
+      expect(m.anchors).toBe(0);
+      expect(m.lineBrokenOn).toBe('2026-09-24');
+      expect(m.ecoEra).toBe(3);
+      expect(m.playedDays).toEqual(['2026-09-19', '2026-09-20', '2026-09-25']);
+      expect(m.anchoredDays).toEqual(['2026-09-22']);
+    }
+    const plain = mergeProgress(empty(), empty());
+    for (const key of ['anchors', 'ecoEra', 'playedDays', 'anchoredDays', 'lineBrokenOn']) expect(key in plain, key).toBe(false);
+  });
+});

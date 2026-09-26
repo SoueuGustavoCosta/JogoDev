@@ -22,6 +22,7 @@ import type { ModuleProgress, Progress, QuizAttemptResult, TrailProgress } from 
  * - Preferência de lição (`lessonMode`): de `primary`, completando com `secondary`.
  * - Tela onde parou (`screen`): a mais adiantada das duas cópias.
  * - Anomalias do Dia: união por dia (fica a consertada primeiro). Última lição: a mais recente.
+ * - Linha do Tempo: âncoras e ramificação da cópia do dia mais recente; Eco = o mais avançado.
  */
 export function mergeProgress(primary: Progress, secondary: Progress): Progress {
   const trailIds = new Set([...Object.keys(primary.trails ?? {}), ...Object.keys(secondary.trails ?? {})]);
@@ -61,6 +62,16 @@ export function mergeProgress(primary: Progress, secondary: Progress): Progress 
     streakCurrent,
     streakBest,
     ultimoDiaAtivo: recent.ultimoDiaAtivo ?? older.ultimoDiaAtivo,
+    // Linha do Tempo (Etapa 8): âncoras e ramificação seguem a cópia do dia mais recente
+    // (como a sequência); o Eco nunca recua; dias jogados e ancorados somam.
+    anchors: recent.anchors ?? older.anchors,
+    lineBrokenOn: recent.lineBrokenOn ?? older.lineBrokenOn,
+    ecoEra:
+      primary.ecoEra === undefined && secondary.ecoEra === undefined
+        ? undefined
+        : Math.max(primary.ecoEra ?? 0, secondary.ecoEra ?? 0),
+    playedDays: unionDays(primary.playedDays, secondary.playedDays),
+    anchoredDays: unionDays(primary.anchoredDays, secondary.anchoredDays),
   };
   // Não grava chaves opcionais vazias que nenhum dos dois lados tinha.
   for (const key of Object.keys(merged) as (keyof Progress)[]) {
@@ -113,6 +124,11 @@ function mergeQuizResults(
   const out: Record<string, QuizAttemptResult> = {};
   for (const key of keys) out[key] = bestQuizAttempt(a?.[key], b?.[key]);
   return out;
+}
+
+function unionDays(a: string[] | undefined, b: string[] | undefined): string[] | undefined {
+  if (!a && !b) return undefined;
+  return [...new Set([...(a ?? []), ...(b ?? [])])].sort().slice(-14);
 }
 
 function mergeBadges(
