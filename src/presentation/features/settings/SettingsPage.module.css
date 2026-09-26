@@ -87,16 +87,6 @@
   color: var(--color-cyan);
 }
 
-.muted {
-  background: none;
-  border: 0;
-  color: var(--color-muted);
-  cursor: pointer;
-  text-decoration: underline;
-  font: inherit;
-  padding: 0;
-}
-
 .accountLinks {
   display: flex;
   flex-wrap: wrap;

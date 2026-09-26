@@ -125,7 +125,7 @@ export function SettingsPage() {
             </p>
             <div className={styles.accountLinks}>
               <button type="button" className={styles.accountButton} onClick={() => openAccount('signup')}>
-                Criar conta ▸
+                Salvar progresso (criar conta) ▸
               </button>
               <button type="button" className={styles.accountButton} onClick={() => openAccount('login')}>
                 Já tenho conta ▸
@@ -140,10 +140,11 @@ export function SettingsPage() {
         </p>
       </section>
 
+      {/* Contribuição: botão discreto (sem brilho, sem ficar fixo), só abre o modal ao toque (CLAUDE.md seção 9). */}
       <section className={styles.section}>
-        <button type="button" className={styles.muted} onClick={() => setSupportOpen(true)}>
+        <Button variant="ghost" size="sm" onClick={() => setSupportOpen(true)}>
           {SUPPORT_COPY.footerLinkLabel}
-        </button>
+        </Button>
       </section>
 
       {signOutOpen ? (
