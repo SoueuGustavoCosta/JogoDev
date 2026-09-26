@@ -14,11 +14,14 @@ export function QuizRunner({
   moduleId,
   quiz,
   onFinished,
+  onAnswered,
 }: {
   trailId: string;
   moduleId: string;
   quiz: QuizItem[];
   onFinished: () => void;
+  /** Chamado depois de cada resposta gravada (ex.: para o cabeçalho atualizar o XP). */
+  onAnswered?: () => void;
 }) {
   const { progressRepository, analytics } = useServices();
   const [index, setIndex] = useState(0);
@@ -43,6 +46,7 @@ export function QuizRunner({
       { repository: progressRepository, analytics },
       { trailId, moduleId, quizIndex: index, item, answer },
     );
+    onAnswered?.();
     if (result.correct) {
       setXpGained(result.xpGained);
       setSolved(choiceIndex ?? 'fill');

@@ -35,7 +35,7 @@ export function TrailShell() {
 
   return (
     <div className={styles.layout}>
-      <nav className={styles.rail} aria-label="Fases da era">
+      <nav className={`${styles.rail} ${moduleId ? styles.railInModule : ''}`} aria-label="Fases da era">
         <Link to={`/trilhas/${trail.id}`} className={`${styles.node} ${!moduleId && !onLab && !onBoss ? styles.sel : ''}`}>
           <span className={styles.dot}>◈</span>
           <span className={styles.label}>Início da era</span>

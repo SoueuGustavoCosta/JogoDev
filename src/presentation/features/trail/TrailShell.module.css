@@ -138,6 +138,11 @@
   .node:not(:last-child)::after {
     display: none;
   }
+  /* Dentro de um salto, no celular, a lista de fases sai da frente: o conteúdo começa no topo.
+     Ela continua na tela da era (o ◂ do cabeçalho do salto leva até lá). */
+  .railInModule {
+    display: none;
+  }
   .sel .dot {
     border-color: var(--color-cyan);
     color: var(--color-cyan);

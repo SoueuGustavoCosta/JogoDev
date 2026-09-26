@@ -7,6 +7,7 @@ import {
   getPresence,
   getProfileSummary,
   getTraveler,
+  needsSignInAgain,
   sendHeartbeat,
 } from '@/application/usecases';
 import type { ProfileSummary } from '@/application/usecases';
@@ -18,7 +19,6 @@ import type { StreakCheckIn } from '@/domain/traveler';
 import { HallIcon, MapIcon, TravelerIcon } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
 import { SupportModal } from '@/presentation/features/support';
-import { SaveProgressWidget } from '@/presentation/features/save-progress';
 import { AccountSheetProvider } from '@/presentation/features/account';
 import { ProfileHeader } from './ProfileHeader';
 import { StreakCelebration } from './StreakCelebration';
@@ -31,18 +31,38 @@ const FULL_SCREEN_PATHS = new Set(['/prologo', '/entrar', '/cadastro', '/esqueci
 
 export type LayoutOutletContext = { summary: ProfileSummary; onlinePlayers: OnlinePlayer[] };
 
-function NavItem({ to, label, icon, end }: { to: string; label: string; icon: ReactNode; end?: boolean }) {
+function NavItem({
+  to,
+  label,
+  icon,
+  end,
+  alert,
+}: {
+  to: string;
+  label: string;
+  icon: ReactNode;
+  end?: boolean;
+  /** Pontinho discreto de "precisa de atenção" (ex.: sessão da conta expirou), sem cobrir nada. */
+  alert?: string;
+}) {
   return (
     <NavLink
       to={to}
       end={end}
+      aria-label={alert ? `${label} (${alert})` : undefined}
       className={({ isActive }) => `${styles.navLink} ${isActive ? styles.navLinkActive : ''}`}
     >
-      {icon}
+      <span className={styles.navIcon}>
+        {icon}
+        {alert ? <i className={styles.navAlert} aria-hidden="true" /> : null}
+      </span>
       <span>{label}</span>
     </NavLink>
   );
 }
+
+/** Rota de um salto (módulo): ele desenha o próprio cabeçalho compacto de uma linha. */
+const MODULE_PATH = /^\/trilhas\/[^/]+\/modulos\/[^/]+\/?$/;
 
 export function Layout() {
   const { progressRepository, leaderboard } = useServices();
@@ -57,10 +77,18 @@ export function Layout() {
   const isMap = location.pathname === '/';
   // Telas cheias, sem navegação nem cabeçalho do viajante: o prólogo e as telas de conta.
   const isFullScreen = FULL_SCREEN_PATHS.has(location.pathname);
+  const isModule = MODULE_PATH.test(location.pathname);
 
   const summary = useMemo(
     () => getProfileSummary({ repository: progressRepository }, { trails: trailRegistry, badgeCatalog }),
     // recalcula ao trocar de tela, quando o progresso pode ter mudado
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [progressRepository, location.pathname],
+  );
+
+  // Sessão da conta perdida: aviso discreto na aba Viajante (lá fica o "Entrar de novo").
+  const sessionExpired = useMemo(
+    () => needsSignInAgain({ repository: progressRepository }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [progressRepository, location.pathname],
   );
@@ -129,13 +157,14 @@ export function Layout() {
   return (
     <AccountSheetProvider>
       <div className={styles.root}>
-        <button type="button" className={styles.pix} onClick={() => setSupportOpen(true)} aria-label="Contribua com o projeto e conheça quem desenvolve">
-          Contribua
-        </button>
-        <SaveProgressWidget />
         <nav className={styles.nav} aria-label="Navegação principal">
           <NavItem to="/" end label="Mapa" icon={<MapIcon />} />
-          <NavItem to="/configuracoes" label="Viajante" icon={<TravelerIcon />} />
+          <NavItem
+            to="/configuracoes"
+            label="Viajante"
+            icon={<TravelerIcon />}
+            alert={sessionExpired ? 'entre de novo na sua conta' : undefined}
+          />
           <NavItem to="/hall" label="Hall dos Viajantes" icon={<HallIcon />} />
         </nav>
 
@@ -143,13 +172,16 @@ export function Layout() {
           <Outlet context={{ summary, onlinePlayers } satisfies LayoutOutletContext} />
         ) : (
           <div className={styles.column}>
-            <header className={styles.top}>
-              <Link to="/" className={styles.back}>
-                ◂ Voltar ao mapa
-              </Link>
-              <ProfileHeader summary={summary} onlinePlayers={onlinePlayers} streakGrew={streakGrew} />
-            </header>
-            <main className={styles.main}>
+            {/* Dentro de um salto, o perfil e os contadores saem da frente (continuam na aba Viajante). */}
+            {isModule ? null : (
+              <header className={styles.top}>
+                <Link to="/" className={styles.back}>
+                  ◂ Voltar ao mapa
+                </Link>
+                <ProfileHeader summary={summary} onlinePlayers={onlinePlayers} streakGrew={streakGrew} />
+              </header>
+            )}
+            <main className={`${styles.main} ${isModule ? styles.mainBare : ''}`}>
               <div key={location.pathname} className={styles.page}>
                 <Outlet context={{ summary, onlinePlayers } satisfies LayoutOutletContext} />
               </div>

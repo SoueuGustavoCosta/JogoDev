@@ -120,3 +120,50 @@
   font: 700 0.95rem var(--font-body);
   cursor: pointer;
 }
+
+/* Cabeçalho compacto do salto: voltar, número e nome curto, XP. Uma linha só. */
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+  min-height: var(--touch-target);
+}
+
+.barBack {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--touch-target);
+  height: var(--touch-target);
+  border-radius: 12px;
+  border: 1px solid var(--color-line);
+  background: var(--color-panel);
+  color: var(--color-cyan);
+  text-decoration: none;
+  font-size: 1rem;
+}
+
+.barTitle {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 600 0.9rem var(--font-body);
+  color: var(--color-text);
+}
+
+.barStep {
+  font: 700 0.75rem var(--font-mono);
+  color: var(--color-muted);
+}
+
+.barXp {
+  flex: none;
+  font: 700 0.78rem var(--font-mono);
+  color: var(--color-gold);
+  padding: 6px 10px;
+  border-radius: 99px;
+  border: 1px solid var(--color-line);
+}

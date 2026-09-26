@@ -1,22 +1,34 @@
-.floating {
-  position: fixed;
-  right: 12px;
-  bottom: calc(88px + env(safe-area-inset-bottom));
-  z-index: 55;
+.nudge {
+  margin: 14px 0 4px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(155, 77, 255, 0.45);
+  background: rgba(155, 77, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.nudge p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.action {
   display: inline-flex;
   align-items: center;
   min-height: var(--touch-target);
   padding: 10px 16px;
-  text-decoration: none;
   border-radius: 99px;
-  border: 1px solid rgba(155, 77, 255, 0.5);
-  background: linear-gradient(135deg, rgba(155, 77, 255, 0.22), rgba(21, 18, 37, 0.94));
+  border: 1px solid rgba(155, 77, 255, 0.6);
+  background: rgba(155, 77, 255, 0.16);
   color: var(--color-text);
-  font: 700 0.78rem var(--font-body);
+  font: 700 0.85rem var(--font-body);
   cursor: pointer;
-  box-shadow: 0 8px 26px -8px rgba(155, 77, 255, 0.65);
 }
 
-.floating:hover {
-  transform: translateY(-1px);
+.action:hover {
+  background: rgba(155, 77, 255, 0.26);
 }

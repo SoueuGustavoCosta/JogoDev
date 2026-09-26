@@ -1,12 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
-import { Navigate, useNavigate, useOutletContext, useParams } from 'react-router-dom';
-import { completeModule, getOrCreateTravelerUuid, getTraveler } from '@/application/usecases';
+import { useEffect, useReducer, useRef, useState } from 'react';
+import { Link, Navigate, useNavigate, useOutletContext, useParams } from 'react-router-dom';
+import { completeModule, getOrCreateTravelerUuid, getTrailProgress, getTraveler } from '@/application/usecases';
 import { getTrailById } from '@/content/registry';
 import { badgeCatalog } from '@/content/badges/catalog';
-import { XP_MODULE_COMPLETION_BONUS, type ModuleRecap } from '@/domain/progress';
+import { XP_MODULE_COMPLETION_BONUS, xpForModule, type ModuleRecap } from '@/domain/progress';
 import { BlockRenderer } from '@/presentation/blocks';
 import { Confetti, playModuleCompleteSound, SintaxeFace } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
+import { SaveProgressNudge } from '@/presentation/features/save-progress';
 import { QuizRunner } from './QuizRunner';
 import type { TrailOutletContext } from './TrailShell';
 import { useModuleLeftTracking } from './useModuleLeftTracking';
@@ -30,7 +31,14 @@ export function ModulePage() {
   const navigate = useNavigate();
   const { refresh } = useOutletContext<TrailOutletContext>();
   const { progressRepository, analytics, leaderboard } = useServices();
-  const [result, setResult] = useState<{ fresh: boolean; trailCompleted: boolean; recap: ModuleRecap } | null>(null);
+  const [result, setResult] = useState<{
+    fresh: boolean;
+    trailCompleted: boolean;
+    recap: ModuleRecap;
+    firstBadge: boolean;
+  } | null>(null);
+  // Relê o progresso depois de cada resposta, para o XP do cabeçalho acompanhar o quiz.
+  const [, bumpXp] = useReducer((n: number) => n + 1, 0);
 
   const trail = trailId ? getTrailById(trailId) : undefined;
   const moduleIndex = trail?.modules.findIndex((m) => m.id === moduleId) ?? -1;
@@ -55,26 +63,45 @@ export function ModulePage() {
       { repository: progressRepository, analytics, leaderboard },
       { trail: trail!, moduleId: module!.id, traveler: { uuid, name }, badgeCatalog },
     );
-    setResult({ fresh: !outcome.alreadyCompleted, trailCompleted: outcome.trailCompleted, recap: outcome.recap });
+    setResult({
+      fresh: !outcome.alreadyCompleted,
+      trailCompleted: outcome.trailCompleted,
+      recap: outcome.recap,
+      firstBadge: outcome.firstBadge,
+    });
     if (!outcome.alreadyCompleted) playModuleCompleteSound();
     refresh();
   }
 
   const next = trail.modules[moduleIndex + 1];
+  const { trailProgress } = getTrailProgress({ repository: progressRepository }, { trail });
+  const moduleXp = xpForModule(module, trailProgress?.modules[module.id]);
 
   return (
     <article ref={articleRef}>
-      <p className="eyebrow">
-        Salto {moduleIndex + 1} de {trail.modules.length} · {module.level}
-      </p>
+      {/* Cabeçalho compacto, uma linha só: o conteúdo começa logo no topo da tela. */}
+      <header className={styles.bar}>
+        <Link to={`/trilhas/${trail.id}`} className={styles.barBack} aria-label={`Voltar para ${trail.title}`}>
+          ◂
+        </Link>
+        <span className={styles.barTitle}>
+          <span className={styles.barStep}>
+            {moduleIndex + 1}/{trail.modules.length}
+          </span>{' '}
+          {module.short}
+        </span>
+        <span className={styles.barXp} aria-label={`${moduleXp} XP neste salto`}>
+          {moduleXp} XP
+        </span>
+      </header>
       <h1>{module.title}</h1>
       <p className={styles.lead}>{module.lead}</p>
 
       <div className={styles.sintaxe}>
         <SintaxeFace size={44} />
         <p>
-          <b>Senhorita Sintaxe</b> · Toda lição parte de um problema real. Leia com calma; quando estiver pronto, o
-          paradoxo no fim destrava o próximo salto.
+          <b>Senhorita Sintaxe</b> · Bora, {travelerName}. Cada bloco é curtinho e no fim tem um paradoxo pra
+          resolver.
         </p>
       </div>
 
@@ -100,6 +127,7 @@ export function ModulePage() {
               </p>
             </div>
           </div>
+          {result.firstBadge ? <SaveProgressNudge /> : null}
           <p>
             <b>Cristal aceso!</b>{' '}
             {result.fresh ? `Salto concluído: +${XP_MODULE_COMPLETION_BONUS} XP.` : 'XP já contabilizado.'}
@@ -115,7 +143,14 @@ export function ModulePage() {
           )}
         </div>
       ) : (
-        <QuizRunner key={module.id} trailId={trail.id} moduleId={module.id} quiz={module.quiz} onFinished={handleFinished} />
+        <QuizRunner
+          key={module.id}
+          trailId={trail.id}
+          moduleId={module.id}
+          quiz={module.quiz}
+          onFinished={handleFinished}
+          onAnswered={bumpXp}
+        />
       )}
     </article>
   );
