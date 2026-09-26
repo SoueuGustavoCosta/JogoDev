@@ -3,12 +3,15 @@ import { Link } from 'react-router-dom';
 import {
   BIO_MAX_LENGTH,
   getCachedBio,
+  getLessonMode,
   getTraveler,
   hasPhoneLinked,
   needsSignInAgain,
   saveBio,
+  setLessonMode,
   signOutTraveler,
 } from '@/application/usecases';
+import { DEFAULT_LESSON_MODE } from '@/config/exploration';
 import { SUPPORT_COPY } from '@/domain/support';
 import { Button, isSoundMuted, Modal, playTestSound, setSoundMuted } from '@/presentation/design-system';
 import { BadgePassport } from '@/presentation/features/badges';
@@ -25,6 +28,9 @@ export function SettingsPage() {
   const [signingOut, setSigningOut] = useState(false);
   const [bio, setBio] = useState(() => getCachedBio({ repository: progressRepository }));
   const [muted, setMuted] = useState(() => isSoundMuted());
+  const [readingMode, setReadingMode] = useState(
+    () => getLessonMode({ repository: progressRepository }, { fallback: DEFAULT_LESSON_MODE }) === 'rolagem',
+  );
 
   const name = getTraveler({ repository: progressRepository }).name;
   const linked = hasPhoneLinked({ repository: progressRepository });
@@ -35,6 +41,12 @@ export function SettingsPage() {
     setSoundMuted(next);
     setMuted(next);
     if (!next) playTestSound();
+  }
+
+  function toggleReadingMode() {
+    const next = !readingMode;
+    setLessonMode({ repository: progressRepository }, { mode: next ? 'rolagem' : 'telas' });
+    setReadingMode(next);
   }
 
   function handleBioBlur() {
@@ -96,6 +108,17 @@ export function SettingsPage() {
         <p className={styles.hint}>Sons suaves pelo jogo: o ambiente calmo da Praça da Sintaxe, o vórtice ao entrar numa era, a voz da Sintaxe, o quiz e o chefão. Desligue aqui se preferir silêncio.</p>
         <Button variant="ghost" size="sm" onClick={toggleSound} aria-pressed={!muted}>
           {muted ? '🔇 Som desligado' : '🔊 Som ligado'}
+        </Button>
+      </section>
+
+      <section className={styles.section}>
+        <h2>Modo leitura</h2>
+        <p className={styles.hint}>
+          Prefere ler o salto inteiro numa página só, com os paradoxos no fim? Ligue o Modo leitura. Desligado, cada
+          salto vem em telas curtas, com paradoxos pelo caminho.
+        </p>
+        <Button variant="ghost" size="sm" onClick={toggleReadingMode} aria-pressed={readingMode}>
+          {readingMode ? '📖 Modo leitura ligado' : '📖 Modo leitura desligado'}
         </Button>
       </section>
 
