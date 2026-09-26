@@ -297,3 +297,7 @@ grant execute on function public.email_de_login(text, text) to anon, authenticat
 -- PENDENTE (Etapa 11, 2026-09-26): função contar_anomalias_periodo (meta da Convergência)
 -- está em supabase/2026-09-26_convergencia.sql (depende da tabela da Etapa 7), esperando o
 -- autor aplicar. Depois de aplicado, mover o conteúdo para cá.
+
+-- PENDENTE (Etapa 13B, 2026-09-26): tabelas solucoes_oficina, estrelas_solucao e
+-- oficinas_resolvidas e as funções mural_oficina e contar_oficinas_periodo estão em
+-- supabase/2026-09-26_oficina.sql, esperando o autor aplicar. Depois, mover para cá.

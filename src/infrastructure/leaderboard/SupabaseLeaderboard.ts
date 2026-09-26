@@ -2,6 +2,7 @@ import type {
   HallOfTravelersEntry,
   LeaderboardPort,
   LeagueRow,
+  MuralRow,
   OnlinePlayer,
   PlayerProfile,
   SignInIdentifier,
@@ -46,6 +47,9 @@ type SupabaseClientLike = {
       opts?: { count: 'exact' },
     ): { eq(column: string, value: unknown): Promise<{ error: { message: string } | null; count: number | null }> };
     insert(values: Record<string, unknown>): Promise<{ error: { message: string; code?: string } | null }>;
+    delete(): {
+      eq(column: string, value: unknown): { eq(column: string, value: unknown): Promise<{ error: { message: string } | null }> };
+    };
     select(columns: string): SelectQuery;
   };
   rpc<T = unknown>(fnName: string, args: Record<string, unknown>): Promise<{ data: T | null; error: { message: string } | null }>;
@@ -214,6 +218,79 @@ export class SupabaseLeaderboard implements LeaderboardPort {
       return data;
     } catch {
       return null;
+    }
+  }
+
+  async recordWorkshopSolved(uuid: string, workshopId: string): Promise<void> {
+    try {
+      const client = await this.ensureClient();
+      const { error } = await client.from('oficinas_resolvidas').insert({ uuid, workshop_id: workshopId });
+      // 23505: já estava registrada (uma linha por viajante por oficina), não é erro.
+      if (error && error.code !== '23505' && import.meta.env.DEV) {
+        console.warn('[SupabaseLeaderboard] recordWorkshopSolved falhou:', error.message);
+      }
+    } catch (e) {
+      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] recordWorkshopSolved falhou:', e);
+    }
+  }
+
+  async countWorkshopsBetween(from: string, to: string): Promise<number | null> {
+    try {
+      const client = await this.ensureClient();
+      const { data, error } = await client.rpc<number>('contar_oficinas_periodo', { p_inicio: from, p_fim: to });
+      if (error || typeof data !== 'number') return null;
+      return data;
+    } catch {
+      return null;
+    }
+  }
+
+  async publishSolution(uuid: string, workshopId: string, lang: string, code: string): Promise<boolean> {
+    try {
+      const client = await this.ensureClient();
+      const { error } = await client
+        .from('solucoes_oficina')
+        .upsert({ uuid, workshop_id: workshopId, linguagem: lang, codigo: code }, { onConflict: 'uuid,workshop_id,linguagem' });
+      if (error && import.meta.env.DEV) console.warn('[SupabaseLeaderboard] publishSolution falhou:', error.message);
+      return !error;
+    } catch (e) {
+      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] publishSolution falhou:', e);
+      return false;
+    }
+  }
+
+  async listMural(workshopId: string): Promise<MuralRow[] | null> {
+    try {
+      const client = await this.ensureClient();
+      const { data, error } = await client.rpc<Record<string, unknown>[]>('mural_oficina', { p_workshop: workshopId });
+      if (error || !Array.isArray(data)) return null;
+      return data.map((row) => ({
+        id: String(row.id),
+        uuid: String(row.uuid),
+        nome: String(row.nome ?? ''),
+        fotoUrl: row.foto_url ? String(row.foto_url) : null,
+        lang: String(row.linguagem ?? ''),
+        code: String(row.codigo ?? ''),
+        createdAt: String(row.criada_em ?? ''),
+        stars: Number(row.estrelas ?? 0),
+        starredByMe: Boolean(row.minha_estrela),
+      }));
+    } catch {
+      return null;
+    }
+  }
+
+  async setStar(uuid: string, solutionId: string, on: boolean): Promise<boolean> {
+    try {
+      const client = await this.ensureClient();
+      if (on) {
+        const { error } = await client.from('estrelas_solucao').insert({ uuid, solucao_id: Number(solutionId) });
+        return !error || error.code === '23505';
+      }
+      const { error } = await client.from('estrelas_solucao').delete().eq('uuid', uuid).eq('solucao_id', Number(solutionId));
+      return !error;
+    } catch {
+      return false;
     }
   }
 

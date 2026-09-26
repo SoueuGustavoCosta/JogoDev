@@ -21,6 +21,7 @@ import { useServices } from '@/presentation/app/ServicesContext';
 import type { LayoutOutletContext } from '@/presentation/shell';
 import { BlockEditor } from './BlockEditor';
 import { CodeEditor } from './CodeEditor';
+import { MuralSection } from './MuralSection';
 import styles from './Workshop.module.css';
 
 const LANG_LABEL: Record<WorkshopLang, string> = { php: 'PHP', js: 'JS', python: 'Python' };
@@ -197,6 +198,7 @@ function WorkshopScreen({ workshop }: { workshop: Workshop }) {
           <button type="button" className={styles.primary} onClick={begin}>
             {already ? 'Abrir o editor' : `Começar · +${potentialXp} XP`}
           </button>
+          {already ? <MuralSection workshop={workshop} /> : null}
         </>
       ) : null}
 
@@ -277,6 +279,7 @@ function WorkshopScreen({ workshop }: { workshop: Workshop }) {
               <pre>{s.code}</pre>
             </section>
           ))}
+          <MuralSection workshop={workshop} publish={{ lang, code }} />
           {workshop.extra && !gained?.extra && !already?.extra ? (
             <section className={styles.extra}>
               <b>Desafio extra:</b> {workshop.extra.prompt} (+{WORKSHOP_EXTRA_XP} XP)

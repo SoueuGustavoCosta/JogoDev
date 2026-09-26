@@ -116,5 +116,9 @@ describe('Eventos (casos de uso)', () => {
     expect(analytics.events.filter((e) => e.event === 'convergence_unlocked')).toHaveLength(1);
     const offline = await loadConvergence({ repository, analytics, leaderboard: at(null) }, { active: active! });
     expect(offline?.progress.count).toBeNull();
+    // Convergência por oficinas conta pela outra função.
+    const byWorkshops = { ...active!, event: { ...(active!.event as Extract<GameEvent, { kind: 'convergencia' }>), metric: 'oficinas' as const } };
+    const lb = { countWorkshopsBetween: async () => 7, countAnomaliesBetween: async () => 99 } as unknown as LeaderboardPort;
+    expect((await loadConvergence({ repository, analytics, leaderboard: lb }, { active: byWorkshops }))?.progress.count).toBe(7);
   });
 });

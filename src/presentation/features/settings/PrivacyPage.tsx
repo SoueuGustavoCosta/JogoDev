@@ -27,6 +27,7 @@ export function PrivacyPage() {
         </li>
         <li>os itens da Loja do Viajante que você equipou no avatar (moldura, cor, cabelo, acessório);</li>
         <li>o XP que você ganhou em cada semana, para o ranking da Liga dos Viajantes;</li>
+        <li>quais oficinas você resolveu e, só se você tocar em &quot;Publicar no mural&quot;, o código da sua solução;</li>
         <li>o horário da última atividade, para mostrar quem está online agora;</li>
         <li>uma cópia de segurança do seu progresso completo.</li>
       </ul>
@@ -39,7 +40,7 @@ export function PrivacyPage() {
       <h2>Quem vê o quê</h2>
       <p>
         No Hall dos Viajantes, qualquer pessoa vê seu nome, foto, os itens do avatar, resumo, eras concluídas,
-        insígnias e se você está online. Na Liga, vê também seu XP da semana e seus dias de linha. Telefone, e-mail, senha e a cópia do progresso não aparecem para ninguém. Use um apelido se preferir
+        insígnias e se você está online. Na Liga, vê também seu XP da semana e seus dias de linha; no mural de uma oficina, as soluções que você escolheu publicar. Telefone, e-mail, senha e a cópia do progresso não aparecem para ninguém. Use um apelido se preferir
         não mostrar seu nome real.
       </p>
 

@@ -35,7 +35,9 @@ export type AnalyticsEventName =
   | 'convergence_unlocked'
   | 'workshop_started'
   | 'workshop_test_run'
-  | 'workshop_solved';
+  | 'workshop_solved'
+  | 'workshop_published'
+  | 'workshop_starred';
 
 export type AnalyticsProps = Record<string, string | number | boolean>;
 

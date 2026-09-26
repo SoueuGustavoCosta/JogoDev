@@ -4,7 +4,7 @@ import type { Workshop } from '@/domain/workshop';
 import type { AnalyticsPort, CodeRunnerPort, LeaderboardPort, ProgressRepository } from '../ports';
 import { getMyWeeklyXp } from './league';
 import { getProfileSummary } from './presence';
-import { listWorkshops, runWorkshopTests, solveWorkshop, workshopsForTrail } from './workshop';
+import { listWorkshops, loadMural, publishToMural, runWorkshopTests, solveWorkshop, toggleStar, workshopsForTrail } from './workshop';
 
 class Memory implements ProgressRepository {
   data: Progress | null = { version: 1, trails: {} };
@@ -101,5 +101,54 @@ describe('Oficina (casos de uso)', () => {
   it('oficinas da ilha', () => {
     expect(workshopsForTrail([workshop], 'logica')).toHaveLength(1);
     expect(workshopsForTrail([workshop], 'php')).toHaveLength(0);
+  });
+});
+
+describe('Mural da turma (casos de uso)', () => {
+  const row = { id: '7', uuid: 'outra', nome: 'Ana', fotoUrl: null, lang: 'js', code: 'x', createdAt: '', stars: 2, starredByMe: false };
+  function setup(solved: boolean) {
+    const repository = new Memory();
+    repository.data = {
+      version: 1,
+      trails: {},
+      travelerUuid: 'eu',
+      ...(solved ? { workshops: { dobro: { solvedAt: 'x', langs: ['js'], hintsUsed: 0, xp: 50 } } } : {}),
+    };
+    const calls: unknown[][] = [];
+    const leaderboard = {
+      publishSolution: async (...a: unknown[]) => {
+        calls.push(['publish', ...a]);
+        return true;
+      },
+      listMural: async () => [row],
+      setStar: async (...a: unknown[]) => {
+        calls.push(['star', ...a]);
+        return true;
+      },
+    } as unknown as LeaderboardPort;
+    return { repository, leaderboard, analytics: new Recording(), calls };
+  }
+
+  it('mural só abre depois de resolver', async () => {
+    expect(await loadMural(setup(false), { workshop })).toEqual({ status: 'locked' });
+    expect(await loadMural(setup(true), { workshop })).toEqual({ status: 'ok', entries: [row], myUuid: 'eu' });
+    const off = { ...setup(true), leaderboard: { listMural: async () => null } as unknown as LeaderboardPort };
+    expect(await loadMural(off, { workshop })).toEqual({ status: 'offline' });
+  });
+
+  it('publicar: só resolvida, sem palavrão, dentro do limite', async () => {
+    const notSolved = setup(false);
+    expect(await publishToMural(notSolved, { workshop, lang: 'js', code: 'console.log(n * 2)' })).toEqual({ ok: false, reason: 'not-solved' });
+    const deps = setup(true);
+    expect(await publishToMural(deps, { workshop, lang: 'js', code: 'console.log("porra")' })).toEqual({ ok: false, reason: 'profanity' });
+    expect(await publishToMural(deps, { workshop, lang: 'js', code: '  console.log(n * 2)\n' })).toEqual({ ok: true });
+    expect(deps.calls).toEqual([['publish', 'eu', 'dobro', 'js', 'console.log(n * 2)']]);
+  });
+
+  it('estrela: nunca na própria solução', async () => {
+    const deps = setup(true);
+    expect(await toggleStar(deps, { entry: row, on: true })).toBe(true);
+    expect(await toggleStar(deps, { entry: { ...row, uuid: 'eu' }, on: true })).toBe(false);
+    expect(deps.calls).toEqual([['star', 'eu', '7', true]]);
   });
 });

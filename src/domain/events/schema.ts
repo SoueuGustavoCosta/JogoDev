@@ -22,11 +22,19 @@ export const gameEventSchema = z.discriminatedUnion('kind', [
       kind: z.literal('eco-solto'),
       rewardItemId: z.string().min(1),
       bonusFragments: z.number().int().min(0).max(100),
+      workshopId: z.string().regex(/^[a-z][a-z0-9-]*$/).optional(),
       when,
     })
     .strict(),
   z
-    .object({ ...base, kind: z.literal('convergencia'), target: z.number().int().positive(), rewardItemId: z.string().min(1), when: range })
+    .object({
+      ...base,
+      kind: z.literal('convergencia'),
+      target: z.number().int().positive(),
+      metric: z.enum(['anomalias', 'oficinas']).optional(),
+      rewardItemId: z.string().min(1),
+      when: range,
+    })
     .strict(),
 ]);
 

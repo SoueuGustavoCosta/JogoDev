@@ -21,6 +21,19 @@ export type PlayerProfile = {
 /** Uma linha do ranking semanal da Liga dos Viajantes (função `liga_da_semana`). */
 export type LeagueRow = { uuid: string; nome: string; fotoUrl: string | null; sequenciaAtual: number; xp: number };
 
+/** Uma solução publicada no mural de uma oficina (função `mural_oficina`). */
+export type MuralRow = {
+  id: string;
+  uuid: string;
+  nome: string;
+  fotoUrl: string | null;
+  lang: string;
+  code: string;
+  createdAt: string;
+  stars: number;
+  starredByMe: boolean;
+};
+
 /** Um viajante "online agora" na faixa de presença. */
 export type OnlinePlayer = { uuid: string; nome: string; fotoUrl: string | null };
 
@@ -227,4 +240,17 @@ export interface LeaderboardPort {
    * da Convergência (Etapa 11). `null` quando não dá pra saber. Nunca lança.
    */
   countAnomaliesBetween(from: string, to: string): Promise<number | null>;
+  /** Oficina resolvida (Etapa 13B), para a Convergência contar oficinas. Falha em silêncio. */
+  recordWorkshopSolved(uuid: string, workshopId: string): Promise<void>;
+  /** Oficinas resolvidas pela turma num período. `null` quando não dá pra saber. Nunca lança. */
+  countWorkshopsBetween(from: string, to: string): Promise<number | null>;
+  /**
+   * Publica (ou atualiza) a solução do viajante no mural da oficina. Devolve se deu certo;
+   * nunca lança. O app já conferiu tamanho e palavrões antes.
+   */
+  publishSolution(uuid: string, workshopId: string, lang: string, code: string): Promise<boolean>;
+  /** Mural de uma oficina (mais estrelas primeiro). `null` = fora do ar. Nunca lança. */
+  listMural(workshopId: string): Promise<MuralRow[] | null>;
+  /** Dá ou tira a estrela de uma solução. Devolve se deu certo. Nunca lança. */
+  setStar(uuid: string, solutionId: string, on: boolean): Promise<boolean>;
 }

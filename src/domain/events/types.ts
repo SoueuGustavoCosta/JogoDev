@@ -27,6 +27,8 @@ export type EcoSoltoEvent = EventBase & {
   rewardItemId: string;
   /** ◆ por vitória depois que o item já é do viajante (uma vez por dia de evento). */
   bonusFragments: number;
+  /** Opcional: uma oficina (content/workshops) para treinar depois do chefe. */
+  workshopId?: string;
   when: EventWhen;
 };
 
@@ -34,6 +36,8 @@ export type EcoSoltoEvent = EventBase & {
 export type ConvergenciaEvent = EventBase & {
   kind: 'convergencia';
   target: number;
+  /** O que a turma precisa juntar: anomalias consertadas (padrão) ou oficinas resolvidas. */
+  metric?: 'anomalias' | 'oficinas';
   rewardItemId: string;
   when: { from: string; to: string };
 };

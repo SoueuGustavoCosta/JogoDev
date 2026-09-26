@@ -12,7 +12,9 @@ import type { GameEvent } from '@/domain/events';
  * - 'eco-solto': mini-chefe de 3 rodadas (rodadas em `ecoSolto.ts`). A primeira vitória dá
  *   o cosmético `rewardItemId`; as seguintes dão `bonusFragments` ◆ (uma vez por dia).
  * - 'convergencia': meta da turma no período (`target` anomalias consertadas por todos,
- *   contadas no Supabase). Batida a meta, o cosmético `rewardItemId` fica liberado para todos.
+ *   contadas no Supabase; com `metric: 'oficinas'`, conta oficinas resolvidas). Batida a meta,
+ *   o cosmético `rewardItemId` fica liberado para todos.
+ * - No 'eco-solto', `workshopId` (opcional) indica uma oficina para treinar depois do chefe.
  *
  * Os prêmios precisam ser itens "só de evento" de `src/content/cosmetics` (price: null) com
  * o mesmo `event` (eco-solto ou convergencia).
@@ -33,6 +35,7 @@ export const eventCalendar: GameEvent[] = [
     description: 'mini-chefe de 3 rodadas com visual raro',
     rewardItemId: 'moldura-fenda',
     bonusFragments: 15,
+    workshopId: 'mini-calculadora',
     when: { weekly: ['sex'] },
   },
   {

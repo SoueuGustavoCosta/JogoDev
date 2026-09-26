@@ -1,5 +1,6 @@
 import { createEmptyProgress, recordWorkshop, type WorkshopResult } from '@/domain/progress';
 import {
+  checkPublishable,
   outputMatches,
   summarizeResults,
   testsToRun,
@@ -8,7 +9,7 @@ import {
   type WorkshopLang,
   type WorkshopTestResult,
 } from '@/domain/workshop';
-import type { AnalyticsPort, CodeRunnerPort, LeaderboardPort, ProgressRepository } from '../ports';
+import type { AnalyticsPort, CodeRunnerPort, LeaderboardPort, MuralRow, ProgressRepository } from '../ports';
 import { recordXpGain, syncWeeklyXp } from './league';
 
 export type WorkshopCard = { workshop: Workshop; solved: WorkshopResult | null };
@@ -81,10 +82,64 @@ export function solveWorkshop(
   const xpGained = totalXp - (before?.xp ?? 0);
   if (!before) {
     deps.analytics.track('workshop_solved', { workshop: params.workshop.id, lang: params.lang, hints: params.hintsUsed });
+    // Para a Convergência poder contar oficinas da turma (só com identidade e sessão válidas).
+    if (next.travelerUuid && !next.needsSignIn) void deps.leaderboard.recordWorkshopSolved(next.travelerUuid, params.workshop.id);
   }
   if (xpGained > 0) {
     recordXpGain(deps, { sourceId: `workshop:${params.workshop.id}`, xp: totalXp, now: params.now });
     syncWeeklyXp(deps, params.now);
   }
   return { xpGained, totalXp };
+}
+
+export type PublishResult = { ok: true } | { ok: false; reason: 'not-solved' | 'no-identity' | 'empty' | 'too-long' | 'profanity' | 'offline' };
+
+/**
+ * "Publicar no mural": só depois de resolver, só quem tocou no botão, com limite de tamanho e
+ * filtro básico de palavrões. O nome e o código ficam visíveis para a turma.
+ */
+export async function publishToMural(
+  deps: { repository: ProgressRepository; leaderboard: LeaderboardPort; analytics: AnalyticsPort },
+  params: { workshop: Workshop; lang: WorkshopLang; code: string },
+): Promise<PublishResult> {
+  const progress = deps.repository.load() ?? createEmptyProgress();
+  if (!progress.workshops?.[params.workshop.id]) return { ok: false, reason: 'not-solved' };
+  if (!progress.travelerUuid || progress.needsSignIn) return { ok: false, reason: 'no-identity' };
+  const check = checkPublishable(params.code);
+  if (!check.ok) return check;
+  const ok = await deps.leaderboard.publishSolution(progress.travelerUuid, params.workshop.id, params.lang, params.code.trim());
+  if (!ok) return { ok: false, reason: 'offline' };
+  deps.analytics.track('workshop_published', { workshop: params.workshop.id, lang: params.lang });
+  return { ok: true };
+}
+
+export type MuralView = { status: 'locked' } | { status: 'offline' } | { status: 'ok'; entries: MuralRow[]; myUuid: string | null };
+
+/** O mural de uma oficina só abre depois que o viajante a resolve (para não copiar). */
+export async function loadMural(
+  deps: { repository: ProgressRepository; leaderboard: LeaderboardPort },
+  params: { workshop: Workshop },
+): Promise<MuralView> {
+  const progress = deps.repository.load() ?? createEmptyProgress();
+  if (!progress.workshops?.[params.workshop.id]) return { status: 'locked' };
+  let rows: MuralRow[] | null = null;
+  try {
+    rows = await deps.leaderboard.listMural(params.workshop.id);
+  } catch {
+    rows = null;
+  }
+  if (!rows) return { status: 'offline' };
+  return { status: 'ok', entries: rows, myUuid: progress.travelerUuid ?? null };
+}
+
+/** Dá ou tira a estrela (nunca na própria solução). Devolve se deu certo. */
+export async function toggleStar(
+  deps: { repository: ProgressRepository; leaderboard: LeaderboardPort; analytics: AnalyticsPort },
+  params: { entry: MuralRow; on: boolean },
+): Promise<boolean> {
+  const uuid = deps.repository.load()?.travelerUuid;
+  if (!uuid || uuid === params.entry.uuid) return false;
+  const ok = await deps.leaderboard.setStar(uuid, params.entry.id, params.on);
+  if (ok && params.on) deps.analytics.track('workshop_starred');
+  return ok;
 }

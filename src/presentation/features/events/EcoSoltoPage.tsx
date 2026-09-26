@@ -4,6 +4,7 @@ import { getEcoSolto, loseEcoSolto, startEcoSolto, winEcoSolto, ECO_SOLTO_ROUNDS
 import { cosmetics } from '@/content/cosmetics';
 import { eventCalendar } from '@/content/events/calendar';
 import { ecoSoltoRounds } from '@/content/events/ecoSolto';
+import { workshops } from '@/content/workshops';
 import {
   applyBossAttempt,
   checkSingleShot,
@@ -94,6 +95,7 @@ export function EcoSoltoPage() {
   }
 
   const rewardItem = reward?.kind === 'item' ? cosmetics.find((c) => c.id === reward.itemId) : undefined;
+  const training = eco.event.kind === 'eco-solto' && eco.event.workshopId ? workshops.find((w) => w.id === eco.event?.workshopId) : undefined;
   const prize = cosmetics.find((c) => c.id === eco.event?.rewardItemId);
 
   return (
@@ -183,6 +185,11 @@ export function EcoSoltoPage() {
           ) : (
             <p>Vitória registrada. O prêmio de hoje você já tinha levado.</p>
           )}
+          {training ? (
+            <Link to={`/oficina/${training.id}`} className={styles.secondary}>
+              Treino da semana: oficina {training.title} ▸
+            </Link>
+          ) : null}
           <Link to="/" className={styles.primary}>
             Voltar ao Início
           </Link>

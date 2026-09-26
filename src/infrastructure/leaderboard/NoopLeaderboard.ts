@@ -2,6 +2,7 @@ import type {
   HallOfTravelersEntry,
   LeaderboardPort,
   LeagueRow,
+  MuralRow,
   OnlinePlayer,
   PlayerProfile,
   SignInIdentifier,
@@ -124,5 +125,25 @@ export class NoopLeaderboard implements LeaderboardPort {
 
   async countAnomaliesBetween(_from: string, _to: string): Promise<number | null> {
     return null;
+  }
+
+  async recordWorkshopSolved(_uuid: string, _workshopId: string): Promise<void> {
+    // Intencionalmente vazio.
+  }
+
+  async countWorkshopsBetween(_from: string, _to: string): Promise<number | null> {
+    return null;
+  }
+
+  async publishSolution(_uuid: string, _workshopId: string, _lang: string, _code: string): Promise<boolean> {
+    return false;
+  }
+
+  async listMural(_workshopId: string): Promise<MuralRow[] | null> {
+    return null;
+  }
+
+  async setStar(_uuid: string, _solutionId: string, _on: boolean): Promise<boolean> {
+    return false;
   }
 }

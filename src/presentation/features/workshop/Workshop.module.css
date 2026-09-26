@@ -440,3 +440,79 @@
 .sintaxe p b {
   color: var(--color-cyan);
 }
+
+.mural {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  background: var(--color-panel);
+}
+
+.muted {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.muralList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.muralRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.muralWho {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  font: 0.94rem var(--font-body);
+  text-align: left;
+  cursor: pointer;
+}
+
+.star {
+  flex-shrink: 0;
+  min-width: 56px;
+  min-height: 44px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-gold);
+  font: 700 0.9rem var(--font-mono);
+  cursor: pointer;
+}
+
+.star:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.starOn {
+  border-color: var(--color-gold);
+  background: var(--color-panel-2);
+}
+
+.muralCode {
+  margin: 6px 0 0;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  font: 0.86rem/1.55 var(--font-mono);
+  font-variant-ligatures: none;
+  overflow-x: auto;
+  max-height: 320px;
+}

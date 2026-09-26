@@ -4,11 +4,18 @@ import { eventCalendarSchema } from '@/domain/events';
 import { cosmetics } from './cosmetics';
 import { eventCalendar } from './events/calendar';
 import { ecoSoltoRounds } from './events/ecoSolto';
+import { workshops } from './workshops';
 
 describe('calendário de eventos (content/events/calendar.ts)', () => {
   it('formato válido: tipos, datas, ids únicos', () => {
     const r = eventCalendarSchema.safeParse(eventCalendar);
     expect(r.success, r.success ? '' : r.error.message).toBe(true);
+  });
+
+  it('oficina indicada no Eco Solto existe', () => {
+    for (const e of eventCalendar) {
+      if (e.kind === 'eco-solto' && e.workshopId) expect(workshops.some((w) => w.id === e.workshopId), e.id).toBe(true);
+    }
   });
 
   it('prêmios existem no catálogo, são só de evento e do evento certo', () => {

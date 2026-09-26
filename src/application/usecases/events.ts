@@ -110,7 +110,8 @@ export function getActiveConvergence(params: { calendar: readonly GameEvent[]; n
 }
 
 /**
- * Meta da turma: conta as anomalias consertadas no período (Supabase) e, se a meta foi
+ * Meta da turma: conta as anomalias consertadas (ou as oficinas resolvidas, com
+ * `metric: 'oficinas'`) no período (Supabase) e, se a meta foi
  * batida, libera o cosmético para este viajante (uma vez). Sem rede, mostra sem contagem.
  */
 export async function loadConvergence(
@@ -121,7 +122,10 @@ export async function loadConvergence(
   if (event.kind !== 'convergencia') return null;
   let count: number | null = null;
   try {
-    count = await deps.leaderboard.countAnomaliesBetween(event.when.from, event.when.to);
+    count =
+      event.metric === 'oficinas'
+        ? await deps.leaderboard.countWorkshopsBetween(event.when.from, event.when.to)
+        : await deps.leaderboard.countAnomaliesBetween(event.when.from, event.when.to);
   } catch {
     count = null;
   }
