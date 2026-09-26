@@ -23,4 +23,6 @@ npm run build
 
 Crie `src/content/trails/<id>/` (metadados + módulos) e registre em `src/content/registry.ts`. Nenhum outro arquivo do projeto deve mudar — veja a seção 3 e 10 do `CLAUDE.md`.
 
+Cada pergunta do quiz tem um `id` (único no módulo, nunca só dígitos, ex.: `q1`): o progresso do aluno é guardado por esse id. Um id publicado nunca muda nem é reaproveitado; a pergunta pode mudar de lugar levando o id junto, e pergunta nova ganha id novo.
+
 Colaboração voluntária via Pix pelo link discreto "Colabore com o projeto" (rodapé e Configurações).
