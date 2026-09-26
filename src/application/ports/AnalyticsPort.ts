@@ -21,7 +21,9 @@ export type AnalyticsEventName =
   | 'boss_fight_started'
   | 'boss_fight_won'
   | 'boss_fight_lost'
-  | 'module_left';
+  | 'module_left'
+  | 'anomaly_opened'
+  | 'anomaly_solved';
 
 export type AnalyticsProps = Record<string, string | number | boolean>;
 

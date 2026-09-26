@@ -187,4 +187,15 @@ export interface LeaderboardPort {
    * chama sempre limpa o progresso local em seguida, sessão tendo saído ou não.
    */
   signOut(): Promise<void>;
+  /**
+   * Registra que o viajante consertou a Anomalia do Dia (Etapa 7), na tabela
+   * `anomalias_resolvidas`. Uma linha por viajante por dia. Falha em silêncio (sem rede, ou
+   * tabela ainda não criada): a recompensa já foi gravada no progresso local.
+   */
+  recordAnomalySolved(uuid: string, anomalyId: string, day: string): Promise<void>;
+  /**
+   * Quantos viajantes já consertaram a anomalia de um dia (contagem pública, sem nomes).
+   * `null` quando não dá pra saber (offline, sem Supabase, função ainda não criada).
+   */
+  countAnomalySolved(day: string): Promise<number | null>;
 }

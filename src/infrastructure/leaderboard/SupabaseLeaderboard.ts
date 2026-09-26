@@ -121,6 +121,31 @@ export class SupabaseLeaderboard implements LeaderboardPort {
     }
   }
 
+  async recordAnomalySolved(uuid: string, anomalyId: string, day: string): Promise<void> {
+    try {
+      const client = await this.ensureClient();
+      // Uma linha por viajante por dia (chave primária uuid + dia): repetir dá conflito 23505,
+      // que é esperado (já estava registrada) e não é erro de verdade.
+      const { error } = await client.from('anomalias_resolvidas').insert({ uuid, anomalia_id: anomalyId, dia: day });
+      if (error && error.code !== '23505' && import.meta.env.DEV) {
+        console.warn('[SupabaseLeaderboard] recordAnomalySolved falhou:', error.message);
+      }
+    } catch (e) {
+      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] recordAnomalySolved falhou:', e);
+    }
+  }
+
+  async countAnomalySolved(day: string): Promise<number | null> {
+    try {
+      const client = await this.ensureClient();
+      const { data, error } = await client.rpc<number>('contar_anomalias_resolvidas', { p_dia: day });
+      if (error || typeof data !== 'number') return null;
+      return data;
+    } catch {
+      return null;
+    }
+  }
+
   async listHallOfTravelers(): Promise<HallOfTravelersEntry[]> {
     const client = await this.ensureClient();
     const [jogadoresRes, insigniasRes, progressoRes] = await Promise.all([

@@ -84,6 +84,10 @@ class StubLeaderboard implements LeaderboardPort {
     return null;
   }
   async saveBio(): Promise<void> {}
+  async recordAnomalySolved(): Promise<void> {}
+  async countAnomalySolved(): Promise<number | null> {
+    return null;
+  }
   async ensureSignedIn(): Promise<string | null> {
     return 'uuid-anonimo';
   }

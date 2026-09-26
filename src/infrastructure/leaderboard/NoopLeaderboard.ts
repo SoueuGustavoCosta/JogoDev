@@ -61,6 +61,14 @@ export class NoopLeaderboard implements LeaderboardPort {
     return null;
   }
 
+  async recordAnomalySolved(_uuid: string, _anomalyId: string, _day: string): Promise<void> {
+    // Intencionalmente vazio.
+  }
+
+  async countAnomalySolved(_day: string): Promise<number | null> {
+    return null;
+  }
+
   async saveBio(_uuid: string, _bio: string): Promise<void> {
     // Intencionalmente vazio.
   }

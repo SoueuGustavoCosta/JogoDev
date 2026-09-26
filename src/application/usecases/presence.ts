@@ -1,4 +1,4 @@
-import { createEmptyProgress, xpForTrail } from '@/domain/progress';
+import { anomalyXpTotal, createEmptyProgress, fragmentsEarned, xpForTrail } from '@/domain/progress';
 import { checkInStreak, localDateISO, travelerLevel, type StreakCheckIn } from '@/domain/traveler';
 import type { Badge } from '@/domain/badges';
 import type { Trail } from '@/domain/trail';
@@ -15,6 +15,8 @@ export type ProfileSummary = {
   badgesEarnedCount: number;
   badgesTotal: number;
   streak: { current: number; best: number };
+  /** Fragmentos Temporais ganhos (Anomalia do Dia; a loja entra na Etapa 9). */
+  fragments: number;
 };
 
 /**
@@ -41,6 +43,8 @@ export function getProfileSummary(
     crystals += trail.modules.filter((m) => trailProgress?.modules[m.id]?.completed).length;
   }
 
+  xp += anomalyXpTotal(progress);
+
   return {
     name: getTraveler({ repository: deps.repository }).name,
     avatarUrl: progress.avatarUrl ?? null,
@@ -50,6 +54,7 @@ export function getProfileSummary(
     badgesEarnedCount: Object.keys(progress.badgesEarned ?? {}).length,
     badgesTotal: params.badgeCatalog.length,
     streak: { current: progress.streakCurrent ?? 0, best: progress.streakBest ?? 0 },
+    fragments: fragmentsEarned(progress),
   };
 }
 

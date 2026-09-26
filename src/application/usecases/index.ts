@@ -15,3 +15,4 @@ export * from './reportModuleLeft';
 export * from './lesson';
 export * from './quizIdMigration';
 export * from './tryBlock';
+export * from './anomaly';
