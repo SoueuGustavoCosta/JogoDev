@@ -64,7 +64,7 @@ const PUBLISHED_QUIZ_COUNT: Record<string, number> = {
   'java/metodos-java': 5,
   'java/classes-objetos-java': 5,
   'java/heranca-interfaces-java': 5,
-  'php/nascimento-php': 5,
+  'php/nascimento-php': 6,
   'php/sintaxe-tipos-php': 5,
   'php/operadores-condicoes-php': 5,
   'php/loops-php': 5,

@@ -8,7 +8,7 @@ import { trailRegistry } from './registry';
  * de alternativas de teoria, pelo menos um desafio de código por módulo e nenhum
  * parágrafo com mais de 60 palavras. Ilha nova na lista = ilha que passou pela Etapa 5.
  */
-const CONVERTED = ['logica', 'banco-de-dados', 'python', 'java'];
+const CONVERTED = ['logica', 'banco-de-dados', 'python', 'java', 'php'];
 
 /** Formatos em que o jogador mexe em código (ou lê código de verdade). */
 const CODE_KINDS = new Set(['fill', 'order', 'output', 'bug']);
@@ -34,5 +34,23 @@ describe('metas da Etapa 5 nas ilhas convertidas', () => {
         }
       });
     }
+  }
+});
+
+/**
+ * Python, Java e PHP têm módulos paralelos (história, sintaxe, operadores...). Para o jogo não
+ * virar repetição, o mesmo módulo não pode ter a mesma sequência de formatos nas três.
+ */
+describe('Python, Java e PHP não repetem a sequência de formatos', () => {
+  const languages = ['python', 'java', 'php'].map((id) => trailRegistry.find((t) => t.id === id)!);
+  const sequence = (trailIndex: number, moduleIndex: number) =>
+    languages[trailIndex].modules[moduleIndex].quiz.map(quizKind).join(' ');
+
+  const moduleCount = Math.min(...languages.map((t) => t.modules.length));
+  for (let m = 0; m < moduleCount; m++) {
+    it(`módulo ${m + 1}`, () => {
+      const seqs = languages.map((_, t) => sequence(t, m));
+      expect(new Set(seqs).size, seqs.join(' | ')).toBe(seqs.length);
+    });
   }
 });
