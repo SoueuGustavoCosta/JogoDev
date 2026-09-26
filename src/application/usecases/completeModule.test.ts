@@ -94,4 +94,26 @@ describe('completeModule', () => {
 
     expect(repository.load()?.badgesEarned ?? {}).toEqual({});
   });
+
+  it('reports firstBadge only when the traveler goes from zero badges to at least one', () => {
+    const trailWithRareBadge: Trail = { ...trail, completionBadgeId: 'rara-t1' };
+
+    const a = completeModule({ repository, analytics, leaderboard }, { trail: trailWithRareBadge, moduleId: 'a', traveler });
+    expect(a.firstBadge).toBe(false);
+
+    const b = completeModule({ repository, analytics, leaderboard }, { trail: trailWithRareBadge, moduleId: 'b', traveler });
+    expect(b.firstBadge).toBe(true);
+
+    const again = completeModule({ repository, analytics, leaderboard }, { trail: trailWithRareBadge, moduleId: 'b', traveler });
+    expect(again.firstBadge).toBe(false);
+  });
+
+  it('does not report firstBadge for someone who already had a badge', () => {
+    repository.save({ version: 1, trails: {}, badgesEarned: { antiga: '2026-01-01T00:00:00.000Z' } });
+    const oneModuleTrail: Trail = { ...trail, modules: [makeModule('a')], completionBadgeId: 'rara-t1' };
+
+    const result = completeModule({ repository, analytics, leaderboard }, { trail: oneModuleTrail, moduleId: 'a', traveler });
+    expect(repository.load()?.badgesEarned?.['rara-t1']).toBeDefined();
+    expect(result.firstBadge).toBe(false);
+  });
 });

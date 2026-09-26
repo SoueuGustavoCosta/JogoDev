@@ -25,7 +25,16 @@ export type CompleteModuleResult = {
   trailCompleted: boolean;
   /** Como o aluno foi neste módulo, para a Sintaxe comentar. */
   recap: ModuleRecap;
+  /**
+   * Esta conclusão deu ao viajante a primeira insígnia da vida dele (antes tinha zero).
+   * É o momento de sugerir, uma única vez e sem interromper, que ele salve o progresso.
+   */
+  firstBadge: boolean;
 };
+
+function badgeCount(progress: { badgesEarned?: Record<string, string> } | null): number {
+  return Object.keys(progress?.badgesEarned ?? {}).length;
+}
 
 export function completeModule(
   deps: { repository: ProgressRepository; analytics: AnalyticsPort; leaderboard: LeaderboardPort },
@@ -40,8 +49,10 @@ export function completeModule(
       alreadyCompleted: true,
       trailCompleted: isTrailCompleted(params.trail, trailProgress),
       recap: moduleRecap(params.trail, params.moduleId, trailProgress),
+      firstBadge: false,
     };
   }
+  const badgesBefore = badgeCount(progress);
 
   const nextTrailProgress = {
     ...trailProgress,
@@ -83,5 +94,10 @@ export function completeModule(
     }
   }
 
-  return { alreadyCompleted: false, trailCompleted, recap: moduleRecap(params.trail, params.moduleId, nextTrailProgress) };
+  return {
+    alreadyCompleted: false,
+    trailCompleted,
+    recap: moduleRecap(params.trail, params.moduleId, nextTrailProgress),
+    firstBadge: badgesBefore === 0 && badgeCount(deps.repository.load()) > 0,
+  };
 }
