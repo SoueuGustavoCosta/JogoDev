@@ -8,7 +8,7 @@ import { trailRegistry } from './registry';
  * de alternativas de teoria, pelo menos um desafio de código por módulo e nenhum
  * parágrafo com mais de 60 palavras. Ilha nova na lista = ilha que passou pela Etapa 5.
  */
-const CONVERTED = ['logica', 'banco-de-dados', 'python', 'java', 'php'];
+const CONVERTED = ['logica', 'banco-de-dados', 'python', 'java', 'php', 'git-github'];
 
 /** Formatos em que o jogador mexe em código (ou lê código de verdade). */
 const CODE_KINDS = new Set(['fill', 'order', 'output', 'bug']);
