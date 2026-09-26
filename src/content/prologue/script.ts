@@ -32,7 +32,7 @@ export const prologueScript: PrologueScript = {
       id: 'missao',
       say: [
         'Você viaja até cada era, entende o problema que as pessoas tinham e conserta o rastro do Eco. Cada acerto acende um cristal.',
-        'No mapa do tempo, você escolhe por onde começar. Minha dica é a Era dos Dados, em 1963: um foguete, uma lista de peças e a primeira dor de cabeça dos dados.',
+        'No mapa do tempo, você escolhe por onde começar. Minha dica é a Era da Lógica: antes de qualquer linguagem, a arte de resolver um problema em passos, com um desafio atrás do outro.',
       ],
       warp: { label: 'Abrir o mapa do tempo' },
     },
