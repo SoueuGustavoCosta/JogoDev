@@ -14,7 +14,7 @@ export const cosmetics: CosmeticItem[] = [
   { id: 'moldura-dupla', slot: 'frame', style: 'dupla', color: '#ffa36b', name: 'Anel duplo', description: 'Dois anéis laranja, um dentro do outro.', rarity: 'comum', price: 30 },
   { id: 'moldura-orbita', slot: 'frame', style: 'orbita', color: '#c9a2ff', name: 'Órbita', description: 'Uma órbita tracejada que gira devagar.', rarity: 'raro', price: 70 },
   { id: 'moldura-pixel', slot: 'frame', style: 'pixel', color: '#3ee0a1', name: 'Tela de 8 bits', description: 'Moldura quadrada, de quando os pixels eram grandes.', rarity: 'raro', price: 80 },
-  { id: 'moldura-fenda', slot: 'frame', style: 'fenda', color: '#ff5d7a', name: 'Fenda do Eco', description: 'Uma moldura rachada: você encarou o Eco e voltou.', rarity: 'lendario', price: null, event: 'eco-solto' },
+  { id: 'moldura-fenda', slot: 'frame', style: 'fenda', color: '#ff5d7a', name: 'Fenda do Eco', description: 'Uma moldura rachada: você encarou o Eco e voltou.', rarity: 'raro', price: null, event: 'eco-solto' },
 
   // Cores de fundo do avatar
   { id: 'cor-ametista', slot: 'color', from: '#9b4dff', to: '#4a2a8a', name: 'Ametista', description: 'O roxo da Praça da Sintaxe.', rarity: 'comum', price: 20 },

@@ -142,6 +142,10 @@ export type Progress = {
   weeklyXp?: Record<string, Record<string, number>>;
   /** Semanas (segunda-feira) em que o viajante ficou no top 3 e ganhou o selo. Opcional (Etapa 10). */
   leagueSeals?: string[];
+  /** XP extra de eventos (Surto Temporal), por fonte -> XP a mais. Opcional (Etapa 11). */
+  xpBonus?: Record<string, number>;
+  /** Dias (AAAA-MM-DD) em que venceu o Eco Solto. Opcional (Etapa 11). */
+  ecoSoltoWins?: string[];
 };
 
 /** Um lançamento de Fragmentos Temporais: `amount` positivo = ganho, negativo = gasto. */

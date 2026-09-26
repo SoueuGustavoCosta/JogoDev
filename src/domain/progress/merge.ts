@@ -3,6 +3,7 @@ import { bestQuizAttempt } from './attempt';
 import { mergeAnomalies } from './anomalies';
 import { mergeFragmentLedgers } from './fragments';
 import { mergeLeagueSeals, mergeWeeklyXp } from './weeklyXp';
+import { mergeBonusXp } from './bonusXp';
 import { mergeQuizBackups } from './quizBackup';
 import type { ModuleProgress, Progress, QuizAttemptResult, TrailProgress } from './types';
 
@@ -28,6 +29,7 @@ import type { ModuleProgress, Progress, QuizAttemptResult, TrailProgress } from 
  * - Fragmentos Temporais: união dos lançamentos por id (nada se perde nem se duplica).
  *   Cosméticos equipados: de `primary`, completando com `secondary`.
  * - Liga: XP da semana por fonte (união por id, maior valor) e selos (união).
+ * - Eventos: XP extra do Surto (união por id) e vitórias no Eco Solto (união).
  */
 export function mergeProgress(primary: Progress, secondary: Progress): Progress {
   const trailIds = new Set([...Object.keys(primary.trails ?? {}), ...Object.keys(secondary.trails ?? {})]);
@@ -66,6 +68,8 @@ export function mergeProgress(primary: Progress, secondary: Progress): Progress 
     equippedCosmetics: primary.equippedCosmetics ?? secondary.equippedCosmetics,
     weeklyXp: mergeWeeklyXp(primary.weeklyXp, secondary.weeklyXp),
     leagueSeals: mergeLeagueSeals(primary.leagueSeals, secondary.leagueSeals),
+    xpBonus: mergeBonusXp(primary.xpBonus, secondary.xpBonus),
+    ecoSoltoWins: mergeLeagueSeals(primary.ecoSoltoWins, secondary.ecoSoltoWins),
     lastLesson:
       (primary.lastLesson?.at ?? '') >= (secondary.lastLesson?.at ?? '') ? primary.lastLesson : secondary.lastLesson,
     streakCurrent,
