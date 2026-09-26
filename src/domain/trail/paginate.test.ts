@@ -92,3 +92,24 @@ describe('paginateModule', () => {
     expect(paginateModule({ blocks: [], quiz: [q(0)] })).toEqual([{ kind: 'quiz', quizIndex: 0 }]);
   });
 });
+
+describe('paginateModule: afterBlock (Etapa 5)', () => {
+  // 9 telas de conteúdo (cada p(50) sozinho), 3 perguntas: uma a cada 3 telas.
+  const blocks = Array.from({ length: 9 }, () => p(50));
+  const kinds = (screens: LessonScreen[]) =>
+    screens.map((s) => (s.kind === 'quiz' ? `q${s.quizIndex}` : `c${s.blocks.join('')}`)).join(' ');
+
+  it('sem afterBlock, nada muda', () => {
+    expect(kinds(paginateModule({ blocks, quiz: [q(1), q(2), q(3)] }))).toBe('c0 c1 c2 q0 c3 c4 c5 q1 c6 c7 c8 q2');
+  });
+
+  it('pergunta espera a tela do bloco que ela pede, sem trocar a ordem', () => {
+    const quiz = [{ ...q(1), afterBlock: 4 }, q(2), q(3)];
+    expect(kinds(paginateModule({ blocks, quiz }))).toBe('c0 c1 c2 c3 c4 q0 c5 q1 c6 c7 c8 q2');
+  });
+
+  it('se o bloco só aparece no fim, a pergunta e as seguintes vão para o fim', () => {
+    const quiz = [{ ...q(1), afterBlock: 8 }, q(2), q(3)];
+    expect(kinds(paginateModule({ blocks, quiz }))).toBe('c0 c1 c2 c3 c4 c5 c6 c7 c8 q0 q1 q2');
+  });
+});

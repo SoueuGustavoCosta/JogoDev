@@ -63,3 +63,12 @@ describe('moduleSchema: formatos novos (Etapa 4)', () => {
     expect(moduleSchema.safeParse(withItem({ kind: 'output', options: ['a', 'b'], answer: 0 })).success).toBe(false);
   });
 });
+
+describe('moduleSchema: afterBlock (Etapa 5)', () => {
+  const withAfter = (afterBlock: number) => ({ ...mod(['q1']), quiz: [{ id: 'q1', q: 'q', options: ['a', 'b'], answer: 0, explain: 'e', afterBlock }] });
+  it('aceita bloco existente e recusa posição fora dos blocos', () => {
+    expect(moduleSchema.safeParse(withAfter(0)).success).toBe(true);
+    expect(moduleSchema.safeParse(withAfter(1)).success).toBe(false);
+    expect(moduleSchema.safeParse(withAfter(-1)).success).toBe(false);
+  });
+});

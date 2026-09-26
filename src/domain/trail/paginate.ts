@@ -137,6 +137,9 @@ function quizGap(contentScreens: number, questions: number): number {
  * Divide um módulo em telas curtas e intercala as perguntas do quiz: depois de cada 2–3
  * telas de conteúdo entra uma pergunta, e as que sobrarem ficam no final, na ordem original.
  * O módulo sempre termina com pelo menos uma pergunta (se tiver quiz).
+ *
+ * Pergunta com `afterBlock` só entra depois da tela que mostra esse bloco: se a vez dela
+ * chegar antes, ela (e as seguintes, para não trocar a ordem) espera a próxima tela.
  */
 export function paginateModule(module: Pick<Module, 'blocks' | 'quiz'>): LessonScreen[] {
   const content = groupIntoScreens(buildUnits(module.blocks));
@@ -144,13 +147,20 @@ export function paginateModule(module: Pick<Module, 'blocks' | 'quiz'>): LessonS
   const gap = quizGap(content.length, questions);
   const screens: LessonScreen[] = [];
   let nextQuestion = 0;
+  let lastBlockShown = -1;
+  let waiting = false;
   content.forEach((blocks, i) => {
     screens.push({ kind: 'content', blocks });
+    lastBlockShown = Math.max(lastBlockShown, ...blocks);
     const isLastContent = i === content.length - 1;
     // Não intercala depois da última tela de conteúdo: dali em diante vêm as perguntas restantes.
-    if (!isLastContent && (i + 1) % gap === 0 && nextQuestion < questions - 1) {
+    if (isLastContent || nextQuestion >= questions - 1) return;
+    if ((i + 1) % gap === 0) waiting = true;
+    const after = module.quiz[nextQuestion]?.afterBlock;
+    if (waiting && (after === undefined || after <= lastBlockShown)) {
       screens.push({ kind: 'quiz', quizIndex: nextQuestion });
       nextQuestion += 1;
+      waiting = false;
     }
   });
   for (; nextQuestion < questions; nextQuestion += 1) screens.push({ kind: 'quiz', quizIndex: nextQuestion });

@@ -19,6 +19,11 @@ export type QuizItem =
       explain: string;
       /** Dica opcional para perguntas mais difíceis. Some cedo, aparece após o 1º erro e fica automática a partir do 3º. */
       hint?: string;
+      /**
+       * Posição (começando em 0) do bloco de `blocks` que precisa ter aparecido antes desta
+       * pergunta na lição em telas curtas. Sem ele, a pergunta entra onde couber. Etapa 5.
+       */
+      afterBlock?: number;
     }
   | {
       /** Ver o `id` do formato de múltipla escolha acima. */
@@ -39,6 +44,8 @@ export type QuizItem =
       explain: string;
       /** Dica opcional para perguntas mais difíceis. Some cedo, aparece após o 1º erro e fica automática a partir do 3º. */
       hint?: string;
+      /** Ver `afterBlock` da múltipla escolha. */
+      afterBlock?: number;
     }
   /**
    * Montar a linha: o aluno toca nas peças na ordem certa. `pieces` já vem na ordem
@@ -52,6 +59,8 @@ export type QuizItem =
       distractors?: string[];
       explain: string;
       hint?: string;
+      /** Ver `afterBlock` da múltipla escolha. */
+      afterBlock?: number;
     }
   /** O que aparece na tela? Escolha sobre código real: `code` é o programa, `lang` o nome da linguagem. Etapa 4. */
   | {
@@ -64,6 +73,8 @@ export type QuizItem =
       answer: number;
       explain: string;
       hint?: string;
+      /** Ver `afterBlock` da múltipla escolha. */
+      afterBlock?: number;
     }
   /** Encontre o bug: o aluno toca na linha errada. `bugLine` começa em 1 (como no editor). Etapa 4. */
   | {
@@ -74,6 +85,8 @@ export type QuizItem =
       bugLine: number;
       explain: string;
       hint?: string;
+      /** Ver `afterBlock` da múltipla escolha. */
+      afterBlock?: number;
     };
 
 /** Formato de uma pergunta: `choice` e `fill` são os originais (sem `kind` no conteúdo). */

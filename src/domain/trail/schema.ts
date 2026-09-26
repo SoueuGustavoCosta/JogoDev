@@ -17,6 +17,7 @@ const quizMultipleChoiceSchema = z.object({
   answer: z.number().int().nonnegative(),
   explain: z.string().min(1),
   hint: z.string().min(1).optional(),
+  afterBlock: z.number().int().nonnegative().optional(),
 });
 
 const quizFillSchema = z.object({
@@ -31,6 +32,7 @@ const quizFillSchema = z.object({
   placeholder: z.string().optional(),
   explain: z.string().min(1),
   hint: z.string().min(1).optional(),
+  afterBlock: z.number().int().nonnegative().optional(),
 });
 
 /** Montar a linha (Etapa 4): peças na ordem certa + peças que sobram, sem texto repetido entre elas. */
@@ -43,6 +45,7 @@ const quizOrderSchema = z
     distractors: z.array(z.string().min(1)).min(1).max(4).optional(),
     explain: z.string().min(1),
     hint: z.string().min(1).optional(),
+  afterBlock: z.number().int().nonnegative().optional(),
   })
   .refine((item) => !(item.distractors ?? []).some((d) => item.pieces.includes(d)), {
     message: 'Peça que sobra não pode ter o mesmo texto de uma peça certa',
@@ -60,6 +63,7 @@ const quizOutputSchema = z
     answer: z.number().int().nonnegative(),
     explain: z.string().min(1),
     hint: z.string().min(1).optional(),
+  afterBlock: z.number().int().nonnegative().optional(),
   })
   .refine((item) => item.answer < item.options.length, { message: 'answer fora das opções' })
   .refine((item) => new Set(item.options).size === item.options.length, { message: 'Opções repetidas' });
@@ -74,6 +78,7 @@ const quizBugSchema = z
     bugLine: z.number().int().positive(),
     explain: z.string().min(1),
     hint: z.string().min(1).optional(),
+  afterBlock: z.number().int().nonnegative().optional(),
   })
   .refine((item) => item.bugLine <= item.lines.length, { message: 'bugLine fora das linhas' })
   .refine((item) => item.lines[item.bugLine - 1]?.trim() !== '', { message: 'bugLine aponta para linha vazia' });
@@ -143,6 +148,8 @@ export const moduleSchema = z.object({
     .refine((quiz) => new Set(quiz.map((item) => item.id)).size === quiz.length, {
       message: 'Ids de pergunta repetidos no mesmo módulo',
     }),
+}).refine((module) => module.quiz.every((item) => item.afterBlock === undefined || item.afterBlock < module.blocks.length), {
+  message: 'afterBlock aponta para um bloco que não existe',
 });
 
 const missionSelectSchema = z.object({
