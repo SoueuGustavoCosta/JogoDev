@@ -34,6 +34,17 @@ export const modCiclo: Module = {
       k: 'Boas mensagens de commit',
       x: 'Escreva no imperativo e de forma curta: <code>adiciona validação de e-mail</code>, e não <code>adicionei</code> ou apenas <code>mudanças</code>. Uma boa mensagem economiza tempo de todo mundo, inclusive o seu, seis meses depois.',
     },
+    {
+      t: 'try',
+      engine: 'git',
+      file: 'terminal — meu-projeto',
+      brief: 'Grave o primeiro commit do projeto: inicie o repositório, prepare os arquivos e faça o commit',
+      starter: 'git init\n',
+      hint: 'Depois do git init: git add . (prepara tudo) e git commit -m "sua mensagem". Um comando por linha.',
+      repo: 'projeto',
+      mission: 'm2',
+      solution: 'git init\ngit add .\ngit commit -m "primeiro commit"',
+    },
   ],
   quiz: [
     {
