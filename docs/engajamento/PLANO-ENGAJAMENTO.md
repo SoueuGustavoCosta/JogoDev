@@ -714,4 +714,5 @@ Coisas que ficaram para depois. Nenhuma etapa deve fazê-las sem o autor pedir.
 | Etapa 1 | Saídas não contadas no celular | Quem só troca de app e tem a aba fechada pelo sistema em segundo plano pode sair sem gerar `module_left`. |
 | Etapa 1 | `module_left` em telas | Na Etapa 3, o `percent` do `module_left` passa a contar telas vistas, não rolagem. |
 | Etapa 2 | Pix fora do mapa | Decisão do autor: na tela do mapa (sem rodapé) o Pix fica só na aba Viajante. Nada a fazer. |
-| Etapa 2 | Nível do módulo | O nível ("Base", "Intermediário"...) saiu da página do módulo junto com a linha antiga do topo. Voltar de forma discreta dentro do LessonPlayer, na Etapa 3. |
+| Etapa 2 | Nível do módulo | O nível ("Base", "Intermediário"...) saiu da página do módulo junto com a linha antiga do topo. Voltar de forma discreta dentro do LessonPlayer, na Etapa 3. **Resolvido na Etapa 3** (linha pequena abaixo da barra de progresso). |
+| Etapa 3 | Texto da Sintaxe no Modo leitura | O Modo leitura ainda diz "Cada bloco é curtinho"; nas telas curtas a fala é "Cada tela é curtinha, e no caminho tem paradoxo pra resolver". |
