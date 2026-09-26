@@ -1,5 +1,13 @@
 import { createContext, useContext, useEffect, useMemo, type ReactNode } from 'react';
-import type { AnalyticsPort, ClipboardPort, LeaderboardPort, PhpEnginePort, ProgressRepository, SqlEnginePort } from '@/application/ports';
+import type {
+  AnalyticsPort,
+  ClipboardPort,
+  CodeRunnerPort,
+  LeaderboardPort,
+  PhpEnginePort,
+  ProgressRepository,
+  SqlEnginePort,
+} from '@/application/ports';
 import { LocalStorageProgressRepository } from '@/infrastructure/storage';
 import { withQuizIdMigration } from '@/application/usecases';
 import { buildQuizIdIndex } from '@/domain/progress';
@@ -9,6 +17,7 @@ import { POSTHOG_HOST, POSTHOG_KEY } from '@/config/analytics';
 import { generateRecoveryCode, NoopLeaderboard, resizeAvatarImage, SupabaseLeaderboard } from '@/infrastructure/leaderboard';
 import { PgliteEngine } from '@/infrastructure/sql';
 import { PhpWasmEngine } from '@/infrastructure/php';
+import { CodeRunner } from '@/infrastructure/runner';
 import { NavigatorClipboard } from '@/infrastructure/clipboard';
 import { shareText } from '@/infrastructure/share';
 
@@ -17,6 +26,8 @@ export type Services = {
   analytics: AnalyticsPort;
   sqlEngine: SqlEnginePort;
   phpEngine: PhpEnginePort;
+  /** Oficina do Viajante: roda PHP (mesmo motor do laboratório) e JS (Web Worker isolado). */
+  codeRunner: CodeRunnerPort;
   clipboard: ClipboardPort;
   leaderboard: LeaderboardPort;
   /**
@@ -43,8 +54,9 @@ const ServicesContext = createContext<Services | null>(null);
  * presentation que pode importar infrastructure — componentes usam os hooks abaixo.
  */
 export function ServicesProvider({ children }: { children: ReactNode }) {
-  const services = useMemo<Services>(
-    () => ({
+  const services = useMemo<Services>(() => {
+    const phpEngine = new PhpWasmEngine();
+    return {
       // Converte o progresso antigo do quiz (por posição) para id da pergunta, em toda leitura e gravação.
       progressRepository: withQuizIdMigration(new LocalStorageProgressRepository(), buildQuizIdIndex(trailRegistry)),
       // Eventos no PostHog (grátis) só em produção e com a chave configurada; visitas na Vercel (ver abaixo).
@@ -53,7 +65,8 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
           ? new PostHogAnalytics({ apiKey: POSTHOG_KEY, host: POSTHOG_HOST })
           : new NoopAnalytics(),
       sqlEngine: new PgliteEngine(),
-      phpEngine: new PhpWasmEngine(),
+      phpEngine,
+      codeRunner: new CodeRunner(phpEngine),
       clipboard: new NavigatorClipboard(),
       // Só em produção: em dev, escritas reais poluiriam o Hall dos Viajantes com
       // dados de teste (mesma lógica do analytics acima).
@@ -61,9 +74,8 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
       resizeAvatarImage,
       generateRecoveryCode,
       shareText,
-    }),
-    [],
-  );
+    };
+  }, []);
 
   // Contagem de visitas (Vercel Web Analytics, plano grátis): só em produção.
   useEffect(() => {

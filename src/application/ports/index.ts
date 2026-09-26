@@ -4,3 +4,4 @@ export * from './SqlEnginePort';
 export * from './PhpEnginePort';
 export * from './ClipboardPort';
 export * from './LeaderboardPort';
+export * from './CodeRunnerPort';
