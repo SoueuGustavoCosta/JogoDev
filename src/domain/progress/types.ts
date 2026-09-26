@@ -108,6 +108,24 @@ export type Progress = {
    * TODO(autor): remover a partir de 2026-10-24 (4 semanas depois da Etapa 3.5).
    */
   quizBackup?: QuizBackup;
+  /**
+   * Anomalias do Dia consertadas, por dia (AAAA-MM-DD, fuso de São Paulo). Cada registro
+   * guarda o que foi ganho (XP e Fragmentos Temporais): é o histórico de ganhos que a
+   * Etapa 9 usa como base da moeda. Campo novo e opcional (Etapa 7).
+   */
+  anomalies?: Record<string, AnomalyResult>;
+  /** Última lição aberta, para o "Continuar de onde parou" da tela Início. Opcional (Etapa 7). */
+  lastLesson?: { trailId: string; moduleId: string; at: string };
+};
+
+export type AnomalyResult = {
+  anomalyId: string;
+  /** Tentativas até acertar (1 = de primeira). */
+  tries: number;
+  /** Instante ISO em que foi consertada. */
+  solvedAt: string;
+  xp: number;
+  fragments: number;
 };
 
 /** Resultados do quiz por trilha -> módulo -> id da pergunta. */

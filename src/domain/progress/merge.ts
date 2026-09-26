@@ -1,5 +1,6 @@
 import { PROGRESS_SCHEMA_VERSION } from './factory';
 import { bestQuizAttempt } from './attempt';
+import { mergeAnomalies } from './anomalies';
 import { mergeQuizBackups } from './quizBackup';
 import type { ModuleProgress, Progress, QuizAttemptResult, TrailProgress } from './types';
 
@@ -20,6 +21,7 @@ import type { ModuleProgress, Progress, QuizAttemptResult, TrailProgress } from 
  *   Quem chama decide quem é a identidade "dona" (a conta no login; o aparelho no backup).
  * - Preferência de lição (`lessonMode`): de `primary`, completando com `secondary`.
  * - Tela onde parou (`screen`): a mais adiantada das duas cópias.
+ * - Anomalias do Dia: união por dia (fica a consertada primeiro). Última lição: a mais recente.
  */
 export function mergeProgress(primary: Progress, secondary: Progress): Progress {
   const trailIds = new Set([...Object.keys(primary.trails ?? {}), ...Object.keys(secondary.trails ?? {})]);
@@ -53,6 +55,9 @@ export function mergeProgress(primary: Progress, secondary: Progress): Progress 
     badgesEarned: mergeBadges(primary.badgesEarned, secondary.badgesEarned),
     // TODO(autor): remover junto com `quizBackup` a partir de 2026-10-24.
     quizBackup: mergeQuizBackups(primary.quizBackup, secondary.quizBackup),
+    anomalies: mergeAnomalies(primary.anomalies, secondary.anomalies),
+    lastLesson:
+      (primary.lastLesson?.at ?? '') >= (secondary.lastLesson?.at ?? '') ? primary.lastLesson : secondary.lastLesson,
     streakCurrent,
     streakBest,
     ultimoDiaAtivo: recent.ultimoDiaAtivo ?? older.ultimoDiaAtivo,
