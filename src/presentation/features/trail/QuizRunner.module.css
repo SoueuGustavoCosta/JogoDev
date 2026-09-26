@@ -262,3 +262,12 @@
     transition: none;
   }
 }
+
+/* Pergunta dentro da lição em telas curtas: sem a moldura da caixa, a tela inteira é dela. */
+.lessonBox {
+  padding: 4px 0 0;
+}
+
+.lessonBox .question {
+  font-size: 1.35rem;
+}
