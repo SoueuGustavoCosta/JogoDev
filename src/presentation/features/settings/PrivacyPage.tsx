@@ -25,6 +25,7 @@ export function PrivacyPage() {
           os dias em que você consertou a Anomalia do Dia (a turma vê só quantas pessoas consertaram, nunca
           quem);
         </li>
+        <li>os itens da Loja do Viajante que você equipou no avatar (moldura, cor, cabelo, acessório);</li>
         <li>o horário da última atividade, para mostrar quem está online agora;</li>
         <li>uma cópia de segurança do seu progresso completo.</li>
       </ul>
@@ -36,8 +37,8 @@ export function PrivacyPage() {
 
       <h2>Quem vê o quê</h2>
       <p>
-        No Hall dos Viajantes, qualquer pessoa vê seu nome, foto, resumo, eras concluídas, insígnias e se você está
-        online. Telefone, e-mail, senha e a cópia do progresso não aparecem para ninguém. Use um apelido se preferir
+        No Hall dos Viajantes, qualquer pessoa vê seu nome, foto, os itens do avatar, resumo, eras concluídas,
+        insígnias e se você está online. Telefone, e-mail, senha e a cópia do progresso não aparecem para ninguém. Use um apelido se preferir
         não mostrar seu nome real.
       </p>
 
