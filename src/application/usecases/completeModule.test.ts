@@ -116,4 +116,13 @@ describe('completeModule', () => {
     expect(repository.load()?.badgesEarned?.['rara-t1']).toBeDefined();
     expect(result.firstBadge).toBe(false);
   });
+
+  it('a insígnia do último módulo da trilha não some quando o troféu é gravado', () => {
+    const catalog = [{ id: 'comum-b', trail: 'outras', name: 'B', description: '', crown: false, unlockedBy: 'b', image: 'x.webp' }] as never;
+    completeModule({ repository, analytics, leaderboard }, { trail, moduleId: 'a', traveler, badgeCatalog: catalog });
+    const result = completeModule({ repository, analytics, leaderboard }, { trail, moduleId: 'b', traveler, badgeCatalog: catalog });
+    expect(result.trailCompleted).toBe(true);
+    expect(repository.load()?.badgesEarned?.['comum-b']).toBeDefined();
+    expect(repository.load()?.trails.t1.trophyAwarded).toBe(true);
+  });
 });

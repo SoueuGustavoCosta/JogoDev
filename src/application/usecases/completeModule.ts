@@ -81,10 +81,13 @@ export function completeModule(
 
   const trailCompleted = isTrailCompleted(params.trail, nextTrailProgress);
   if (trailCompleted && !nextTrailProgress.trophyAwarded) {
-    const withTrophy = { ...nextTrailProgress, trophyAwarded: true };
+    // Relê o progresso: as insígnias do módulo acabaram de ser gravadas, e gravar a partir
+    // de `nextProgress` (anterior a elas) apagaria a insígnia do último módulo da trilha.
+    const latest = deps.repository.load() ?? nextProgress;
+    const latestTrail = latest.trails[params.trail.id] ?? nextTrailProgress;
     deps.repository.save({
-      ...nextProgress,
-      trails: { ...nextProgress.trails, [params.trail.id]: withTrophy },
+      ...latest,
+      trails: { ...latest.trails, [params.trail.id]: { ...latestTrail, trophyAwarded: true } },
     });
     deps.analytics.track('island_completed', { island: params.trail.id });
     // Insígnia "rara" (o degrau entre as insígnias comuns e a lendária do chefe de
