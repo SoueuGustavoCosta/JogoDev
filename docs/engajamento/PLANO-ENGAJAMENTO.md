@@ -412,6 +412,7 @@ Meta para esta ilha:
 - Parágrafos 'p' com mais de 60 palavras devem ser divididos em frases mais curtas, SEM perder informação. Se um trecho for claramente leitura extra, marque-o como opcional (ex.: bloco 'note' com k "Curiosidade") em vez de apagar.
 - Python, Java e PHP não podem ter a mesma sequência de formatos: varie a ordem e os tipos de desafio entre as três.
 - Mantenha os fatos históricos, as falas da Sintaxe e as fontes citadas.
+- Onde uma pergunta cair antes da tela que explica o assunto, use o campo opcional da pergunta que diz depois de qual bloco ela aparece (decisão do autor na Etapa 3; criar o campo e o suporte em `paginateModule` na primeira execução desta etapa).
 
 Regras de segurança:
 - Converter uma pergunta = substituir pelo novo formato cobrindo O MESMO conceito. Nunca apague um conceito.
@@ -715,4 +716,6 @@ Coisas que ficaram para depois. Nenhuma etapa deve fazê-las sem o autor pedir.
 | Etapa 1 | `module_left` em telas | Na Etapa 3, o `percent` do `module_left` passa a contar telas vistas, não rolagem. |
 | Etapa 2 | Pix fora do mapa | Decisão do autor: na tela do mapa (sem rodapé) o Pix fica só na aba Viajante. Nada a fazer. |
 | Etapa 2 | Nível do módulo | O nível ("Base", "Intermediário"...) saiu da página do módulo junto com a linha antiga do topo. Voltar de forma discreta dentro do LessonPlayer, na Etapa 3. **Resolvido na Etapa 3** (linha pequena abaixo da barra de progresso). |
-| Etapa 3 | Texto da Sintaxe no Modo leitura | O Modo leitura ainda diz "Cada bloco é curtinho"; nas telas curtas a fala é "Cada tela é curtinha, e no caminho tem paradoxo pra resolver". |
+| Etapa 3 | Texto da Sintaxe no Modo leitura | **Resolvido** logo depois da Etapa 3: a fala agora descreve o Modo leitura (página inteira, paradoxos no fim). |
+| Etapa 3 | Pergunta antes da explicação | Como as perguntas mantêm a ordem original, alguma pode cair antes da tela que explica o assunto. **Decisão do autor: na Etapa 5**, adicionar em cada pergunta um campo opcional dizendo depois de qual bloco ela deve aparecer (ex.: `after: <posição ou id do bloco>`), respeitado por `paginateModule`. |
+| Etapa 3 | Contador "N seguidas" | Decisão do autor: conta só acertos de primeira. Manter. |
