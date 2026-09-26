@@ -77,15 +77,13 @@ export const modSintaxe: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'O que acontece com o texto escrito fora de <?php ... ?> num arquivo PHP?',
-      options: [
-        'É ignorado completamente',
-        'Causa um erro de sintaxe',
-        'É enviado direto para a tela, como HTML puro',
-        'Vira automaticamente um comentário',
-      ],
-      answer: 2,
-      explain: 'PHP foi criado para se misturar com HTML: tudo fora das tags de PHP é enviado como está, direto para a saída.',
+      kind: "output",
+      q: "O texto fora de <?php ... ?> também vai para a tela. O que aparece?",
+      lang: "php",
+      code: "Olá, <?php echo \"mundo\"; ?>!",
+      options: ["Olá, mundo!", "mundo", "Olá, !", "Erro"],
+      answer: 0,
+      explain: "O que fica fora das tags PHP é enviado direto para a tela, como HTML puro. Só o trecho entre <code>&lt;?php</code> e <code>?&gt;</code> é executado.",
     },
     {
       id: 'q2',
@@ -109,10 +107,14 @@ export const modSintaxe: Module = {
     },
     {
       id: 'q4',
-      q: 'Qual operador PHP usa para concatenar (juntar) textos?',
-      options: ['+', '&', '.', '++'],
-      answer: 2,
-      explain: 'PHP usa o ponto (.) para concatenação, diferente de outras linguagens que usam +.',
+      q: "Complete com o operador que junta (concatena) textos em PHP:",
+      fill: true,
+      pre: "echo \"Olá, \"",
+      post: "$nome;",
+      accept: ["."],
+      wrong: ["+", "&", "++"],
+      placeholder: "?",
+      explain: "Em PHP quem concatena é o ponto: <code>\"Olá, \" . $nome</code>. O <code>+</code> tentaria somar números.",
     },
     {
       id: 'q5',

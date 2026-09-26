@@ -70,6 +70,7 @@ export const modWeb: Module = {
   quiz: [
     {
       id: 'q1',
+      afterBlock: 4,
       q: 'Por onde chegam os dados guardados no array $_GET?',
       options: ['No corpo de um formulário POST', 'Na própria URL, depois do ?', 'No banco de dados', 'Numa variável de sessão'],
       answer: 1,
@@ -89,17 +90,22 @@ export const modWeb: Module = {
     },
     {
       id: 'q3',
-      q: 'O que precisa ser chamado antes de usar $_SESSION num script PHP?',
-      options: ['session_start()', 'session_init()', 'new Session()', 'Nada, funciona direto'],
-      answer: 0,
-      explain: 'session_start() precisa ser chamado (geralmente no início do script) para habilitar o uso de $_SESSION.',
+      q: "Complete com o que precisa ser chamado antes de usar $_SESSION:",
+      fill: true,
+      pre: "<?php\n",
+      post: ";\n$_SESSION[\"visitas\"] = 1;",
+      accept: ["session_start()"],
+      wrong: ["session_init()", "new Session()", "start_session()"],
+      placeholder: "?",
+      explain: "<code>session_start()</code> liga a sessão no topo do arquivo, antes de qualquer uso de $_SESSION.",
     },
     {
       id: 'q4',
-      q: 'Qual superglobal guarda os dados enviados por um formulário HTML com method="post"?',
-      options: ['$_GET', '$_POST', '$_SESSION', '$_FORM'],
-      answer: 1,
-      explain: '$_POST recebe os dados enviados no corpo de uma requisição POST, como um formulário submetido.',
+      kind: "bug",
+      q: "O formulário é enviado, mas o e-mail nunca aparece. Toque na linha com o bug.",
+      lines: ["<form method=\"post\" action=\"salvar.php\">", "  <input name=\"email\">", "</form>", "<?php echo $_GET[\"email\"]; ?>"],
+      bugLine: 4,
+      explain: "Formulário com method=\"post\" manda os dados em <code>$_POST</code>, não em <code>$_GET</code> (que vem da URL).",
     },
     {
       id: 'q5',

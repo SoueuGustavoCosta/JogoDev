@@ -72,15 +72,12 @@ export const modLoops: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'O que foreach ($viajante as $chave => $valor) permite fazer?',
-      options: [
-        'Percorrer um array pegando a chave e o valor ao mesmo tempo',
-        'Criar um array novo vazio',
-        'Ordenar o array automaticamente',
-        'Um erro de sintaxe em PHP',
-      ],
-      answer: 0,
-      explain: 'A sintaxe chave => valor no foreach permite acessar tanto a chave quanto o valor de cada item de um array associativo.',
+      afterBlock: 9,
+      kind: "order",
+      q: "Monte o laço que percorre o array $viajante pegando a chave e o valor",
+      pieces: ["foreach", "($viajante", "as", "$chave", "=>", "$valor)"],
+      distractors: ["in", ":"],
+      explain: "<code>foreach ($viajante as $chave => $valor)</code> percorre o array pegando a chave e o valor ao mesmo tempo.",
     },
     {
       id: 'q2',
@@ -98,10 +95,13 @@ export const modLoops: Module = {
     },
     {
       id: 'q4',
-      q: 'Qual comando pula o resto da volta atual, sem sair do laço inteiro?',
-      options: ['break', 'continue', 'return', 'exit'],
+      kind: "output",
+      q: "Repare no continue. O que aparece na tela?",
+      lang: "php",
+      code: "<?php\nfor ($i = 1; $i <= 4; $i++) {\n    if ($i == 2) {\n        continue;\n    }\n    echo $i;\n}",
+      options: ["1", "134", "1234", "34"],
       answer: 1,
-      explain: 'continue pula direto para a próxima volta; break sai do laço inteiro.',
+      explain: "<code>continue</code> pula o resto da volta atual (o echo do 2), sem sair do laço. Com <code>break</code>, apareceria só 1.",
     },
     {
       id: 'q5',

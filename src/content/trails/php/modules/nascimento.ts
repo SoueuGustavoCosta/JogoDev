@@ -116,5 +116,15 @@ export const modNascimento: Module = {
       placeholder: 'nome da era',
       explain: 'A Era da Lógica usa PHP como linguagem de base para seu laboratório e para o chefe Loopus Infinitus.',
     },
+    {
+      id: 'q6',
+      kind: "output",
+      q: "Rasmus criou o PHP para contar as visitas ao currículo dele. O que aparece na tela?",
+      lang: "php",
+      code: "<?php\n$visitas = 41;\n$visitas++;\necho \"Visitas: $visitas\";",
+      options: ["Visitas: 41", "Visitas: 42", "Visitas: $visitas", "Erro"],
+      answer: 1,
+      explain: "O <code>++</code> soma 1 à variável, e as aspas duplas trocam <code>$visitas</code> pelo valor: \"Visitas: 42\".",
+    },
   ],
 };
