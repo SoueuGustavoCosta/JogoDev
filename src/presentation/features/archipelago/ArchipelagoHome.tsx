@@ -5,7 +5,7 @@ import { trailRegistry } from '@/content/registry';
 import { isEraRestored } from '@/domain/progress';
 import { useServices } from '@/presentation/app/ServicesContext';
 import type { LayoutOutletContext } from '@/presentation/shell';
-import { ERAS, type MapEra } from './mapData';
+import { ERAS, START_HERE_ERA_ID, type MapEra } from './mapData';
 import { TimeMap, type EraProgress } from './TimeMap';
 
 /** Home do app: o Mini Mapa do Tempo. */
@@ -46,11 +46,15 @@ export function ArchipelagoHome() {
     }
   }
 
+  // Quem ainda não concluiu nenhum módulo, em nenhuma era, vê o selo "Comece aqui".
+  const firstSteps = Object.values(byEra).every((p) => p.done === 0);
+
   return (
     <TimeMap
       summary={summary}
       onlinePlayers={onlinePlayers}
       progress={progress}
+      startHereEraId={firstSteps ? START_HERE_ERA_ID : undefined}
       onEnterEra={(era: MapEra) => era.trailId && navigate(`/trilhas/${era.trailId}`)}
     />
   );

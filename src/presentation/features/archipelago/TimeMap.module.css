@@ -136,7 +136,7 @@
 .say {
   position: absolute;
   left: 12px;
-  right: 12px;
+  right: 68px;
   bottom: calc(92px + env(safe-area-inset-bottom));
   z-index: 4;
   max-width: 400px;
@@ -408,6 +408,28 @@
 @media (prefers-reduced-motion: reduce) {
   .dive,
   .portal {
+    animation: none;
+  }
+}
+
+/* Selo "Comece aqui" na era sugerida para quem ainda não concluiu nenhum módulo. */
+.tagStart {
+  border-color: var(--color-cyan);
+  color: var(--color-cyan);
+}
+
+.startHere {
+  animation: startHerePulse 2.4s ease-in-out infinite;
+}
+
+@keyframes startHerePulse {
+  50% {
+    opacity: 0.72;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .startHere {
     animation: none;
   }
 }

@@ -75,6 +75,13 @@ export const ICON_PATHS: Record<EraIcon, string> = {
   ia: 'M0 -14c-8 0-14 6-14 13s5 9 8 9c0 4 3 6 6 6s6-2 6-6c3 0 8-2 8-9S8 -14 0 -14z',
 };
 
+/**
+ * Era sugerida para quem ainda não concluiu nenhum módulo (selo "Comece aqui" no mapa).
+ * É só uma sugestão: todas as eras continuam abertas. A Lógica é a mais jogável (widgets
+ * e desafios de código), por isso é a porta de entrada (plano de engajamento, Etapa 2).
+ */
+export const START_HERE_ERA_ID = 'logica';
+
 export const ERAS: MapEra[] = [
   {
     id: 'dados',

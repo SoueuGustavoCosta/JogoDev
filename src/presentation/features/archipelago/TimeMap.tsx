@@ -67,14 +67,20 @@ export function TimeMap({
   summary,
   onlinePlayers,
   progress,
+  startHereEraId,
   onEnterEra,
 }: {
   summary: ProfileSummary;
   onlinePlayers: OnlinePlayer[];
   progress: Record<string, EraProgress>;
+  /** Era com o selo "Comece aqui" (só para quem ainda não concluiu nenhum módulo). */
+  startHereEraId?: string;
   onEnterEra: (era: MapEra) => void;
 }) {
   const travelerName = summary.name;
+  const startHereEra = VISIBLE_ERAS.find((e) => e.id === startHereEraId);
+  // Enquadramento inicial: a era sugerida para quem está começando, senão a Era dos Dados.
+  const initialFocus = useRef(startHereEra ?? ERAS[0]);
   const stars = useMemo(buildStars, []);
   const svgRef = useRef<SVGSVGElement>(null);
   const miniRef = useRef<HTMLCanvasElement>(null);
@@ -155,7 +161,8 @@ export function TimeMap({
       if (first) {
         first = false;
         const { w } = size.current;
-        centerOn(ERAS[0].x + 90, ERAS[0].y + 40, Math.min(1.05, Math.max((w / MAP_W) * 1.55, 0.62)));
+        const focus = initialFocus.current;
+        centerOn(focus.x + 90, focus.y + 40, Math.min(1.05, Math.max((w / MAP_W) * 1.55, 0.62)));
       } else {
         clamp();
         redraw();
@@ -174,12 +181,19 @@ export function TimeMap({
 
   useEffect(() => {
     setSay(
-      <>
-        <b>SINTAXE</b> · Este é o mapa do tempo, {travelerName}. Toque numa era para ver detalhes e viajar até
-        ela.
-      </>,
+      startHereEra ? (
+        <>
+          <b>SINTAXE</b> · Este é o mapa do tempo, {travelerName}. Comece pela <b>{startHereEra.name}</b>: toque nela
+          para viajar até lá. As outras eras também estão abertas.
+        </>
+      ) : (
+        <>
+          <b>SINTAXE</b> · Este é o mapa do tempo, {travelerName}. Toque numa era para ver detalhes e viajar até
+          ela.
+        </>
+      ),
     );
-  }, [travelerName]);
+  }, [travelerName, startHereEra]);
 
   // Zoom com roda do mouse (precisa de listener não passivo).
   useEffect(() => {
@@ -404,7 +418,7 @@ export function TimeMap({
                 transform={`translate(${e.x} ${e.y})`}
                 tabIndex={0}
                 role="button"
-                aria-label={`${e.name}. ${e.description}`}
+                aria-label={`${e.name}${e.id === startHereEra?.id ? ' (comece aqui)' : ''}. ${e.description}`}
                 {...activate(() => setSheet({ kind: 'era', era: e }))}
               >
                 <EraVortex id={e.id} color={e.color} iconPath={ICON_PATHS[e.icon]} progress={pr} />
@@ -415,7 +429,14 @@ export function TimeMap({
                     {e.name}
                   </text>
                 </g>
-                {e.status === 'ativo' && pr ? (
+                {e.id === startHereEra?.id ? (
+                  <g transform="translate(0 126)" className={styles.startHere}>
+                    <rect x={-62} y={-15} width={124} height={30} rx={15} fill="#5ee7ff" />
+                    <text y={6} textAnchor="middle" fontSize={15} fontWeight={800} fill="#0a0912" fontFamily="JetBrains Mono, monospace">
+                      COMECE AQUI
+                    </text>
+                  </g>
+                ) : e.status === 'ativo' && pr ? (
                   <g transform="translate(46 -46)">
                     <circle r={19} fill="#ffd479" />
                     <text y={6} textAnchor="middle" fontSize={16} fontWeight={800} fill="#0a0912" fontFamily="JetBrains Mono, monospace">
@@ -634,6 +655,7 @@ export function TimeMap({
           {sheet.kind === 'era' ? (
             <EraSheet
               era={sheet.era}
+              startHere={sheet.era.id === startHereEra?.id}
               progress={progress[sheet.era.id]}
               onGo={() => goTo(sheet.era)}
               onClose={() => setSheet(null)}
@@ -678,11 +700,13 @@ export function TimeMap({
 
 function EraSheet({
   era,
+  startHere,
   progress,
   onGo,
   onClose,
 }: {
   era: MapEra;
+  startHere: boolean;
   progress?: EraProgress;
   onGo: () => void;
   onClose: () => void;
@@ -694,6 +718,7 @@ function EraSheet({
         {era.years}
         {era.status === 'novo' ? <span className={styles.tag}>NOVA</span> : null}
         {era.status === 'breve' ? <span className={styles.tag}>EM BREVE</span> : null}
+        {startHere ? <span className={`${styles.tag} ${styles.tagStart}`}>COMECE AQUI</span> : null}
       </div>
       <h2>{era.name}</h2>
       <p>{era.description}</p>
