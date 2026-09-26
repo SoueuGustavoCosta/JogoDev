@@ -27,3 +27,7 @@ O código de cada pergunta está no campo `code` dela, em `src/content/trails/<i
 | Lua de Java | Métodos: parâmetros, retorno e sobrecarga | `q3` | `5 e 3.0` | [ ] |
 | Lua de Java | Classes, objetos e encapsulamento | `q3` | `null` | [ ] |
 | Lua de Java | Herança, polimorfismo e interfaces | `q3` | `VIP` | [ ] |
+| Anomalia do Dia | py-contagem | `desafio` | `1 2 3` | [ ] |
+| Anomalia do Dia | py-mochila | `desafio` | `3` | [ ] |
+| Anomalia do Dia | java-divisao | `desafio` | `3` | [ ] |
+| Anomalia do Dia | java-pares | `desafio` | `024` | [ ] |

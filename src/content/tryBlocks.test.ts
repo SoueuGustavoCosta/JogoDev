@@ -6,6 +6,7 @@ import { getGitMissionById } from '@/domain/lab';
 import type { TryBlock } from '@/domain/trail';
 import { NoopAnalytics } from '@/infrastructure/analytics';
 import { PgliteEngine } from '@/infrastructure/sql';
+import { anomalies } from './anomalies';
 import { trailRegistry } from './registry';
 
 /**
@@ -53,6 +54,10 @@ const tries = trailRegistry.flatMap((trail) =>
       .filter((b): b is TryBlock => b.t === 'try')
       .map((block, i) => ({ where: `${trail.id}/${module.id} #${i + 1}`, block })),
   ),
+).concat(
+  anomalies
+    .filter((a) => 't' in a.challenge)
+    .map((a) => ({ where: `anomalia ${a.id}`, block: a.challenge as TryBlock })),
 );
 
 describe('blocos try: a solução passa e o começo não', () => {

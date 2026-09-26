@@ -2,6 +2,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import type { OutputQuizItem } from '@/domain/trail';
 import { PgliteEngine } from '@/infrastructure/sql';
+import { anomalies } from './anomalies';
 import { trailRegistry } from './registry';
 
 /**
@@ -25,6 +26,12 @@ const outputs = trailRegistry.flatMap((trail) =>
       .filter((item): item is OutputQuizItem => item.kind === 'output')
       .map((item) => ({ where: `${trail.id}/${module.id}/${item.id}`, item })),
   ),
+).concat(
+  // Anomalias do Dia (Etapa 7) também: o desafio de cada uma pode ser um "o que aparece".
+  anomalies
+    .map((a) => a.challenge)
+    .filter((c): c is OutputQuizItem => !('t' in c) && c.kind === 'output')
+    .map((item) => ({ where: `anomalia ${item.q.slice(0, 30)}`, item })),
 );
 
 describe('perguntas "o que aparece na tela?"', () => {
