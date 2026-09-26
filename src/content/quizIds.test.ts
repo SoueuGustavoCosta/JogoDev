@@ -9,8 +9,8 @@ import { trailRegistry } from './registry';
  * id novo (q{N+1}, ...). Esta lista só cresce.
  */
 const PUBLISHED_QUIZ_COUNT: Record<string, number> = {
-  'banco-de-dados/porque': 4,
-  'banco-de-dados/tipos': 4,
+  'banco-de-dados/porque': 5,
+  'banco-de-dados/tipos': 5,
   'banco-de-dados/arquitetura': 4,
   'banco-de-dados/interface': 3,
   'banco-de-dados/sintaxe': 4,
