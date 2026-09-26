@@ -47,12 +47,19 @@ describe('conteúdo da Era dos Dados (migração do protótipo)', () => {
     ]);
   });
 
-  it('preserva os 84 itens de quiz do protótipo (81 múltipla escolha + 3 completar)', () => {
+  // Decisão do autor (Etapa 4): a contagem exata (81 múltipla escolha + 3 completar) virou
+  // "nenhuma pergunta sumiu e o total não diminui". Uma pergunta pode mudar de formato (ex.:
+  // múltipla escolha -> montar a linha) levando o id junto, e perguntas novas podem entrar.
+  it('não perde nenhuma das 84 perguntas do protótipo (total ≥ 84; formatos podem mudar)', () => {
     const allQuiz = bancoDeDadosModules.flatMap((m) => m.quiz);
-    expect(allQuiz).toHaveLength(84);
-    const fillCount = allQuiz.filter((q) => 'fill' in q).length;
-    expect(fillCount).toBe(3);
-    expect(allQuiz.length - fillCount).toBe(81);
+    expect(allQuiz.length).toBeGreaterThanOrEqual(84);
+    // Ids das perguntas do protótipo em cada módulo (q1..qN, Etapa 3.5): todos continuam existindo.
+    const original: Record<string, number> = { porque: 4, tipos: 4, arquitetura: 4, interface: 3, sintaxe: 4, tiposdados: 3, relacional: 4, create: 5, insert: 3, where: 4, update: 3, mer: 4, join: 4, algebra: 4, agg: 4, subconsultas: 3, norm: 5, indices: 4, transacoes: 4, views: 3, seguranca: 4, projeto: 4 };
+    for (const mod of bancoDeDadosModules) {
+      const ids = mod.quiz.map((q) => q.id);
+      for (let n = 1; n <= (original[mod.id] ?? 0); n++) expect(ids, `${mod.id} perdeu a pergunta q${n}`).toContain(`q${n}`);
+    }
+    expect(Object.values(original).reduce((a, b) => a + b, 0)).toBe(84);
   });
 
   it('cada módulo tem pelo menos um bloco e um item de quiz', () => {

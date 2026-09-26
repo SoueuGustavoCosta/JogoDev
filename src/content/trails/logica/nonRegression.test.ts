@@ -32,12 +32,19 @@ describe('conteúdo da Era da Lógica (logica)', () => {
     }
   });
 
-  it('preserva os 54 itens de quiz do protótipo (31 múltipla escolha + 23 completar)', () => {
+  // Decisão do autor (Etapa 4): a contagem exata (31 múltipla escolha + 23 completar) virou
+  // "nenhuma pergunta sumiu e o total não diminui". Uma pergunta pode mudar de formato (ex.:
+  // múltipla escolha -> montar a linha) levando o id junto, e perguntas novas podem entrar.
+  it('não perde nenhuma das 54 perguntas do protótipo (total ≥ 54; formatos podem mudar)', () => {
     const allQuiz = logicaModules.flatMap((m) => m.quiz);
-    expect(allQuiz).toHaveLength(54);
-    const fillCount = allQuiz.filter((q) => 'fill' in q).length;
-    expect(fillCount).toBe(23);
-    expect(allQuiz.length - fillCount).toBe(31);
+    expect(allQuiz.length).toBeGreaterThanOrEqual(54);
+    // Ids das perguntas do protótipo em cada módulo (q1..qN, Etapa 3.5): todos continuam existindo.
+    const original: Record<string, number> = { origem: 5, ola: 5, variaveis: 6, operadores: 6, decisoes: 5, loops: 6, arrays: 6, funcoes: 6, web: 5, velha: 4 };
+    for (const mod of logicaModules) {
+      const ids = mod.quiz.map((q) => q.id);
+      for (let n = 1; n <= (original[mod.id] ?? 0); n++) expect(ids, `${mod.id} perdeu a pergunta q${n}`).toContain(`q${n}`);
+    }
+    expect(Object.values(original).reduce((a, b) => a + b, 0)).toBe(54);
   });
 
   it('valida a trilha inteira contra o esquema Zod de conteúdo', () => {

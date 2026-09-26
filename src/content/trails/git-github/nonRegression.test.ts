@@ -29,12 +29,19 @@ describe('conteúdo da Era "Código Compartilhado" (git-github)', () => {
     }
   });
 
-  it('preserva os 21 itens de quiz do protótipo (18 múltipla escolha + 3 completar)', () => {
+  // Decisão do autor (Etapa 4): a contagem exata (18 múltipla escolha + 3 completar) virou
+  // "nenhuma pergunta sumiu e o total não diminui". Uma pergunta pode mudar de formato (ex.:
+  // múltipla escolha -> montar a linha) levando o id junto, e perguntas novas podem entrar.
+  it('não perde nenhuma das 21 perguntas do protótipo (total ≥ 21; formatos podem mudar)', () => {
     const allQuiz = gitGithubModules.flatMap((m) => m.quiz);
-    expect(allQuiz).toHaveLength(21);
-    const fillCount = allQuiz.filter((q) => 'fill' in q).length;
-    expect(fillCount).toBe(3);
-    expect(allQuiz.length - fillCount).toBe(18);
+    expect(allQuiz.length).toBeGreaterThanOrEqual(21);
+    // Ids das perguntas do protótipo em cada módulo (q1..qN, Etapa 3.5): todos continuam existindo.
+    const original: Record<string, number> = { origem: 3, conceitos: 3, ciclo: 3, branches: 3, desfazer: 3, github: 3, boaspraticas: 3 };
+    for (const mod of gitGithubModules) {
+      const ids = mod.quiz.map((q) => q.id);
+      for (let n = 1; n <= (original[mod.id] ?? 0); n++) expect(ids, `${mod.id} perdeu a pergunta q${n}`).toContain(`q${n}`);
+    }
+    expect(Object.values(original).reduce((a, b) => a + b, 0)).toBe(21);
   });
 
   it('valida a trilha inteira contra o esquema Zod de conteúdo', () => {
