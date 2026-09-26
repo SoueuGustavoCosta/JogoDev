@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { getHallOfTravelers } from '@/application/usecases';
+import { getHallOfTravelers, getLooksOf } from '@/application/usecases';
+import type { AvatarLook } from '@/domain/cosmetics';
+import { cosmetics } from '@/content/cosmetics';
 import type { HallOfTravelersEntry } from '@/application/ports';
 import { Avatar, BadgeMedal, Modal } from '@/presentation/design-system';
 import { getBadgeById } from '@/content/badges/catalog';
@@ -44,12 +46,18 @@ export function HallPage() {
   const { onlinePlayers } = useOutletContext<LayoutOutletContext>();
   const [state, setState] = useState<LoadState>({ status: 'loading' });
   const [selectedUuid, setSelectedUuid] = useState<string | null>(null);
+  const [looks, setLooks] = useState<Record<string, AvatarLook>>({});
 
   useEffect(() => {
     let cancelled = false;
     getHallOfTravelers({ leaderboard })
       .then((entries) => {
-        if (!cancelled) setState({ status: 'ok', entries });
+        if (cancelled) return;
+        setState({ status: 'ok', entries });
+        // Cosméticos numa leitura à parte: se falhar, o Hall aparece igual, só sem eles.
+        void getLooksOf({ leaderboard }, { uuids: entries.map((e) => e.uuid), catalog: cosmetics }).then((l) => {
+          if (!cancelled) setLooks(l);
+        });
       })
       .catch(() => {
         if (!cancelled) setState({ status: 'error' });
@@ -101,7 +109,7 @@ export function HallPage() {
                 onClick={() => setSelectedUuid(entry.uuid)}
               >
                 <div className={styles.cardHead}>
-                  <Avatar name={entry.nome} url={entry.fotoUrl} size={40} online={online} />
+                  <Avatar name={entry.nome} url={entry.fotoUrl} size={40} online={online} look={looks[entry.uuid]} />
                   <div className={styles.cardNames}>
                     <h3>{entry.nome}</h3>
                     <span className={styles.cardStatus}>{online ? 'Online agora' : 'Offline'}</span>
@@ -123,7 +131,7 @@ export function HallPage() {
       {selected ? (
         <Modal title={selected.nome} onClose={() => setSelectedUuid(null)}>
           <div className={styles.detailHead}>
-            <Avatar name={selected.nome} url={selected.fotoUrl} size={64} online={onlineUuids.has(selected.uuid)} />
+            <Avatar name={selected.nome} url={selected.fotoUrl} size={64} online={onlineUuids.has(selected.uuid)} look={looks[selected.uuid]} />
             <div>
               <h2 className={styles.detailName}>{selected.nome}</h2>
               <p className={styles.detailMeta}>

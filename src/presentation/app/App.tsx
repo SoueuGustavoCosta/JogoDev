@@ -18,6 +18,7 @@ const LabPage = lazy(() => import('@/presentation/features/lab').then((m) => ({ 
 const BossFightPage = lazy(() =>
   import('@/presentation/features/bossfight').then((m) => ({ default: m.BossFightPage })),
 );
+const ShopPage = lazy(() => import('@/presentation/features/shop').then((m) => ({ default: m.ShopPage })));
 const SettingsPage = lazy(() =>
   import('@/presentation/features/settings').then((m) => ({ default: m.SettingsPage })),
 );
@@ -55,6 +56,7 @@ function AppRoutes() {
             <Route path="chefe" element={<BossFightPage />} />
           </Route>
           <Route path="configuracoes" element={<SettingsPage />} />
+          <Route path="configuracoes/loja" element={<ShopPage />} />
           <Route path="privacidade" element={<PrivacyPage />} />
           <Route path="hall" element={<HallPage />} />
           <Route path="redefinir-senha" element={<ResetPasswordPage />} />

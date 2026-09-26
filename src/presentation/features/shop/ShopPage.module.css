@@ -1,0 +1,202 @@
+.back {
+  color: inherit;
+  text-decoration: none;
+}
+
+.hero {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 26px 18px 18px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-panel);
+}
+
+.wallet {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.balance {
+  font: 800 1.1rem var(--font-title);
+  color: var(--color-purple-soft);
+}
+
+.balance b {
+  font-size: 1.7rem;
+  color: var(--color-text);
+}
+
+.walletHint {
+  font-size: 0.84rem;
+  line-height: 1.4;
+  color: var(--color-muted);
+}
+
+.walletHint a,
+.linkButton {
+  color: var(--color-purple-soft);
+}
+
+.linkButton {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.84rem;
+  text-align: left;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.status {
+  min-height: 1.4em;
+  margin: 10px 0 6px;
+  font-size: 0.88rem;
+  color: var(--color-good);
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.tab {
+  min-height: 44px;
+  padding: 0 4px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-panel);
+  color: var(--color-muted);
+  font: 700 0.8rem var(--font-body);
+  cursor: pointer;
+}
+
+.tabOn {
+  border-color: var(--color-purple);
+  color: var(--color-text);
+  background: var(--color-panel-2);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 720px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 10px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-panel);
+  text-align: center;
+  min-width: 0;
+}
+
+.r-raro {
+  border-color: var(--color-cyan);
+}
+
+.r-lendario {
+  border-color: var(--color-gold);
+}
+
+.tryOn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 92px;
+  height: 92px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--color-panel-2);
+  cursor: pointer;
+}
+
+.tryOn[aria-pressed='true'] {
+  outline: 2px solid var(--color-purple);
+}
+
+.name {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.rarity {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-muted);
+}
+
+.r-raro .rarity {
+  color: var(--color-cyan);
+}
+
+.r-lendario .rarity {
+  color: var(--color-gold);
+}
+
+.desc {
+  flex: 1;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: var(--color-muted);
+}
+
+.action {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 6px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-panel-2);
+  color: var(--color-text);
+  font: 700 0.84rem var(--font-body);
+  cursor: pointer;
+}
+
+.actionBuy {
+  border-color: var(--color-purple);
+}
+
+.actionConfirm {
+  border-color: var(--color-orange);
+  background: var(--color-orange);
+  color: var(--color-bg);
+}
+
+.actionOn {
+  border-color: var(--color-good);
+  color: var(--color-good);
+}
+
+.note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  margin-top: 6px;
+  font-size: 0.78rem;
+  color: var(--color-muted);
+}

@@ -2,6 +2,7 @@ import { useRef, useState, type ChangeEvent } from 'react';
 import type { ProfileSummary } from '@/application/usecases';
 import { uploadAvatarPhoto } from '@/application/usecases';
 import type { OnlinePlayer } from '@/application/ports';
+import type { AvatarLook } from '@/domain/cosmetics';
 import { Avatar } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
 import styles from './ProfileHeader.module.css';
@@ -11,11 +12,13 @@ const PRESENCE_MAX_AVATARS = 5;
 export function ProfileHeader({
   summary,
   onlinePlayers,
+  onlineLooks = {},
   streakGrew = false,
   hideStreak = false,
 }: {
   summary: ProfileSummary;
   onlinePlayers: OnlinePlayer[];
+  onlineLooks?: Record<string, AvatarLook>;
   streakGrew?: boolean;
   /** No Início a Linha do Tempo substitui o foguinho (Etapa 8). */
   hideStreak?: boolean;
@@ -52,7 +55,7 @@ export function ProfileHeader({
     <div className={styles.root}>
       <div className={styles.identity}>
         <button type="button" className={styles.avatarButton} onClick={onPickAvatar} aria-label="Trocar minha foto">
-          <Avatar name={summary.name} url={avatarUrl} size={48} online />
+          <Avatar name={summary.name} url={avatarUrl} size={48} online look={summary.look} />
         </button>
         <input
           ref={fileInputRef}
@@ -101,7 +104,7 @@ export function ProfileHeader({
           <div className={styles.presenceAvatars}>
             {onlinePlayers.slice(0, PRESENCE_MAX_AVATARS).map((p) => (
               <span key={p.uuid} className={styles.presenceAvatar}>
-                <Avatar name={p.nome} url={p.fotoUrl} size={26} />
+                <Avatar name={p.nome} url={p.fotoUrl} size={26} look={onlineLooks[p.uuid]} />
               </span>
             ))}
             {overflowCount > 0 ? <span className={styles.presenceOverflow}>+{overflowCount}</span> : null}

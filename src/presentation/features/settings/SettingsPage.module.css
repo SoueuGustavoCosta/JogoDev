@@ -105,3 +105,36 @@
   font: 600 1rem var(--font-body);
   cursor: pointer;
 }
+
+/* Entrada da Loja do Viajante (Etapa 9). */
+.shopCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  padding: 12px 14px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-panel);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.shopCard span:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.shopCard small {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
+
+.shopBalance {
+  flex-shrink: 0;
+  font-weight: 800;
+  color: var(--color-purple-soft);
+}

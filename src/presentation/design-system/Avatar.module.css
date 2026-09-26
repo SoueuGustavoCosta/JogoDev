@@ -29,6 +29,7 @@
 }
 
 .onlineDot {
+  z-index: 1;
   position: absolute;
   right: -1px;
   bottom: -1px;
@@ -38,4 +39,46 @@
   background: var(--color-good);
   border: 2px solid var(--color-bg);
   box-shadow: 0 0 6px rgba(62, 224, 161, 0.8);
+}
+
+/* Cosméticos (Etapa 9): SVG do tamanho do avatar, pode passar das bordas. */
+.look {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.neon {
+  filter: drop-shadow(0 0 4px currentColor);
+}
+
+.spin {
+  transform-origin: 0 0;
+  animation: avatar-spin 12s linear infinite;
+}
+
+.blink {
+  animation: avatar-blink 1.6s ease-in-out infinite;
+}
+
+@keyframes avatar-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes avatar-blink {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin,
+  .blink {
+    animation: none;
+  }
 }

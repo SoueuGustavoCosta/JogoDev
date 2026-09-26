@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState, type KeyboardEvent, type MouseEvent, type PointerEvent, type ReactNode } from 'react';
 import type { OnlinePlayer } from '@/application/ports';
 import type { ProfileSummary } from '@/application/usecases';
+import type { AvatarLook } from '@/domain/cosmetics';
+import { Link } from 'react-router-dom';
 import {
+  Avatar,
   Modal,
   playSelectSound,
   playVortexSound,
@@ -66,6 +69,7 @@ function buildStars() {
 export function TimeMap({
   summary,
   onlinePlayers,
+  onlineLooks = {},
   progress,
   startHereEraId,
   onEnterEra,
@@ -73,6 +77,8 @@ export function TimeMap({
 }: {
   summary: ProfileSummary;
   onlinePlayers: OnlinePlayer[];
+  /** Cosméticos de quem está online (Etapa 9), por uuid. */
+  onlineLooks?: Record<string, AvatarLook>;
   progress: Record<string, EraProgress>;
   /** Era com o selo "Comece aqui" (só para quem ainda não concluiu nenhum módulo). */
   startHereEraId?: string;
@@ -624,12 +630,7 @@ export function TimeMap({
         <div>
           <div className={styles.brand}>
             <span className={styles.avatar} aria-hidden="true">
-              {summary.avatarUrl ? (
-                <img src={summary.avatarUrl} alt="" className={styles.avatarImg} />
-              ) : (
-                (travelerName.trim()[0] ?? 'V').toUpperCase()
-              )}
-              <i className={styles.avatarDot} />
+              <Avatar name={travelerName} url={summary.avatarUrl} size={26} online look={summary.look} />
             </span>
             {travelerName} <span className={styles.level}>· Nível {summary.level}</span>
           </div>
@@ -691,6 +692,21 @@ export function TimeMap({
                 É o centro do mapa: todas as eras saem daqui. Antes de qualquer linguagem, você precisa saber
                 escrever: pontuação, indentação, nomes e blocos. Isso vale para quase tudo.
               </p>
+              <div className={styles.plazaCrowd} aria-label="Viajantes na praça">
+                <span className={styles.plazaMe}>
+                  <Avatar name={travelerName} url={summary.avatarUrl} size={44} look={summary.look} />
+                  <small>Você</small>
+                </span>
+                {onlinePlayers.slice(0, 6).map((p) => (
+                  <span key={p.uuid} className={styles.plazaMe}>
+                    <Avatar name={p.nome} url={p.fotoUrl} size={44} online look={onlineLooks[p.uuid]} />
+                    <small>{p.nome}</small>
+                  </span>
+                ))}
+              </div>
+              <Link to="/configuracoes/loja" className={styles.plazaShop}>
+                Loja do Viajante · {summary.fragments} ◆
+              </Link>
             </div>
           ) : null}
           {sheet.kind === 'char' ? (

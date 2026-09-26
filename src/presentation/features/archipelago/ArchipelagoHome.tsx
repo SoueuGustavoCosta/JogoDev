@@ -12,7 +12,7 @@ import { TimeMap, type EraProgress } from './TimeMap';
 export function ArchipelagoHome() {
   const { progressRepository, analytics } = useServices();
   const navigate = useNavigate();
-  const { summary, onlinePlayers } = useOutletContext<LayoutOutletContext>();
+  const { summary, onlinePlayers, onlineLooks } = useOutletContext<LayoutOutletContext>();
 
   const traveler = getTraveler({ repository: progressRepository });
 
@@ -53,6 +53,7 @@ export function ArchipelagoHome() {
     <TimeMap
       summary={summary}
       onlinePlayers={onlinePlayers}
+        onlineLooks={onlineLooks}
       progress={progress}
       startHereEraId={firstSteps ? START_HERE_ERA_ID : undefined}
       onEnterEra={(era: MapEra) => era.trailId && navigate(`/trilhas/${era.trailId}`)}

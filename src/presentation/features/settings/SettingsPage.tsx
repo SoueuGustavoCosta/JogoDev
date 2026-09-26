@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useOutletContext } from 'react-router-dom';
 import {
   BIO_MAX_LENGTH,
   getCachedBio,
@@ -18,11 +18,13 @@ import { BadgePassport } from '@/presentation/features/badges';
 import { SupportModal } from '@/presentation/features/support';
 import { useAccountSheet } from '@/presentation/features/account';
 import { useServices } from '@/presentation/app/ServicesContext';
+import type { LayoutOutletContext } from '@/presentation/shell';
 import styles from './SettingsPage.module.css';
 
 export function SettingsPage() {
   const { progressRepository, leaderboard } = useServices();
   const { openAccount } = useAccountSheet();
+  const shopBalance = useOutletContext<LayoutOutletContext>().summary.fragments;
   const [supportOpen, setSupportOpen] = useState(false);
   const [signOutOpen, setSignOutOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
@@ -68,6 +70,16 @@ export function SettingsPage() {
 
       <section className={styles.section}>
         <BadgePassport />
+      </section>
+
+      <section className={styles.section}>
+        <Link to="/configuracoes/loja" className={styles.shopCard}>
+          <span>
+            <b>Loja do Viajante</b>
+            <small>Molduras, cores, cabelos e acessórios para o seu avatar.</small>
+          </span>
+          <span className={styles.shopBalance}>{shopBalance} ◆ ▸</span>
+        </Link>
       </section>
 
       <section className={styles.section}>

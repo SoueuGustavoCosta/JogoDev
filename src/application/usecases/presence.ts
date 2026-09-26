@@ -1,6 +1,7 @@
 import { anomalyXpTotal, createEmptyProgress, fragmentBalance, xpForTrail } from '@/domain/progress';
 import { travelerLevel } from '@/domain/traveler';
 import type { Badge } from '@/domain/badges';
+import { resolveLook, type AvatarLook, type CosmeticItem } from '@/domain/cosmetics';
 import type { Trail } from '@/domain/trail';
 import type { LeaderboardPort, OnlinePlayer, ProgressRepository } from '../ports';
 import { getOrCreateTravelerUuid, getTraveler } from './traveler';
@@ -17,6 +18,8 @@ export type ProfileSummary = {
   streak: { current: number; best: number };
   /** Saldo de Fragmentos Temporais (ganhos menos gastos na Loja do Viajante). */
   fragments: number;
+  /** Cosméticos equipados (Etapa 9); vazio se quem chama não passou o catálogo. */
+  look: AvatarLook;
 };
 
 /**
@@ -31,7 +34,7 @@ export type ProfileSummary = {
  */
 export function getProfileSummary(
   deps: { repository: ProgressRepository },
-  params: { trails: Trail[]; badgeCatalog: Badge[] },
+  params: { trails: Trail[]; badgeCatalog: Badge[]; cosmetics?: readonly CosmeticItem[] },
 ): ProfileSummary {
   const progress = deps.repository.load() ?? createEmptyProgress();
 
@@ -55,6 +58,7 @@ export function getProfileSummary(
     badgesTotal: params.badgeCatalog.length,
     streak: { current: progress.streakCurrent ?? 0, best: progress.streakBest ?? 0 },
     fragments: fragmentBalance(progress),
+    look: resolveLook(progress.equippedCosmetics, params.cosmetics ?? []),
   };
 }
 

@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import {
   backupProgress,
   bootstrapTravelerIdentity,
+  getLooksOf,
   getPresence,
   getLessonMode,
   getProfileSummary,
@@ -15,6 +16,8 @@ import type { ProfileSummary } from '@/application/usecases';
 import type { OnlinePlayer } from '@/application/ports';
 import { trailRegistry } from '@/content/registry';
 import { badgeCatalog } from '@/content/badges/catalog';
+import { cosmetics } from '@/content/cosmetics';
+import type { AvatarLook } from '@/domain/cosmetics';
 import { SUPPORT_COPY } from '@/domain/support';
 import { DEFAULT_LESSON_MODE } from '@/config/exploration';
 import type { TimelineStatus } from '@/domain/traveler';
@@ -31,7 +34,14 @@ const HEARTBEAT_INTERVAL_MS = 90_000;
 
 const FULL_SCREEN_PATHS = new Set(['/prologo', '/entrar', '/cadastro', '/esqueci-senha', '/conta']);
 
-export type LayoutOutletContext = { summary: ProfileSummary; onlinePlayers: OnlinePlayer[] };
+export type LayoutOutletContext = {
+  summary: ProfileSummary;
+  onlinePlayers: OnlinePlayer[];
+  /** Cosméticos de quem está online, por uuid (Etapa 9). */
+  onlineLooks: Record<string, AvatarLook>;
+  /** Recalcula o resumo do cabeçalho sem trocar de tela (ex.: depois de comprar na Loja). */
+  refreshSummary: () => void;
+};
 
 function NavItem({
   to,
@@ -84,11 +94,14 @@ export function Layout() {
   const lessonFullScreen =
     isModule && getLessonMode({ repository: progressRepository }, { fallback: DEFAULT_LESSON_MODE }) === 'telas';
 
+  const [summaryVersion, setSummaryVersion] = useState(0);
+  const refreshSummary = useCallback(() => setSummaryVersion((v) => v + 1), []);
+  const [onlineLooks, setOnlineLooks] = useState<Record<string, AvatarLook>>({});
   const summary = useMemo(
-    () => getProfileSummary({ repository: progressRepository }, { trails: trailRegistry, badgeCatalog }),
+    () => getProfileSummary({ repository: progressRepository }, { trails: trailRegistry, badgeCatalog, cosmetics }),
     // recalcula ao trocar de tela, quando o progresso pode ter mudado
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [progressRepository, location.pathname],
+    [progressRepository, location.pathname, summaryVersion],
   );
 
   // Sessão da conta perdida: aviso discreto na aba Viajante (lá fica o "Entrar de novo").
@@ -121,7 +134,11 @@ export function Layout() {
       void backupProgress({ repository: progressRepository, leaderboard });
       getPresence({ leaderboard })
         .then((players) => {
-          if (!cancelled) setOnlinePlayers(players);
+          if (cancelled) return;
+          setOnlinePlayers(players);
+          void getLooksOf({ leaderboard }, { uuids: players.map((p) => p.uuid), catalog: cosmetics }).then((looks) => {
+            if (!cancelled) setOnlineLooks(looks);
+          });
         })
         .catch(() => {
           // Leitura pode falhar (rede fora do ar, projeto pausado): mantém a lista anterior.
@@ -176,7 +193,7 @@ export function Layout() {
         )}
 
         {isMap || lessonFullScreen ? (
-          <Outlet context={{ summary, onlinePlayers } satisfies LayoutOutletContext} />
+          <Outlet context={{ summary, onlinePlayers, onlineLooks, refreshSummary } satisfies LayoutOutletContext} />
         ) : (
           <div className={styles.column}>
             {/* Dentro de um salto, o perfil e os contadores saem da frente (continuam na aba Viajante). */}
@@ -187,12 +204,12 @@ export function Layout() {
                     ◂ Voltar ao mapa
                   </Link>
                 )}
-                <ProfileHeader summary={summary} onlinePlayers={onlinePlayers} hideStreak={isHome} />
+                <ProfileHeader summary={summary} onlinePlayers={onlinePlayers} onlineLooks={onlineLooks} hideStreak={isHome} />
               </header>
             )}
             <main className={`${styles.main} ${isModule ? styles.mainBare : ''}`}>
               <div key={location.pathname} className={styles.page}>
-                <Outlet context={{ summary, onlinePlayers } satisfies LayoutOutletContext} />
+                <Outlet context={{ summary, onlinePlayers, onlineLooks, refreshSummary } satisfies LayoutOutletContext} />
               </div>
             </main>
             <footer className={styles.footer}>

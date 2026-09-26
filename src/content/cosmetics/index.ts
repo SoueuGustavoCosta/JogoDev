@@ -25,10 +25,10 @@ export const cosmetics: CosmeticItem[] = [
   { id: 'cor-convergencia', slot: 'color', from: '#ece9f8', to: '#5ee7ff', name: 'Convergência', description: 'Liberada para todos quando a turma bate a meta do mês.', rarity: 'lendario', price: null, event: 'convergencia' },
 
   // Cabelos
-  { id: 'cabelo-espetado', slot: 'hair', style: 'espetado', color: '#1b1731', name: 'Espetado', description: 'Para quem acabou de achar o bug.', rarity: 'comum', price: 25 },
-  { id: 'cabelo-franja', slot: 'hair', style: 'franja', color: '#6b3f1f', name: 'Franja reta', description: 'Arrumado como código indentado.', rarity: 'comum', price: 25 },
-  { id: 'cabelo-coque', slot: 'hair', style: 'coque', color: '#2c2647', name: 'Coque', description: 'Prático para longas sessões de estudo.', rarity: 'comum', price: 30 },
-  { id: 'cabelo-cacheado', slot: 'hair', style: 'cacheado', color: '#3a2412', name: 'Cacheado', description: 'Volume de sobra, como um laço bem feito.', rarity: 'comum', price: 30 },
+  { id: 'cabelo-espetado', slot: 'hair', style: 'espetado', color: '#ffd479', name: 'Espetado', description: 'Para quem acabou de achar o bug.', rarity: 'comum', price: 25 },
+  { id: 'cabelo-franja', slot: 'hair', style: 'franja', color: '#8a5a3c', name: 'Franja reta', description: 'Arrumado como código indentado.', rarity: 'comum', price: 25 },
+  { id: 'cabelo-coque', slot: 'hair', style: 'coque', color: '#b0673a', name: 'Coque', description: 'Prático para longas sessões de estudo.', rarity: 'comum', price: 30 },
+  { id: 'cabelo-cacheado', slot: 'hair', style: 'cacheado', color: '#6b4226', name: 'Cacheado', description: 'Volume de sobra, como um laço bem feito.', rarity: 'comum', price: 30 },
   { id: 'cabelo-chanel', slot: 'hair', style: 'chanel', color: '#c9a2ff', name: 'Chanel lilás', description: 'Um corte curto em lilás de neon.', rarity: 'raro', price: 75 },
   { id: 'cabelo-moicano', slot: 'hair', style: 'moicano', color: '#ff6b1f', name: 'Moicano de fogo', description: 'Uma crista laranja que não passa despercebida.', rarity: 'lendario', price: 180 },
 
