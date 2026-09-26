@@ -92,3 +92,26 @@ Colunas de formatos: completar / montar a linha / o que aparece / encontre o bug
   alternativas e ganha uma pergunta nova de código (`q6`, montar `import this`).
 - Parágrafo longo: 1 (a origem do nome, no nascimento), dividido em dois.
 - `afterBlock` em 2 perguntas (Laços q1, Funções q1).
+
+## Java (branch `etapa-5-conteudo-java`)
+
+| Módulo | Palavras (antes → depois) | Alternativas | Outros formatos (completar / montar / saída / bug) |
+|---|---|---|---|
+| nascimento-java | 439 → 439 | 4 → 4 | 1 / 0 / 0 / 0 → 2 / 0 / 0 / 0 |
+| sintaxe-tipos-java | 242 → 242 | 4 → 2 | 1 / 0 / 0 / 0 → 1 / 1 / 0 / 1 |
+| operadores-condicoes-java | 157 → 157 | 4 → 1 | 1 / 0 / 0 / 0 → 2 / 0 / 2 / 0 |
+| loops-java | 83 → 83 | 4 → 1 | 1 / 0 / 0 / 0 → 1 / 1 / 2 / 0 |
+| arrays-colecoes-java | 148 → 148 | 4 → 2 | 1 / 0 / 0 / 0 → 2 / 0 / 0 / 1 |
+| metodos-java | 185 → 185 | 4 → 2 | 1 / 0 / 0 / 0 → 2 / 0 / 1 / 0 |
+| classes-objetos-java | 168 → 168 | 4 → 2 | 1 / 0 / 0 / 0 → 1 / 1 / 1 / 0 |
+| heranca-interfaces-java | 205 → 205 | 4 → 2 | 1 / 0 / 0 / 0 → 1 / 0 / 1 / 1 |
+| **Total** | 1627 → 1627 | 32/40 (80%) → 16/41 (39%) | |
+
+- 16 conversões: o que aparece (7, rodadas no `java` local e listadas em `conferir-output.md`),
+  completar (4), montar a linha (3) e encontre o bug (3). Nas perguntas "o que aparece" de Java,
+  o código mostrado é o corpo do `main` (e as classes auxiliares, quando há), para caber no
+  celular; a pergunta avisa "código dentro do main".
+- O módulo de história mantém as 4 alternativas e ganha uma pergunta nova de código (`q6`,
+  completar `javac Main.java`).
+- A sequência de formatos de cada módulo é diferente da de Python.
+- `afterBlock` em 1 pergunta (Laços q1, do-while).

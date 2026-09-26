@@ -20,3 +20,10 @@ O código de cada pergunta está no campo `code` dela, em `src/content/trails/<i
 | Lua de Python | Funções: def, argumentos e a armadilha da lista mutável | `q1` | `None` | [ ] |
 | Lua de Python | Funções: def, argumentos e a armadilha da lista mutável | `q3` | `['pão', 'leite']` | [ ] |
 | Lua de Python | Orientação a objetos: classes, self e herança | `q4` | `Olá` | [ ] |
+| Lua de Java | Operadores, condições e a armadilha do == | `q1` | `2` | [ ] |
+| Lua de Java | Operadores, condições e a armadilha do == | `q4` | `UmDois` | [ ] |
+| Lua de Java | Laços: for, while, do-while e for-each | `q1` | `10` | [ ] |
+| Lua de Java | Laços: for, while, do-while e for-each | `q3` | `012` | [ ] |
+| Lua de Java | Métodos: parâmetros, retorno e sobrecarga | `q3` | `5 e 3.0` | [ ] |
+| Lua de Java | Classes, objetos e encapsulamento | `q3` | `null` | [ ] |
+| Lua de Java | Herança, polimorfismo e interfaces | `q3` | `VIP` | [ ] |
