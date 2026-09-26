@@ -281,3 +281,7 @@ end;
 $$;
 revoke all on function public.email_de_login(text, text) from public;
 grant execute on function public.email_de_login(text, text) to anon, authenticated;
+
+-- PENDENTE (Etapa 7, 2026-09-26): tabela anomalias_resolvidas e a função
+-- contar_anomalias_resolvidas estão em supabase/2026-09-26_anomalias_resolvidas.sql,
+-- esperando o autor aplicar. Depois de aplicado, mover o conteúdo para cá.
