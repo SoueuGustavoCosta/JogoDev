@@ -71,3 +71,24 @@ Colunas de formatos: completar / montar a linha / o que aparece / encontre o bug
   Subconsultas q1–q2, Transações q2–q3, Views q2).
 - Fora da pasta da ilha (infraestrutura da etapa): o teste de `output` passou a rodar SQL no
   PGlite, e o código dos desafios quebra linha no celular em vez de esconder o fim.
+
+## Python (branch `etapa-5-conteudo-python`)
+
+| Módulo | Palavras (antes → depois) | Alternativas | Outros formatos (completar / montar / saída / bug) |
+|---|---|---|---|
+| nascimento-python | 635 → 635 | 4 → 4 | 1 / 0 / 0 / 0 → 1 / 1 / 0 / 0 |
+| sintaxe-e-tipos | 250 → 250 | 4 → 2 | 1 / 0 / 0 / 0 → 1 / 0 / 1 / 1 |
+| operadores-condicoes | 239 → 239 | 4 → 1 | 1 / 0 / 0 / 0 → 2 / 1 / 1 / 0 |
+| loops-python | 216 → 216 | 4 → 2 | 1 / 0 / 0 / 0 → 1 / 1 / 1 / 0 |
+| colecoes | 213 → 213 | 4 → 1 | 1 / 0 / 0 / 0 → 1 / 0 / 2 / 1 |
+| funcoes-python | 166 → 166 | 4 → 2 | 1 / 0 / 0 / 0 → 1 / 0 / 2 / 0 |
+| modulos-e-arquivos | 202 → 202 | 4 → 2 | 1 / 0 / 0 / 0 → 2 / 1 / 0 / 0 |
+| poo-python | 162 → 162 | 4 → 2 | 1 / 0 / 0 / 0 → 2 / 0 / 1 / 0 |
+| **Total** | 2083 → 2083 | 32/40 (80%) → 16/41 (39%) | |
+
+- 16 conversões (2 por módulo técnico, 3 em Operadores e Coleções): o que aparece (8,
+  rodadas no `python3` e listadas em `conferir-output.md` para o autor conferir), completar
+  (3), montar a linha (3) e encontre o bug (2). O módulo de história (nascimento) mantém as 4
+  alternativas e ganha uma pergunta nova de código (`q6`, montar `import this`).
+- Parágrafo longo: 1 (a origem do nome, no nascimento), dividido em dois.
+- `afterBlock` em 2 perguntas (Laços q1, Funções q1).
