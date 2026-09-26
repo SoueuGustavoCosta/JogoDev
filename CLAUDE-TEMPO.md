@@ -92,8 +92,8 @@ O código continua com `Trail`, `Module`, `QuizItem`. O vocabulário vive em `pr
 1. Tela cheia, fundo estrelado. A **Sintaxe** aparece e diz: "Olá, viajante do tempo. Qual é o seu nome?"
 2. Campo de texto (máx. 20 caracteres, fonte de 16 px ou mais) + botão Enviar. Nome vazio vira "Viajante".
 3. A Sintaxe responde usando o nome, se apresenta e conta o que aconteceu: a Linha do Tempo rachou e ninguém lembra por que as tecnologias foram inventadas.
-4. Diálogo curto com **escolhas** do aluno (ex.: "Isso é sério?" / "O que eu preciso fazer?"), cada uma com uma resposta da Sintaxe, e depois convite para começar pela **Era dos Dados**.
-5. Botão "Ir para a Era dos Dados". O nome fica salvo no navegador e aparece no cabeçalho e nas falas da Sintaxe.
+4. Diálogo curto com **escolhas** do aluno (ex.: "Isso é sério?" / "O que eu preciso fazer?"), cada uma com uma resposta da Sintaxe, e depois convite para começar pela **Era da Lógica** (decisão do autor, plano de engajamento Etapa 2, 2026-09-25: é a era mais jogável; antes a sugestão era a Era dos Dados). É só uma dica: todas as eras continuam abertas.
+5. Botão "Abrir o mapa do tempo". No mapa, enquanto o viajante não concluiu nenhum módulo, a Era da Lógica aparece com o selo **"Comece aqui"** e a câmera abre nela (`START_HERE_ERA_ID` em `presentation/features/archipelago/mapData.ts`). O nome fica salvo no navegador e aparece no cabeçalho e nas falas da Sintaxe.
 
 Requisitos: balões de conversa com animação curta (desligada em `prefers-reduced-motion`), botão "Pular" sempre visível para quem já viu o prólogo, e possibilidade de trocar o nome depois na aba Viajante. Sem login, sem envio do nome para nenhum servidor e **sem o nome nos eventos de métricas**.
 

@@ -713,3 +713,5 @@ Coisas que ficaram para depois. Nenhuma etapa deve fazê-las sem o autor pedir.
 | Etapa 1 | **Configurar as métricas de eventos** | O código já envia os eventos para o PostHog, mas nada sai enquanto não houver chave. Falta: criar o projeto no PostHog (plano Free), ligar "Discard client IP data" em Settings → Project, criar `VITE_POSTHOG_KEY` e `VITE_POSTHOG_HOST` na Vercel (Production e Preview) e fazer um novo deploy. Também ligar a aba **Analytics** do projeto na Vercel para contar visitas. Detalhes em `.env.example` e `src/config/analytics.ts`. |
 | Etapa 1 | Saídas não contadas no celular | Quem só troca de app e tem a aba fechada pelo sistema em segundo plano pode sair sem gerar `module_left`. |
 | Etapa 1 | `module_left` em telas | Na Etapa 3, o `percent` do `module_left` passa a contar telas vistas, não rolagem. |
+| Etapa 2 | Pix fora do mapa | Decisão do autor: na tela do mapa (sem rodapé) o Pix fica só na aba Viajante. Nada a fazer. |
+| Etapa 2 | Nível do módulo | O nível ("Base", "Intermediário"...) saiu da página do módulo junto com a linha antiga do topo. Voltar de forma discreta dentro do LessonPlayer, na Etapa 3. |
