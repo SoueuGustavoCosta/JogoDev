@@ -146,6 +146,20 @@ export type Progress = {
   xpBonus?: Record<string, number>;
   /** Dias (AAAA-MM-DD) em que venceu o Eco Solto. Opcional (Etapa 11). */
   ecoSoltoWins?: string[];
+  /** Oficinas do Viajante resolvidas, por id. Opcional (Etapa 13). */
+  workshops?: Record<string, WorkshopResult>;
+};
+
+/** Uma oficina resolvida (Etapa 13). */
+export type WorkshopResult = {
+  /** Instante ISO da primeira vez que passou em todos os testes. */
+  solvedAt: string;
+  /** Linguagens em que já resolveu. */
+  langs: string[];
+  hintsUsed: number;
+  /** XP ganho (50 menos as dicas, nunca abaixo de 20; +25 com o extra). */
+  xp: number;
+  extra?: boolean;
 };
 
 /** Um lançamento de Fragmentos Temporais: `amount` positivo = ganho, negativo = gasto. */
