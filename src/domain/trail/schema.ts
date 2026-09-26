@@ -133,7 +133,41 @@ export const blockSchema: z.ZodType = z.discriminatedUnion('t', [
       .min(1),
   }),
   z.object({ t: z.literal('out'), file: z.string().min(1), x: z.string().min(1) }),
-]);
+  z.object({
+    t: z.literal('try'),
+    engine: z.enum(['sql', 'php', 'git']),
+    brief: z.string().min(1),
+    starter: z.string(),
+    hint: z.string().min(1),
+    file: z.string().min(1).optional(),
+    solution: z.string().min(1).optional(),
+    ds: z.enum(['loja', 'vazio']).optional(),
+    ordered: z.boolean().optional(),
+    verify: z.string().min(1).optional(),
+    expect: z.array(z.array(z.string())).optional(),
+    repo: z.enum(['vazio', 'projeto']).optional(),
+    mission: z.string().min(1).optional(),
+  }),
+]).superRefine((block, ctx) => {
+  if (block.t !== 'try') return;
+  const problem =
+    block.engine === 'sql'
+      ? !block.ds
+        ? 'bloco try de SQL precisa de ds'
+        : !block.solution === !block.verify
+          ? 'bloco try de SQL precisa de solution OU de verify + expect'
+          : block.verify && !block.expect
+            ? 'bloco try de SQL com verify precisa de expect'
+            : null
+      : block.engine === 'php'
+        ? !block.solution
+          ? 'bloco try de PHP precisa de solution'
+          : null
+        : !block.repo || !block.mission || !block.solution
+          ? 'bloco try de Git precisa de repo, mission e solution'
+          : null;
+  if (problem) ctx.addIssue({ code: z.ZodIssueCode.custom, message: problem });
+});
 
 export const moduleSchema = z.object({
   id: z.string().min(1),

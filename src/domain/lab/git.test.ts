@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { applyGitCommand, createGitRepoState } from './git';
+import { applyGitCommand, createGitRepoState, runGitScript } from './git';
 import { gitMissions } from './gitMissions';
 
 function run(state: ReturnType<typeof createGitRepoState>, raw: string) {
@@ -149,5 +149,20 @@ describe('gitMissions', () => {
     s = run(s, 'git remote add origin https://github.com/exemplo/projeto.git').state;
     s = run(s, 'git push').state;
     expect(gitMissions[5].check(s)).toBe(true);
+  });
+});
+
+describe('runGitScript', () => {
+  it('roda um comando por linha, ignorando linhas vazias e comentários', () => {
+    const { state, lines } = runGitScript('projeto', '# começo\ngit init\n\ngit add .\ngit commit -m "primeiro"');
+    expect(state.initialized).toBe(true);
+    expect(Object.keys(state.commits)).toHaveLength(1);
+    expect(lines.filter((l) => l.cls === 'tl-cmd').map((l) => l.text)).toEqual(['git init', 'git add .', 'git commit -m "primeiro"']);
+  });
+
+  it('comando errado vira linha de erro, e o resto continua', () => {
+    const { state, lines } = runGitScript('vazio', 'gti init\ngit init');
+    expect(lines.some((l) => l.cls === 'tl-err')).toBe(true);
+    expect(state.initialized).toBe(true);
   });
 });

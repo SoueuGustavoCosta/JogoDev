@@ -18,7 +18,7 @@ export const SCREEN_MAX_WORDS = 60;
 export const SHORT_PARAGRAPH_WORDS = 35;
 
 /** Blocos "pesados": ocupam a tela sozinhos (no máximo com 1 parágrafo curto antes). */
-const HEAVY: ReadonlySet<Block['t']> = new Set(['code', 'table', 'raw', 'gui', 'syntax', 'out']);
+const HEAVY: ReadonlySet<Block['t']> = new Set(['code', 'table', 'raw', 'gui', 'syntax', 'out', 'try']);
 
 function countWords(html: string): number {
   const text = html.replace(/<[^>]*>/g, ' ').replace(/&[a-z#0-9]+;/gi, ' ').trim();

@@ -525,3 +525,21 @@ export function applyGitCommand(
 
   return { state: ctx.state, lines: ctx.lines };
 }
+
+/**
+ * Roda vários comandos (um por linha, linhas vazias e `#comentários` ignorados) a partir de
+ * um cenário novo, como se o aluno digitasse um por um no terminal. Usado pelo laboratório
+ * dentro da lição (bloco `try` de Git).
+ */
+export function runGitScript(kind: GitRepoKind, script: string): { state: GitRepoState; lines: GitOutputLine[] } {
+  let state = createGitRepoState(kind);
+  const lines: GitOutputLine[] = [];
+  for (const raw of script.split('\n')) {
+    const command = raw.trim();
+    if (!command || command.startsWith('#')) continue;
+    const result = applyGitCommand(state, command);
+    state = result.state;
+    lines.push(...result.lines);
+  }
+  return { state, lines };
+}

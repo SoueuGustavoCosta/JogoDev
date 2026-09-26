@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { moduleSchema } from './schema';
+import { blockSchema, moduleSchema } from './schema';
 
 const mod = (ids: string[]) => ({
   id: 'm',
@@ -70,5 +70,24 @@ describe('moduleSchema: afterBlock (Etapa 5)', () => {
     expect(moduleSchema.safeParse(withAfter(0)).success).toBe(true);
     expect(moduleSchema.safeParse(withAfter(1)).success).toBe(false);
     expect(moduleSchema.safeParse(withAfter(-1)).success).toBe(false);
+  });
+});
+
+describe('blockSchema: bloco try (Etapa 6)', () => {
+  const base = { t: 'try', brief: 'b', starter: '', hint: 'h' };
+  const ok = (b: Record<string, unknown>) => blockSchema.safeParse({ ...base, ...b }).success;
+  it('SQL precisa de ds e de solution OU verify + expect', () => {
+    expect(ok({ engine: 'sql', ds: 'loja', solution: 'SELECT 1;' })).toBe(true);
+    expect(ok({ engine: 'sql', ds: 'loja', verify: 'SELECT 1;', expect: [['1']] })).toBe(true);
+    expect(ok({ engine: 'sql', solution: 'SELECT 1;' })).toBe(false);
+    expect(ok({ engine: 'sql', ds: 'loja' })).toBe(false);
+    expect(ok({ engine: 'sql', ds: 'loja', solution: 'SELECT 1;', verify: 'SELECT 1;', expect: [] })).toBe(false);
+    expect(ok({ engine: 'sql', ds: 'loja', verify: 'SELECT 1;' })).toBe(false);
+  });
+  it('PHP precisa de solution; Git de repo, mission e solution', () => {
+    expect(ok({ engine: 'php', solution: '<?php echo 1;' })).toBe(true);
+    expect(ok({ engine: 'php' })).toBe(false);
+    expect(ok({ engine: 'git', repo: 'projeto', mission: 'm2', solution: 'git init' })).toBe(true);
+    expect(ok({ engine: 'git', repo: 'projeto', solution: 'git init' })).toBe(false);
   });
 });

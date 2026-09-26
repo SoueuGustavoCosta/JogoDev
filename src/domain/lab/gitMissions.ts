@@ -61,3 +61,7 @@ export const gitMissions: GitMission[] = [
     check: (state) => !!state.remote && state.remoteHeads[state.head] === state.branches[state.head],
   },
 ];
+
+export function getGitMissionById(id: string): GitMission | undefined {
+  return gitMissions.find((mission) => mission.id === id);
+}

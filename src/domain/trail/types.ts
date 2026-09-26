@@ -117,7 +117,41 @@ export type Block =
   /** Linha do tempo de fatos históricos datados, com fonte já embutida no texto. */
   | { t: 'timeline'; items: { y: string; h: string; x: string }[] }
   /** Saída de programa (o que apareceu na tela), sem realce de sintaxe — distinto de `code`. */
-  | { t: 'out'; file: string; x: string };
+  | { t: 'out'; file: string; x: string }
+  /** "Sua vez": laboratório dentro da lição (Etapa 6). Ver `TryBlock`. */
+  | TryBlock;
+
+export type TryEngine = 'sql' | 'php' | 'git';
+
+/**
+ * Laboratório dentro da lição (Etapa 6): o aluno escreve e roda código de verdade e o app
+ * confere. A conferência reaproveita as regras que já existem:
+ * - `sql`: as das missões (`Mission`): `solution` compara o resultado com a consulta de
+ *   referência (`ordered` exige a mesma ordem); `verify` + `expect` confere o estado final.
+ *   `ds` é o conjunto de dados de partida.
+ * - `php`: a saída do código do aluno precisa ser igual à saída de `solution`.
+ * - `git`: os comandos (um por linha) rodam no simulador de Git, a partir do cenário `repo`,
+ *   e precisam cumprir a missão `mission` do laboratório Git (domain/lab/gitMissions);
+ *   `solution` é um jeito de cumprir (conferido em teste).
+ */
+export type TryBlock = {
+  t: 'try';
+  engine: TryEngine;
+  /** O desafio, curto (vira o título da tela). */
+  brief: string;
+  /** O que já vem escrito no editor. */
+  starter: string;
+  hint: string;
+  /** Nome do "arquivo" na moldura do editor (ex.: loja.sql). */
+  file?: string;
+  solution?: string;
+  ds?: MissionDataset;
+  ordered?: boolean;
+  verify?: string;
+  expect?: string[][];
+  repo?: 'vazio' | 'projeto';
+  mission?: string;
+};
 
 export type ModuleLevel = 'Base' | 'Intermediário' | 'Avançado';
 
