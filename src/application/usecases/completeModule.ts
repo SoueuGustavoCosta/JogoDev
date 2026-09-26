@@ -4,9 +4,11 @@ import {
   getOrCreateTrailProgress,
   isTrailCompleted,
   moduleRecap,
+  recordBonusXp,
   XP_MODULE_COMPLETION_BONUS,
   type ModuleRecap,
 } from '@/domain/progress';
+import { bonusXp } from '@/domain/events';
 import type { Trail } from '@/domain/trail';
 import type { Badge } from '@/domain/badges';
 import type { AnalyticsPort, LeaderboardPort, ProgressRepository } from '../ports';
@@ -21,6 +23,8 @@ export type CompleteModuleParams = {
   traveler: { uuid: string; name: string };
   /** Catálogo compartilhado de insígnias (ver domain/badges), para conceder as ligadas a este módulo. */
   badgeCatalog?: Badge[];
+  /** Surto Temporal (Etapa 11): multiplicador de XP do dia; 1 = sem evento. */
+  xpMultiplier?: number;
 };
 
 export type CompleteModuleResult = {
@@ -103,8 +107,14 @@ export function completeModule(
   // Concluir uma lição inteira conta como dia jogado na Linha do Tempo (Etapa 8). Por
   // último: as gravações acima partem de uma cópia anterior do progresso.
   recordPlayedDay(deps);
-  // Bônus de conclusão entra no XP da semana (Liga dos Viajantes), que sobe para o ranking.
-  recordXpGain(deps, { sourceId: `module:${params.trail.id}/${params.moduleId}`, xp: XP_MODULE_COMPLETION_BONUS });
+  // Bônus de conclusão (com o Surto, se houver) entra no XP da semana, que sobe para o ranking.
+  const sourceId = `module:${params.trail.id}/${params.moduleId}`;
+  const extra = bonusXp(XP_MODULE_COMPLETION_BONUS, params.xpMultiplier ?? 1);
+  if (extra > 0) {
+    const latest = deps.repository.load() ?? nextProgress;
+    deps.repository.save(recordBonusXp(latest, `surto:${sourceId}`, extra));
+  }
+  recordXpGain(deps, { sourceId, xp: XP_MODULE_COMPLETION_BONUS + extra });
   syncWeeklyXp(deps);
 
   return {

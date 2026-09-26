@@ -95,6 +95,9 @@ class StubLeaderboard implements LeaderboardPort {
   async getLeague(): Promise<null> {
     return null;
   }
+  async countAnomaliesBetween(): Promise<null> {
+    return null;
+  }
 }
 
 const moduleDone = (trailId: string, moduleId: string) => ({

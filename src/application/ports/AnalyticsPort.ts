@@ -28,7 +28,11 @@ export type AnalyticsEventName =
   | 'cosmetic_bought'
   | 'cosmetic_equipped'
   | 'league_opened'
-  | 'league_seal_won';
+  | 'league_seal_won'
+  | 'eco_solto_started'
+  | 'eco_solto_won'
+  | 'eco_solto_lost'
+  | 'convergence_unlocked';
 
 export type AnalyticsProps = Record<string, string | number | boolean>;
 

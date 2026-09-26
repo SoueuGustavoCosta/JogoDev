@@ -8,6 +8,7 @@ import {
   type Anomaly,
 } from '@/domain/anomaly';
 import { createEmptyProgress, recordAnomaly, type AnomalyResult, type Progress } from '@/domain/progress';
+import { bonusXp } from '@/domain/events';
 import { paginateModule, type Trail } from '@/domain/trail';
 import type { AnalyticsPort, LeaderboardPort, ProgressRepository } from '../ports';
 import { syncWeeklyXp } from './league';
@@ -40,7 +41,7 @@ function openedEras(progress: Progress): Set<string> {
 
 export function getDailyAnomaly(
   deps: { repository: ProgressRepository },
-  params: { pool: readonly Anomaly[]; now?: Date },
+  params: { pool: readonly Anomaly[]; now?: Date; xpMultiplier?: number },
 ): DailyAnomaly {
   const now = params.now ?? new Date();
   const progress = deps.repository.load() ?? createEmptyProgress();
@@ -53,7 +54,7 @@ export function getDailyAnomaly(
     fallback,
     solved: progress.anomalies?.[day] ?? null,
     closesInMs: msUntilNextAnomaly(now),
-    reward: { xp: ANOMALY_XP, fragments: ANOMALY_FRAGMENTS },
+    reward: { xp: ANOMALY_XP + bonusXp(ANOMALY_XP, params.xpMultiplier ?? 1), fragments: ANOMALY_FRAGMENTS },
   };
 }
 
@@ -76,14 +77,15 @@ export type SolveAnomalyResult = {
  */
 export function solveAnomaly(
   deps: { repository: ProgressRepository; analytics: AnalyticsPort; leaderboard: LeaderboardPort },
-  params: { day: string; anomaly: Anomaly; tries: number; now?: Date },
+  params: { day: string; anomaly: Anomaly; tries: number; now?: Date; xpMultiplier?: number },
 ): SolveAnomalyResult {
   const progress = deps.repository.load() ?? createEmptyProgress();
   const result: AnomalyResult = {
     anomalyId: params.anomaly.id,
     tries: Math.max(1, params.tries),
     solvedAt: (params.now ?? new Date()).toISOString(),
-    xp: ANOMALY_XP,
+    // Surto Temporal: o XP da anomalia já fica gravado multiplicado no registro do dia.
+    xp: ANOMALY_XP + bonusXp(ANOMALY_XP, params.xpMultiplier ?? 1),
     fragments: ANOMALY_FRAGMENTS,
   };
   const { progress: next, added } = recordAnomaly(progress, params.day, result);

@@ -206,6 +206,17 @@ export class SupabaseLeaderboard implements LeaderboardPort {
     }
   }
 
+  async countAnomaliesBetween(from: string, to: string): Promise<number | null> {
+    try {
+      const client = await this.ensureClient();
+      const { data, error } = await client.rpc<number>('contar_anomalias_periodo', { p_inicio: from, p_fim: to });
+      if (error || typeof data !== 'number') return null;
+      return data;
+    } catch {
+      return null;
+    }
+  }
+
   async listHallOfTravelers(): Promise<HallOfTravelersEntry[]> {
     const client = await this.ensureClient();
     const [jogadoresRes, insigniasRes, progressoRes] = await Promise.all([

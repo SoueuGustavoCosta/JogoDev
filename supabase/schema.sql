@@ -293,3 +293,7 @@ grant execute on function public.email_de_login(text, text) to anon, authenticat
 -- PENDENTE (Etapa 10, 2026-09-26): tabela xp_semanal e as funções semana_atual,
 -- registrar_xp_semanal e liga_da_semana estão em supabase/2026-09-26_xp_semanal.sql,
 -- esperando o autor aplicar. Depois de aplicado, mover o conteúdo para cá.
+
+-- PENDENTE (Etapa 11, 2026-09-26): função contar_anomalias_periodo (meta da Convergência)
+-- está em supabase/2026-09-26_convergencia.sql (depende da tabela da Etapa 7), esperando o
+-- autor aplicar. Depois de aplicado, mover o conteúdo para cá.

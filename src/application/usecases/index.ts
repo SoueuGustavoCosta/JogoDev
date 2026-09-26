@@ -19,3 +19,4 @@ export * from './anomaly';
 export * from './timeline';
 export * from './cosmetics';
 export * from './league';
+export * from './events';

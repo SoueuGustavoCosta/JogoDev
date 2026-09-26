@@ -3,9 +3,11 @@ import {
   getOrCreateModuleProgress,
   getOrCreateTrailProgress,
   isQuizAnswerCorrect,
+  recordBonusXp,
   xpForQuizAttempt,
   type QuizAnswer,
 } from '@/domain/progress';
+import { bonusXp } from '@/domain/events';
 import type { QuizItem } from '@/domain/trail';
 import type { AnalyticsPort, ProgressRepository } from '../ports';
 import { recordXpGain } from './league';
@@ -18,6 +20,8 @@ export type AnswerQuizParams = {
   answer: QuizAnswer;
   /** Para a semana da Liga (testes). */
   now?: Date;
+  /** Surto Temporal (Etapa 11): multiplicador de XP do dia; 1 = sem evento. */
+  xpMultiplier?: number;
 };
 
 export type AnswerQuizResult = {
@@ -66,8 +70,12 @@ export function answerQuiz(
   };
 
   deps.repository.save(nextProgress);
-  // XP da semana (Liga dos Viajantes): uma fonte por pergunta.
-  recordXpGain(deps, { sourceId: `quiz:${params.trailId}/${params.moduleId}/${params.item.id}`, xp: xpGained, now: params.now });
+  // Surto Temporal: o XP a mais fica guardado à parte (o normal continua saindo do conteúdo).
+  const sourceId = `quiz:${params.trailId}/${params.moduleId}/${params.item.id}`;
+  const extra = bonusXp(xpGained, params.xpMultiplier ?? 1);
+  if (extra > 0) deps.repository.save(recordBonusXp(nextProgress, `surto:${sourceId}`, extra));
+  // XP da semana (Liga dos Viajantes): uma fonte por pergunta, já com o Surto.
+  recordXpGain(deps, { sourceId, xp: xpGained + extra, now: params.now });
   deps.analytics.track('quiz_answered', {
     island: params.trailId,
     module: params.moduleId,
@@ -75,5 +83,5 @@ export function answerQuiz(
     tries: triesUsed,
   });
 
-  return { correct, alreadyAnswered: false, xpGained };
+  return { correct, alreadyAnswered: false, xpGained: xpGained + extra };
 }

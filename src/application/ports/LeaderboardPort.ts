@@ -222,4 +222,9 @@ export interface LeaderboardPort {
    * pra saber (offline, sem Supabase, função ainda não criada). Nunca lança.
    */
   getLeague(week: string): Promise<LeagueRow[] | null>;
+  /**
+   * Quantas Anomalias do Dia a turma toda consertou entre dois dias (inclusive), para a meta
+   * da Convergência (Etapa 11). `null` quando não dá pra saber. Nunca lança.
+   */
+  countAnomaliesBetween(from: string, to: string): Promise<number | null>;
 }

@@ -121,4 +121,8 @@ export class NoopLeaderboard implements LeaderboardPort {
   async getLeague(_week: string): Promise<LeagueRow[] | null> {
     return null;
   }
+
+  async countAnomaliesBetween(_from: string, _to: string): Promise<number | null> {
+    return null;
+  }
 }
