@@ -26,7 +26,9 @@ export type AnalyticsEventName =
   | 'anomaly_solved'
   | 'shop_opened'
   | 'cosmetic_bought'
-  | 'cosmetic_equipped';
+  | 'cosmetic_equipped'
+  | 'league_opened'
+  | 'league_seal_won';
 
 export type AnalyticsProps = Record<string, string | number | boolean>;
 

@@ -92,6 +92,10 @@ class StubLeaderboard implements LeaderboardPort {
   async listCosmetics(): Promise<Record<string, unknown>> {
     return {};
   }
+  async syncWeeklyXp(): Promise<void> {}
+  async getLeague(): Promise<null> {
+    return null;
+  }
   async ensureSignedIn(): Promise<string | null> {
     return 'uuid-anonimo';
   }

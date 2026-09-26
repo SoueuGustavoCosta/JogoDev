@@ -18,6 +18,9 @@ export type PlayerProfile = {
   ultimoDiaAtivo: string | null; // YYYY-MM-DD
 };
 
+/** Uma linha do ranking semanal da Liga dos Viajantes (função `liga_da_semana`). */
+export type LeagueRow = { uuid: string; nome: string; fotoUrl: string | null; sequenciaAtual: number; xp: number };
+
 /** Um viajante "online agora" na faixa de presença. */
 export type OnlinePlayer = { uuid: string; nome: string; fotoUrl: string | null };
 
@@ -209,4 +212,14 @@ export interface LeaderboardPort {
    * sem rede ou sem a coluna, devolve `{}` e os avatares aparecem sem cosméticos.
    */
   listCosmetics(uuids: string[]): Promise<Record<string, unknown>>;
+  /**
+   * Envia o XP da semana (Etapa 10) pela função `registrar_xp_semanal`, que confere no
+   * servidor a semana atual e o teto de XP. Falha em silêncio.
+   */
+  syncWeeklyXp(week: string, xp: number): Promise<void>;
+  /**
+   * Ranking de uma semana (segunda-feira AAAA-MM-DD), mais XP primeiro. `null` quando não dá
+   * pra saber (offline, sem Supabase, função ainda não criada). Nunca lança.
+   */
+  getLeague(week: string): Promise<LeagueRow[] | null>;
 }

@@ -1,6 +1,7 @@
 import type {
   HallOfTravelersEntry,
   LeaderboardPort,
+  LeagueRow,
   OnlinePlayer,
   PlayerProfile,
   SignInIdentifier,
@@ -173,6 +174,35 @@ export class SupabaseLeaderboard implements LeaderboardPort {
       return out;
     } catch {
       return {};
+    }
+  }
+
+  async syncWeeklyXp(week: string, xp: number): Promise<void> {
+    try {
+      const client = await this.ensureClient();
+      // O uuid vem da sessão (auth.uid()) dentro da função; o servidor recusa semana que não
+      // é a atual e XP acima do teto.
+      const { error } = await client.rpc('registrar_xp_semanal', { p_semana: week, p_xp: Math.round(xp) });
+      if (error && import.meta.env.DEV) console.warn('[SupabaseLeaderboard] syncWeeklyXp falhou:', error.message);
+    } catch (e) {
+      if (import.meta.env.DEV) console.warn('[SupabaseLeaderboard] syncWeeklyXp falhou:', e);
+    }
+  }
+
+  async getLeague(week: string): Promise<LeagueRow[] | null> {
+    try {
+      const client = await this.ensureClient();
+      const { data, error } = await client.rpc<Record<string, unknown>[]>('liga_da_semana', { p_semana: week });
+      if (error || !Array.isArray(data)) return null;
+      return data.map((row) => ({
+        uuid: String(row.uuid),
+        nome: String(row.nome ?? ''),
+        fotoUrl: row.foto_url ? String(row.foto_url) : null,
+        sequenciaAtual: Number(row.sequencia_atual ?? 0),
+        xp: Number(row.xp ?? 0),
+      }));
+    } catch {
+      return null;
     }
   }
 

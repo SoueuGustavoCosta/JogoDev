@@ -8,6 +8,7 @@ import {
 } from '@/domain/progress';
 import type { QuizItem } from '@/domain/trail';
 import type { AnalyticsPort, ProgressRepository } from '../ports';
+import { recordXpGain } from './league';
 
 export type AnswerQuizParams = {
   trailId: string;
@@ -15,6 +16,8 @@ export type AnswerQuizParams = {
   /** A pergunta respondida; o resultado fica guardado pelo `item.id`. */
   item: QuizItem;
   answer: QuizAnswer;
+  /** Para a semana da Liga (testes). */
+  now?: Date;
 };
 
 export type AnswerQuizResult = {
@@ -63,6 +66,8 @@ export function answerQuiz(
   };
 
   deps.repository.save(nextProgress);
+  // XP da semana (Liga dos Viajantes): uma fonte por pergunta.
+  recordXpGain(deps, { sourceId: `quiz:${params.trailId}/${params.moduleId}/${params.item.id}`, xp: xpGained, now: params.now });
   deps.analytics.track('quiz_answered', {
     island: params.trailId,
     module: params.moduleId,

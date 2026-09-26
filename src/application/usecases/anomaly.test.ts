@@ -43,7 +43,11 @@ const leaderboard = {
   },
   countAnomalySolved: async () => 38,
   checkIn: async () => undefined,
+  syncWeeklyXp: async (week: string, xp: number) => {
+    weekly.push([week, xp]);
+  },
 } as unknown as LeaderboardPort;
+const weekly: [string, number][] = [];
 
 const now = new Date('2026-09-26T15:00:00Z');
 

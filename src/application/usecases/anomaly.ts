@@ -10,6 +10,7 @@ import {
 import { createEmptyProgress, recordAnomaly, type AnomalyResult, type Progress } from '@/domain/progress';
 import { paginateModule, type Trail } from '@/domain/trail';
 import type { AnalyticsPort, LeaderboardPort, ProgressRepository } from '../ports';
+import { syncWeeklyXp } from './league';
 import { recordPlayedDay, type PlayedDay } from './timeline';
 
 export type DailyAnomaly = {
@@ -93,6 +94,8 @@ export function solveAnomaly(
     void deps.leaderboard.recordAnomalySolved(next.travelerUuid, params.anomaly.id, params.day).catch(() => undefined);
   }
   const timeline = recordPlayedDay(deps, params.now);
+  // O XP da anomalia conta na semana da Liga (sai de `anomalies`); sobe para o ranking.
+  syncWeeklyXp(deps, params.now);
   return { added: true, xp: result.xp, fragments: result.fragments, timeline };
 }
 

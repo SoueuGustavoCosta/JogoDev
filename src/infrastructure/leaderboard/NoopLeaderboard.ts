@@ -1,6 +1,7 @@
 import type {
   HallOfTravelersEntry,
   LeaderboardPort,
+  LeagueRow,
   OnlinePlayer,
   PlayerProfile,
   SignInIdentifier,
@@ -111,5 +112,13 @@ export class NoopLeaderboard implements LeaderboardPort {
 
   async listCosmetics(_uuids: string[]): Promise<Record<string, unknown>> {
     return {};
+  }
+
+  async syncWeeklyXp(_week: string, _xp: number): Promise<void> {
+    // Intencionalmente vazio.
+  }
+
+  async getLeague(_week: string): Promise<LeagueRow[] | null> {
+    return null;
   }
 }

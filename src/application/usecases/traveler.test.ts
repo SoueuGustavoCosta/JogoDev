@@ -66,6 +66,10 @@ class StubLeaderboard implements LeaderboardPort {
   async listCosmetics(): Promise<Record<string, unknown>> {
     return {};
   }
+  async syncWeeklyXp(): Promise<void> {}
+  async getLeague(): Promise<null> {
+    return null;
+  }
   async ensureSignedIn(): Promise<string | null> {
     if (this.ensureSignedInError) throw new Error('rede fora do ar');
     return this.signedInUid;

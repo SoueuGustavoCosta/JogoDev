@@ -4,12 +4,14 @@ import {
   getOrCreateTrailProgress,
   isTrailCompleted,
   moduleRecap,
+  XP_MODULE_COMPLETION_BONUS,
   type ModuleRecap,
 } from '@/domain/progress';
 import type { Trail } from '@/domain/trail';
 import type { Badge } from '@/domain/badges';
 import type { AnalyticsPort, LeaderboardPort, ProgressRepository } from '../ports';
 import { awardBadge, awardBadgesForModule } from './badges';
+import { recordXpGain, syncWeeklyXp } from './league';
 import { recordPlayedDay } from './timeline';
 
 export type CompleteModuleParams = {
@@ -101,6 +103,9 @@ export function completeModule(
   // Concluir uma lição inteira conta como dia jogado na Linha do Tempo (Etapa 8). Por
   // último: as gravações acima partem de uma cópia anterior do progresso.
   recordPlayedDay(deps);
+  // Bônus de conclusão entra no XP da semana (Liga dos Viajantes), que sobe para o ranking.
+  recordXpGain(deps, { sourceId: `module:${params.trail.id}/${params.moduleId}`, xp: XP_MODULE_COMPLETION_BONUS });
+  syncWeeklyXp(deps);
 
   return {
     alreadyCompleted: false,
