@@ -48,7 +48,7 @@ const PUBLISHED_QUIZ_COUNT: Record<string, number> = {
   'git-github/desfazer': 3,
   'git-github/github': 3,
   'git-github/boaspraticas': 3,
-  'python/nascimento-python': 5,
+  'python/nascimento-python': 6,
   'python/sintaxe-e-tipos': 5,
   'python/operadores-condicoes': 5,
   'python/loops-python': 5,
