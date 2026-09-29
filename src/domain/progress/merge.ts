@@ -6,6 +6,7 @@ import { mergeLeagueSeals, mergeWeeklyXp } from './weeklyXp';
 import { mergeBonusXp } from './bonusXp';
 import { mergeWorkshops } from './workshops';
 import { mergeQuizBackups } from './quizBackup';
+import { mergeNexusSeen } from '../nexus/rules';
 import type { ModuleProgress, Progress, QuizAttemptResult, TrailProgress } from './types';
 
 /**
@@ -32,6 +33,7 @@ import type { ModuleProgress, Progress, QuizAttemptResult, TrailProgress } from 
  * - Liga: XP da semana por fonte (união por id, maior valor) e selos (união).
  * - Eventos: XP extra do Surto (união por id) e vitórias no Eco Solto (união).
  * - Oficinas: por oficina, a primeira resolução, com o maior XP e o extra de qualquer lado.
+ * - Evento Nexus visto: união por lua (fica a data mais antiga).
  */
 export function mergeProgress(primary: Progress, secondary: Progress): Progress {
   const trailIds = new Set([...Object.keys(primary.trails ?? {}), ...Object.keys(secondary.trails ?? {})]);
@@ -74,6 +76,7 @@ export function mergeProgress(primary: Progress, secondary: Progress): Progress 
     ecoSoltoWins: mergeLeagueSeals(primary.ecoSoltoWins, secondary.ecoSoltoWins),
     workshops: mergeWorkshops(primary.workshops, secondary.workshops),
     installPromptShownAt: primary.installPromptShownAt ?? secondary.installPromptShownAt,
+    nexusSeen: mergeNexusSeen(primary.nexusSeen, secondary.nexusSeen),
     lastLesson:
       (primary.lastLesson?.at ?? '') >= (secondary.lastLesson?.at ?? '') ? primary.lastLesson : secondary.lastLesson,
     streakCurrent,

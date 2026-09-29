@@ -150,6 +150,8 @@ export type Progress = {
   workshops?: Record<string, WorkshopResult>;
   /** Quando a tela "Adicionar à tela inicial" apareceu sozinha (uma vez só). Opcional (Etapa 12). */
   installPromptShownAt?: string;
+  /** Evento Nexus já visto, por lua -> instante ISO: a cena completa toca uma vez só. Opcional (Nexus). */
+  nexusSeen?: Record<string, string>;
 };
 
 /** Uma oficina resolvida (Etapa 13). */
