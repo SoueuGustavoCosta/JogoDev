@@ -91,7 +91,7 @@ export const modDjangoViews: Module = {
     {
       id: 'q3',
       kind: 'bug',
-      q: 'A URL <code>/enquetes/</code> dá 404. Toque na linha com o bug do <code>meusite/urls.py</code>.',
+      q: 'A URL /enquetes/ dá 404. Toque na linha com o bug do meusite/urls.py.',
       lines: ['from django.urls import include, path', '', 'urlpatterns = [', '    path("enquetes/", "enquetes.urls"),', ']'],
       bugLine: 4,
       explain: 'As URLs do app entram com <code>include("enquetes.urls")</code>. Só o texto não diz ao Django para ler o outro arquivo.',
@@ -99,7 +99,7 @@ export const modDjangoViews: Module = {
     {
       id: 'desafio',
       kind: 'order',
-      q: 'Desafio: monte a rota que liga o endereço vazio à view <code>index</code>.',
+      q: 'Desafio: monte a rota que liga o endereço vazio à view index.',
       pieces: ['path(', '""', ',', 'views.index', ')'],
       distractors: ['include(', 'views.index()', 'url('],
       explain: '<code>path("", views.index)</code> passa a função sem chamá-la: quem chama é o Django, quando o pedido chega.',

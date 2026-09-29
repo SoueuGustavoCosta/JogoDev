@@ -57,7 +57,7 @@ export const modFlaskPrimeiro: Module = {
     },
     {
       id: 'q2',
-      q: 'Qual comando roda o app que está em <code>ola.py</code>?',
+      q: 'Qual comando roda o app que está em ola.py?',
       options: ['python manage.py runserver', 'flask --app ola run', 'uvicorn ola:app', 'flask start ola.py'],
       answer: 1,
       explain: '<code>--app ola</code> aponta para o arquivo <code>ola.py</code>.',

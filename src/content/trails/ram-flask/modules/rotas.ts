@@ -56,7 +56,7 @@ export const modFlaskRotas: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'Com <code>@app.route("/post/&lt;int:post_id&gt;")</code>, o que acontece ao abrir <code>/post/abc</code>?',
+      q: 'Com @app.route("/post/<int:post_id>"), o que acontece ao abrir /post/abc?',
       options: ['post_id vale "abc"', 'O Flask responde 404', 'post_id vale 0', 'O servidor trava'],
       answer: 1,
       explain: '"abc" não passa no conversor <code>int</code>, então a rota não casa e a resposta é 404.',
@@ -71,7 +71,7 @@ export const modFlaskRotas: Module = {
     },
     {
       id: 'q3',
-      q: 'Qual a vantagem de usar <code>url_for("perfil", nome="Ana")</code> em vez de escrever <code>"/usuario/Ana"</code>?',
+      q: 'Qual a vantagem de usar url_for("perfil", nome="Ana") em vez de escrever "/usuario/Ana"?',
       options: [
         'Nenhuma, é só mais longo',
         'Se a rota mudar, os links continuam certos',

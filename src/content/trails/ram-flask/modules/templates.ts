@@ -55,7 +55,7 @@ export const modFlaskTemplates: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'Qual função devolve a página a partir de um arquivo da pasta <code>templates</code>?',
+      q: 'Qual função devolve a página a partir de um arquivo da pasta templates?',
       options: ['render(request, ...)', 'render_template(...)', 'HttpResponse(...)', 'open_template(...)'],
       answer: 1,
       explain: '<code>render_template("ola.html", pessoa=nome)</code>: o nome do arquivo e as variáveis.',
@@ -74,7 +74,7 @@ export const modFlaskTemplates: Module = {
     {
       id: 'q3',
       kind: 'output',
-      q: 'O Flask monta o template abaixo com <code>pessoa="Ana"</code>. O que aparece na tela?',
+      q: 'O Flask monta o template abaixo com pessoa="Ana". O que aparece na tela?',
       lang: 'python',
       code: 'from flask import Flask, render_template_string\n\napp = Flask(__name__)\n\nwith app.app_context():\n    print(render_template_string(\n        "{% if pessoa %}Olá, {{ pessoa }}!{% else %}Olá, Viajante!{% endif %}",\n        pessoa="Ana",\n    ))',
       options: ['Olá, Viajante!', 'Olá, Ana!', 'Olá, {{ pessoa }}!', 'Olá, pessoa!'],

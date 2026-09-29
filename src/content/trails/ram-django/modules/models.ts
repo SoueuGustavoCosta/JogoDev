@@ -73,7 +73,7 @@ export const modDjangoModels: Module = {
     },
     {
       id: 'q3',
-      q: 'O que faz <code>on_delete=models.CASCADE</code> na <code>ForeignKey</code> de <code>Opcao</code>?',
+      q: 'O que faz on_delete=models.CASCADE na ForeignKey de Opcao?',
       options: [
         'Impede que a pergunta seja apagada',
         'Apaga as opções junto quando a pergunta é apagada',
@@ -86,7 +86,7 @@ export const modDjangoModels: Module = {
     {
       id: 'desafio',
       kind: 'order',
-      q: 'Desafio: monte a linha que coloca o model <code>Pergunta</code> no admin.',
+      q: 'Desafio: monte a linha que coloca o model Pergunta no admin.',
       pieces: ['admin.site.register(', 'Pergunta', ')'],
       distractors: ['admin.register(', 'Pergunta()', 'models.'],
       explain: '<code>admin.site.register(Pergunta)</code> faz o model aparecer no painel <code>/admin/</code>.',

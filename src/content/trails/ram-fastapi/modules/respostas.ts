@@ -85,7 +85,7 @@ export const modFastapiRespostas: Module = {
     },
     {
       id: 'q3',
-      q: 'Para que serve <code>response_model</code>?',
+      q: 'Para que serve response_model?',
       options: [
         'Para validar o corpo que chega',
         'Para filtrar e validar o que a rota devolve',
