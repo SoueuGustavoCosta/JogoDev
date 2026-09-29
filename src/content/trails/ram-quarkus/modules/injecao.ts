@@ -48,7 +48,7 @@ export const modQuarkusInjecao: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'O que <code>@ApplicationScoped</code> quer dizer?',
+      q: 'O que @ApplicationScoped quer dizer?',
       options: [
         'Um objeto novo a cada pedido',
         'Um objeto só para a aplicação inteira',

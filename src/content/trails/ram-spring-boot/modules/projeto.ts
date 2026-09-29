@@ -58,7 +58,7 @@ export const modSpringProjeto: Module = {
     },
     {
       id: 'q2',
-      q: 'O que a anotação <code>@SpringBootApplication</code> faz na classe principal?',
+      q: 'O que a anotação @SpringBootApplication faz na classe principal?',
       options: [
         'Cria o banco de dados',
         'Liga a configuração automática e a busca de componentes',
@@ -70,7 +70,7 @@ export const modSpringProjeto: Module = {
     },
     {
       id: 'q3',
-      q: 'Complete a linha que sobe a aplicação dentro do <code>main</code>:',
+      q: 'Complete a linha que sobe a aplicação dentro do main:',
       fill: true,
       pre: 'SpringApplication.',
       post: '(DemoApplication.class, args);',

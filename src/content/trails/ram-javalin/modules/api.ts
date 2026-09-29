@@ -47,7 +47,7 @@ export const modJavalinApi: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'Na API, o que responde <code>GET /tarefas/abc</code>?',
+      q: 'Na API, o que responde GET /tarefas/abc?',
       options: ['404', '400 id inválido', '500', '200 com lista vazia'],
       answer: 1,
       explain: '<code>Integer.parseInt("abc")</code> lança <code>NumberFormatException</code>, que o mapeamento transforma em 400.',
@@ -61,7 +61,7 @@ export const modJavalinApi: Module = {
     },
     {
       id: 'q3',
-      q: 'Por que usar <code>ConcurrentHashMap</code> em vez de <code>HashMap</code> aqui?',
+      q: 'Por que usar ConcurrentHashMap em vez de HashMap aqui?',
       options: [
         'É mais bonito',
         'O servidor atende pedidos ao mesmo tempo, e ele é seguro para isso',

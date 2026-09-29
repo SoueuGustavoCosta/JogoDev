@@ -57,14 +57,14 @@ export const modSpringConfig: Module = {
     },
     {
       id: 'q2',
-      q: 'Com o perfil <code>prod</code> ativo, qual arquivo entra além do <code>application.properties</code>?',
+      q: 'Com o perfil prod ativo, qual arquivo entra além do application.properties?',
       options: ['prod.properties', 'application-prod.properties', 'application.prod', 'config-prod.yml'],
       answer: 1,
       explain: 'O padrão é <code>application-{perfil}.properties</code>.',
     },
     {
       id: 'q3',
-      q: 'Complete a anotação que lê a propriedade <code>app.boas-vindas</code>:',
+      q: 'Complete a anotação que lê a propriedade app.boas-vindas:',
       fill: true,
       pre: '@Value("',
       post: '") String mensagem',

@@ -57,14 +57,14 @@ export const modQuarkusPanache: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'Herdando de <code>PanacheEntity</code>, o que a entidade ganha de graça?',
+      q: 'Herdando de PanacheEntity, o que a entidade ganha de graça?',
       options: ['Uma tela de cadastro', 'O campo id e métodos como persist e listAll', 'Um servidor próprio', 'Nada'],
       answer: 1,
       explain: 'O <code>id</code> e os métodos prontos vêm da classe-mãe.',
     },
     {
       id: 'q2',
-      q: 'O que falta para o <code>persist()</code> funcionar num método que salva?',
+      q: 'O que falta para o persist() funcionar num método que salva?',
       options: ['@GET', '@Transactional', '@ApplicationScoped', '@Produces'],
       answer: 1,
       explain: 'Escrita no banco precisa de transação.',

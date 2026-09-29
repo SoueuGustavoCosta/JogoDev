@@ -54,14 +54,14 @@ export const modJavalinErros: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'O que acontece ao lançar <code>new NotFoundResponse("...")</code> numa rota?',
+      q: 'O que acontece ao lançar new NotFoundResponse("...") numa rota?',
       options: ['O servidor desliga', 'O Javalin responde 404 com a mensagem', 'A rota devolve 200', 'Nada, precisa de return'],
       answer: 1,
       explain: 'As respostas prontas do Javalin carregam o status HTTP certo.',
     },
     {
       id: 'q2',
-      q: 'Qual a diferença entre <code>config.routes.exception</code> e <code>config.routes.error</code>?',
+      q: 'Qual a diferença entre config.routes.exception e config.routes.error?',
       options: [
         'São iguais',
         'exception trata um tipo de exceção; error trata um código de status',

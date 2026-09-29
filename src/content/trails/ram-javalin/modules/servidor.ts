@@ -51,7 +51,7 @@ export const modJavalinServidor: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'No Javalin, o que é o <code>ctx</code> que cada rota recebe?',
+      q: 'No Javalin, o que é o ctx que cada rota recebe?',
       options: ['Uma conexão com o banco', 'O contexto: dados do pedido e da resposta', 'A configuração do Maven', 'Um contador de pedidos'],
       answer: 1,
       explain: 'O <code>Context</code> junta tudo do pedido (parâmetros, corpo) e da resposta (status, resultado).',

@@ -47,7 +47,7 @@ export const modQuarkusRest: Module = {
     },
     {
       id: 'q2',
-      q: 'Com <code>@Path("/saudacao")</code> na classe e <code>@Path("/{nome}")</code> no método, qual pedido chama o método?',
+      q: 'Com @Path("/saudacao") na classe e @Path("/{nome}") no método, qual pedido chama o método?',
       options: ['GET /nome', 'GET /saudacao/Ana', 'GET /saudacao?nome=Ana', 'POST /saudacao'],
       answer: 1,
       explain: 'Os caminhos se somam: <code>/saudacao</code> + <code>/{nome}</code>.',

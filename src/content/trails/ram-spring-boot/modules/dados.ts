@@ -54,14 +54,14 @@ export const modSpringDados: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'Qual anotação transforma a classe <code>Cliente</code> numa tabela?',
+      q: 'Qual anotação transforma a classe Cliente numa tabela?',
       options: ['@Table', '@Entity', '@Service', '@Repository'],
       answer: 1,
       explain: '<code>@Entity</code> marca a classe como entidade JPA, ligada a uma tabela.',
     },
     {
       id: 'q2',
-      q: 'No repositório, o que o Spring faz com o método <code>findByCidade(String cidade)</code>?',
+      q: 'No repositório, o que o Spring faz com o método findByCidade(String cidade)?',
       options: [
         'Nada, você precisa implementar',
         'Monta a consulta a partir do nome do método',
@@ -73,7 +73,7 @@ export const modSpringDados: Module = {
     },
     {
       id: 'q3',
-      q: 'Complete a interface do repositório para <code>Cliente</code> com id <code>Long</code>:',
+      q: 'Complete a interface do repositório para Cliente com id Long:',
       fill: true,
       pre: 'public interface ClienteRepository extends',
       post: '<Cliente, Long> {}',

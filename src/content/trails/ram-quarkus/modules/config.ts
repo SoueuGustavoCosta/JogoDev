@@ -48,21 +48,21 @@ export const modQuarkusConfig: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'Com <code>%dev.saudacao.mensagem=Olá, dev</code>, quando essa linha vale?',
+      q: 'Com %dev.saudacao.mensagem=Olá, dev, quando essa linha vale?',
       options: ['Sempre', 'Só no modo dev', 'Só em produção', 'Nunca, o % desliga'],
       answer: 1,
       explain: 'O prefixo <code>%dev.</code> limita ao perfil dev.',
     },
     {
       id: 'q2',
-      q: 'Depois de <code>./mvnw package</code>, qual comando roda a aplicação?',
+      q: 'Depois de ./mvnw package, qual comando roda a aplicação?',
       options: ['quarkus dev', 'java -jar target/quarkus-app/quarkus-run.jar', './mvnw run', 'java Main'],
       answer: 1,
       explain: 'O pacote fica em <code>target/quarkus-app/</code>, com o <code>quarkus-run.jar</code>.',
     },
     {
       id: 'q3',
-      q: 'Complete para ler a propriedade <code>saudacao.mensagem</code>:',
+      q: 'Complete para ler a propriedade saudacao.mensagem:',
       fill: true,
       pre: '@',
       post: '(name = "saudacao.mensagem") String mensagem;',

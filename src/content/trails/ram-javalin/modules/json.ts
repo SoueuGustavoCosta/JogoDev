@@ -56,21 +56,21 @@ export const modJavalinJson: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'Como ler o <code>q</code> de <code>/busca?q=javalin</code>?',
+      q: 'Como ler o q de /busca?q=javalin?',
       options: ['ctx.pathParam("q")', 'ctx.queryParam("q")', 'ctx.formParam("q")', 'ctx.body()'],
       answer: 1,
       explain: 'O que vem depois do <code>?</code> é parâmetro de consulta: <code>queryParam</code>.',
     },
     {
       id: 'q2',
-      q: 'O que <code>ctx.json(new Tarefa(1, "Estudar"))</code> faz?',
+      q: 'O que ctx.json(new Tarefa(1, "Estudar")) faz?',
       options: ['Salva no banco', 'Responde com o objeto convertido em JSON', 'Lê JSON do pedido', 'Imprime no console'],
       answer: 1,
       explain: 'O objeto vira JSON na resposta (com o Jackson no projeto).',
     },
     {
       id: 'q3',
-      q: 'Complete para converter o corpo JSON num objeto <code>Tarefa</code>:',
+      q: 'Complete para converter o corpo JSON num objeto Tarefa:',
       fill: true,
       pre: 'Tarefa nova = ctx.',
       post: '(Tarefa.class);',

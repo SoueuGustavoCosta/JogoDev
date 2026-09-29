@@ -52,14 +52,14 @@ export const modJavalinRotas: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'Como ler o <code>{nome}</code> da rota <code>/ola/{nome}</code>?',
+      q: 'Como ler o {nome} da rota /ola/{nome}?',
       options: ['ctx.queryParam("nome")', 'ctx.pathParam("nome")', 'ctx.body()', 'ctx.header("nome")'],
       answer: 1,
       explain: 'Parte do caminho entre chaves chega por <code>pathParam</code>.',
     },
     {
       id: 'q2',
-      q: 'Quando roda um handler registrado com <code>config.routes.before(...)</code>?',
+      q: 'Quando roda um handler registrado com config.routes.before(...)?',
       options: ['Só na rota "/"', 'Antes das rotas, a cada pedido', 'Depois da resposta ser enviada', 'Só quando dá erro'],
       answer: 1,
       explain: 'Handlers <code>before</code> rodam antes dos handlers de rota.',
@@ -67,7 +67,7 @@ export const modJavalinRotas: Module = {
     {
       id: 'q3',
       kind: 'bug',
-      q: '<code>/ola/Ana</code> responde "Olá, null". Toque na linha com o bug.',
+      q: '/ola/Ana responde "Olá, null". Toque na linha com o bug.',
       lines: ['config.routes.get("/ola/{nome}", ctx -> {', '    String nome = ctx.pathParam("name");', '    ctx.result("Olá, " + nome);', '});'],
       bugLine: 2,
       explain: 'O nome no caminho é <code>{nome}</code>, então a leitura é <code>pathParam("nome")</code>.',

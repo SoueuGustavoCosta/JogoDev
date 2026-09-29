@@ -44,21 +44,21 @@ export const modSpringController: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'Qual anotação faz um método atender pedidos GET em <code>/saudacao</code>?',
+      q: 'Qual anotação faz um método atender pedidos GET em /saudacao?',
       options: ['@RequestMapping("GET")', '@GetMapping("/saudacao")', '@Get("/saudacao")', '@RestController("/saudacao")'],
       answer: 1,
       explain: '<code>@GetMapping("/saudacao")</code> liga o método ao caminho e ao método HTTP.',
     },
     {
       id: 'q2',
-      q: 'Na URL <code>/itens/42</code>, como o controller recebe o 42?',
+      q: 'Na URL /itens/42, como o controller recebe o 42?',
       options: ['@RequestParam Long id', '@PathVariable Long id', '@RequestBody Long id', 'String id = "42"'],
       answer: 1,
       explain: 'Pedaço do caminho entre chaves (<code>{id}</code>) chega com <code>@PathVariable</code>.',
     },
     {
       id: 'q3',
-      q: 'O que acontece com o <code>record Saudacao</code> que o método devolve?',
+      q: 'O que acontece com o record Saudacao que o método devolve?',
       options: ['Vira texto com toString()', 'É convertido em JSON na resposta', 'É salvo no banco', 'Dá erro, só pode devolver String'],
       answer: 1,
       explain: 'O Spring Boot usa uma biblioteca de JSON (Jackson) para converter objetos na resposta.',
@@ -66,7 +66,7 @@ export const modSpringController: Module = {
     {
       id: 'desafio',
       kind: 'order',
-      q: 'Desafio: monte a assinatura que lê <code>?nome=</code> com padrão "Viajante".',
+      q: 'Desafio: monte a assinatura que lê ?nome= com padrão "Viajante".',
       pieces: ['@RequestParam(', 'defaultValue = "Viajante"', ')', 'String nome'],
       distractors: ['@PathVariable', 'default = "Viajante"', 'int nome'],
       explain: '<code>@RequestParam(defaultValue = "Viajante") String nome</code>.',
