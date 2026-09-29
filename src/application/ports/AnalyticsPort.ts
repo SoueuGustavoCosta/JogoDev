@@ -40,7 +40,12 @@ export type AnalyticsEventName =
   | 'workshop_starred'
   | 'nexus_event_seen'
   | 'comet_opened'
-  | 'archive_opened';
+  | 'archive_opened'
+  | 'web_stage_started'
+  | 'web_stage_completed'
+  | 'web_stage_failed'
+  | 'web_portfolio_opened'
+  | 'web_portfolio_copied';
 
 export type AnalyticsProps = Record<string, string | number | boolean>;
 

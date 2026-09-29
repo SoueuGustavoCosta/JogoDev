@@ -14,12 +14,13 @@ const GROUP_LABEL: Record<string, string> = {
   php: 'Lua de PHP',
   'dados-modelagem': 'Lua da Modelagem',
   'dados-guardiao': 'Lua do Guardião',
+  web: 'Era da Web',
   ramificacoes: 'Ramificações',
   cometas: 'Cometas de tecnologia',
   outras: 'Outras eras (em breve)',
 };
 
-const GROUP_ORDER = ['logica', 'python', 'java', 'php', 'dados-modelagem', 'dados-guardiao', 'ramificacoes', 'cometas', 'sql', 'git', 'outras'];
+const GROUP_ORDER = ['logica', 'python', 'java', 'php', 'dados-modelagem', 'dados-guardiao', 'web', 'ramificacoes', 'cometas', 'sql', 'git', 'outras'];
 
 /** As insígnias de cada framework (Evento Nexus) ficam juntas, num grupo só. */
 const RAMIFICACOES = new Set(['django', 'fastapi', 'flask', 'spring-boot', 'javalin', 'quarkus', 'laravel', 'symfony', 'codeigniter']);

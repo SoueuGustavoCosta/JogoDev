@@ -11,6 +11,7 @@ function unlockCaption(badge: Badge): string | null {
   if (badge.trail === 'outras') return 'Em breve — era ainda não existe';
   if (!badge.unlockedBy) return 'Ainda sem lição ligada a esta insígnia';
 
+  if (badge.unlockedBy.startsWith('web:')) return 'Conclua a trilha na Era da Web';
   if (badge.unlockedBy === 'boss') return 'Vença o chefe de fase da trilha';
   if (badge.unlockedBy === 'trophy') return 'Conclua todos os faróis da trilha';
 

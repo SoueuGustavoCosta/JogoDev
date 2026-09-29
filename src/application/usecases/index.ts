@@ -24,3 +24,4 @@ export * from './workshop';
 export * from './install';
 export * from './nexus';
 export * from './comets';
+export * from './webEra';

@@ -1,0 +1,14 @@
+.gem {
+  display: inline-block;
+  flex: none;
+}
+
+.gem :global(svg) {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.locked :global(svg) {
+  filter: grayscale(1) brightness(0.3);
+}

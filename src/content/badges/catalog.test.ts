@@ -58,15 +58,22 @@ describe('catálogo compartilhado de insígnias', () => {
       'sql-arquiteto',
       'sql-guardiao-transacoes',
       'sql-mestre',
+      // Era da Web: a lendária do Eco e as coroas das 3 luas.
+      'web-coroa-marcacao',
+      'web-motor-eventos',
+      'web-prisma-cascata',
+      'web-tecelao-www',
     ]);
   });
 
   // Insígnias dos Cometas de tecnologia (expansão Nexus): a rara vem do chefe vencido durante
   // o evento (unlockedBy "boss"), não do troféu; ficam de fora das regras das luas.
   const isComet = (b: { trail: string }) => b.trail.startsWith('cometa-');
+  // Era da Web: a rara vem do chefe Eco (e a lendária, dele sem perder coração), não do troféu.
+  const isWeb = (b: { trail: string }) => b.trail === 'web';
 
   it('tem exatamente 3 insígnias raras de lua: uma por lua satélite (Python, Java, PHP)', () => {
-    const rares = badgeCatalog.filter((b) => b.rare && !isComet(b)).map((b) => b.id);
+    const rares = badgeCatalog.filter((b) => b.rare && !isComet(b) && !isWeb(b)).map((b) => b.id);
     expect(rares.sort()).toEqual(['java-rara', 'php-rara', 'py-rara']);
   });
 
@@ -79,11 +86,18 @@ describe('catálogo compartilhado de insígnias', () => {
 
   it('coroas usam unlockedBy "boss" e raras "trophy" (a legenda da carteira depende desses valores)', () => {
     for (const b of badgeCatalog.filter((x) => x.crown && x.unlockedBy !== null)) expect(b.unlockedBy, b.id).toBe('boss');
-    for (const b of badgeCatalog.filter((x) => x.rare && !isComet(x))) expect(b.unlockedBy, b.id).toBe('trophy');
+    for (const b of badgeCatalog.filter((x) => x.rare && !isComet(x) && !isWeb(x))) expect(b.unlockedBy, b.id).toBe('trophy');
   });
 
   it('nenhuma insígnia rara é também coroa (são níveis distintos)', () => {
     expect(badgeCatalog.every((b) => !(b.rare && b.crown))).toBe(true);
+  });
+
+  it('a Era da Web tem 15 insígnias: 10 das trilhas, a rara e a lendária do Eco e 3 das luas', () => {
+    const web = badgeCatalog.filter(isWeb);
+    expect(web).toHaveLength(15);
+    expect(web.filter((b) => b.rare).map((b) => b.id)).toEqual(['web-guardiao-portfolio']);
+    for (const b of web.filter((x) => x.rare)) expect(b.unlockedBy, b.id).toBe('boss');
   });
 
   it('"outras" não tem nenhuma insígnia com unlockedBy: nenhuma trilha existe ainda para elas', () => {

@@ -1,3 +1,5 @@
+import type { WebEraProgress } from '../webEra/types';
+
 export type QuizAttemptResult = {
   correct: boolean;
   /** 1 = acertou de primeira. */
@@ -152,6 +154,11 @@ export type Progress = {
   installPromptShownAt?: string;
   /** Evento Nexus já visto, por lua -> instante ISO: a cena completa toca uma vez só. Opcional (Nexus). */
   nexusSeen?: Record<string, string>;
+  /**
+   * Era da Web: etapas vencidas (com o XP de cada uma), o portfólio que o viajante escreveu
+   * nas missões e se a intro já tocou. Opcional: ausente = nunca entrou na era.
+   */
+  webEra?: WebEraProgress;
 };
 
 /** Uma oficina resolvida (Etapa 13). */
