@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
+import { interpolate } from '@/domain/prologue';
+import { getTraveler } from '@/application/usecases';
 import { playSintaxeTalkSound, SintaxeFace } from '@/presentation/design-system';
+import { useServices } from '@/presentation/app/ServicesContext';
 import styles from './TrailIntroDialogue.module.css';
 
 const SEEN_KEY_PREFIX = 'viajante:trail-intro-seen:';
@@ -35,6 +38,9 @@ export function TrailIntroDialogue({
   lines: string[];
   onDone: () => void;
 }) {
+  const { progressRepository } = useServices();
+  // As falas usam `{name}` para o nome do viajante, como no prólogo e nos blocos `say`.
+  const [name] = useState(() => getTraveler({ repository: progressRepository }).name);
   const [step, setStep] = useState(0);
   const isLast = step === lines.length - 1;
 
@@ -68,7 +74,7 @@ export function TrailIntroDialogue({
         <SintaxeFace size={64} />
         <div className={styles.bubble} role="log" aria-live="polite" aria-label="Conversa com a Senhorita Sintaxe" key={step}>
           <div className={styles.who}>Senhorita Sintaxe</div>
-          <p dangerouslySetInnerHTML={{ __html: lines[step] }} />
+          <p dangerouslySetInnerHTML={{ __html: interpolate(lines[step], name) }} />
         </div>
       </div>
 

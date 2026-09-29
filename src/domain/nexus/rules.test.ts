@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { createEmptyProgress, mergeProgress, type Progress } from '../progress';
-import { markNexusSeen, mergeNexusSeen, nexusForIsland, nexusOfBranch, nexusState, shouldPlayNexus } from './rules';
+import {
+  markNexusSeen,
+  mergeNexusSeen,
+  nexusForIsland,
+  nexusOfBranch,
+  nexusSeenKey,
+  nexusState,
+  shouldPlayNexus,
+} from './rules';
 import { nexusEventSchema } from './schema';
 import type { NexusEvent } from './types';
 
@@ -18,13 +26,23 @@ const example: NexusEvent = {
 function withBoss(defeated: boolean): Progress {
   return {
     ...createEmptyProgress(),
-    trails: { 'lua-x': { trailId: 'lua-x', modules: {}, missionsCompleted: {}, trophyAwarded: true, ...(defeated ? { bossDefeated: true } : {}) } },
+    trails: {
+      'lua-x': {
+        trailId: 'lua-x',
+        modules: {},
+        missionsCompleted: {},
+        trophyAwarded: true,
+        ...(defeated ? { bossDefeated: true } : {}),
+      },
+    },
   };
 }
 
 describe('Evento Nexus', () => {
   it('portais: em breve sem conteúdo, fechados até vencer o chefe, abertos depois', () => {
-    expect(nexusState({ ...example, launched: false }, withBoss(true).trails['lua-x'])).toBe('soon');
+    expect(nexusState({ ...example, launched: false }, withBoss(true).trails['lua-x'])).toBe(
+      'soon',
+    );
     expect(nexusState(example, undefined)).toBe('locked');
     expect(nexusState(example, withBoss(false).trails['lua-x'])).toBe('locked');
     expect(nexusState(example, withBoss(true).trails['lua-x'])).toBe('open');
@@ -39,19 +57,41 @@ describe('Evento Nexus', () => {
     expect(markNexusSeen(seen, 'lua-x', 'z')).toBe(seen);
   });
 
+  it('quem viu a cena antes da correção (chave antiga, tocava fora da vista) vê mais uma vez', () => {
+    const old = { ...withBoss(true), nexusSeen: { 'lua-x': '2026-09-28T00:00:00.000Z' } };
+    expect(shouldPlayNexus(old, example)).toBe(true);
+    const seen = markNexusSeen(old, 'lua-x', '2026-09-30T00:00:00.000Z');
+    expect(seen.nexusSeen).toEqual({
+      'lua-x': '2026-09-28T00:00:00.000Z',
+      [nexusSeenKey('lua-x')]: '2026-09-30T00:00:00.000Z',
+    });
+    expect(shouldPlayNexus(seen, example)).toBe(false);
+  });
+
   it('merge entre aparelhos: união por lua, fica a data mais antiga', () => {
-    expect(mergeNexusSeen({ a: '2026-10-02' }, { a: '2026-10-01', b: '2026-10-03' })).toEqual({ a: '2026-10-01', b: '2026-10-03' });
+    expect(mergeNexusSeen({ a: '2026-10-02' }, { a: '2026-10-01', b: '2026-10-03' })).toEqual({
+      a: '2026-10-01',
+      b: '2026-10-03',
+    });
     expect(mergeNexusSeen(undefined, { a: 'x' })).toEqual({ a: 'x' });
-    const merged = mergeProgress({ ...createEmptyProgress(), nexusSeen: { a: '2' } }, { ...createEmptyProgress(), nexusSeen: { a: '1' } });
+    const merged = mergeProgress(
+      { ...createEmptyProgress(), nexusSeen: { a: '2' } },
+      { ...createEmptyProgress(), nexusSeen: { a: '1' } },
+    );
     expect(merged.nexusSeen).toEqual({ a: '1' });
     expect('nexusSeen' in mergeProgress(createEmptyProgress(), createEmptyProgress())).toBe(false);
   });
 
   it('esquema: três Ramificações diferentes, cores válidas', () => {
     expect(() => nexusEventSchema.parse(example)).not.toThrow();
-    const repeated = { ...example, branches: [example.branches[0], example.branches[0], example.branches[2]] };
+    const repeated = {
+      ...example,
+      branches: [example.branches[0], example.branches[0], example.branches[2]],
+    };
     expect(() => nexusEventSchema.parse(repeated)).toThrow();
-    expect(() => nexusEventSchema.parse({ ...example, branches: example.branches.slice(0, 2) })).toThrow();
+    expect(() =>
+      nexusEventSchema.parse({ ...example, branches: example.branches.slice(0, 2) }),
+    ).toThrow();
     expect(nexusForIsland([example], 'lua-x')).toBe(example);
     expect(nexusOfBranch([example], 'ram-b')).toBe(example);
     expect(nexusOfBranch([example], 'lua-x')).toBeUndefined();

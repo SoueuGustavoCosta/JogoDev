@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState, type KeyboardEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import type { NexusBranchView } from '@/application/usecases';
 import type { NexusState } from '@/domain/nexus';
 import { SintaxeFace } from '@/presentation/design-system';
-import { BRANCH_POS, BRANCH_R, ISLAND, SX, SY, VIEW, spiralPath, threadPath } from './geometry';
+import { BRANCH_POS, BRANCH_R, ISLAND, NEXUS_ANCHOR, SX, SY, VIEW, spiralPath, threadPath } from './geometry';
 import styles from './NexusScene.module.css';
 
 type Props = {
@@ -15,7 +15,10 @@ type Props = {
   play: boolean;
   onPlayed?: () => void;
   onEnter?: (trailId: string) => void;
+  /** Rola a tela até os portais ao abrir (a cena fica no fim da tela da lua). */
+  focus?: boolean;
 };
+
 
 /**
  * Evento Nexus (referência: docs/expansao/prototipos/prototipo_cometa.html). O portal da lua
@@ -23,9 +26,54 @@ type Props = {
  * `transform` e `opacity` animam; com `prefers-reduced-motion` a cena
  * já aparece no estado final (ver o CSS).
  */
-export function NexusScene({ islandName, islandColor, bossName, state, branches, play, onPlayed, onEnter }: Props) {
+export function NexusScene({
+  islandName,
+  islandColor,
+  bossName,
+  state,
+  branches,
+  play,
+  onPlayed,
+  onEnter,
+  focus = false,
+}: Props) {
   const [opened, setOpened] = useState(state === 'open' && !play);
   const [flash, setFlash] = useState(false);
+  // A cena só toca (e só fica marcada como vista) quando os portais aparecem na tela.
+  const [inView, setInView] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!focus || !el) return;
+    const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    // Espera o layout da tela assentar (a página começa no topo) antes de rolar.
+    const t = window.setTimeout(
+      () => el.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' }),
+      150,
+    );
+    return () => window.clearTimeout(t);
+  }, [focus]);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (state !== 'open' || !play || !el) return;
+    if (typeof IntersectionObserver === 'undefined') {
+      setInView(true);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setInView(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.5 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [state, play]);
 
   useEffect(() => {
     if (state !== 'open') return;
@@ -33,6 +81,7 @@ export function NexusScene({ islandName, islandColor, bossName, state, branches,
       setOpened(true);
       return;
     }
+    if (!inView) return;
     setFlash(true);
     const open = window.setTimeout(() => setOpened(true), 300);
     const done = window.setTimeout(() => onPlayed?.(), 2600);
@@ -42,9 +91,15 @@ export function NexusScene({ islandName, islandColor, bossName, state, branches,
     };
     // A cena toca uma vez por montagem; `onPlayed` muda a cada render do pai.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state, play]);
+  }, [state, play, inView]);
 
-  const threads = useMemo(() => [0, 1, 2].map((i) => [threadPath(i, 0), threadPath(i, Math.PI), threadPath(i, 0, 0)] as const), []);
+  const threads = useMemo(
+    () =>
+      [0, 1, 2].map(
+        (i) => [threadPath(i, 0), threadPath(i, Math.PI), threadPath(i, 0, 0)] as const,
+      ),
+    [],
+  );
   const bigSpiral = useMemo(() => spiralPath(ISLAND.r), []);
   const smallSpiral = useMemo(() => spiralPath(BRANCH_R), []);
 
@@ -56,7 +111,12 @@ export function NexusScene({ islandName, islandColor, bossName, state, branches,
         : 'Evento Nexus: novos portais se abriram.';
 
   return (
-    <section className={styles.nexus} aria-labelledby="nexus-title">
+    <section
+      ref={sectionRef}
+      id={NEXUS_ANCHOR}
+      className={styles.nexus}
+      aria-labelledby="nexus-title"
+    >
       <h2 id="nexus-title" className={styles.title}>
         Ramificações de {islandName}
       </h2>
@@ -64,23 +124,51 @@ export function NexusScene({ islandName, islandColor, bossName, state, branches,
       <div className={styles.stage}>
         <svg
           viewBox={`0 0 ${VIEW.w} ${VIEW.h}`}
-          className={`${styles.svg} ${opened ? styles.open : ''} ${flash ? styles.distort : ''}`} role="img" aria-label={legend}>
+          className={`${styles.svg} ${opened ? styles.open : ''} ${flash ? styles.distort : ''}`}
+          role="img"
+          aria-label={legend}
+        >
           {threads.map(([a, b, base], i) => {
             const color = branches[i]?.color ?? islandColor;
             return (
               <g key={i}>
                 <path d={base} className={styles.base} />
                 {/* O fio cresce a partir do topo do portal da lua: só transform (scaleY), nada de traço animado. */}
-                <g className={styles.grow} style={{ transformOrigin: `${ISLAND.x}px ${ISLAND.y - ISLAND.r * SY}px`, transitionDelay: `${i * 0.12}s` }}>
+                <g
+                  className={styles.grow}
+                  style={{
+                    transformOrigin: `${ISLAND.x}px ${ISLAND.y - ISLAND.r * SY}px`,
+                    transitionDelay: `${i * 0.12}s`,
+                  }}
+                >
                   <path d={a} className={styles.thread} stroke={color} strokeWidth={2.4} />
-                  <path d={b} className={styles.thread} stroke={color} strokeWidth={1.4} opacity={0.55} />
+                  <path
+                    d={b}
+                    className={styles.thread}
+                    stroke={color}
+                    strokeWidth={1.4}
+                    opacity={0.55}
+                  />
                 </g>
               </g>
             );
           })}
 
-          <Portal x={ISLAND.x} y={ISLAND.y} r={ISLAND.r} color={islandColor} spiral={bigSpiral} alwaysOpen />
-          <text x={ISLAND.x} y={ISLAND.y + ISLAND.r * SY + 34} textAnchor="middle" className={styles.islandLabel} fill={islandColor}>
+          <Portal
+            x={ISLAND.x}
+            y={ISLAND.y}
+            r={ISLAND.r}
+            color={islandColor}
+            spiral={bigSpiral}
+            alwaysOpen
+          />
+          <text
+            x={ISLAND.x}
+            y={ISLAND.y + ISLAND.r * SY + 34}
+            textAnchor="middle"
+            className={styles.islandLabel}
+            fill={islandColor}
+          >
             {islandName}
           </text>
 
@@ -97,12 +185,26 @@ export function NexusScene({ islandName, islandColor, bossName, state, branches,
                       tabIndex: 0,
                       'aria-label': `Entrar na Ramificação ${b.name}`,
                       onClick: enter,
-                      onKeyDown: (e: KeyboardEvent) => (e.key === 'Enter' || e.key === ' ') && enter(),
+                      onKeyDown: (e: KeyboardEvent) =>
+                        (e.key === 'Enter' || e.key === ' ') && enter(),
                     }
                   : {})}
               >
-                <Portal x={x} y={y} r={BRANCH_R} color={b.color} spiral={smallSpiral} delay={1.3 + i * 0.12} bob={i} />
-                <text x={x} y={y - BRANCH_R * SY - 14} textAnchor="middle" className={styles.branchLabel}>
+                <Portal
+                  x={x}
+                  y={y}
+                  r={BRANCH_R}
+                  color={b.color}
+                  spiral={smallSpiral}
+                  delay={1.3 + i * 0.12}
+                  bob={i}
+                />
+                <text
+                  x={x}
+                  y={y - BRANCH_R * SY - 14}
+                  textAnchor="middle"
+                  className={styles.branchLabel}
+                >
                   {b.name}
                 </text>
                 {state !== 'open' ? (
@@ -121,8 +223,8 @@ export function NexusScene({ islandName, islandColor, bossName, state, branches,
         <div className={styles.sintaxe}>
           <SintaxeFace size={40} />
           <p>
-            <b>A linha do tempo se ramificou!</b> Assim como um branch no Git, ela se dividiu, e cada ramo segue o
-            seu próprio caminho. Escolha um portal.
+            <b>A linha do tempo se ramificou!</b> Assim como um branch no Git, ela se dividiu, e
+            cada ramo segue o seu próprio caminho. Escolha um portal.
           </p>
         </div>
       ) : (
@@ -133,7 +235,12 @@ export function NexusScene({ islandName, islandColor, bossName, state, branches,
         {branches.map((b) => (
           <li key={b.trailId}>
             {state === 'open' && b.exists && onEnter ? (
-              <button type="button" className={styles.branchButton} style={{ borderColor: b.color }} onClick={() => onEnter(b.trailId)}>
+              <button
+                type="button"
+                className={styles.branchButton}
+                style={{ borderColor: b.color }}
+                onClick={() => onEnter(b.trailId)}
+              >
                 <span style={{ color: b.color }}>{b.name}</span>
                 <small>
                   {b.done}/{b.total} trilhas ▸
@@ -174,7 +281,10 @@ function Portal({
   const gradientId = `nexus-g-${x}-${y}`;
   return (
     <g transform={`translate(${x} ${y})`}>
-      <g className={bob === undefined ? styles.float : styles.bob} style={bob === undefined ? undefined : { animationDelay: `${-bob * 1.3}s` }}>
+      <g
+        className={bob === undefined ? styles.float : styles.bob}
+        style={bob === undefined ? undefined : { animationDelay: `${-bob * 1.3}s` }}
+      >
         <g transform={`scale(${SX} ${SY})`}>
           <defs>
             <radialGradient id={gradientId}>
@@ -183,13 +293,44 @@ function Portal({
               <stop offset="100%" stopColor={color} stopOpacity={0.35} />
             </radialGradient>
           </defs>
-          <circle r={r + 8} fill="none" stroke={color} strokeWidth={1.2} strokeDasharray="10 14" className={`${styles.ring} ${styles.spinSlow}`} />
-          <g className={alwaysOpen ? styles.coreOpen : styles.core} style={{ transitionDelay: `${delay}s` }}>
+          <circle
+            r={r + 8}
+            fill="none"
+            stroke={color}
+            strokeWidth={1.2}
+            strokeDasharray="10 14"
+            className={`${styles.ring} ${styles.spinSlow}`}
+          />
+          <g
+            className={alwaysOpen ? styles.coreOpen : styles.core}
+            style={{ transitionDelay: `${delay}s` }}
+          >
             <circle r={r} fill={`url(#${gradientId})`} />
-            <path d={spiral} fill="none" stroke={color} strokeWidth={1.4} opacity={0.55} className={styles.spin} />
-            <circle r={r * 0.7} fill="none" stroke={color} strokeWidth={1.5} strokeDasharray="2 8" opacity={0.8} className={styles.spinFast} />
+            <path
+              d={spiral}
+              fill="none"
+              stroke={color}
+              strokeWidth={1.4}
+              opacity={0.55}
+              className={styles.spin}
+            />
+            <circle
+              r={r * 0.7}
+              fill="none"
+              stroke={color}
+              strokeWidth={1.5}
+              strokeDasharray="2 8"
+              opacity={0.8}
+              className={styles.spinFast}
+            />
           </g>
-          <circle r={r} fill="none" stroke={color} strokeWidth={3} className={alwaysOpen ? undefined : styles.edge} />
+          <circle
+            r={r}
+            fill="none"
+            stroke={color}
+            strokeWidth={3}
+            className={alwaysOpen ? undefined : styles.edge}
+          />
         </g>
       </g>
     </g>
