@@ -3,6 +3,7 @@ import { ANOMALY_NO_REPEAT_DAYS, anomalySchema } from '@/domain/anomaly';
 import { fillAnswerMatches } from '@/domain/progress';
 import { anomalies } from './anomalies';
 import { trailRegistry } from './registry';
+import { nexusEvents } from './nexus';
 
 describe('banco de Anomalias do Dia', () => {
   it(`tem ao menos ${ANOMALY_NO_REPEAT_DAYS} (o sorteio não repete em ${ANOMALY_NO_REPEAT_DAYS} dias) e ids únicos`, () => {
@@ -12,7 +13,9 @@ describe('banco de Anomalias do Dia', () => {
 
   // Luas da Era dos Dados (Etapa 14A): as anomalias delas chegam na Etapa 15C.
   // TODO(autor): tirar daqui quando a 15C criar as 5 anomalias de cada lua.
-  const AWAITING_ANOMALIES = new Set(['dados-modelagem', 'dados-guardiao']);
+  // Ramificações e cometas (expansão Nexus) não têm Anomalia do Dia própria: o assunto delas
+  // já vem da lua de linguagem de onde saem.
+  const AWAITING_ANOMALIES = new Set(['dados-modelagem', 'dados-guardiao', ...nexusEvents.flatMap((e) => e.branches.map((b) => b.trailId))]);
 
   it('cobre todas as ilhas e só ilhas que existem', () => {
     const eras = new Set(trailRegistry.map((t) => t.id));

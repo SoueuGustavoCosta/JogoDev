@@ -65,6 +65,19 @@ const SYMBOLS: Record<string, (stroke: string) => ReactNode> = {
       <path d="M8 10v4c0 .9 1.8 1.6 4 1.6s4-.7 4-1.6v-4" />
     </>
   ),
+  // Ramificações (Evento Nexus): símbolos próprios, nunca os logotipos oficiais.
+  // Django: o Monólito partido em camadas (projeto, apps, templates).
+  'ram-django': () => (
+    <>
+      <rect x="4" y="4" width="16" height="4" rx="1" />
+      <rect x="4" y="10" width="16" height="4" rx="1" />
+      <rect x="4" y="16" width="16" height="4" rx="1" />
+    </>
+  ),
+  // FastAPI: um raio (rápido).
+  'ram-fastapi': () => <path d="M13 2L5 13h6l-2 9 8-12h-6z" />,
+  // Flask: um frasco de laboratório.
+  'ram-flask': () => <path d="M9 3h6M10 3v6l-5 9a2 2 0 002 3h10a2 2 0 002-3l-5-9V3M7.5 15h9" />,
   'logic-diamond': () => (
     <>
       <path d="M12 3l6 6-6 6-6-6z" />

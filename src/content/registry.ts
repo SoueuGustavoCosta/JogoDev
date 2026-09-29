@@ -7,6 +7,9 @@ import { logicaTrail } from './trails/logica/trail';
 import { javaTrail } from './trails/java/trail';
 import { pythonTrail } from './trails/python/trail';
 import { phpTrail } from './trails/php/trail';
+import { ramDjangoTrail } from './trails/ram-django/trail';
+import { ramFastapiTrail } from './trails/ram-fastapi/trail';
+import { ramFlaskTrail } from './trails/ram-flask/trail';
 
 /**
  * Lista de todas as ilhas do arquipélago. Para adicionar uma ilha nova,
@@ -21,6 +24,10 @@ export const trailRegistry: Trail[] = [
   pythonTrail,
   javaTrail,
   phpTrail,
+  // Ramificações (Evento Nexus, ver content/nexus.ts)
+  ramDjangoTrail,
+  ramFastapiTrail,
+  ramFlaskTrail,
 ];
 
 export function getTrailById(id: string): Trail | undefined {

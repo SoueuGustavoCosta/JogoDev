@@ -1,0 +1,93 @@
+import type { Module } from '@/domain/trail/types';
+
+/** Trilha 3 da Ramificação Flask: templates com Jinja. */
+export const modFlaskTemplates: Module = {
+  id: 'flask-templates',
+  short: 'Templates Jinja',
+  title: 'Templates com Jinja',
+  lead: 'O Flask usa o Jinja para montar páginas: um HTML com espaços que a view preenche.',
+  level: 'Base',
+  blocks: [
+    { t: 'h', x: 'A pasta templates' },
+    { t: 'p', x: 'O Flask procura templates na pasta <code>templates</code>, ao lado do seu arquivo:' },
+    { t: 'code', file: 'estrutura', lang: 'text', nolab: true, x: 'app.py\ntemplates/\n    ola.html' },
+    {
+      t: 'code',
+      file: 'app.py',
+      lang: 'python',
+      nolab: true,
+      x: 'from flask import render_template\n\n\n@app.route("/ola/")\n@app.route("/ola/<nome>")\ndef ola(nome=None):\n    return render_template("ola.html", pessoa=nome)',
+    },
+    {
+      t: 'code',
+      file: 'templates/ola.html',
+      lang: 'html',
+      nolab: true,
+      x: '<!doctype html>\n<title>Olá</title>\n{% if pessoa %}\n  <h1>Olá, {{ pessoa }}!</h1>\n{% else %}\n  <h1>Olá, Viajante!</h1>\n{% endif %}',
+    },
+    { t: 'h', x: 'Herança: uma base para todas as páginas' },
+    {
+      t: 'code',
+      file: 'templates/base.html',
+      lang: 'html',
+      nolab: true,
+      x: '<!doctype html>\n<title>{% block titulo %}{% endblock %} · Meu site</title>\n<main>\n  {% block conteudo %}{% endblock %}\n</main>',
+    },
+    {
+      t: 'code',
+      file: 'templates/sobre.html',
+      lang: 'html',
+      nolab: true,
+      x: '{% extends "base.html" %}\n{% block titulo %}Sobre{% endblock %}\n{% block conteudo %}\n  <p>Um site feito com Flask.</p>\n{% endblock %}',
+    },
+    {
+      t: 'note',
+      k: 'Escape automático',
+      x: 'Em templates <code>.html</code>, o Jinja escapa as variáveis: um <code>&lt;script&gt;</code> digitado pelo usuário aparece como texto e não roda.',
+    },
+    { t: 'say', x: 'Se você fez a Ramificação Django, notou a família: {{ }} para mostrar e {% %} para lógica. São parentes próximos.' },
+    {
+      t: 'note',
+      k: 'Fonte oficial',
+      x: 'Documentação do Flask: <a href="https://flask.palletsprojects.com/en/stable/quickstart/#rendering-templates" target="_blank" rel="noopener">Rendering Templates</a> e <a href="https://flask.palletsprojects.com/en/stable/templating/" target="_blank" rel="noopener">Templates</a>.',
+    },
+  ],
+  quiz: [
+    {
+      id: 'q1',
+      q: 'Qual função devolve a página a partir de um arquivo da pasta <code>templates</code>?',
+      options: ['render(request, ...)', 'render_template(...)', 'HttpResponse(...)', 'open_template(...)'],
+      answer: 1,
+      explain: '<code>render_template("ola.html", pessoa=nome)</code>: o nome do arquivo e as variáveis.',
+    },
+    {
+      id: 'q2',
+      q: 'Complete a primeira linha do template filho para herdar a base:',
+      fill: true,
+      pre: '{%',
+      post: '"base.html" %}',
+      accept: ['extends'],
+      wrong: ['include', 'import', 'block'],
+      placeholder: '?',
+      explain: '<code>{% extends "base.html" %}</code> faz a página usar a base e preencher os <code>block</code>.',
+    },
+    {
+      id: 'q3',
+      kind: 'output',
+      q: 'O Flask monta o template abaixo com <code>pessoa="Ana"</code>. O que aparece na tela?',
+      lang: 'python',
+      code: 'from flask import Flask, render_template_string\n\napp = Flask(__name__)\n\nwith app.app_context():\n    print(render_template_string(\n        "{% if pessoa %}Olá, {{ pessoa }}!{% else %}Olá, Viajante!{% endif %}",\n        pessoa="Ana",\n    ))',
+      options: ['Olá, Viajante!', 'Olá, Ana!', 'Olá, {{ pessoa }}!', 'Olá, pessoa!'],
+      answer: 1,
+      explain: '<code>pessoa</code> tem valor, então o <code>if</code> mostra "Olá, Ana!".',
+    },
+    {
+      id: 'desafio',
+      kind: 'order',
+      q: 'Desafio: monte o retorno que usa o template com a variável.',
+      pieces: ['return', 'render_template(', '"ola.html"', ',', 'pessoa=nome', ')'],
+      distractors: ['render(', 'print', '{{ nome }}'],
+      explain: 'Cada argumento nomeado vira uma variável dentro do template.',
+    },
+  ],
+};

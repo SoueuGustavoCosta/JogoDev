@@ -21,6 +21,9 @@ export const BADGE_TRAIL_TO_TRAIL_ID: Record<string, string> = {
   python: 'python',
   java: 'java',
   php: 'php',
+  django: 'ram-django',
+  fastapi: 'ram-fastapi',
+  flask: 'ram-flask',
 };
 
 export const badgeCatalog: Badge[] = [
@@ -755,5 +758,32 @@ export const badgeCatalog: Badge[] = [
     crown: true,
     unlockedBy: "boss",
     file: "php/malabari.webp",
+  },
+  {
+    id: "ram-django-monolito",
+    trail: "django",
+    name: "Quebrador do Monólito",
+    description: "Venceu o Monólito: a coroa da Ramificação Django.",
+    crown: true,
+    unlockedBy: "boss",
+    file: "nexus/ram-django-monolito.svg",
+  },
+  {
+    id: "ram-fastapi-hidra",
+    trail: "fastapi",
+    name: "Caçador da Hidra 422",
+    description: "Venceu a Hidra 422: a coroa da Ramificação FastAPI.",
+    crown: true,
+    unlockedBy: "boss",
+    file: "nexus/ram-fastapi-hidra.svg",
+  },
+  {
+    id: "ram-flask-borbulha",
+    trail: "flask",
+    name: "Selador do Borbulha",
+    description: "Venceu o Borbulha: a coroa da Ramificação Flask.",
+    crown: true,
+    unlockedBy: "boss",
+    file: "nexus/ram-flask-borbulha.svg",
   },
 ];

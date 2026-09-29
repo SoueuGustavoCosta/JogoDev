@@ -31,3 +31,5 @@ O código de cada pergunta está no campo `code` dela, em `src/content/trails/<i
 | Anomalia do Dia | py-mochila | `desafio` | `3` | [ ] |
 | Anomalia do Dia | java-divisao | `desafio` | `3` | [ ] |
 | Anomalia do Dia | java-pares | `desafio` | `024` | [ ] |
+| Ramificação FastAPI | Documentação automática e testes | `q3` | `200` | [ ] |
+| Ramificação Flask | Templates com Jinja | `q3` | `Olá, Ana!` | [ ] |

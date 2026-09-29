@@ -14,7 +14,7 @@ export const nexusEvents: readonly NexusEvent[] = [
       { trailId: 'ram-fastapi', name: 'FastAPI', color: '#b6ff3d' },
       { trailId: 'ram-flask', name: 'Flask', color: '#ff3db8' },
     ],
-    launched: false,
+    launched: true,
   },
   {
     island: 'java',

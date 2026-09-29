@@ -12,10 +12,15 @@ const GROUP_LABEL: Record<string, string> = {
   python: 'Lua de Python',
   java: 'Lua de Java',
   php: 'Lua de PHP',
+  ramificacoes: 'Ramificações',
   outras: 'Outras eras (em breve)',
 };
 
-const GROUP_ORDER = ['logica', 'python', 'java', 'php', 'sql', 'git', 'outras'];
+const GROUP_ORDER = ['logica', 'python', 'java', 'php', 'ramificacoes', 'sql', 'git', 'outras'];
+
+/** As insígnias de cada framework (Evento Nexus) ficam juntas, num grupo só. */
+const RAMIFICACOES = new Set(['django', 'fastapi', 'flask']);
+const groupOf = (trail: string) => (RAMIFICACOES.has(trail) ? 'ramificacoes' : trail);
 
 /**
  * "Carteira" do viajante: fechada por padrão (só um resumo), abre ao toque pra revelar
@@ -51,7 +56,7 @@ export function BadgePassport() {
       {open ? (
         <div className={styles.walletContent}>
           {GROUP_ORDER.map((trailSlug) => {
-            const badges = badgeCatalog.filter((b) => b.trail === trailSlug);
+            const badges = badgeCatalog.filter((b) => groupOf(b.trail) === trailSlug);
             if (badges.length === 0) return null;
             const groupEarned = badges.filter((b) => earned[b.id]).length;
             return (

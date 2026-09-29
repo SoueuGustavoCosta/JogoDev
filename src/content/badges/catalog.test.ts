@@ -36,9 +36,20 @@ describe('catálogo compartilhado de insígnias', () => {
     expect(byTrail('php')).toBe(10);
   });
 
-  it('tem exatamente 6 insígnias-coroa (lendárias): uma por chefe de fase já existente', () => {
+  it('tem uma insígnia-coroa (lendária) por chefe de fase já existente', () => {
     const crowns = badgeCatalog.filter((b) => b.crown).map((b) => b.id);
-    expect(crowns.sort()).toEqual(['git-mestre', 'java-nulo', 'php-malabari', 'problemas', 'py-onduluk', 'sql-mestre']);
+    expect(crowns.sort()).toEqual([
+      'git-mestre',
+      'java-nulo',
+      'php-malabari',
+      'problemas',
+      'py-onduluk',
+      // Ramificações de Python (Evento Nexus)
+      'ram-django-monolito',
+      'ram-fastapi-hidra',
+      'ram-flask-borbulha',
+      'sql-mestre',
+    ]);
   });
 
   it('tem exatamente 3 insígnias raras: uma por lua satélite (Python, Java, PHP)', () => {
