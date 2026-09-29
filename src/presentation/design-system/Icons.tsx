@@ -97,6 +97,17 @@ const SYMBOLS: Record<string, (stroke: string) => ReactNode> = {
   'ram-symfony': () => <path d="M13 21c-3 0-4-3-2-4s4 1 2 3M13 20V4c3 1 4 3 1 5-4 3-7 5-5 8" />,
   // CodeIgniter: uma faísca.
   'ram-codeigniter': () => <path d="M12 2v5M12 17v5M2 12h5M17 12h5M5 5l3.5 3.5M15.5 15.5L19 19M19 5l-3.5 3.5M8.5 15.5L5 19" />,
+  // Cometas de tecnologia: símbolos próprios (sem mascotes nem logotipos).
+  'cometa-docker': () => <path d="M3 13h18l-2 6H5zM5 13V9h4v4M9 13V9h4v4M13 13V9h4v4M9 9V5h4v4" />,
+  'cometa-linux': () => <path d="M3 5h18v14H3zM6 10l3 2-3 2M11 15h6" />,
+  'cometa-git': () => (
+    <>
+      <circle cx="6" cy="5" r="2" />
+      <circle cx="6" cy="19" r="2" />
+      <circle cx="18" cy="12" r="2" />
+      <path d="M6 7v10M6 7c0 5 10 2 10 5" />
+    </>
+  ),
   'logic-diamond': () => (
     <>
       <path d="M12 3l6 6-6 6-6-6z" />

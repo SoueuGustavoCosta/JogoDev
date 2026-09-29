@@ -58,14 +58,25 @@ describe('catálogo compartilhado de insígnias', () => {
     ]);
   });
 
-  it('tem exatamente 3 insígnias raras: uma por lua satélite (Python, Java, PHP)', () => {
-    const rares = badgeCatalog.filter((b) => b.rare).map((b) => b.id);
+  // Insígnias dos Cometas de tecnologia (expansão Nexus): a rara vem do chefe vencido durante
+  // o evento (unlockedBy "boss"), não do troféu; ficam de fora das regras das luas.
+  const isComet = (b: { trail: string }) => b.trail.startsWith('cometa-');
+
+  it('tem exatamente 3 insígnias raras de lua: uma por lua satélite (Python, Java, PHP)', () => {
+    const rares = badgeCatalog.filter((b) => b.rare && !isComet(b)).map((b) => b.id);
     expect(rares.sort()).toEqual(['java-rara', 'php-rara', 'py-rara']);
+  });
+
+  it('cada cometa tem uma insígnia rara e uma comum, as duas pelo chefe', () => {
+    const comet = badgeCatalog.filter(isComet);
+    expect(comet.filter((b) => b.rare).map((b) => b.id).sort()).toEqual(['cometa-docker-rara', 'cometa-git-rara', 'cometa-linux-rara']);
+    expect(comet.filter((b) => !b.rare).map((b) => b.id).sort()).toEqual(['cometa-docker-comum', 'cometa-git-comum', 'cometa-linux-comum']);
+    for (const b of comet) expect(b.unlockedBy, b.id).toBe('boss');
   });
 
   it('coroas usam unlockedBy "boss" e raras "trophy" (a legenda da carteira depende desses valores)', () => {
     for (const b of badgeCatalog.filter((x) => x.crown && x.unlockedBy !== null)) expect(b.unlockedBy, b.id).toBe('boss');
-    for (const b of badgeCatalog.filter((x) => x.rare)) expect(b.unlockedBy, b.id).toBe('trophy');
+    for (const b of badgeCatalog.filter((x) => x.rare && !isComet(x))) expect(b.unlockedBy, b.id).toBe('trophy');
   });
 
   it('nenhuma insígnia rara é também coroa (são níveis distintos)', () => {

@@ -4,6 +4,7 @@ import { fillAnswerMatches } from '@/domain/progress';
 import { anomalies } from './anomalies';
 import { trailRegistry } from './registry';
 import { nexusEvents } from './nexus';
+import { cometCalendar } from './comets/calendar';
 
 describe('banco de Anomalias do Dia', () => {
   it(`tem ao menos ${ANOMALY_NO_REPEAT_DAYS} (o sorteio não repete em ${ANOMALY_NO_REPEAT_DAYS} dias) e ids únicos`, () => {
@@ -15,7 +16,7 @@ describe('banco de Anomalias do Dia', () => {
   // TODO(autor): tirar daqui quando a 15C criar as 5 anomalias de cada lua.
   // Ramificações e cometas (expansão Nexus) não têm Anomalia do Dia própria: o assunto delas
   // já vem da lua de linguagem de onde saem.
-  const AWAITING_ANOMALIES = new Set(['dados-modelagem', 'dados-guardiao', ...nexusEvents.flatMap((e) => e.branches.map((b) => b.trailId))]);
+  const AWAITING_ANOMALIES = new Set(['dados-modelagem', 'dados-guardiao', ...nexusEvents.flatMap((e) => e.branches.map((b) => b.trailId)), ...cometCalendar.map((c) => c.trailId)]);
 
   it('cobre todas as ilhas e só ilhas que existem', () => {
     const eras = new Set(trailRegistry.map((t) => t.id));

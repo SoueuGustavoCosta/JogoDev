@@ -13,14 +13,15 @@ const GROUP_LABEL: Record<string, string> = {
   java: 'Lua de Java',
   php: 'Lua de PHP',
   ramificacoes: 'Ramificações',
+  cometas: 'Cometas de tecnologia',
   outras: 'Outras eras (em breve)',
 };
 
-const GROUP_ORDER = ['logica', 'python', 'java', 'php', 'ramificacoes', 'sql', 'git', 'outras'];
+const GROUP_ORDER = ['logica', 'python', 'java', 'php', 'ramificacoes', 'cometas', 'sql', 'git', 'outras'];
 
 /** As insígnias de cada framework (Evento Nexus) ficam juntas, num grupo só. */
 const RAMIFICACOES = new Set(['django', 'fastapi', 'flask', 'spring-boot', 'javalin', 'quarkus', 'laravel', 'symfony', 'codeigniter']);
-const groupOf = (trail: string) => (RAMIFICACOES.has(trail) ? 'ramificacoes' : trail);
+const groupOf = (trail: string) => (RAMIFICACOES.has(trail) ? 'ramificacoes' : trail.startsWith('cometa-') ? 'cometas' : trail);
 
 /**
  * "Carteira" do viajante: fechada por padrão (só um resumo), abre ao toque pra revelar

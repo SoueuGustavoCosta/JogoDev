@@ -16,6 +16,9 @@ import { ramQuarkusTrail } from './trails/ram-quarkus/trail';
 import { ramLaravelTrail } from './trails/ram-laravel/trail';
 import { ramSymfonyTrail } from './trails/ram-symfony/trail';
 import { ramCodeigniterTrail } from './trails/ram-codeigniter/trail';
+import { cometaDockerTrail } from './trails/cometa-docker/trail';
+import { cometaLinuxTrail } from './trails/cometa-linux/trail';
+import { cometaGitTrail } from './trails/cometa-git/trail';
 
 /**
  * Lista de todas as ilhas do arquipélago. Para adicionar uma ilha nova,
@@ -40,6 +43,10 @@ export const trailRegistry: Trail[] = [
   ramLaravelTrail,
   ramSymfonyTrail,
   ramCodeigniterTrail,
+  // Cometas de tecnologia (datas em content/comets/calendar.ts)
+  cometaDockerTrail,
+  cometaLinuxTrail,
+  cometaGitTrail,
 ];
 
 export function getTrailById(id: string): Trail | undefined {
