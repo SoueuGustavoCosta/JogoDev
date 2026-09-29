@@ -2,8 +2,52 @@ import { describe, expect, it } from 'vitest';
 import { trailSchema } from '@/domain/trail';
 import { PgliteEngine } from '@/infrastructure/sql';
 import { bancoDeDadosTrail } from './trail';
-import { bancoDeDadosModules } from './modules';
 import { bancoDeDadosMissions } from './missions';
+import { dadosModelagemTrail } from '../dados-modelagem/trail';
+import { dadosGuardiaoTrail } from '../dados-guardiao/trail';
+import { moduleRelocations } from '../../relocations';
+
+/** Ordem final dos 22 módulos migrados do protótipo (antes da Etapa 14A, todos numa trilha só). */
+const PROTOTYPE_ORDER = [
+  'porque',
+  'tipos',
+  'arquitetura',
+  'interface',
+  'sintaxe',
+  'tiposdados',
+  'relacional',
+  'create',
+  'insert',
+  'where',
+  'update',
+  'mer',
+  'join',
+  'algebra',
+  'agg',
+  'subconsultas',
+  'norm',
+  'indices',
+  'transacoes',
+  'views',
+  'seguranca',
+  'projeto',
+];
+
+/**
+ * Etapa 14A: a Era dos Dados virou ilha principal + Lua da Modelagem + Lua do Guardião, e
+ * dois módulos foram fundidos. O conteúdo do protótipo agora está espalhado nas 3 trilhas;
+ * `bancoDeDadosModules` aqui é a união delas, na ordem do protótipo.
+ */
+const eraTrails = [bancoDeDadosTrail, dadosModelagemTrail, dadosGuardiaoTrail];
+const bancoDeDadosModules = eraTrails
+  .flatMap((t) => t.modules)
+  .sort((a, b) => PROTOTYPE_ORDER.indexOf(a.id) - PROTOTYPE_ORDER.indexOf(b.id));
+
+/** Onde está hoje cada módulo do protótipo, e o prefixo das perguntas dele lá (módulo fundido). */
+function currentHome(moduleId: string): { module: string; prefix: string } {
+  const fold = moduleRelocations.find((r) => r.moduleId === moduleId)?.fold;
+  return fold ? { module: fold.toModule, prefix: fold.quizIdPrefix } : { module: moduleId, prefix: '' };
+}
 
 /**
  * Teste de não regressão exigido pela seção 1 (item 4) do CLAUDE-TEMPO.md e pela
@@ -12,9 +56,8 @@ import { bancoDeDadosMissions } from './missions';
  * bloco de código deve continuar executando no PGlite como no protótipo original.
  */
 describe('conteúdo da Era dos Dados (migração do protótipo)', () => {
-  it('preserva os 22 módulos do protótipo, na mesma ordem final', () => {
-    expect(bancoDeDadosModules).toHaveLength(22);
-    expect(bancoDeDadosModules.map((m) => m.id)).toEqual([
+  it('preserva os 22 módulos do protótipo, na mesma ordem final (2 deles fundidos em outro)', () => {
+    expect(PROTOTYPE_ORDER).toEqual([
       'porque',
       'tipos',
       'arquitetura',
@@ -38,6 +81,18 @@ describe('conteúdo da Era dos Dados (migração do protótipo)', () => {
       'seguranca',
       'projeto',
     ]);
+    const present = new Set(bancoDeDadosModules.map((m) => m.id));
+    for (const id of PROTOTYPE_ORDER) {
+      const home = currentHome(id);
+      expect(present.has(home.module), `módulo ${id} sumiu`).toBe(true);
+      if (home.module !== id) {
+        // Fundido: todos os blocos dele continuam dentro do módulo que o absorveu.
+        expect(present.has(id), `${id} foi fundido e não pode aparecer duas vezes`).toBe(false);
+      }
+    }
+    // 22 do protótipo - 2 fundidos = 20 módulos, sem repetir id.
+    expect(bancoDeDadosModules).toHaveLength(20);
+    expect(new Set(bancoDeDadosModules.map((m) => m.id)).size).toBe(20);
   });
 
   it('preserva as 12 missões práticas do laboratório', () => {
@@ -55,9 +110,10 @@ describe('conteúdo da Era dos Dados (migração do protótipo)', () => {
     expect(allQuiz.length).toBeGreaterThanOrEqual(84);
     // Ids das perguntas do protótipo em cada módulo (q1..qN, Etapa 3.5): todos continuam existindo.
     const original: Record<string, number> = { porque: 4, tipos: 4, arquitetura: 4, interface: 3, sintaxe: 4, tiposdados: 3, relacional: 4, create: 5, insert: 3, where: 4, update: 3, mer: 4, join: 4, algebra: 4, agg: 4, subconsultas: 3, norm: 5, indices: 4, transacoes: 4, views: 3, seguranca: 4, projeto: 4 };
-    for (const mod of bancoDeDadosModules) {
-      const ids = mod.quiz.map((q) => q.id);
-      for (let n = 1; n <= (original[mod.id] ?? 0); n++) expect(ids, `${mod.id} perdeu a pergunta q${n}`).toContain(`q${n}`);
+    for (const [moduleId, count] of Object.entries(original)) {
+      const home = currentHome(moduleId);
+      const ids = bancoDeDadosModules.find((m) => m.id === home.module)?.quiz.map((q) => q.id) ?? [];
+      for (let n = 1; n <= count; n++) expect(ids, `${moduleId} perdeu a pergunta q${n}`).toContain(`${home.prefix}q${n}`);
     }
     expect(Object.values(original).reduce((a, b) => a + b, 0)).toBe(84);
   });
@@ -69,8 +125,8 @@ describe('conteúdo da Era dos Dados (migração do protótipo)', () => {
     }
   });
 
-  it('valida a trilha inteira contra o esquema Zod de conteúdo', () => {
-    expect(() => trailSchema.parse(bancoDeDadosTrail)).not.toThrow();
+  it('valida as 3 trilhas da era contra o esquema Zod de conteúdo', () => {
+    for (const trail of eraTrails) expect(() => trailSchema.parse(trail), trail.id).not.toThrow();
   });
 });
 

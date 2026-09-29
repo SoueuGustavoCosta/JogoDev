@@ -12,6 +12,7 @@ import { LocalStorageProgressRepository } from '@/infrastructure/storage';
 import { withQuizIdMigration } from '@/application/usecases';
 import { buildQuizIdIndex } from '@/domain/progress';
 import { trailRegistry } from '@/content/registry';
+import { moduleRelocations } from '@/content/relocations';
 import { NoopAnalytics, PostHogAnalytics, startVercelPageViews } from '@/infrastructure/analytics';
 import { POSTHOG_HOST, POSTHOG_KEY } from '@/config/analytics';
 import { generateRecoveryCode, NoopLeaderboard, resizeAvatarImage, SupabaseLeaderboard } from '@/infrastructure/leaderboard';
@@ -61,7 +62,10 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
     const phpEngine = new PhpWasmEngine();
     return {
       // Converte o progresso antigo do quiz (por posição) para id da pergunta, em toda leitura e gravação.
-      progressRepository: withQuizIdMigration(new LocalStorageProgressRepository(), buildQuizIdIndex(trailRegistry)),
+      progressRepository: withQuizIdMigration(new LocalStorageProgressRepository(), buildQuizIdIndex(trailRegistry), {
+        modules: moduleRelocations,
+        trails: trailRegistry,
+      }),
       // Eventos no PostHog (grátis) só em produção e com a chave configurada; visitas na Vercel (ver abaixo).
       analytics:
         import.meta.env.PROD && POSTHOG_KEY

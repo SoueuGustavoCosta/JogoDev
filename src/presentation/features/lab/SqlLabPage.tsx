@@ -230,9 +230,12 @@ export function SqlLabPage({ trail }: { trail: Trail }) {
         <OutputBlocks blocks={output} />
       </NotebookFrame>
 
-      <h2>
-        Missões práticas <span className={styles.status}>{doneCount}/{missions.length}</span>
-      </h2>
+      {/* As luas da Era dos Dados usam o laboratório só para testar; as missões ficam na ilha principal. */}
+      {missions.length > 0 ? (
+        <h2>
+          Missões práticas <span className={styles.status}>{doneCount}/{missions.length}</span>
+        </h2>
+      ) : null}
       <div className={styles.missionsGrid}>
         {missions.map((mission) => (
           <button

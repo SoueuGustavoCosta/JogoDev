@@ -3,7 +3,7 @@
 App web gratuito e interativo para aprender tecnologia do zero ao avançado, jogando. Sem login: o progresso fica no navegador do aluno.
 
 - **Stack:** Vite + React + TypeScript (strict), arquitetura em camadas (domain → application → infrastructure/presentation), Vitest, ESLint com `eslint-plugin-boundaries`.
-- **Ilha em produção:** Banco de Dados — 22 módulos de PostgreSQL, quiz e um laboratório SQL rodando Postgres de verdade no navegador via [PGlite](https://github.com/electric-sql/pglite).
+- **Ilha em produção:** Banco de Dados — 10 módulos de PostgreSQL (mais a Lua da Modelagem e a Lua do Guardião, com 5 cada), quiz e um laboratório SQL rodando Postgres de verdade no navegador via [PGlite](https://github.com/electric-sql/pglite).
 - `CLAUDE.md` / `CLAUDE-TEMPO.md` — especificação e arquitetura do projeto (leia antes de mexer no código).
 - `legacy/` — protótipo original em HTML único, usado como fonte da migração de conteúdo.
 - `prototypes/` — protótipos de telas, 3D e mapa (referência visual para features futuras).

@@ -94,7 +94,7 @@ export const ERAS: MapEra[] = [
     years: '1963 → hoje',
     trailId: 'banco-de-dados',
     description:
-      'Bancos de dados: do foguete Saturn V e da primeira lista de peças ao PostgreSQL. Aqui moram os 22 módulos de SQL e o laboratório na Máquina do Tempo.',
+      'Bancos de dados: do foguete Saturn V e da primeira lista de peças ao PostgreSQL. Aqui moram os 10 módulos principais de SQL e o laboratório na Máquina do Tempo; modelagem e os tópicos avançados ficam em duas luas.',
   },
   {
     id: 'logica',
