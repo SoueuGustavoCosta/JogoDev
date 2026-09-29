@@ -503,7 +503,8 @@ export function TimeMap({
                   sat.description ??
                   `A lua de ${sat.name} ainda está guardada na névoa... em breve chega uma trilha só dela!`,
               };
-              const label = sat.trailId && !unlocked ? `${sat.name}. Vença o chefe da Lógica para abrir.` : `${sat.name}.`;
+              const boss = e.bossName ?? 'o chefe';
+              const label = sat.trailId && !unlocked ? `${sat.name}. Vença ${boss} na ${e.name} para abrir.` : `${sat.name}.`;
               return (
                 <g
                   key={sat.id}
@@ -518,8 +519,8 @@ export function TimeMap({
                     } else if (sat.trailId) {
                       setSay(
                         <>
-                          <b>SINTAXE</b> · A lua de <b>{sat.name}</b> já existe, mas só abre depois que você vencer
-                          o chefe da Era da Lógica.
+                          <b>SINTAXE</b> · A lua de <b>{sat.name}</b> já existe, mas só abre depois que você vencer{' '}
+                          {boss}, o chefe da {e.name}.
                         </>,
                       );
                     } else {

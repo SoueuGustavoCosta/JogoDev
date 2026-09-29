@@ -7,8 +7,8 @@ export const HUB = { x: 500, y: 660 };
 export type EraStatus = 'ativo' | 'novo' | 'breve' | 'nevoa';
 export type EraIcon = 'db' | 'log' | 'code' | 'git' | 'cloud' | 'web' | 'ia';
 
-/** Linguagem "satélite": lua da Era da Lógica, com trilha própria ou ainda "em breve" — ver `LanguageSatellite`. */
-export type SatelliteIcon = 'py' | 'java' | 'php';
+/** Lua "satélite" de uma era, com trilha própria ou ainda "em breve" — ver `LanguageSatellite`. */
+export type SatelliteIcon = 'py' | 'java' | 'php' | 'model' | 'guard';
 
 export type MapEra = {
   id: string;
@@ -22,8 +22,10 @@ export type MapEra = {
   description: string;
   /** Ilha (Trail) que esta era abre; só existe para eras com conteúdo. */
   trailId?: string;
-  /** Luas apagadas em volta da era, cada uma "em breve" (ver `SATELLITE_ICON_PATHS`). */
+  /** Luas em volta da era (ver `SATELLITE_ICON_PATHS`): só abrem depois do chefe da era. */
   satellites?: LanguageSatellite[];
+  /** Nome do chefe da era, citado pela Sintaxe quando o viajante toca numa lua ainda fechada. */
+  bossName?: string;
 };
 
 export type LanguageSatellite = {
@@ -52,6 +54,10 @@ export const SATELLITE_ICON_PATHS: Record<SatelliteIcon, string> = {
   java: 'M-6 -2h12v5a6 5 0 0 1 -12 0zM-8 3h16M6 -1c3 0 4 3 2 5M-3 -9c1 2 -1 3 0 5M2 -9c1 2 -1 3 0 5',
   // PHP: o óvalo do logotipo, sem o texto.
   php: 'M-9 0a9 5 0 1 0 18 0a9 5 0 1 0 -18 0',
+  // Lua da Modelagem: duas entidades ligadas por um relacionamento (losango).
+  model: 'M-12 -10h7v6h-7zM5 4h7v6h-7zM0 -4l4 4-4 4-4-4zM-8.5 -4v4h4.5M4 0h4.5v4',
+  // Lua do Guardião: escudo com a tampa de um cilindro de dados.
+  guard: 'M0 -12l9 3.5v6c0 6-4 9.5-9 11-5-1.5-9-5-9-11v-6zM-5 -1a5 2 0 1 0 10 0a5 2 0 1 0 -10 0M-5 -1v5c0 1.1 2.2 2 5 2s5-.9 5-2v-5',
 };
 
 const SATELLITE_RADIUS = 118;
@@ -93,8 +99,36 @@ export const ERAS: MapEra[] = [
     status: 'ativo',
     years: '1963 → hoje',
     trailId: 'banco-de-dados',
+    bossName: 'o Arquivista',
     description:
       'Bancos de dados: do foguete Saturn V e da primeira lista de peças ao PostgreSQL. Aqui moram os 10 módulos principais de SQL e o laboratório na Máquina do Tempo; modelagem e os tópicos avançados ficam em duas luas.',
+    satellites: [
+      // Arco de cima, à esquerda: embaixo ficam o nome da era, o Rastro do Eco (à esquerda)
+      // e a Dona Vírgula (à direita); em cima e à direita, o selo "X/10". As luas só liberam depois que o viajante vence o Arquivista —
+      // mesma regra de `unlocked` das luas da Lógica, em TimeMap.tsx.
+      {
+        id: 'dados-modelagem',
+        name: 'Modelagem',
+        icon: 'model',
+        angle: -150,
+        trailId: 'dados-modelagem',
+        color: '#c9a2ff',
+        years: 'LUA DOS DADOS',
+        description:
+          'A Lua da Modelagem: 5 módulos para desenhar o banco antes do SQL. Tipos de bancos, MER e DER, álgebra relacional e normalização.',
+      },
+      {
+        id: 'dados-guardiao',
+        name: 'Guardião',
+        icon: 'guard',
+        angle: -95,
+        trailId: 'dados-guardiao',
+        color: '#3ee0a1',
+        years: 'LUA DOS DADOS',
+        description:
+          'A Lua do Guardião: 5 módulos para cuidar do banco no ar. Índices, transações, views, segurança e um projeto final.',
+      },
+    ],
   },
   {
     id: 'logica',
@@ -106,6 +140,7 @@ export const ERAS: MapEra[] = [
     status: 'ativo',
     years: 'ERA 2',
     trailId: 'logica',
+    bossName: 'o Loopus Infinitus',
     description: 'Como pensar um problema passo a passo: variáveis, condições, laços e funções.',
     satellites: [
       // Arco de cima: embaixo ficam o nome da era e o "Seu Bloco". Cada lua só libera
