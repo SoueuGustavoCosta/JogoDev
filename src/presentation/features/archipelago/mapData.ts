@@ -8,7 +8,7 @@ export type EraStatus = 'ativo' | 'novo' | 'breve' | 'nevoa';
 export type EraIcon = 'db' | 'log' | 'code' | 'git' | 'cloud' | 'web' | 'ia';
 
 /** Lua "satélite" de uma era, com trilha própria ou ainda "em breve" — ver `LanguageSatellite`. */
-export type SatelliteIcon = 'py' | 'java' | 'php' | 'model' | 'guard';
+export type SatelliteIcon = 'py' | 'java' | 'php' | 'model' | 'guard' | 'html' | 'css' | 'js';
 
 export type MapEra = {
   id: string;
@@ -22,6 +22,8 @@ export type MapEra = {
   description: string;
   /** Ilha (Trail) que esta era abre; só existe para eras com conteúdo. */
   trailId?: string;
+  /** Tela própria da era, quando ela não é uma trilha comum (ex.: Era da Web, `/era-da-web`). */
+  route?: string;
   /** Luas em volta da era (ver `SATELLITE_ICON_PATHS`): só abrem depois do chefe da era. */
   satellites?: LanguageSatellite[];
   /** Nome do chefe da era, citado pela Sintaxe quando o viajante toca numa lua ainda fechada. */
@@ -36,6 +38,10 @@ export type LanguageSatellite = {
   angle: number;
   /** Trilha própria desta lua, só quando o conteúdo já existe (ver content/registry.ts). */
   trailId?: string;
+  /** Tela própria da lua, quando ela não é uma trilha comum (luas da Era da Web). */
+  route?: string;
+  /** A lua não aparece no mapa antes do chefe da era (as luas da Web nascem do Eco). */
+  hiddenUntilRestored?: boolean;
   /** Cor de acento própria da lua, usada quando ela já tem trilha (senão herda a cor da era-mãe). */
   color?: string;
   years?: string;
@@ -58,6 +64,10 @@ export const SATELLITE_ICON_PATHS: Record<SatelliteIcon, string> = {
   model: 'M-12 -10h7v6h-7zM5 4h7v6h-7zM0 -4l4 4-4 4-4-4zM-8.5 -4v4h4.5M4 0h4.5v4',
   // Lua do Guardião: escudo com a tampa de um cilindro de dados.
   guard: 'M0 -12l9 3.5v6c0 6-4 9.5-9 11-5-1.5-9-5-9-11v-6zM-5 -1a5 2 0 1 0 10 0a5 2 0 1 0 -10 0M-5 -1v5c0 1.1 2.2 2 5 2s5-.9 5-2v-5',
+  // Luas da Era da Web: sinais de tag, cerquilha de seletor e um raio (o JS dá vida à página).
+  html: 'M-6 -7l-7 7 7 7M6 -7l7 7-7 7M3 -10l-6 20',
+  css: 'M-3 -10l-3 20M5 -10l-3 20M-9 -4h18M-10 4h18',
+  js: 'M3 -12L-7 2h7l-3 10 10-14H1z',
 };
 
 const SATELLITE_RADIUS = 118;
@@ -221,11 +231,51 @@ export const ERAS: MapEra[] = [
     name: 'Era da Web',
     x: 200,
     y: 850,
-    color: '#3ee0a1',
+    color: '#3db8ff',
     icon: 'web',
-    status: 'breve',
-    years: 'ERA 6',
-    description: 'HTML, CSS, JavaScript e APIs: como os sites funcionam.',
+    status: 'ativo',
+    years: '1989 → hoje',
+    route: '/era-da-web',
+    bossName: 'o Eco',
+    description:
+      'HTML, CSS e JavaScript. O Eco, a sua variante, voltou a 1989 para apagar a Web: 10 trilhas de ação para consertar a história e construir o SEU portfólio.',
+    satellites: [
+      // Nascem da vitória sobre o Eco (antes disso nem aparecem). Arco de cima e da esquerda:
+      // embaixo fica o nome da era, e o Eco da Linha do Tempo pode parar à esquerda.
+      {
+        id: 'web-mh',
+        name: 'HTML',
+        icon: 'html',
+        angle: -160,
+        route: '/era-da-web/lua/mh',
+        hiddenUntilRestored: true,
+        color: '#ff7a3d',
+        years: 'LUA DA WEB',
+        description: 'A Lua HTML: formulários, tabelas, mídia, acessibilidade e SEO, e o chefe O Silenciador.',
+      },
+      {
+        id: 'web-mc',
+        name: 'CSS',
+        icon: 'css',
+        angle: -115,
+        route: '/era-da-web/lua/mc',
+        hiddenUntilRestored: true,
+        color: '#3db8ff',
+        years: 'LUA DA WEB',
+        description: 'A Lua CSS: grid, responsivo, variáveis, animações e posicionamento, e o chefe Glitch Cromático.',
+      },
+      {
+        id: 'web-mj',
+        name: 'JS',
+        icon: 'js',
+        angle: -70,
+        route: '/era-da-web/lua/mj',
+        hiddenUntilRestored: true,
+        color: '#ffe14d',
+        years: 'LUA DA WEB',
+        description: 'A Lua JS: arrays, funções, JSON, fetch e localStorage, e o chefe Loop Infinito.',
+      },
+    ],
   },
   {
     id: 'ia',

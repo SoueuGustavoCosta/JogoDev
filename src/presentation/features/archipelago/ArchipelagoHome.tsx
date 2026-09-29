@@ -1,11 +1,13 @@
 import { useEffect, useMemo } from 'react';
 import { Navigate, useNavigate, useOutletContext } from 'react-router-dom';
-import { getNexus, getTimeline, getTraveler, getTrailProgress } from '@/application/usecases';
+import { getNexus, getTimeline, getTraveler, getTrailProgress, getWebEra } from '@/application/usecases';
 import { nexusEvents } from '@/content/nexus';
 import { cometCalendar } from '@/content/comets/calendar';
 import { CometSky } from '@/presentation/features/comets';
 import { trailRegistry } from '@/content/registry';
 import { isEraRestored } from '@/domain/progress';
+import { areAllMoonsDone, eraTrailsDone, isEcoDefeated, isMoonDone, moonTrailsDone } from '@/domain/webEra';
+import { webBranches, webEraTrails, webMoons } from '@/content/webEra';
 import { useServices } from '@/presentation/app/ServicesContext';
 import type { LayoutOutletContext } from '@/presentation/shell';
 import { ERAS, START_HERE_ERA_ID, type MapEra } from './mapData';
@@ -55,6 +57,21 @@ export function ArchipelagoHome() {
     }
   }
 
+  // Era da Web: não é uma trilha comum (tela própria em /era-da-web); as luas nascem do Eco e
+  // ganham o vórtice do Evento Nexus quando as três caem.
+  const { web } = getWebEra({ repository: progressRepository });
+  const webBranchesOpen = areAllMoonsDone(webMoons, web) ? webBranches.filter((b) => !b.future).map((b) => b.name) : undefined;
+  progress.web = { done: eraTrailsDone(webEraTrails, web), total: webEraTrails.length, restored: isEcoDefeated(web), unit: 'trilhas' };
+  for (const moon of webMoons) {
+    progress[`web-${moon.id}`] = {
+      done: moonTrailsDone(moon, web),
+      total: moon.trails.length,
+      restored: isMoonDone(moon, web),
+      unit: 'trilhas',
+      branches: webBranchesOpen,
+    };
+  }
+
   // Quem ainda não concluiu nenhum módulo, em nenhuma era, vê o selo "Comece aqui".
   const firstSteps = Object.values(byEra).every((p) => p.done === 0);
 
@@ -66,7 +83,7 @@ export function ArchipelagoHome() {
         onlineLooks={onlineLooks}
       progress={progress}
       startHereEraId={firstSteps ? START_HERE_ERA_ID : undefined}
-      onEnterEra={(era: MapEra) => era.trailId && navigate(`/trilhas/${era.trailId}`)}
+      onEnterEra={(era: MapEra) => (era.route ? navigate(era.route) : era.trailId && navigate(`/trilhas/${era.trailId}`))}
       ecoEra={getTimeline({ repository: progressRepository }).state.ecoEra}
     />
     {/* Céu dos Cometas de tecnologia (expansão Nexus): por cima do mapa, fora da câmera. */}

@@ -47,6 +47,8 @@ export type EraProgress = {
   restored?: boolean;
   /** Ramificações abertas por um Evento Nexus (nomes dos frameworks): a lua ganha um vórtice. */
   branches?: string[];
+  /** O que `done/total` conta no cartão ("módulos" por padrão; "trilhas" na Era da Web). */
+  unit?: string;
 };
 
 const reducedMotion = () =>
@@ -336,7 +338,7 @@ export function TimeMap({
     atRef.current = era;
     setMe({ x: era.x, y: era.y });
     centerOn(era.x, era.y);
-    if (era.trailId) {
+    if (era.trailId || era.route) {
       setSay(
         <>
           <b>SINTAXE</b> · Chegamos à <b>{era.name}</b>. Entrando...
@@ -489,8 +491,12 @@ export function TimeMap({
             (e.satellites ?? []).map((sat, i) => {
               const pos = satellitePosition(e, sat);
               // Uma lua só fica clicável (com trilha própria) depois que a era-mãe é
-              // restaurada (chefe vencido) E o conteúdo dela já existe (`trailId`).
-              const unlocked = Boolean(sat.trailId) && Boolean(progress[e.id]?.restored);
+              // restaurada (chefe vencido) E o conteúdo dela já existe (`trailId` ou `route`).
+              const restored = Boolean(progress[e.id]?.restored);
+              // Luas que nascem do chefe (Era da Web) nem aparecem antes dele.
+              if (sat.hiddenUntilRestored && !restored) return null;
+              const hasContent = Boolean(sat.trailId || sat.route);
+              const unlocked = hasContent && restored;
               const satEra: MapEra = {
                 id: sat.id,
                 name: sat.name,
@@ -501,12 +507,13 @@ export function TimeMap({
                 status: unlocked ? 'ativo' : 'breve',
                 years: sat.years ?? 'EM BREVE',
                 trailId: unlocked ? sat.trailId : undefined,
+                route: unlocked ? sat.route : undefined,
                 description:
                   sat.description ??
                   `A lua de ${sat.name} ainda está guardada na névoa... em breve chega uma trilha só dela!`,
               };
               const boss = e.bossName ?? 'o chefe';
-              const label = sat.trailId && !unlocked ? `${sat.name}. Vença ${boss} na ${e.name} para abrir.` : `${sat.name}.`;
+              const label = hasContent && !unlocked ? `${sat.name}. Vença ${boss} na ${e.name} para abrir.` : `${sat.name}.`;
               return (
                 <g
                   key={sat.id}
@@ -518,7 +525,7 @@ export function TimeMap({
                   {...activate(() => {
                     if (unlocked) {
                       setSheet({ kind: 'era', era: satEra });
-                    } else if (sat.trailId) {
+                    } else if (hasContent) {
                       setSay(
                         <>
                           <b>SINTAXE</b> · A lua de <b>{sat.name}</b> já existe, mas só abre depois que você vencer{' '}
@@ -771,7 +778,7 @@ function EraSheet({
             <i style={{ width: `${(progress.done / Math.max(1, progress.total)) * 100}%` }} />
           </div>
           <p>
-            {progress.done} de {progress.total} módulos concluídos
+            {progress.done} de {progress.total} {progress.unit ?? 'módulos'} concluídos
           </p>
           {progress.branches?.length ? (
             <p className={styles.branches}>
