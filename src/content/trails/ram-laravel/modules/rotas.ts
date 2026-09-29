@@ -1,0 +1,87 @@
+import type { Module } from '@/domain/trail/types';
+
+/** Trilha 2 da Ramificação Laravel: rotas. */
+export const modLaravelRotas: Module = {
+  id: 'laravel-rotas',
+  short: 'Rotas',
+  title: 'Rotas: o endereço e quem responde',
+  lead: 'No Laravel, uma rota liga um método HTTP e um caminho a quem responde: uma função ou um método de controller.',
+  level: 'Base',
+  blocks: [
+    { t: 'h', x: 'A rota mais simples' },
+    {
+      t: 'code',
+      file: 'routes/web.php',
+      lang: 'php',
+      nolab: true,
+      x: "<?php\n\nuse Illuminate\\Support\\Facades\\Route;\n\nRoute::get('/ola', function () {\n    return 'Olá, Viajante';\n});",
+    },
+    { t: 'h', x: 'Parâmetros' },
+    {
+      t: 'code',
+      file: 'routes/web.php',
+      lang: 'php',
+      nolab: true,
+      x: "Route::get('/usuario/{id}', function (string $id) {\n    return 'Usuário ' . $id;\n});\n\nRoute::get('/busca/{termo?}', function (?string $termo = null) {\n    return $termo ?? 'Nada buscado';\n});",
+    },
+    { t: 'p', x: 'O <code>?</code> depois do nome deixa o parâmetro opcional, e a função precisa de um valor padrão.' },
+    { t: 'h', x: 'Métodos HTTP' },
+    {
+      t: 'code',
+      file: 'routes/web.php',
+      lang: 'php',
+      nolab: true,
+      x: "Route::get('/tarefas', ...);\nRoute::post('/tarefas', ...);\nRoute::put('/tarefas/{id}', ...);\nRoute::delete('/tarefas/{id}', ...);",
+    },
+    { t: 'h', x: 'Rotas com nome' },
+    {
+      t: 'code',
+      file: 'routes/web.php',
+      lang: 'php',
+      nolab: true,
+      x: "Route::get('/perfil/{id}', function (string $id) {\n    return 'Perfil ' . $id;\n})->name('perfil');\n\n// em qualquer lugar do código:\n$url = route('perfil', ['id' => 7]);   // /perfil/7",
+    },
+    { t: 'p', x: 'Para ver todas as rotas do projeto: <code>php artisan route:list</code>.' },
+    { t: 'say', x: 'Dando nome às rotas, se o endereço mudar um dia, todo link feito com route() continua certo.' },
+    {
+      t: 'note',
+      k: 'Fonte oficial',
+      x: 'Documentação do Laravel: <a href="https://laravel.com/docs/routing" target="_blank" rel="noopener">Routing</a>.',
+    },
+  ],
+  quiz: [
+    {
+      id: 'q1',
+      q: 'Como se escreve uma rota GET em /ola no Laravel?',
+      options: ["Route::get('/ola', ...)", "$app->get('/ola', ...)", "@GetMapping('/ola')", "route('/ola')"],
+      answer: 0,
+      explain: "<code>Route::get('/ola', ...)</code> no <code>routes/web.php</code>.",
+    },
+    {
+      id: 'q2',
+      q: 'Na rota /busca/{termo?}, o que o ? faz?',
+      options: ['Deixa o parâmetro opcional', 'Transforma em query string', 'Aceita só números', 'Nada, é enfeite'],
+      answer: 0,
+      explain: 'Parâmetro opcional: a função precisa de um valor padrão.',
+    },
+    {
+      id: 'q3',
+      q: 'Complete para dar o nome perfil à rota:',
+      fill: true,
+      pre: "Route::get('/perfil/{id}', ...)->",
+      post: "('perfil');",
+      accept: ['name'],
+      wrong: ['as', 'alias', 'route'],
+      placeholder: '?',
+      explain: "<code>->name('perfil')</code>; depois, <code>route('perfil', ['id' => 7])</code> monta a URL.",
+    },
+    {
+      id: 'desafio',
+      kind: 'order',
+      q: 'Desafio: monte a rota POST para criar tarefas.',
+      pieces: ['Route::post(', "'/tarefas'", ',', 'function () { ... }', ');'],
+      distractors: ['Route::get(', 'app.post(', '->name('],
+      explain: "<code>Route::post('/tarefas', ...)</code> recebe os envios de formulário.",
+    },
+  ],
+};

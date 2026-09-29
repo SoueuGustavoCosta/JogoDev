@@ -13,6 +13,9 @@ import { ramFlaskTrail } from './trails/ram-flask/trail';
 import { ramSpringBootTrail } from './trails/ram-spring-boot/trail';
 import { ramJavalinTrail } from './trails/ram-javalin/trail';
 import { ramQuarkusTrail } from './trails/ram-quarkus/trail';
+import { ramLaravelTrail } from './trails/ram-laravel/trail';
+import { ramSymfonyTrail } from './trails/ram-symfony/trail';
+import { ramCodeigniterTrail } from './trails/ram-codeigniter/trail';
 
 /**
  * Lista de todas as ilhas do arquipélago. Para adicionar uma ilha nova,
@@ -34,6 +37,9 @@ export const trailRegistry: Trail[] = [
   ramSpringBootTrail,
   ramJavalinTrail,
   ramQuarkusTrail,
+  ramLaravelTrail,
+  ramSymfonyTrail,
+  ramCodeigniterTrail,
 ];
 
 export function getTrailById(id: string): Trail | undefined {

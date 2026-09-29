@@ -27,6 +27,9 @@ export const BADGE_TRAIL_TO_TRAIL_ID: Record<string, string> = {
   'spring-boot': 'ram-spring-boot',
   javalin: 'ram-javalin',
   quarkus: 'ram-quarkus',
+  laravel: 'ram-laravel',
+  symfony: 'ram-symfony',
+  codeigniter: 'ram-codeigniter',
 };
 
 export const badgeCatalog: Badge[] = [
@@ -815,5 +818,32 @@ export const badgeCatalog: Badge[] = [
     crown: true,
     unlockedBy: "boss",
     file: "nexus/ram-quarkus-partida.svg",
+  },
+  {
+    id: "ram-laravel-artesao",
+    trail: "laravel",
+    name: "Mestre da Oficina",
+    description: "Venceu o Artesão das Sombras: a coroa da Ramificação Laravel.",
+    crown: true,
+    unlockedBy: "boss",
+    file: "nexus/ram-laravel-artesao.svg",
+  },
+  {
+    id: "ram-symfony-sinfonia",
+    trail: "symfony",
+    name: "Regente da Sinfonia",
+    description: "Venceu a Sinfonia Desafinada: a coroa da Ramificação Symfony.",
+    crown: true,
+    unlockedBy: "boss",
+    file: "nexus/ram-symfony-sinfonia.svg",
+  },
+  {
+    id: "ram-codeigniter-faisca",
+    trail: "codeigniter",
+    name: "Guardião da Ignição",
+    description: "Venceu a Faísca Apagada: a coroa da Ramificação CodeIgniter.",
+    crown: true,
+    unlockedBy: "boss",
+    file: "nexus/ram-codeigniter-faisca.svg",
   },
 ];

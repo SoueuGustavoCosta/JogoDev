@@ -32,6 +32,6 @@ export const nexusEvents: readonly NexusEvent[] = [
       { trailId: 'ram-symfony', name: 'Symfony', color: '#b6ff3d' },
       { trailId: 'ram-codeigniter', name: 'CodeIgniter', color: '#ff3db8' },
     ],
-    launched: false,
+    launched: true,
   },
 ];

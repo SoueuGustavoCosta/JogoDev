@@ -91,6 +91,12 @@ const SYMBOLS: Record<string, (stroke: string) => ReactNode> = {
       <ellipse cx="12" cy="12" rx="9" ry="3.5" transform="rotate(120 12 12)" />
     </>
   ),
+  // Laravel: uma bigorna (a oficina do Artisan).
+  'ram-laravel': () => <path d="M3 8h13l5 3H14l-1 3h2v3H7v-3h2L8 11H4z" />,
+  // Symfony: uma clave musical estilizada (componentes em harmonia).
+  'ram-symfony': () => <path d="M13 21c-3 0-4-3-2-4s4 1 2 3M13 20V4c3 1 4 3 1 5-4 3-7 5-5 8" />,
+  // CodeIgniter: uma faísca.
+  'ram-codeigniter': () => <path d="M12 2v5M12 17v5M2 12h5M17 12h5M5 5l3.5 3.5M15.5 15.5L19 19M19 5l-3.5 3.5M8.5 15.5L5 19" />,
   'logic-diamond': () => (
     <>
       <path d="M12 3l6 6-6 6-6-6z" />

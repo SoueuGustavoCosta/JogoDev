@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <radialGradient id="fill" cx="50%" cy="30%" r="80%"><stop offset="0%" stop-color="#1c0f33"/><stop offset="100%" stop-color="#0d071a"/></radialGradient>
+    <linearGradient id="border" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#b8fbff"/><stop offset="50%" stop-color="#3df5ff"/><stop offset="100%" stop-color="#ff9a2e"/></linearGradient>
+    <radialGradient id="medal" cx="50%" cy="35%" r="70%"><stop offset="0%" stop-color="#3df5ff" stop-opacity="0.45"/><stop offset="100%" stop-color="#1c0f33" stop-opacity="0.95"/></radialGradient>
+    <filter id="glow" x="-70%" y="-70%" width="240%" height="240%"><feGaussianBlur stdDeviation="10" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <path d="M128.0 10.0 L157.8 55.9 L211.4 44.6 L200.1 98.2 L246.0 128.0 L200.1 157.8 L211.4 211.4 L157.8 200.1 L128.0 246.0 L98.2 200.1 L44.6 211.4 L55.9 157.8 L10.0 128.0 L55.9 98.2 L44.6 44.6 L98.2 55.9 Z" fill="#3df5ff" opacity="0.45" filter="url(#glow)"/>
+  <path d="M128.0 10.0 L157.8 55.9 L211.4 44.6 L200.1 98.2 L246.0 128.0 L200.1 157.8 L211.4 211.4 L157.8 200.1 L128.0 246.0 L98.2 200.1 L44.6 211.4 L55.9 157.8 L10.0 128.0 L55.9 98.2 L44.6 44.6 L98.2 55.9 Z" fill="url(#fill)" stroke="url(#border)" stroke-width="6" stroke-linejoin="round"/>
+  <circle cx="128" cy="128" r="64" fill="url(#medal)" stroke="#3df5ff" stroke-width="2.5"/>
+  <circle cx="128" cy="128" r="72" fill="none" stroke="#ff9a2e" stroke-width="1.2" stroke-dasharray="6 9" opacity="0.8"/>
+  <g transform="translate(128 128)" fill="none" stroke="#faf6ff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M-40-18h52l20 12H4l-4 12h8v12h-32v-12h8l-4-12h-20z"/>
+  </g>
+  <g><circle cx="128.0" cy="10.0" r="3.6" fill="#b8fbff"/><circle cx="211.4" cy="44.6" r="3.6" fill="#b8fbff"/><circle cx="246.0" cy="128.0" r="3.6" fill="#b8fbff"/><circle cx="211.4" cy="211.4" r="3.6" fill="#b8fbff"/><circle cx="128.0" cy="246.0" r="3.6" fill="#b8fbff"/><circle cx="44.6" cy="211.4" r="3.6" fill="#b8fbff"/><circle cx="10.0" cy="128.0" r="3.6" fill="#b8fbff"/><circle cx="44.6" cy="44.6" r="3.6" fill="#b8fbff"/></g>
+</svg>

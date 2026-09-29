@@ -38,20 +38,22 @@ describe('catálogo compartilhado de insígnias', () => {
 
   it('tem uma insígnia-coroa (lendária) por chefe de fase já existente', () => {
     const crowns = badgeCatalog.filter((b) => b.crown).map((b) => b.id);
+    // Chefes das eras e luas, mais os das Ramificações (Evento Nexus, `ram-*`).
     expect(crowns.sort()).toEqual([
       'git-mestre',
       'java-nulo',
       'php-malabari',
       'problemas',
       'py-onduluk',
-      // Ramificações de Python (Evento Nexus)
+      'ram-codeigniter-faisca',
       'ram-django-monolito',
       'ram-fastapi-hidra',
       'ram-flask-borbulha',
-      // Ramificações de Java
       'ram-javalin-fantasma',
+      'ram-laravel-artesao',
       'ram-quarkus-partida',
       'ram-spring-colecionador',
+      'ram-symfony-sinfonia',
       'sql-mestre',
     ]);
   });
