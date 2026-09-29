@@ -39,6 +39,16 @@ function openedEras(progress: Progress): Set<string> {
   return eras;
 }
 
+/** Quantas vezes cada anomalia já foi consertada, sem contar a de hoje (a escolha de hoje não muda depois de consertar). */
+function anomalyHistory(progress: Progress, today: string): Map<string, number> {
+  const history = new Map<string, number>();
+  for (const [day, result] of Object.entries(progress.anomalies ?? {})) {
+    if (day === today || !result?.anomalyId) continue;
+    history.set(result.anomalyId, (history.get(result.anomalyId) ?? 0) + 1);
+  }
+  return history;
+}
+
 export function getDailyAnomaly(
   deps: { repository: ProgressRepository },
   params: { pool: readonly Anomaly[]; now?: Date; xpMultiplier?: number },
@@ -46,7 +56,7 @@ export function getDailyAnomaly(
   const now = params.now ?? new Date();
   const progress = deps.repository.load() ?? createEmptyProgress();
   const day = anomalyDay(now);
-  const { anomaly, fallback } = pickAnomaly(day, params.pool, openedEras(progress));
+  const { anomaly, fallback } = pickAnomaly(day, params.pool, openedEras(progress), anomalyHistory(progress, day));
   return {
     day,
     number: anomalyNumber(day),

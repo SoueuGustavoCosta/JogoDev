@@ -82,3 +82,60 @@ describe('pickAnomaly', () => {
     expect(fallbacks).toBeGreaterThan(0);
   });
 });
+
+describe('pickAnomaly: não repete até ver todas da ilha (Etapa 15A)', () => {
+  // 12 de Lógica, 12 de Banco de Dados e 5 de Java, todas Base.
+  const eras = [
+    ...Array.from({ length: 12 }, (_, i) => make(i, 'logica')),
+    ...Array.from({ length: 12 }, (_, i) => make(20 + i, 'banco-de-dados')),
+    ...Array.from({ length: 5 }, (_, i) => make(40 + i, 'java')),
+  ];
+
+  it('quem conserta todo dia não vê a mesma anomalia de uma ilha antes de ver todas dela', () => {
+    const history = new Map<string, number>();
+    const byEra = new Map<string, string[]>();
+    for (let i = 0; i < 400; i++) {
+      const { anomaly } = pickAnomaly(addDays('2026-09-01', i), eras, new Set(), history);
+      history.set(anomaly.id, (history.get(anomaly.id) ?? 0) + 1);
+      const seq = byEra.get(anomaly.era) ?? [];
+      seq.push(anomaly.id);
+      byEra.set(anomaly.era, seq);
+    }
+    for (const [era, seq] of byEra) {
+      const size = eras.filter((a) => a.era === era).length;
+      // Em cada volta completa (size seguidas), nenhuma se repete.
+      for (let start = 0; start + size <= seq.length; start += size) {
+        expect(new Set(seq.slice(start, start + size)).size, `${era} volta ${start / size + 1}`).toBe(size);
+      }
+    }
+  });
+
+  it('sem histórico, é a mesma anomalia para todos; com histórico, troca só para quem já viu', () => {
+    const day = '2026-10-10';
+    const global = pickAnomaly(day, eras, new Set()).anomaly;
+    expect(global.id).toBe(globalAnomalyForDay(day, eras).id);
+    const seenIt = pickAnomaly(day, eras, new Set(), new Map([[global.id, 1]])).anomaly;
+    expect(seenIt.id).not.toBe(global.id);
+    expect(seenIt.era).toBe(global.era);
+    // Determinística: o mesmo histórico dá a mesma escolha no mesmo dia.
+    expect(pickAnomaly(day, eras, new Set(), new Map([[global.id, 1]])).anomaly.id).toBe(seenIt.id);
+  });
+
+  it('a reserva Base de quem não abriu a era também não repete', () => {
+    const withHard = [...eras, ...Array.from({ length: 30 }, (_, i) => make(60 + i, 'php', 'Avançado'))];
+    const history = new Map<string, number>();
+    const seen: string[] = [];
+    for (let i = 0; i < 300; i++) {
+      const pick = pickAnomaly(addDays('2026-09-01', i), withHard, new Set(), history);
+      expect(pick.anomaly.level).toBe('Base');
+      if (pick.fallback) seen.push(pick.anomaly.id);
+      history.set(pick.anomaly.id, (history.get(pick.anomaly.id) ?? 0) + 1);
+    }
+    expect(seen.length).toBeGreaterThan(0);
+    // Nenhuma anomalia foi vista 2 vezes a mais que outra da mesma ilha.
+    for (const era of ['logica', 'banco-de-dados', 'java']) {
+      const counts = eras.filter((a) => a.era === era).map((a) => history.get(a.id) ?? 0);
+      expect(Math.max(...counts) - Math.min(...counts), era).toBeLessThanOrEqual(1);
+    }
+  });
+});
