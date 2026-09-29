@@ -481,6 +481,17 @@ export function applyGitCommand(
       doBranch(ctx, tokens.slice(2));
       break;
     case 'switch':
+      // `git switch -c <nome>`: cria o branch e já muda para ele (como no Git de verdade).
+      if (tokens[2] === '-c' || tokens[2] === '--create') {
+        if (!tokens[3]) {
+          printErr(ctx, 'uso: git switch -c <branch>');
+          break;
+        }
+        const existed = tokens[3] in ctx.state.branches;
+        doBranch(ctx, [tokens[3]]);
+        if (!existed && tokens[3] in ctx.state.branches) doSwitch(ctx, tokens[3]);
+        break;
+      }
       doSwitch(ctx, tokens[2]);
       break;
     case 'checkout':

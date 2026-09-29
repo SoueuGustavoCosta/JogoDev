@@ -59,6 +59,20 @@ describe('applyGitCommand', () => {
     expect(state.branches.feature).toBeDefined();
   });
 
+  it('switch -c cria e troca de branch em um passo; não troca se o branch já existe', () => {
+    let s = createGitRepoState('vazio');
+    s = run(s, 'git init').state;
+    s = run(s, 'git add .').state;
+    s = run(s, 'git commit -m "base"').state;
+    s = run(s, 'git switch -c feature').state;
+    expect(s.head).toBe('feature');
+    expect(s.branches.feature).toBe(s.branches.main);
+    s = run(s, 'git switch main').state;
+    s = run(s, 'git switch -c feature').state;
+    expect(s.head).toBe('main');
+    expect(run(s, 'git switch -c').state.head).toBe('main');
+  });
+
   it('merge funde duas branches e cria um commit com dois pais', () => {
     let s = createGitRepoState('vazio');
     s = run(s, 'git init').state;
