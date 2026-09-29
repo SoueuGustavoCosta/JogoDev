@@ -20,7 +20,7 @@ type Props = {
 /**
  * Evento Nexus (referência: docs/expansao/prototipos/prototipo_cometa.html). O portal da lua
  * embaixo e três fios de luz trançados subindo até três portais de frameworks. Só
- * `transform`, `opacity` e o traço dos fios animam; com `prefers-reduced-motion` a cena
+ * `transform` e `opacity` animam; com `prefers-reduced-motion` a cena
  * já aparece no estado final (ver o CSS).
  */
 export function NexusScene({ islandName, islandColor, bossName, state, branches, play, onPlayed, onEnter }: Props) {
@@ -60,15 +60,21 @@ export function NexusScene({ islandName, islandColor, bossName, state, branches,
       <h2 id="nexus-title" className={styles.title}>
         Ramificações de {islandName}
       </h2>
-      <div className={`${styles.stage} ${flash ? styles.distort : ''}`}>
-        <svg viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} className={`${styles.svg} ${opened ? styles.open : ''}`} role="img" aria-label={legend}>
+      {/* A distorção acontece dentro da moldura (que corta o excesso), nunca alarga a página. */}
+      <div className={styles.stage}>
+        <svg
+          viewBox={`0 0 ${VIEW.w} ${VIEW.h}`}
+          className={`${styles.svg} ${opened ? styles.open : ''} ${flash ? styles.distort : ''}`} role="img" aria-label={legend}>
           {threads.map(([a, b, base], i) => {
             const color = branches[i]?.color ?? islandColor;
             return (
               <g key={i}>
                 <path d={base} className={styles.base} />
-                <path d={a} pathLength={1} className={styles.thread} stroke={color} strokeWidth={2.4} style={{ transitionDelay: `${i * 0.12}s` }} />
-                <path d={b} pathLength={1} className={styles.thread} stroke={color} strokeWidth={1.4} opacity={0.55} style={{ transitionDelay: `${i * 0.12}s` }} />
+                {/* O fio cresce a partir do topo do portal da lua: só transform (scaleY), nada de traço animado. */}
+                <g className={styles.grow} style={{ transformOrigin: `${ISLAND.x}px ${ISLAND.y - ISLAND.r * SY}px`, transitionDelay: `${i * 0.12}s` }}>
+                  <path d={a} className={styles.thread} stroke={color} strokeWidth={2.4} />
+                  <path d={b} className={styles.thread} stroke={color} strokeWidth={1.4} opacity={0.55} />
+                </g>
               </g>
             );
           })}

@@ -34,17 +34,24 @@
   opacity: 0;
 }
 
-/* Fio crescendo: `pathLength=1` faz o traço ir de 0 (escondido) a 1 (inteiro). */
 .thread {
   fill: none;
   stroke-linecap: round;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  transition: stroke-dashoffset 1.4s ease-out;
 }
 
-.open .thread {
-  stroke-dashoffset: 0;
+/* Fio crescendo para cima a partir do portal da lua (origem no topo dele, ver o TSX). */
+.grow {
+  transform-box: view-box;
+  transform: scaleY(0.001);
+  opacity: 0;
+  transition:
+    transform 1.4s ease-out,
+    opacity 0.4s;
+}
+
+.open .grow {
+  transform: scaleY(1);
+  opacity: 1;
 }
 
 .core {
@@ -65,6 +72,7 @@
   transition: opacity 0.6s;
 }
 
+/* O tracejado some na hora; só a opacidade anima. */
 .open .edge {
   stroke-dasharray: none;
   opacity: 1;
@@ -253,7 +261,7 @@
   .flash {
     display: none;
   }
-  .thread,
+  .grow,
   .core,
   .edge,
   .base {
