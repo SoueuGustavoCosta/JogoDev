@@ -19,7 +19,7 @@ const GROUP_LABEL: Record<string, string> = {
 const GROUP_ORDER = ['logica', 'python', 'java', 'php', 'ramificacoes', 'sql', 'git', 'outras'];
 
 /** As insígnias de cada framework (Evento Nexus) ficam juntas, num grupo só. */
-const RAMIFICACOES = new Set(['django', 'fastapi', 'flask']);
+const RAMIFICACOES = new Set(['django', 'fastapi', 'flask', 'spring-boot', 'javalin', 'quarkus']);
 const groupOf = (trail: string) => (RAMIFICACOES.has(trail) ? 'ramificacoes' : trail);
 
 /**

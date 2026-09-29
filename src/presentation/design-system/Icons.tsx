@@ -78,6 +78,19 @@ const SYMBOLS: Record<string, (stroke: string) => ReactNode> = {
   'ram-fastapi': () => <path d="M13 2L5 13h6l-2 9 8-12h-6z" />,
   // Flask: um frasco de laboratório.
   'ram-flask': () => <path d="M9 3h6M10 3v6l-5 9a2 2 0 002 3h10a2 2 0 002-3l-5-9V3M7.5 15h9" />,
+  // Spring Boot: um broto de três folhas (o contêiner que faz crescer os beans).
+  'ram-spring-boot': () => <path d="M12 21v-9M12 12c0-4 3-7 7-7 0 4-3 7-7 7zM12 15c0-3-2-5-5-5 0 3 2 5 5 5z" />,
+  // Javalin: um dardo leve em diagonal.
+  'ram-javalin': () => <path d="M4 20L17 7M17 7l-1-4 5 1-1 5-3-2zM4 20l2-5M4 20l5-2" />,
+  // Quarkus: um átomo pequeno e veloz.
+  'ram-quarkus': () => (
+    <>
+      <circle cx="12" cy="12" r="1.8" />
+      <ellipse cx="12" cy="12" rx="9" ry="3.5" />
+      <ellipse cx="12" cy="12" rx="9" ry="3.5" transform="rotate(60 12 12)" />
+      <ellipse cx="12" cy="12" rx="9" ry="3.5" transform="rotate(120 12 12)" />
+    </>
+  ),
   'logic-diamond': () => (
     <>
       <path d="M12 3l6 6-6 6-6-6z" />

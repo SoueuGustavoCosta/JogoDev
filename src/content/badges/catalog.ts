@@ -24,6 +24,9 @@ export const BADGE_TRAIL_TO_TRAIL_ID: Record<string, string> = {
   django: 'ram-django',
   fastapi: 'ram-fastapi',
   flask: 'ram-flask',
+  'spring-boot': 'ram-spring-boot',
+  javalin: 'ram-javalin',
+  quarkus: 'ram-quarkus',
 };
 
 export const badgeCatalog: Badge[] = [
@@ -785,5 +788,32 @@ export const badgeCatalog: Badge[] = [
     crown: true,
     unlockedBy: "boss",
     file: "nexus/ram-flask-borbulha.svg",
+  },
+  {
+    id: "ram-spring-colecionador",
+    trail: "spring-boot",
+    name: "Libertador de Beans",
+    description: "Venceu o Colecionador de Beans: a coroa da Ramificação Spring Boot.",
+    crown: true,
+    unlockedBy: "boss",
+    file: "nexus/ram-spring-colecionador.svg",
+  },
+  {
+    id: "ram-javalin-fantasma",
+    trail: "javalin",
+    name: "Caçador do Handler Fantasma",
+    description: "Venceu o Handler Fantasma: a coroa da Ramificação Javalin.",
+    crown: true,
+    unlockedBy: "boss",
+    file: "nexus/ram-javalin-fantasma.svg",
+  },
+  {
+    id: "ram-quarkus-partida",
+    trail: "quarkus",
+    name: "Degelo Supersônico",
+    description: "Venceu a Partida a Frio: a coroa da Ramificação Quarkus.",
+    crown: true,
+    unlockedBy: "boss",
+    file: "nexus/ram-quarkus-partida.svg",
   },
 ];

@@ -23,7 +23,7 @@ export const nexusEvents: readonly NexusEvent[] = [
       { trailId: 'ram-javalin', name: 'Javalin', color: '#b6ff3d' },
       { trailId: 'ram-quarkus', name: 'Quarkus', color: '#ff3db8' },
     ],
-    launched: false,
+    launched: true,
   },
   {
     island: 'php',

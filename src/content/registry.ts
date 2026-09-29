@@ -10,6 +10,9 @@ import { phpTrail } from './trails/php/trail';
 import { ramDjangoTrail } from './trails/ram-django/trail';
 import { ramFastapiTrail } from './trails/ram-fastapi/trail';
 import { ramFlaskTrail } from './trails/ram-flask/trail';
+import { ramSpringBootTrail } from './trails/ram-spring-boot/trail';
+import { ramJavalinTrail } from './trails/ram-javalin/trail';
+import { ramQuarkusTrail } from './trails/ram-quarkus/trail';
 
 /**
  * Lista de todas as ilhas do arquipélago. Para adicionar uma ilha nova,
@@ -28,6 +31,9 @@ export const trailRegistry: Trail[] = [
   ramDjangoTrail,
   ramFastapiTrail,
   ramFlaskTrail,
+  ramSpringBootTrail,
+  ramJavalinTrail,
+  ramQuarkusTrail,
 ];
 
 export function getTrailById(id: string): Trail | undefined {

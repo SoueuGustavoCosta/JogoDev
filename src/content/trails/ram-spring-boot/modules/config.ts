@@ -1,0 +1,85 @@
+import type { Module } from '@/domain/trail/types';
+
+/** Trilha 5 da Ramificação Spring Boot: configuração e perfis. */
+export const modSpringConfig: Module = {
+  id: 'spring-config',
+  short: 'Configuração e perfis',
+  title: 'Configuração e perfis',
+  lead: 'Porta, banco, textos: tudo que muda entre o seu computador e o servidor fica fora do código, em arquivos de configuração.',
+  level: 'Intermediário',
+  blocks: [
+    { t: 'h', x: 'application.properties' },
+    {
+      t: 'code',
+      file: 'src/main/resources/application.properties',
+      lang: 'properties',
+      nolab: true,
+      x: 'server.port=9090\napp.boas-vindas=Olá, Viajante',
+    },
+    { t: 'p', x: '<code>server.port</code> é uma propriedade do próprio Spring Boot: muda a porta. <code>app.boas-vindas</code> é sua, e o código lê assim:' },
+    {
+      t: 'code',
+      file: 'BoasVindasController.java',
+      lang: 'java',
+      nolab: true,
+      x: '@RestController\npublic class BoasVindasController {\n\n    private final String mensagem;\n\n    public BoasVindasController(@Value("${app.boas-vindas}") String mensagem) {\n        this.mensagem = mensagem;\n    }\n\n    @GetMapping("/")\n    public String inicio() {\n        return mensagem;\n    }\n}',
+    },
+    { t: 'h', x: 'Perfis: uma configuração para cada lugar' },
+    {
+      t: 'code',
+      file: 'arquivos',
+      lang: 'text',
+      nolab: true,
+      x: 'application.properties        # vale sempre\napplication-dev.properties    # só com o perfil dev\napplication-prod.properties   # só com o perfil prod',
+    },
+    { t: 'p', x: 'O perfil ativo escolhe qual arquivo extra entra. Ele pode vir de uma propriedade ou da linha de comando:' },
+    { t: 'code', file: 'terminal', lang: 'bash', nolab: true, x: 'java -jar app.jar --spring.profiles.active=prod' },
+    {
+      t: 'note',
+      k: 'Segredos',
+      x: 'Senha de banco não vai para o repositório. Em produção, ela chega por variável de ambiente: o Spring Boot lê <code>SPRING_DATASOURCE_PASSWORD</code> como <code>spring.datasource.password</code>.',
+      warn: true,
+    },
+    { t: 'say', x: 'Última trilha! O Colecionador de Beans está esperando: ele pega tudo com new e esconde as configurações dentro do código. Mostre como se faz.' },
+    {
+      t: 'note',
+      k: 'Fonte oficial',
+      x: 'Documentação do Spring Boot: <a href="https://docs.spring.io/spring-boot/reference/features/external-config.html" target="_blank" rel="noopener">Externalized Configuration</a> e <a href="https://docs.spring.io/spring-boot/reference/features/profiles.html" target="_blank" rel="noopener">Profiles</a>.',
+    },
+  ],
+  quiz: [
+    {
+      id: 'q1',
+      q: 'Qual propriedade muda a porta do servidor?',
+      options: ['app.port', 'server.port', 'spring.port', 'http.port'],
+      answer: 1,
+      explain: '<code>server.port=9090</code> no <code>application.properties</code>.',
+    },
+    {
+      id: 'q2',
+      q: 'Com o perfil <code>prod</code> ativo, qual arquivo entra além do <code>application.properties</code>?',
+      options: ['prod.properties', 'application-prod.properties', 'application.prod', 'config-prod.yml'],
+      answer: 1,
+      explain: 'O padrão é <code>application-{perfil}.properties</code>.',
+    },
+    {
+      id: 'q3',
+      q: 'Complete a anotação que lê a propriedade <code>app.boas-vindas</code>:',
+      fill: true,
+      pre: '@Value("',
+      post: '") String mensagem',
+      accept: ['${app.boas-vindas}'],
+      wrong: ['app.boas-vindas', '#{app.boas-vindas}', '{app.boas-vindas}'],
+      placeholder: '?',
+      explain: 'O <code>${...}</code> diz ao Spring para buscar o valor na configuração.',
+    },
+    {
+      id: 'desafio',
+      kind: 'order',
+      q: 'Desafio: monte o comando que roda o jar com o perfil prod.',
+      pieces: ['java', '-jar', 'app.jar', '--spring.profiles.active=prod'],
+      distractors: ['--profile=prod', 'mvn', '-prod'],
+      explain: '<code>--spring.profiles.active=prod</code> ativa o perfil na hora de rodar.',
+    },
+  ],
+};

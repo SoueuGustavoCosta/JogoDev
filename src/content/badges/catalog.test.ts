@@ -48,6 +48,10 @@ describe('catálogo compartilhado de insígnias', () => {
       'ram-django-monolito',
       'ram-fastapi-hidra',
       'ram-flask-borbulha',
+      // Ramificações de Java
+      'ram-javalin-fantasma',
+      'ram-quarkus-partida',
+      'ram-spring-colecionador',
       'sql-mestre',
     ]);
   });
