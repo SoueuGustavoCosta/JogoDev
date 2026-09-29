@@ -57,14 +57,14 @@ export const modDjangoTemplates: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'No template, como se mostra o valor da variável <code>nome</code>?',
+      q: 'No template, como se mostra o valor da variável nome?',
       options: ['{% nome %}', '{{ nome }}', '${nome}', '<?= nome ?>'],
       answer: 1,
       explain: 'Chaves duplas mostram valores. <code>{% %}</code> é para tags, como <code>for</code> e <code>if</code>.',
     },
     {
       id: 'q2',
-      q: 'Por que o template fica em <code>enquetes/templates/enquetes/</code>, repetindo o nome do app?',
+      q: 'Por que o template fica em enquetes/templates/enquetes/, repetindo o nome do app?',
       options: [
         'É obrigatório, senão o Django não inicia',
         'Para dois apps não terem templates com o mesmo nome se confundindo',

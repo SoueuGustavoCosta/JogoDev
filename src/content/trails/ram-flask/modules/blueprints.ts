@@ -45,7 +45,7 @@ export const modFlaskBlueprints: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'Com <code>Blueprint("auth", __name__, url_prefix="/auth")</code> e <code>@bp.route("/entrar")</code>, qual é a URL final?',
+      q: 'Com Blueprint("auth", __name__, url_prefix="/auth") e @bp.route("/entrar"), qual é a URL final?',
       options: ['/entrar', '/auth/entrar', '/auth', '/bp/entrar'],
       answer: 1,
       explain: 'O prefixo entra antes de todas as rotas do Blueprint.',
@@ -53,7 +53,7 @@ export const modFlaskBlueprints: Module = {
     {
       id: 'q2',
       kind: 'bug',
-      q: 'A rota <code>/auth/entrar</code> dá 404. Toque na linha com o bug da fábrica.',
+      q: 'A rota /auth/entrar dá 404. Toque na linha com o bug da fábrica.',
       lines: ['def create_app():', '    app = Flask(__name__)', '    from . import auth', '    auth.bp', '    return app'],
       bugLine: 4,
       explain: 'O Blueprint só vale depois de <code>app.register_blueprint(auth.bp)</code>.',

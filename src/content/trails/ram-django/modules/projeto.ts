@@ -55,7 +55,7 @@ export const modDjangoProjeto: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'Qual comando cria um projeto Django novo chamado <code>meusite</code>?',
+      q: 'Qual comando cria um projeto Django novo chamado meusite?',
       options: ['django-admin startproject meusite', 'python manage.py startapp meusite', 'pip install meusite', 'django new meusite'],
       answer: 0,
       explain: '<code>django-admin startproject</code> cria o projeto. <code>startapp</code> cria um app <b>dentro</b> de um projeto que já existe.',
@@ -69,7 +69,7 @@ export const modDjangoProjeto: Module = {
     },
     {
       id: 'q3',
-      q: 'Por que o <code>runserver</code> não deve ser usado para colocar o site no ar de verdade?',
+      q: 'Por que o runserver não deve ser usado para colocar o site no ar de verdade?',
       options: [
         'Porque ele só funciona sem internet',
         'Porque é um servidor feito para desenvolvimento, não para produção',

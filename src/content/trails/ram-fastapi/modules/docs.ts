@@ -63,7 +63,7 @@ export const modFastapiDocs: Module = {
     {
       id: 'q3',
       kind: 'output',
-      q: 'O teste chama <code>client.get("/")</code> numa rota que devolve <code>{"ok": True}</code>. O que <code>resposta.status_code</code> vale?',
+      q: 'O teste chama client.get("/") numa rota que devolve {"ok": True}. O que resposta.status_code vale?',
       lang: 'python',
       code: '@app.get("/")\nasync def raiz():\n    return {"ok": True}\n\nresposta = client.get("/")\nprint(resposta.status_code)',
       options: ['200', '201', 'True', '{"ok": true}'],

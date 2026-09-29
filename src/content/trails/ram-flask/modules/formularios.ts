@@ -55,14 +55,14 @@ export const modFlaskFormularios: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'Onde fica o valor de <code>q</code> na URL <code>/busca?q=flask</code>?',
+      q: 'Onde fica o valor de q na URL /busca?q=flask?',
       options: ['request.form', 'request.args', 'request.method', 'request.json'],
       answer: 1,
       explain: 'Tudo depois do <code>?</code> fica em <code>request.args</code>.',
     },
     {
       id: 'q2',
-      q: 'O que acontece com <code>request.form["nome"]</code> se o campo nome não vier no formulário?',
+      q: 'O que acontece com request.form["nome"] se o campo nome não vier no formulário?',
       options: ['Vira None', 'Vira texto vazio', 'O Flask responde 400 Bad Request', 'O servidor desliga'],
       answer: 2,
       explain: 'Chave que falta em <code>request.form[...]</code> gera 400. Use <code>.get()</code> quando o campo puder faltar.',

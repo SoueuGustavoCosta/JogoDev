@@ -46,7 +46,7 @@ export const modFastapiCorpo: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'No model <code>Item</code>, qual campo pode faltar no JSON sem erro?',
+      q: 'No model Item, qual campo pode faltar no JSON sem erro?',
       options: ['nome', 'preco', 'descricao', 'Nenhum'],
       answer: 2,
       explain: '<code>descricao</code> tem padrão <code>None</code>. Os outros são obrigatórios.',
@@ -64,7 +64,7 @@ export const modFastapiCorpo: Module = {
     },
     {
       id: 'q3',
-      q: 'Em <code>atualizar(item_id: int, item: Item, q: str | None = None)</code> na rota <code>/itens/{item_id}</code>, de onde vem <code>item</code>?',
+      q: 'Em atualizar(item_id: int, item: Item, q: str | None = None) na rota /itens/{item_id}, de onde vem item?',
       options: ['Do caminho', 'Da consulta', 'Do corpo da requisição', 'Do cabeçalho'],
       answer: 2,
       explain: 'Parâmetro com tipo de model Pydantic é lido do corpo (JSON).',

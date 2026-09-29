@@ -47,14 +47,14 @@ export const modFastapiParametros: Module = {
   quiz: [
     {
       id: 'q1',
-      q: 'Com <code>item_id: int</code>, o que acontece ao pedir <code>/itens/abc</code>?',
+      q: 'Com item_id: int, o que acontece ao pedir /itens/abc?',
       options: ['Devolve item_id "abc"', 'Erro 422 com a explicação', 'Erro 500 no servidor', 'Devolve item_id 0'],
       answer: 1,
       explain: 'O tipo declarado é validado. Texto que não vira número dá 422, com detalhes no JSON.',
     },
     {
       id: 'q2',
-      q: 'Na função <code>listar(pular: int = 0, limite: int = 10)</code> da rota <code>/itens/</code>, como chegam <code>pular</code> e <code>limite</code>?',
+      q: 'Na função listar(pular: int = 0, limite: int = 10) da rota /itens/, como chegam pular e limite?',
       options: ['No corpo da requisição', 'Como parâmetros de consulta, depois do ?', 'Como parte do caminho', 'Em cabeçalhos HTTP'],
       answer: 1,
       explain: 'Não estão entre chaves no caminho, então são query: <code>/itens/?pular=0&amp;limite=10</code>.',
@@ -62,7 +62,7 @@ export const modFastapiParametros: Module = {
     {
       id: 'q3',
       kind: 'bug',
-      q: 'A rota nunca recebe o id: dá erro dizendo que falta <code>item_id</code>. Toque na linha com o bug.',
+      q: 'A rota nunca recebe o id: dá erro dizendo que falta item_id. Toque na linha com o bug.',
       lines: ['@app.get("/itens/{id}")', 'async def ler_item(item_id: int):', '    return {"item_id": item_id}'],
       bugLine: 1,
       explain: 'O nome entre chaves precisa ser igual ao parâmetro da função: <code>{item_id}</code>.',
@@ -70,7 +70,7 @@ export const modFastapiParametros: Module = {
     {
       id: 'desafio',
       kind: 'order',
-      q: 'Desafio: monte o parâmetro de consulta opcional <code>q</code>.',
+      q: 'Desafio: monte o parâmetro de consulta opcional q.',
       pieces: ['q:', 'str | None', '=', 'None'],
       distractors: ['{q}', 'Optional', '=='],
       explain: '<code>q: str | None = None</code>: pode vir um texto ou nada.',

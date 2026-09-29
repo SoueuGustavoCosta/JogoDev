@@ -53,7 +53,7 @@ export const modFastapiPrimeira: Module = {
     },
     {
       id: 'q2',
-      q: 'No comando <code>uvicorn main:app --reload</code>, o que é <code>app</code>?',
+      q: 'No comando uvicorn main:app --reload, o que é app?',
       options: ['O nome da pasta', 'O objeto FastAPI dentro de main.py', 'Um parâmetro de porta', 'O nome do servidor'],
       answer: 1,
       explain: '<code>main:app</code> = arquivo <code>main.py</code>, objeto <code>app</code>.',
