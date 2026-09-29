@@ -193,6 +193,22 @@
   animation: pulse 2s infinite;
 }
 
+.vortex {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: vortex 6s linear infinite;
+}
+
+@keyframes vortex {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.branches b {
+  color: var(--color-orange-soft);
+}
+
 @keyframes rise {
   from {
     opacity: 0;
@@ -232,7 +248,8 @@
   .bob,
   .eco,
   .pulse,
-  .satellite {
+  .satellite,
+  .vortex {
     animation: none;
   }
 }

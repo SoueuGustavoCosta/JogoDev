@@ -287,6 +287,15 @@ O progresso é guardado por trilha → módulo → pergunta. Para mover um módu
 4. A migração (`relocateModules`, chamada em `withQuizIdMigration`) leva o progresso de quem tiver algo no lugar antigo: aparelho, nuvem, código importado e até uma aba com o app antigo. Módulo fundido conta como concluído se qualquer um dos dois estava; quem tinha os dois ganha os 150 XP da conclusão perdida como XP extra, então o XP total não muda.
 5. Rode `npm test`: `content/relocations.test.ts` confere que cada linha aponta para um módulo que existe, e `quizIds.test.ts` segue os ids publicados até o lugar novo.
 
+### Ramificações (Evento Nexus)
+
+Depois de vencer o chefe de uma lua de linguagem, a linha do tempo se ramifica em três portais de frameworks. Os dados ficam em `src/content/nexus.ts`, e as regras em `domain/nexus`. A cena está em `presentation/features/nexus` e aparece na tela da lua; no mapa, a lua ganha um vórtice.
+
+1. Cada Ramificação é uma trilha comum: `content/trails/<id>/` + `registry.ts`.
+2. Em `nexus.ts`, cada evento liga a lua (`island`) a três Ramificações (`trailId`, `name`, `color`), da esquerda para a direita.
+3. Com `launched: false`, os portais aparecem "Em breve". Ligue `launched: true` quando as três trilhas existirem: `content/nexus.test.ts` recusa evento lançado que aponta para trilha que não existe.
+4. A cena completa (flash, distorção, fios crescendo) toca uma vez por lua. Isso fica marcado em `progress.nexusSeen`, campo opcional que entra no merge.
+
 ### Eventos: como o autor cria um evento só editando `calendar.ts`
 
 Todos os eventos vivem em `src/content/events/calendar.ts` (lista `eventCalendar`). Nenhum outro arquivo precisa mudar.

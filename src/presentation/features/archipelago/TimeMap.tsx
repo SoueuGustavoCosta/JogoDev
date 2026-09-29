@@ -45,6 +45,8 @@ export type EraProgress = {
   total: number;
   /** Chefe vencido: a era para de ser puxada pelo Eco e fica estável no mapa. */
   restored?: boolean;
+  /** Ramificações abertas por um Evento Nexus (nomes dos frameworks): a lua ganha um vórtice. */
+  branches?: string[];
 };
 
 const reducedMotion = () =>
@@ -536,6 +538,10 @@ export function TimeMap({
                   <line x1={(e.x - pos.x) * 0.35} y1={(e.y - pos.y) * 0.35} x2={0} y2={0} stroke="#2c2647" strokeWidth={2} strokeDasharray="1 6" />
                   {/* Animação num <g> interno: no externo, o transform do CSS apagaria o translate da posição. */}
                   <g className={styles.satellite} style={{ animationDelay: `${(-i * 0.8).toFixed(1)}s` }}>
+                    {unlocked && progress[sat.id]?.branches?.length ? (
+                      // Evento Nexus: a lua abriu portais de Ramificações (vórtice girando em volta).
+                      <circle r={32} fill="none" stroke="#ff6b1f" strokeWidth={2} strokeDasharray="6 9" className={styles.vortex} />
+                    ) : null}
                     <circle r={24} fill="#0d0b18" stroke={unlocked ? satEra.color : '#3a3454'} strokeWidth={2} opacity={unlocked ? 1 : 0.75} />
                     <g
                       stroke={unlocked ? satEra.color : '#6a6483'}
@@ -767,6 +773,11 @@ function EraSheet({
           <p>
             {progress.done} de {progress.total} módulos concluídos
           </p>
+          {progress.branches?.length ? (
+            <p className={styles.branches}>
+              <b>Ramificações abertas:</b> {progress.branches.join(' · ')}. Os portais ficam dentro da lua.
+            </p>
+          ) : null}
         </>
       ) : null}
       {fog ? null : (

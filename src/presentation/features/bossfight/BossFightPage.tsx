@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
-import { Navigate, useParams } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import {
   getOrCreateTravelerUuid,
   getTraveler,
@@ -33,6 +33,8 @@ import {
   ProgressBar,
 } from '@/presentation/design-system';
 import { getBadgeById } from '@/content/badges/catalog';
+import { nexusEvents } from '@/content/nexus';
+import { nexusForIsland } from '@/domain/nexus';
 import { useServices } from '@/presentation/app/ServicesContext';
 import { hasSeenTrailIntro, TrailIntroDialogue } from '@/presentation/features/trail';
 import styles from './BossFightPage.module.css';
@@ -434,6 +436,12 @@ function BossFightArena({
             <Button variant="ghost" onClick={restart}>
               Jogar de novo ↺
             </Button>
+            {nexusForIsland(nexusEvents, trail.id)?.launched ? (
+              // Evento Nexus: vencer o chefe da lua abre as Ramificações (a cena toca na tela da lua).
+              <Link to={`/trilhas/${trail.id}`} className={styles.nexusLink}>
+                Ver as Ramificações ▸
+              </Link>
+            ) : null}
           </div>
         </div>
       ) : null}

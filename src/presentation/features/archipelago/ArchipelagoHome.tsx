@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { Navigate, useNavigate, useOutletContext } from 'react-router-dom';
-import { getTimeline, getTraveler, getTrailProgress } from '@/application/usecases';
+import { getNexus, getTimeline, getTraveler, getTrailProgress } from '@/application/usecases';
+import { nexusEvents } from '@/content/nexus';
 import { trailRegistry } from '@/content/registry';
 import { isEraRestored } from '@/domain/progress';
 import { useServices } from '@/presentation/app/ServicesContext';
@@ -38,11 +39,17 @@ export function ArchipelagoHome() {
   // 'git-github'), então o mapeamento não pode ser um `byEra[era.id]` direto. As luas
   // (satélites) entram do mesmo jeito, por `sat.trailId`, para o TimeMap saber quando
   // cada uma foi restaurada (chefe vencido) e mostrar "X/Y módulos" na lua também.
+  // Evento Nexus: luas com portais abertos mostram um vórtice e os nomes das Ramificações.
+  const branchesOf: Record<string, string[] | undefined> = {};
+  for (const event of nexusEvents) {
+    const view = getNexus({ repository: progressRepository }, { event, trails: trailRegistry });
+    if (view.state === 'open') branchesOf[event.island] = view.branches.map((b) => b.name);
+  }
   const progress: Record<string, EraProgress> = {};
   for (const era of ERAS) {
     if (era.trailId && byEra[era.trailId]) progress[era.id] = byEra[era.trailId];
     for (const sat of era.satellites ?? []) {
-      if (sat.trailId && byEra[sat.trailId]) progress[sat.id] = byEra[sat.trailId];
+      if (sat.trailId && byEra[sat.trailId]) progress[sat.id] = { ...byEra[sat.trailId], branches: branchesOf[sat.trailId] };
     }
   }
 

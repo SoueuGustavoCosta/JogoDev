@@ -351,3 +351,20 @@
     transition: none;
   }
 }
+
+.nexusLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: var(--color-orange);
+  color: var(--color-bg);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.nexusLink:focus-visible {
+  outline: 2px solid var(--color-orange-soft);
+  outline-offset: 2px;
+}

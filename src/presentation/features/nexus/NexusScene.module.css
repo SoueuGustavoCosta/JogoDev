@@ -1,0 +1,262 @@
+.nexus {
+  margin: 28px 0 8px;
+}
+
+.title {
+  font-size: 1.2rem;
+  margin: 0 0 10px;
+}
+
+.stage {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  border-radius: 16px;
+  background: radial-gradient(circle at 50% 80%, var(--color-panel-2), var(--color-bg) 70%);
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 58dvh;
+}
+
+.base {
+  fill: none;
+  stroke: var(--color-line);
+  stroke-width: 2;
+  stroke-dasharray: 4 8;
+  transition: opacity 1s;
+}
+
+.open .base {
+  opacity: 0;
+}
+
+/* Fio crescendo: `pathLength=1` faz o traço ir de 0 (escondido) a 1 (inteiro). */
+.thread {
+  fill: none;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1.4s ease-out;
+}
+
+.open .thread {
+  stroke-dashoffset: 0;
+}
+
+.core {
+  transform: scale(0.001);
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.6s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+.open .core,
+.coreOpen {
+  transform: scale(1);
+}
+
+.edge {
+  stroke-dasharray: 3 6;
+  opacity: 0.45;
+  transition: opacity 0.6s;
+}
+
+.open .edge {
+  stroke-dasharray: none;
+  opacity: 1;
+}
+
+.ring {
+  opacity: 0.35;
+}
+
+.open .ring {
+  opacity: 0.8;
+}
+
+.spin,
+.spinFast,
+.spinSlow {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.spin {
+  animation: spin 7s linear infinite reverse;
+}
+
+.spinFast {
+  animation: spin 4.5s linear infinite reverse;
+}
+
+.spinSlow {
+  animation: spin 12s linear infinite;
+}
+
+.float {
+  animation: bob 5s ease-in-out infinite;
+}
+
+.bob {
+  animation: bob 4s ease-in-out infinite;
+}
+
+.islandLabel {
+  font: 800 20px var(--font-title);
+}
+
+.branchLabel {
+  font: 600 15px var(--font-body);
+  fill: var(--color-text);
+}
+
+.soon {
+  font: 600 11px var(--font-mono);
+  fill: var(--color-muted);
+}
+
+.enter {
+  cursor: pointer;
+}
+
+.enter:focus-visible {
+  outline: 2px solid var(--color-orange);
+}
+
+.flash {
+  position: absolute;
+  inset: 0;
+  background: var(--color-orange);
+  opacity: 0;
+  pointer-events: none;
+  animation: flash 0.9s ease-out;
+}
+
+.distort {
+  animation: distort 0.6s;
+}
+
+.legend {
+  color: var(--color-muted);
+  margin: 10px 0 0;
+}
+
+.sintaxe {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border: 1px solid var(--color-line);
+  border-radius: 14px;
+  background: var(--color-panel);
+}
+
+.sintaxe p {
+  margin: 0;
+  font-size: 0.94rem;
+  line-height: 1.5;
+  color: var(--color-muted);
+}
+
+.sintaxe b {
+  color: var(--color-orange-soft);
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 14px 0 0;
+  display: grid;
+  gap: 8px;
+}
+
+.branchButton,
+.branchClosed {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--color-line);
+  background: var(--color-panel);
+  color: var(--color-text);
+  font: inherit;
+  font-weight: 600;
+}
+
+.branchButton {
+  cursor: pointer;
+}
+
+.branchButton:focus-visible {
+  outline: 2px solid var(--color-orange);
+  outline-offset: 2px;
+}
+
+.branchClosed {
+  color: var(--color-muted);
+  opacity: 0.8;
+}
+
+.branchButton small,
+.branchClosed small {
+  color: var(--color-muted);
+  font-weight: 400;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bob {
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes flash {
+  0% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes distort {
+  30% {
+    transform: skewX(4deg) scale(1.02);
+  }
+  60% {
+    transform: skewX(-3deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin,
+  .spinFast,
+  .spinSlow,
+  .float,
+  .bob,
+  .distort {
+    animation: none;
+  }
+  .flash {
+    display: none;
+  }
+  .thread,
+  .core,
+  .edge,
+  .base {
+    transition: none;
+  }
+}

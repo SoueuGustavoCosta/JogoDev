@@ -10,6 +10,7 @@ import { useServices } from '@/presentation/app/ServicesContext';
 import { TrailIntroDialogue, hasSeenTrailIntro } from './TrailIntroDialogue';
 import styles from './TrailOverview.module.css';
 import { TrailWorkshops } from '@/presentation/features/workshop/WorkshopListPage';
+import { NexusSection } from '@/presentation/features/nexus';
 
 export function TrailOverview() {
   const { trailId } = useParams<{ trailId: string }>();
@@ -152,6 +153,8 @@ function TrailOverviewBody({
           ) : null}
         </div>
       ) : null}
+
+      <NexusSection trail={trail} />
 
       {supportOpen ? <SupportModal onClose={() => setSupportOpen(false)} /> : null}
     </>
