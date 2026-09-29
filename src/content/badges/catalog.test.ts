@@ -54,6 +54,9 @@ describe('catálogo compartilhado de insígnias', () => {
       'ram-quarkus-partida',
       'ram-spring-colecionador',
       'ram-symfony-sinfonia',
+      // Luas da Era dos Dados (Etapa 14C)
+      'sql-arquiteto',
+      'sql-guardiao-transacoes',
       'sql-mestre',
     ]);
   });
