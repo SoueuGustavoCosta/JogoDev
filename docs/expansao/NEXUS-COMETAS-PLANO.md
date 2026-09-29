@@ -58,7 +58,7 @@ Com `launched: false`, os portais aparecem com o aviso "Em breve". Python, Java 
   - flash laranja e leve distorção;
   - a Sintaxe diz: "Assim como um branch no Git, a linha do tempo se dividiu, e cada ramo segue o seu caminho."
   - O botão "Voltar" do chefe vencido leva direto para ela.
-- **No mapa:** a lua aberta ganha um anel de vórtice girando. A ficha dela lista os três portais. Pôr 9 portais soltos em volta da Era da Lógica deixaria o mapa ilegível no celular. `TODO(autor)`: confirmar.
+- **No mapa:** a lua aberta ganha um anel de vórtice girando. A ficha dela lista os três portais. Pôr 9 portais soltos em volta da Era da Lógica deixaria o mapa ilegível no celular. Confirmado pelo autor (2026-09-29): os portais ficam na tela da lua.
 
 **Estrutura de cada Ramificação:**
 - 5 módulos em sequência, porque o padrão do app já é um liberar o próximo.
@@ -150,6 +150,9 @@ Todo o conteúdo é escrito do zero, em português, com base só na documentaç�
 ## 4. Decisões pendentes (`TODO(autor)`)
 
 - Luas continuam "luas" e Ramificações são os frameworks (seção 2.1)?
-- No mapa: anel na lua e portais na tela da lua, ou portais soltos no mapa (seção 2.2)?
-- Data de início do primeiro cometa. Proposta: segunda-feira seguinte ao merge da Etapa 7.
 - Nomes dos 12 chefes: cada Etapa de conteúdo propõe, o autor pode trocar.
+
+Decididas pelo autor em 2026-09-29:
+
+- Portais das Ramificações na tela da lua, e um vórtice na lua do mapa.
+- Cometas: Docker a partir de 12/10, Linux de 27/10 e Git de 11/11/2026 (14 dias cada, 1 dia de intervalo).

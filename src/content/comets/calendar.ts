@@ -6,7 +6,7 @@ import type { Comet } from '@/domain/comets';
  * `content/comets.test.ts` confere). Datas em ISO 8601 com o fuso de São Paulo.
  * Depois do último, o céu mostra "Novos cometas em breve".
  *
- * TODO(autor): confirmar a data do primeiro cometa (proposta: segunda-feira, 12/10/2026).
+ * Datas confirmadas pelo autor em 2026-09-29: Docker 12/10, Linux 27/10 e Git 11/11/2026.
  */
 export const cometCalendar: readonly Comet[] = [
   {
