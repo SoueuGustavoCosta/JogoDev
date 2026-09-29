@@ -31,5 +31,13 @@ O código de cada pergunta está no campo `code` dela, em `src/content/trails/<i
 | Anomalia do Dia | py-mochila | `desafio` | `3` | [ ] |
 | Anomalia do Dia | java-divisao | `desafio` | `3` | [ ] |
 | Anomalia do Dia | java-pares | `desafio` | `024` | [ ] |
+| Anomalia do Dia | py-divisao-inteira | `desafio` | `3` | [ ] |
+| Anomalia do Dia | py-fatia | `desafio` | `via` | [ ] |
+| Anomalia do Dia | py-maiusculas | `desafio` | `AB` | [ ] |
+| Anomalia do Dia | py-quadrados | `desafio` | `[0, 1, 4, 9]` | [ ] |
+| Anomalia do Dia | java-vidas-12 | `desafio` | `Vidas: 12` | [ ] |
+| Anomalia do Dia | java-tamanho-nome | `desafio` | `3` | [ ] |
+| Anomalia do Dia | java-contagem-while | `desafio` | `321` | [ ] |
+| Anomalia do Dia | java-ternario | `desafio` | `jovem` | [ ] |
 | Ramificação FastAPI | Documentação automática e testes | `q3` | `200` | [ ] |
 | Ramificação Flask | Templates com Jinja | `q3` | `Olá, Ana!` | [ ] |

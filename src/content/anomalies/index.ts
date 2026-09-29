@@ -2,7 +2,7 @@ import type { Anomaly } from '@/domain/anomaly';
 
 /**
  * Banco de Anomalias do Dia (Etapa 7): 5 por ilha de começo; a Etapa 15 sobe para 12 por ilha
- * (15A: Lógica e Banco de Dados). Cada uma tem uma frase de história do Eco e um desafio de até
+ * (15A: Lógica e Banco de Dados; 15B: PHP, Python e Java). Cada uma tem uma frase de história do Eco e um desafio de até
  * ~3 minutos. O sorteio do dia está em domain/anomaly. Para
  * acrescentar, é só pôr mais uma aqui (id novo, nunca reaproveitado).
  * Gerado e conferido: as saídas de PHP/SQL e os blocos try rodam nos testes de conteúdo;
@@ -126,14 +126,16 @@ export const anomalies: Anomaly[] = [
       q: 'Quem tem exatamente 18 anos não consegue entrar. Toque na linha com o bug.',
       lines: ['<?php', '$idade = 18;', 'if ($idade > 18) {', '    echo "Pode entrar";', '}'],
       bugLine: 3,
-      explain: '<code>&gt;</code> deixa o 18 de fora. Para incluir, é <code>&gt;=</code> (maior ou igual).',
+      explain:
+        '<code>&gt;</code> deixa o 18 de fora. Para incluir, é <code>&gt;=</code> (maior ou igual).',
     },
   },
   {
     id: 'logica-contagem-regressiva',
     era: 'logica',
     title: 'A contagem para o salto quebrou',
-    story: 'O Eco embaralhou o laço da contagem regressiva do salto no tempo. Monte de novo: 3, 2, 1.',
+    story:
+      'O Eco embaralhou o laço da contagem regressiva do salto no tempo. Monte de novo: 3, 2, 1.',
     level: 'Intermediário',
     challenge: {
       id: 'desafio',
@@ -141,7 +143,8 @@ export const anomalies: Anomaly[] = [
       q: 'Monte o começo do laço que conta 3, 2, 1',
       pieces: ['for (', '$i = 3;', '$i >= 1;', '$i--', ')'],
       distractors: ['$i++', '$i <= 1;'],
-      explain: 'Começa em 3, continua enquanto for maior ou igual a 1, e desce um por vez com <code>$i--</code>.',
+      explain:
+        'Começa em 3, continua enquanto for maior ou igual a 1, e desce um por vez com <code>$i--</code>.',
     },
   },
   {
@@ -157,7 +160,8 @@ export const anomalies: Anomaly[] = [
       starter: '<?php\n$notas = [7, 8, 9];\n$soma = 0;\n',
       hint: 'Use foreach ($notas as $nota) { $soma += $nota; } e depois echo $soma;',
       file: 'notas.php',
-      solution: '<?php\n$notas = [7, 8, 9];\n$soma = 0;\nforeach ($notas as $nota) {\n    $soma += $nota;\n}\necho $soma;',
+      solution:
+        '<?php\n$notas = [7, 8, 9];\n$soma = 0;\nforeach ($notas as $nota) {\n    $soma += $nota;\n}\necho $soma;',
     },
   },
   {
@@ -175,7 +179,8 @@ export const anomalies: Anomaly[] = [
       accept: ['return'],
       wrong: ['echo', 'print', 'break'],
       placeholder: '?',
-      explain: '<code>return</code> devolve o valor para quem chamou a função. <code>echo</code> só mostraria na tela.',
+      explain:
+        '<code>return</code> devolve o valor para quem chamou a função. <code>echo</code> só mostraria na tela.',
     },
   },
   {
@@ -192,7 +197,8 @@ export const anomalies: Anomaly[] = [
       code: '<?php\n$chuva = true;\n$guardaChuva = false;\nif ($chuva && !$guardaChuva) {\n    echo "molhou";\n} else {\n    echo "seco";\n}',
       options: ['molhou', 'seco', 'true', 'nada'],
       answer: 0,
-      explain: 'Está chovendo (<code>true</code>) e <code>!false</code> é <code>true</code>: as duas partes do <code>&amp;&amp;</code> são verdadeiras.',
+      explain:
+        'Está chovendo (<code>true</code>) e <code>!false</code> é <code>true</code>: as duas partes do <code>&amp;&amp;</code> são verdadeiras.',
     },
   },
   {
@@ -209,7 +215,8 @@ export const anomalies: Anomaly[] = [
       code: '<?php\n$eras = ["Dados", "Lógica", "Git"];\necho count($eras) . " " . $eras[1];',
       options: ['3 Lógica', '3 Dados', '2 Lógica', '3 Git'],
       answer: 0,
-      explain: 'O array tem 3 itens, e as posições começam em 0: <code>$eras[1]</code> é o segundo, "Lógica".',
+      explain:
+        'O array tem 3 itens, e as posições começam em 0: <code>$eras[1]</code> é o segundo, "Lógica".',
     },
   },
   {
@@ -311,14 +318,16 @@ export const anomalies: Anomaly[] = [
       code: 'SELECT ROUND(AVG(preco), 2) FROM produtos;',
       options: ['364.68', '364.67', '1458.70', '4'],
       answer: 0,
-      explain: 'A soma é 1458,70; dividida por 4 dá 364,675, e o <code>ROUND(..., 2)</code> arredonda para 364,68.',
+      explain:
+        'A soma é 1458,70; dividida por 4 dá 364,675, e o <code>ROUND(..., 2)</code> arredonda para 364,68.',
     },
   },
   {
     id: 'bd-cliente-sem-pedido',
     era: 'banco-de-dados',
     title: 'Uma cliente sumiu das vendas',
-    story: 'O Eco escondeu quem ainda não comprou nada. Encontre essa pessoa antes que ela suma de vez.',
+    story:
+      'O Eco escondeu quem ainda não comprou nada. Encontre essa pessoa antes que ela suma de vez.',
     level: 'Avançado',
     challenge: {
       t: 'try',
@@ -335,7 +344,8 @@ export const anomalies: Anomaly[] = [
     id: 'bd-reajuste-geral',
     era: 'banco-de-dados',
     title: 'O reajuste pegou a loja inteira',
-    story: 'Era para aumentar só os teclados, mas o Eco tirou uma parte do comando e todo produto ficou mais caro.',
+    story:
+      'Era para aumentar só os teclados, mas o Eco tirou uma parte do comando e todo produto ficou mais caro.',
     level: 'Base',
     challenge: {
       id: 'desafio',
@@ -343,7 +353,8 @@ export const anomalies: Anomaly[] = [
       q: 'O aumento devia valer só para os teclados (categoria 1), mas mudou todos os produtos. Toque na linha com o bug.',
       lines: ['UPDATE produtos', 'SET preco = preco * 1.1;'],
       bugLine: 2,
-      explain: 'Faltou o filtro antes do ponto e vírgula: <code>WHERE categoria_id = 1</code>. Sem WHERE, o UPDATE muda todas as linhas.',
+      explain:
+        'Faltou o filtro antes do ponto e vírgula: <code>WHERE categoria_id = 1</code>. Sem WHERE, o UPDATE muda todas as linhas.',
     },
   },
   {
@@ -358,7 +369,8 @@ export const anomalies: Anomaly[] = [
       q: 'Monte a consulta que conta os produtos de cada categoria',
       pieces: ['SELECT categoria_id, COUNT(*)', 'FROM produtos', 'GROUP BY categoria_id'],
       distractors: ['ORDER BY COUNT', 'WHERE COUNT(*) > 1'],
-      explain: 'O <code>GROUP BY</code> junta as linhas de cada categoria, e o <code>COUNT(*)</code> conta quantas há em cada grupo.',
+      explain:
+        'O <code>GROUP BY</code> junta as linhas de cada categoria, e o <code>COUNT(*)</code> conta quantas há em cada grupo.',
     },
   },
   {
@@ -376,7 +388,8 @@ export const anomalies: Anomaly[] = [
       accept: ['LIKE'],
       wrong: ['=', 'IN', 'BETWEEN'],
       placeholder: '?',
-      explain: 'O <code>LIKE</code> compara com um padrão: o <code>%</code> vale qualquer coisa depois de "Teclado".',
+      explain:
+        'O <code>LIKE</code> compara com um padrão: o <code>%</code> vale qualquer coisa depois de "Teclado".',
     },
   },
   {
@@ -393,21 +406,29 @@ export const anomalies: Anomaly[] = [
       code: 'SELECT SUM(total) FROM pedidos\nWHERE cliente_id = 1;',
       options: ['330.00', '250.00', '459.90', '2'],
       answer: 0,
-      explain: 'O <code>WHERE</code> deixa só os pedidos da Ana, e o <code>SUM</code> soma: 250,00 + 80,00 = 330,00.',
+      explain:
+        'O <code>WHERE</code> deixa só os pedidos da Ana, e o <code>SUM</code> soma: 250,00 + 80,00 = 330,00.',
     },
   },
   {
     id: 'bd-apagar-um-pedido',
     era: 'banco-de-dados',
     title: 'Um pedido cancelado continua na lista',
-    story: 'O pedido 102 foi cancelado, mas o Eco quer apagar a tabela inteira junto. Escolha o comando certo.',
+    story:
+      'O pedido 102 foi cancelado, mas o Eco quer apagar a tabela inteira junto. Escolha o comando certo.',
     level: 'Base',
     challenge: {
       id: 'desafio',
       q: 'Qual comando apaga só o pedido 102?',
-      options: ['DELETE FROM pedidos WHERE id = 102;', 'DELETE FROM pedidos;', 'DROP TABLE pedidos;', 'DELETE pedidos 102;'],
+      options: [
+        'DELETE FROM pedidos WHERE id = 102;',
+        'DELETE FROM pedidos;',
+        'DROP TABLE pedidos;',
+        'DELETE pedidos 102;',
+      ],
       answer: 0,
-      explain: 'Com <code>WHERE id = 102</code>, só aquela linha sai. Sem WHERE, o DELETE apaga todas; o DROP apaga a tabela inteira.',
+      explain:
+        'Com <code>WHERE id = 102</code>, só aquela linha sai. Sem WHERE, o DELETE apaga todas; o DROP apaga a tabela inteira.',
     },
   },
   {
@@ -499,6 +520,128 @@ export const anomalies: Anomaly[] = [
     },
   },
   {
+    id: 'py-divisao-inteira',
+    era: 'python',
+    title: 'Dividiram as moedas e sumiu a metade',
+    story: 'O Eco trocou a barra da divisão por duas. Descubra quanto cada viajante recebe.',
+    level: 'Base',
+    challenge: {
+      id: 'desafio',
+      kind: 'output',
+      q: 'O que aparece na tela?',
+      lang: 'python',
+      code: 'print(7 // 2)',
+      options: ['3.5', '3', '4', '1'],
+      answer: 1,
+      explain:
+        '<code>//</code> é a divisão inteira: descarta a parte decimal. <code>7 / 2</code> daria 3.5; o resto (1) sai com <code>7 % 2</code>.',
+    },
+  },
+  {
+    id: 'py-idade-texto',
+    era: 'python',
+    title: 'A idade chegou como texto',
+    story: 'O Eco deixou a idade do jeito que veio do teclado, e o Python não consegue comparar.',
+    level: 'Intermediário',
+    challenge: {
+      id: 'desafio',
+      kind: 'bug',
+      q: 'Ao rodar, a comparação dá TypeError. Toque na linha com o bug.',
+      lines: ['idade = input("Sua idade: ")', 'if idade >= 18:', '    print("Pode entrar")'],
+      bugLine: 1,
+      explain:
+        '<code>input</code> sempre devolve texto (str). O erro estoura na linha 2, mas a causa está na 1: o certo é <code>idade = int(input("Sua idade: "))</code>.',
+    },
+  },
+  {
+    id: 'py-fatia',
+    era: 'python',
+    title: 'Um pedaço da palavra',
+    story: 'O Eco cortou uma palavra com uma fatia. Descubra qual pedaço sobrou.',
+    level: 'Base',
+    challenge: {
+      id: 'desafio',
+      kind: 'output',
+      q: 'O que aparece na tela?',
+      lang: 'python',
+      code: 'palavra = "viajante"\nprint(palavra[0:3])',
+      options: ['via', 'viaj', 'iaj', 'v'],
+      answer: 0,
+      explain: 'A fatia <code>[0:3]</code> pega as posições 0, 1 e 2 e para antes da 3: "via".',
+    },
+  },
+  {
+    id: 'py-dicionario',
+    era: 'python',
+    title: 'As vidas do Eco sumiram do painel',
+    story:
+      'O Eco guardou as vidas num dicionário e escondeu a chave. Complete para o painel mostrar 3.',
+    level: 'Base',
+    challenge: {
+      id: 'desafio',
+      q: 'Complete para mostrar o valor 3:',
+      fill: true,
+      pre: 'eco = {"nome": "Eco", "vidas": 3}\nprint(eco[',
+      post: '])',
+      accept: ['"vidas"', "'vidas'"],
+      wrong: ['1', '"nome"', '3'],
+      placeholder: '?',
+      explain:
+        'No dicionário, o valor é buscado pela chave: <code>eco["vidas"]</code> dá 3. Posição (<code>1</code>) é coisa de lista.',
+    },
+  },
+  {
+    id: 'py-elif',
+    era: 'python',
+    title: 'O meio do caminho da nota',
+    story: 'O Eco apagou a condição do meio. Monte de novo a linha que testa a nota 6 ou mais.',
+    level: 'Intermediário',
+    challenge: {
+      id: 'desafio',
+      kind: 'order',
+      q: 'Depois de if nota >= 9, monte a próxima condição (nota 6 ou mais)',
+      pieces: ['elif', 'nota >= 6:'],
+      distractors: ['else if', 'elseif', 'nota => 6:'],
+      explain:
+        'Em Python, "senão, se" é <code>elif</code>. <code>else if</code> é de outras linguagens, e o sinal é <code>&gt;=</code>, nunca <code>=&gt;</code>.',
+    },
+  },
+  {
+    id: 'py-maiusculas',
+    era: 'python',
+    title: 'As letras começaram a gritar',
+    story: 'O Eco passou pelas letras e deixou todas maiúsculas. Leia e descubra o que aparece.',
+    level: 'Base',
+    challenge: {
+      id: 'desafio',
+      kind: 'output',
+      q: 'O que aparece na tela?',
+      lang: 'python',
+      code: 'for letra in ["a", "b"]:\n    print(letra.upper(), end="")',
+      options: ['AB', 'A B', 'ab', 'A\nB'],
+      answer: 0,
+      explain:
+        '<code>upper()</code> deixa maiúscula, e <code>end=""</code> não pula linha nem põe espaço: as duas letras saem coladas, AB.',
+    },
+  },
+  {
+    id: 'py-quadrados',
+    era: 'python',
+    title: 'Uma lista feita numa linha só',
+    story: 'O Eco escreveu uma lista inteira numa linha. Descubra o que ela guarda.',
+    level: 'Avançado',
+    challenge: {
+      id: 'desafio',
+      kind: 'output',
+      q: 'O que aparece na tela?',
+      lang: 'python',
+      code: 'print([n * n for n in range(4)])',
+      options: ['[0, 1, 4, 9]', '[1, 4, 9, 16]', '[0, 2, 4, 6]', '[0, 1, 4, 9, 16]'],
+      answer: 0,
+      explain: 'É uma compreensão de lista: para cada n de 0 a 3, guarda n * n. Fica 0, 1, 4 e 9.',
+    },
+  },
+  {
     id: 'java-ponto-virgula',
     era: 'java',
     title: 'O compilador parou tudo',
@@ -584,6 +727,134 @@ export const anomalies: Anomaly[] = [
     },
   },
   {
+    id: 'java-vidas-12',
+    era: 'java',
+    title: 'O viajante ganhou 12 vidas',
+    story:
+      'O Eco somou vidas depois de um texto, e o placar ficou estranho. Descubra o que aparece.',
+    level: 'Intermediário',
+    challenge: {
+      id: 'desafio',
+      kind: 'output',
+      q: 'O que aparece na tela (código dentro do main)?',
+      lang: 'java',
+      code: 'System.out.println("Vidas: " + 1 + 2);',
+      options: ['Vidas: 3', 'Vidas: 12', 'Vidas: 1 2', 'erro de compilação'],
+      answer: 1,
+      explain:
+        'O Java lê da esquerda para a direita: "Vidas: " + 1 já é texto, e + 2 só gruda o 2. Para somar antes, use parênteses: <code>"Vidas: " + (1 + 2)</code>.',
+    },
+  },
+  {
+    id: 'java-fora-do-array',
+    era: 'java',
+    title: 'Um passo além do fim do array',
+    story: 'O Eco esticou o laço em uma volta, e o programa cai no último fragmento.',
+    level: 'Base',
+    challenge: {
+      id: 'desafio',
+      kind: 'bug',
+      q: 'Mostra 4, 8 e 15 e depois dá ArrayIndexOutOfBoundsException. Toque na linha com o bug.',
+      lines: [
+        'int[] fragmentos = {4, 8, 15};',
+        'for (int i = 0; i <= fragmentos.length; i++) {',
+        '  System.out.println(fragmentos[i]);',
+        '}',
+      ],
+      bugLine: 2,
+      explain:
+        'As posições vão de 0 a <code>length - 1</code>. Com <code>&lt;=</code> o laço tenta a posição 3, que não existe. O certo é <code>i &lt; fragmentos.length</code>.',
+    },
+  },
+  {
+    id: 'java-tipo-texto',
+    era: 'java',
+    title: 'A variável perdeu o tipo',
+    story: 'O Eco apagou o tipo da variável e o compilador não sabe o que guardar nela.',
+    level: 'Base',
+    challenge: {
+      id: 'desafio',
+      q: 'Complete com o tipo certo para guardar um texto:',
+      fill: true,
+      pre: '',
+      post: ' nome = "Ana";',
+      accept: ['String'],
+      wrong: ['char', 'int', 'text'],
+      placeholder: '?',
+      explain:
+        'Texto em Java é <code>String</code>, com S maiúsculo. <code>char</code> guarda uma letra só, entre aspas simples.',
+    },
+  },
+  {
+    id: 'java-tamanho-nome',
+    era: 'java',
+    title: 'Quantas letras tem o Eco?',
+    story: 'O Eco quer saber o tamanho do próprio nome. Descubra o que o Java responde.',
+    level: 'Base',
+    challenge: {
+      id: 'desafio',
+      kind: 'output',
+      q: 'O que aparece na tela (código dentro do main)?',
+      lang: 'java',
+      code: 'String nome = "Eco";\nSystem.out.println(nome.length());',
+      options: ['3', '2', '4', 'Eco'],
+      answer: 0,
+      explain: '<code>length()</code> conta os caracteres da String: E, c, o. São 3.',
+    },
+  },
+  {
+    id: 'java-contagem-while',
+    era: 'java',
+    title: 'A contagem para a decolagem',
+    story: 'O Eco ligou a contagem regressiva do portal. Leia e descubra o que aparece.',
+    level: 'Base',
+    challenge: {
+      id: 'desafio',
+      kind: 'output',
+      q: 'O que aparece na tela (código dentro do main)?',
+      lang: 'java',
+      code: 'int n = 3;\nwhile (n > 0) {\n  System.out.print(n);\n  n--;\n}',
+      options: ['321', '3210', '123', '32'],
+      answer: 0,
+      explain:
+        'Mostra 3, 2 e 1. Quando n chega a 0, a condição <code>n &gt; 0</code> fica falsa e o laço para antes de mostrar o 0.',
+    },
+  },
+  {
+    id: 'java-metodo-dobro',
+    era: 'java',
+    title: 'O método do dobro perdeu a assinatura',
+    story: 'O Eco desmontou a primeira linha do método. Monte de novo.',
+    level: 'Intermediário',
+    challenge: {
+      id: 'desafio',
+      kind: 'order',
+      q: 'Monte a primeira linha de um método estático dobro, que recebe um int n e devolve um int',
+      pieces: ['public static', 'int', 'dobro(int n)', '{'],
+      distractors: ['void', 'def'],
+      explain:
+        'A assinatura diz quem pode chamar (<code>public static</code>), o tipo devolvido (<code>int</code>), o nome e os parâmetros. <code>void</code> é para método que não devolve nada.',
+    },
+  },
+  {
+    id: 'java-ternario',
+    era: 'java',
+    title: 'Uma decisão numa linha só',
+    story: 'O Eco escondeu um if inteiro dentro de uma linha. Descubra o que ela decide.',
+    level: 'Avançado',
+    challenge: {
+      id: 'desafio',
+      kind: 'output',
+      q: 'O que aparece na tela (código dentro do main)?',
+      lang: 'java',
+      code: 'int idade = 16;\nString fase = idade >= 18 ? "adulto" : "jovem";\nSystem.out.println(fase);',
+      options: ['adulto', 'jovem', 'true', 'erro de compilação'],
+      answer: 1,
+      explain:
+        'O operador ternário é <code>condição ? se_verdade : se_falso</code>. Como 16 &gt;= 18 é falso, fica "jovem".',
+    },
+  },
+  {
     id: 'php-saudacao',
     era: 'php',
     title: 'A saudação ficou pela metade',
@@ -665,6 +936,127 @@ export const anomalies: Anomaly[] = [
       hint: 'Com aspas duplas a variável vira o valor: echo "Viajante: $nome";',
       file: 'cracha.php',
       solution: '<?php\n$nome = "Ana";\necho "Viajante: $nome";',
+    },
+  },
+  {
+    id: 'php-ponto-e-mais',
+    era: 'php',
+    title: 'O placar juntou e somou ao mesmo tempo',
+    story: 'O Eco misturou o ponto com o mais na mesma linha. Descubra quem o PHP faz primeiro.',
+    level: 'Intermediário',
+    challenge: {
+      id: 'desafio',
+      kind: 'output',
+      q: 'O que aparece na tela (PHP 8)?',
+      lang: 'php',
+      code: '<?php\necho "Vidas: " . 2 + 1;',
+      options: ['Vidas: 3', 'Vidas: 21', '3', 'Erro'],
+      answer: 0,
+      explain:
+        'No PHP 8, o <code>+</code> vem antes do <code>.</code>: primeiro 2 + 1 dá 3, depois junta com o texto. Mesmo assim, parênteses deixam mais claro: <code>"Vidas: " . (2 + 1)</code>.',
+    },
+  },
+  {
+    id: 'php-mochila',
+    era: 'php',
+    title: 'Um item entrou escondido na mochila',
+    story: 'O Eco pôs mais um item no fim do array. Descubra quantos são e qual é o segundo.',
+    level: 'Base',
+    challenge: {
+      id: 'desafio',
+      kind: 'output',
+      q: 'O que aparece na tela?',
+      lang: 'php',
+      code: '<?php\n$itens = ["mapa"];\n$itens[] = "bússola";\necho count($itens) . " " . $itens[1];',
+      options: ['2 bússola', '1 mapa', '2 mapa', '1 bússola'],
+      answer: 0,
+      explain:
+        '<code>$itens[] = ...</code> põe no fim: agora são 2. As posições começam em 0, então <code>$itens[1]</code> é a bússola.',
+    },
+  },
+  {
+    id: 'php-mais-no-texto',
+    era: 'php',
+    title: 'A saudação virou uma conta',
+    story: 'O Eco trocou o ponto por um mais, e o PHP tenta somar dois textos.',
+    level: 'Base',
+    challenge: {
+      id: 'desafio',
+      kind: 'bug',
+      q: 'Este código dá TypeError no PHP 8. Toque na linha com o bug.',
+      lines: ['<?php', '$nome = "Ana";', 'echo "Olá, " + $nome;'],
+      bugLine: 3,
+      explain:
+        'Em PHP, textos se juntam com ponto: <code>"Olá, " . $nome</code>. O <code>+</code> é só para números.',
+    },
+  },
+  {
+    id: 'php-chave-do-array',
+    era: 'php',
+    title: 'O crachá guardado por chave',
+    story: 'O Eco guardou o nome num array com chaves. Complete para o PHP mostrar Ana.',
+    level: 'Base',
+    challenge: {
+      id: 'desafio',
+      q: 'Complete para mostrar o nome:',
+      fill: true,
+      pre: '<?php\n$viajante = ["nome" => "Ana"];\necho $viajante',
+      post: ';',
+      accept: ['["nome"]', "['nome']"],
+      wrong: ['->nome', '("nome")', '[1]'],
+      placeholder: '?',
+      explain:
+        'Em array associativo, o valor sai pela chave entre colchetes: <code>$viajante["nome"]</code>. A seta <code>-&gt;</code> é para objetos.',
+    },
+  },
+  {
+    id: 'php-funcao-dobro',
+    era: 'php',
+    title: 'A função do PHP perdeu o começo',
+    story: 'O Eco desmontou a primeira linha da função. Monte de novo.',
+    level: 'Base',
+    challenge: {
+      id: 'desafio',
+      kind: 'order',
+      q: 'Monte a primeira linha de uma função PHP chamada dobro, que recebe $n',
+      pieces: ['function', 'dobro($n)', '{'],
+      distractors: ['def', 'func', 'dobro(n)'],
+      explain:
+        'Em PHP, a função começa com <code>function</code>, o nome e os parâmetros, que também levam <code>$</code>.',
+    },
+  },
+  {
+    id: 'php-soma-notas',
+    era: 'php',
+    title: 'O boletim ficou sem total',
+    story: 'O Eco apagou a linha que somava as notas. Faça o PHP mostrar o total de novo.',
+    level: 'Intermediário',
+    challenge: {
+      t: 'try',
+      engine: 'php',
+      brief: 'Mostre a soma das notas do array $notas (o resultado é 24)',
+      starter: '<?php\n$notas = [7, 8, 9];\n',
+      hint: 'O PHP já tem uma função que soma um array: echo array_sum($notas);',
+      file: 'boletim.php',
+      solution: '<?php\n$notas = [7, 8, 9];\necho array_sum($notas);',
+    },
+  },
+  {
+    id: 'php-nome-padrao',
+    era: 'php',
+    title: 'Um visitante sem nome',
+    story: 'O Eco apagou o nome do link. O PHP precisa usar um nome padrão sem dar aviso.',
+    level: 'Avançado',
+    challenge: {
+      id: 'desafio',
+      kind: 'output',
+      q: 'Ninguém mandou ?nome= no endereço. O que aparece na tela?',
+      lang: 'php',
+      code: '<?php\necho $_GET["nome"] ?? "Viajante";',
+      options: ['Viajante', 'nome', 'NULL', 'Warning: Undefined array key'],
+      answer: 0,
+      explain:
+        'O <code>??</code> devolve o lado esquerdo se ele existir e não for null; senão, o direito. Sem aviso, sai "Viajante".',
     },
   },
   {
