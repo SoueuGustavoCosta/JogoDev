@@ -1,5 +1,6 @@
 import { anomalyXpTotal, bonusXpTotal, createEmptyProgress, fragmentBalance, workshopXpTotal, xpForTrail } from '@/domain/progress';
 import { travelerLevel } from '@/domain/traveler';
+import { webEraXpTotal } from '@/domain/webEra';
 import type { Badge } from '@/domain/badges';
 import { resolveLook, type AvatarLook, type CosmeticItem } from '@/domain/cosmetics';
 import type { Trail } from '@/domain/trail';
@@ -46,7 +47,7 @@ export function getProfileSummary(
     crystals += trail.modules.filter((m) => trailProgress?.modules[m.id]?.completed).length;
   }
 
-  xp += anomalyXpTotal(progress) + bonusXpTotal(progress) + workshopXpTotal(progress);
+  xp += anomalyXpTotal(progress) + bonusXpTotal(progress) + workshopXpTotal(progress) + webEraXpTotal(progress);
 
   return {
     name: getTraveler({ repository: deps.repository }).name,

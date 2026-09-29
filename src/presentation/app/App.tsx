@@ -22,6 +22,8 @@ const WorkshopListPage = lazy(() => import('@/presentation/features/workshop').t
 const WorkshopPage = lazy(() => import('@/presentation/features/workshop').then((m) => ({ default: m.WorkshopPage })));
 const EcoSoltoPage = lazy(() => import('@/presentation/features/events').then((m) => ({ default: m.EcoSoltoPage })));
 const LeaguePage = lazy(() => import('@/presentation/features/league').then((m) => ({ default: m.LeaguePage })));
+const WebEraPage = lazy(() => import('@/presentation/features/web-era').then((m) => ({ default: m.WebEraPage })));
+const WebMoonPage = lazy(() => import('@/presentation/features/web-era').then((m) => ({ default: m.WebMoonPage })));
 const ArchivePage = lazy(() => import('@/presentation/features/comets').then((m) => ({ default: m.ArchivePage })));
 const ShopPage = lazy(() => import('@/presentation/features/shop').then((m) => ({ default: m.ShopPage })));
 const SettingsPage = lazy(() =>
@@ -60,6 +62,8 @@ function AppRoutes() {
             <Route path="laboratorio" element={<LabPage />} />
             <Route path="chefe" element={<BossFightPage />} />
           </Route>
+          <Route path="era-da-web" element={<WebEraPage />} />
+          <Route path="era-da-web/lua/:moonId" element={<WebMoonPage />} />
           <Route path="configuracoes" element={<SettingsPage />} />
           <Route path="configuracoes/loja" element={<ShopPage />} />
           <Route path="privacidade" element={<PrivacyPage />} />

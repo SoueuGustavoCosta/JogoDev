@@ -18,6 +18,24 @@
   --color-pink: #ff3db8;
   --color-code-str: #8be9b0;
   --color-code-num: #ffd479;
+  /* Era da Web (protótipo docs/eras/web): HTML laranja, CSS azul, JS amarelo, sobre azul-noite. */
+  --web-html: #ff7a3d;
+  --web-css: #3db8ff;
+  --web-js: #ffe14d;
+  --web-neon: #2dff8a;
+  --web-violet: #c3a6ff;
+  --web-pink: #ff6ad5;
+  --web-gold: #ffcf40;
+  --web-bad: #ff4d6d;
+  --web-bg: #05070d;
+  --web-bg-2: #0a0e1a;
+  --web-panel: #0d1322;
+  --web-panel-2: #131b2e;
+  --web-line: #1f2a44;
+  --web-muted: #8a9bbd;
+  --web-text: #eaf2ff;
+  --web-editor: #070a12;
+  --web-editor-text: #d9f3ff;
 
   --font-title: 'Syne', 'Trebuchet MS', sans-serif;
   --font-body: 'Instrument Sans', 'Segoe UI', system-ui, sans-serif;

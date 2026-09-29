@@ -7,6 +7,7 @@ import { mergeBonusXp } from './bonusXp';
 import { mergeWorkshops } from './workshops';
 import { mergeQuizBackups } from './quizBackup';
 import { mergeNexusSeen } from '../nexus/rules';
+import { mergeWebEra } from '../webEra/rules';
 import type { ModuleProgress, Progress, QuizAttemptResult, TrailProgress } from './types';
 
 /**
@@ -34,6 +35,7 @@ import type { ModuleProgress, Progress, QuizAttemptResult, TrailProgress } from 
  * - Eventos: XP extra do Surto (união por id) e vitórias no Eco Solto (união).
  * - Oficinas: por oficina, a primeira resolução, com o maior XP e o extra de qualquer lado.
  * - Evento Nexus visto: união por lua (fica a data mais antiga).
+ * - Era da Web: etapas somam (primeira vitória, maior XP); portfólio da cópia editada por último.
  */
 export function mergeProgress(primary: Progress, secondary: Progress): Progress {
   const trailIds = new Set([...Object.keys(primary.trails ?? {}), ...Object.keys(secondary.trails ?? {})]);
@@ -77,6 +79,7 @@ export function mergeProgress(primary: Progress, secondary: Progress): Progress 
     workshops: mergeWorkshops(primary.workshops, secondary.workshops),
     installPromptShownAt: primary.installPromptShownAt ?? secondary.installPromptShownAt,
     nexusSeen: mergeNexusSeen(primary.nexusSeen, secondary.nexusSeen),
+    webEra: mergeWebEra(primary.webEra, secondary.webEra),
     lastLesson:
       (primary.lastLesson?.at ?? '') >= (secondary.lastLesson?.at ?? '') ? primary.lastLesson : secondary.lastLesson,
     streakCurrent,
