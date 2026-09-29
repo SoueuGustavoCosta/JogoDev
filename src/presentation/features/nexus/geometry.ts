@@ -16,7 +16,8 @@ type Pt = [number, number];
 
 function cubic(b: [Pt, Pt, Pt, Pt], s: number): Pt {
   const a = 1 - s;
-  const f = (i: 0 | 1) => a * a * a * b[0][i] + 3 * a * a * s * b[1][i] + 3 * a * s * s * b[2][i] + s * s * s * b[3][i];
+  const f = (i: 0 | 1) =>
+    a * a * a * b[0][i] + 3 * a * a * s * b[1][i] + 3 * a * s * s * b[2][i] + s * s * s * b[3][i];
   return [f(0), f(1)];
 }
 
@@ -64,3 +65,6 @@ export function spiralPath(r: number): string {
   }
   return d;
 }
+
+/** Id da seção, para links que levam direto aos portais (`/trilhas/<lua>#ramificacoes`). */
+export const NEXUS_ANCHOR = 'ramificacoes';

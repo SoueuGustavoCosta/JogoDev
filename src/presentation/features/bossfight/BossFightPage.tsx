@@ -39,6 +39,7 @@ import { cometCalendar } from '@/content/comets/calendar';
 import { nexusForIsland } from '@/domain/nexus';
 import { useServices } from '@/presentation/app/ServicesContext';
 import { hasSeenTrailIntro, TrailIntroDialogue } from '@/presentation/features/trail';
+import { NEXUS_ANCHOR } from '@/presentation/features/nexus';
 import styles from './BossFightPage.module.css';
 
 type Phase = 'start' | 'fight' | 'won' | 'lost';
@@ -70,12 +71,19 @@ function roundMeta(bossFight: BossFight, roundIndex: number) {
   }
   const round = bossFight.rounds[roundIndex];
   if (!round) return null;
-  return { title: round.title, description: round.description, talk: round.talk, hint: round.hint, stepsInRound: 1 };
+  return {
+    title: round.title,
+    description: round.description,
+    talk: round.talk,
+    hint: round.hint,
+    stepsInRound: 1,
+  };
 }
 
 /** Blocos da rodada (ou do passo) atual, se o conteúdo tiver; senão a rodada é de digitar. */
 function currentChoice(bossFight: BossFight, state: BossFightState): BossChoice | undefined {
-  if (bossFight.mode === 'sequence') return bossFight.rounds[state.roundIndex]?.stepChoices?.[state.stepIndex];
+  if (bossFight.mode === 'sequence')
+    return bossFight.rounds[state.roundIndex]?.stepChoices?.[state.stepIndex];
   return bossFight.rounds[state.roundIndex]?.choices;
 }
 
@@ -108,7 +116,8 @@ export function BossFightPage() {
   if (!trail || !bossFight) return <Navigate to="/" replace />;
 
   const { trailProgress } = getTrailProgress({ repository: progressRepository }, { trail });
-  if (!isTrailCompleted(trail, trailProgress)) return <Navigate to={`/trilhas/${trail.id}`} replace />;
+  if (!isTrailCompleted(trail, trailProgress))
+    return <Navigate to={`/trilhas/${trail.id}`} replace />;
 
   if (introOpen) {
     return (
@@ -120,7 +129,13 @@ export function BossFightPage() {
     );
   }
 
-  return <BossFightArena trail={trail} bossFight={bossFight} alreadyDefeated={Boolean(trailProgress?.bossDefeated)} />;
+  return (
+    <BossFightArena
+      trail={trail}
+      bossFight={bossFight}
+      alreadyDefeated={Boolean(trailProgress?.bossDefeated)}
+    />
+  );
 }
 
 function BossFightArena({
@@ -167,7 +182,11 @@ function BossFightArena({
   const [wonBadgeId, setWonBadgeId] = useState(bossFight.badgeId);
 
   function finishWin() {
-    const wonBadgeId = bossBadgeFor({ calendar: cometCalendar, trailId: trail.id, badgeId: bossFight.badgeId });
+    const wonBadgeId = bossBadgeFor({
+      calendar: cometCalendar,
+      trailId: trail.id,
+      badgeId: bossFight.badgeId,
+    });
     setWonBadgeId(wonBadgeId);
     const uuid = getOrCreateTravelerUuid({ repository: progressRepository });
     const { name } = getTraveler({ repository: progressRepository });
@@ -217,7 +236,10 @@ function BossFightArena({
         ...prev,
         { cls: 'ok', text: isSequence ? `$ ${trimmed.toLowerCase()}` : '> resposta aceita.' },
       ]);
-      const next = applyBossAttempt(state, config, { correct: true, stepsInRound: meta.stepsInRound });
+      const next = applyBossAttempt(state, config, {
+        correct: true,
+        stepsInRound: meta.stepsInRound,
+      });
       setState(next);
       playBossHitSound();
       setInput('');
@@ -234,7 +256,10 @@ function BossFightArena({
       } else if (next.roundIndex !== state.roundIndex) {
         window.setTimeout(() => {
           const nextMeta = roundMeta(bossFight, next.roundIndex);
-          setLines((prev) => [...prev, ...(nextMeta ? [{ cls: 'info' as const, text: `--- ${nextMeta.title} ---` }] : [])]);
+          setLines((prev) => [
+            ...prev,
+            ...(nextMeta ? [{ cls: 'info' as const, text: `--- ${nextMeta.title} ---` }] : []),
+          ]);
           setFeedback(null);
           setHint(null);
         }, 900);
@@ -251,7 +276,10 @@ function BossFightArena({
           : '> rejeitado: não é essa a resposta.',
       },
     ]);
-    const next = applyBossAttempt(state, config, { correct: false, stepsInRound: meta.stepsInRound });
+    const next = applyBossAttempt(state, config, {
+      correct: false,
+      stepsInRound: meta.stepsInRound,
+    });
     setState(next);
 
     const lostLife = next.lives < state.lives;
@@ -283,7 +311,10 @@ function BossFightArena({
       if (!target) return;
       setState((s) => applyBossHint(s, config));
       setEliminated((prev) => [...prev, target]);
-      setLines((prev) => [...prev, { cls: 'info', text: '> dica: um bloco errado saiu da tela (-25 pontos).' }]);
+      setLines((prev) => [
+        ...prev,
+        { cls: 'info', text: '> dica: um bloco errado saiu da tela (-25 pontos).' },
+      ]);
       return;
     }
     setState((s) => applyBossHint(s, config));
@@ -307,7 +338,11 @@ function BossFightArena({
         <div className={styles.gamegrid}>
           <div>
             <div className={styles.gamehead}>
-              <ProgressBar value={state.roundIndex} max={bossFight.rounds.length} label="Progresso do combate" />
+              <ProgressBar
+                value={state.roundIndex}
+                max={bossFight.rounds.length}
+                label="Progresso do combate"
+              />
               <span className={styles.score}>⭐ {state.score}</span>
               <span className={styles.lives}>
                 {bossFight.lifeLabel} {state.lives}
@@ -332,7 +367,11 @@ function BossFightArena({
 
             <NotebookFrame title={isSequence ? 'terminal — repositório' : bossFight.codeFile}>
               {choice ? (
-                <div className={styles.blocks} role="group" aria-label={isSequence ? 'Escolha o próximo comando' : 'Escolha o bloco certo'}>
+                <div
+                  className={styles.blocks}
+                  role="group"
+                  aria-label={isSequence ? 'Escolha o próximo comando' : 'Escolha o bloco certo'}
+                >
                   {blocks.map((block) => {
                     const gone = eliminated.includes(block);
                     return (
@@ -386,7 +425,11 @@ function BossFightArena({
                     Executar ▶
                   </Button>
                 )}
-                <Button variant="ghost" onClick={askHint} disabled={Boolean(choice) && hintableWrong.length <= 1}>
+                <Button
+                  variant="ghost"
+                  onClick={askHint}
+                  disabled={Boolean(choice) && hintableWrong.length <= 1}
+                >
                   {choice ? 'Dica: tirar um errado (-25)' : 'Pedir dica (-25)'}
                 </Button>
                 {choice ? null : (
@@ -399,7 +442,9 @@ function BossFightArena({
                 </Button>
               </div>
               {feedback ? (
-                <p className={feedback.kind === 'good' ? styles.feedbackGood : styles.feedbackBad}>{feedback.text}</p>
+                <p className={feedback.kind === 'good' ? styles.feedbackGood : styles.feedbackBad}>
+                  {feedback.text}
+                </p>
               ) : null}
               {hint ? (
                 <p className={styles.hintBox}>
@@ -412,9 +457,22 @@ function BossFightArena({
           <aside className={styles.side}>
             <h3>{bossFight.bossName} está falando</h3>
             <p className={styles.bubble}>{meta.talk}</p>
-            <div className={styles.consoleBox} ref={consoleRef} role="log" aria-live="polite" aria-label="Console do combate">
+            <div
+              className={styles.consoleBox}
+              ref={consoleRef}
+              role="log"
+              aria-live="polite"
+              aria-label="Console do combate"
+            >
               {lines.map((line, i) => (
-                <div key={i} className={styles[`console${line.cls === 'ok' ? 'Ok' : line.cls === 'err' ? 'Err' : 'Info'}`]}>
+                <div
+                  key={i}
+                  className={
+                    styles[
+                      `console${line.cls === 'ok' ? 'Ok' : line.cls === 'err' ? 'Err' : 'Info'}`
+                    ]
+                  }
+                >
                   {line.text}
                 </div>
               ))}
@@ -430,12 +488,15 @@ function BossFightArena({
           </div>
           <h2>Combate vencido!</h2>
           <p className={styles.sub}>
-            Pontuação final: {state.score} pontos, com {state.lives} {bossFight.lifeLabel} restantes.
+            Pontuação final: {state.score} pontos, com {state.lives} {bossFight.lifeLabel}{' '}
+            restantes.
           </p>
           <div className={styles.badgeCard}>
             {(() => {
               const badge = getBadgeById(wonBadgeId);
-              return badge ? <BadgeMedal badge={badge} earned size={140} showCaption={false} /> : null;
+              return badge ? (
+                <BadgeMedal badge={badge} earned size={140} showCaption={false} />
+              ) : null;
             })()}
             <h3>Insígnia conquistada: {bossFight.badgeTitle}</h3>
             <p>{bossFight.badgeDescription}</p>
@@ -446,7 +507,7 @@ function BossFightArena({
             </Button>
             {nexusForIsland(nexusEvents, trail.id)?.launched ? (
               // Evento Nexus: vencer o chefe da lua abre as Ramificações (a cena toca na tela da lua).
-              <Link to={`/trilhas/${trail.id}`} className={styles.nexusLink}>
+              <Link to={`/trilhas/${trail.id}#${NEXUS_ANCHOR}`} className={styles.nexusLink}>
                 Ver as Ramificações ▸
               </Link>
             ) : null}
@@ -463,7 +524,8 @@ function BossFightArena({
           <div className={styles.gameOverBox}>
             <h3>GAME OVER</h3>
             <p>
-              Sem {bossFight.lifeLabel} suficiente para continuar. Revise a trilha e volte quando quiser.
+              Sem {bossFight.lifeLabel} suficiente para continuar. Revise a trilha e volte quando
+              quiser.
               {alreadyDefeated ? ' Sua insígnia continua garantida.' : ''}
             </p>
           </div>
@@ -502,13 +564,17 @@ function StartScreen({
           </Button>
         </div>
         {alreadyDefeated ? (
-          <p className={styles.status}>Você já tem a insígnia {bossFight.badgeTitle}. Pode jogar de novo pela pontuação.</p>
+          <p className={styles.status}>
+            Você já tem a insígnia {bossFight.badgeTitle}. Pode jogar de novo pela pontuação.
+          </p>
         ) : null}
       </div>
       <div className={styles.mascot}>
         {(() => {
           const badge = getBadgeById(bossFight.badgeId);
-          return badge ? <BadgeMedal badge={badge} earned={alreadyDefeated} size={140} showCaption={false} /> : null;
+          return badge ? (
+            <BadgeMedal badge={badge} earned={alreadyDefeated} size={140} showCaption={false} />
+          ) : null;
         })()}
         <p className={styles.bubble}>{bossFight.rounds[0]?.talk}</p>
       </div>
