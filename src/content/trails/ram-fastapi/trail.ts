@@ -20,7 +20,7 @@ export const ramFastapiTrail: Trail = {
   modules: ramFastapiModules,
   lab: null,
   bossFight: {
-    bossName: 'a Hidra 422',
+    bossName: 'A Hidra 422',
     tagline: 'CADA DADO TORTO É UMA CABEÇA NOVA',
     intro: [
       'A Hidra 422 cresce com cada requisição mal formada: texto no lugar de número, campo que falta, erro devolvido com 200.',

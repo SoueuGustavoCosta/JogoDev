@@ -20,7 +20,7 @@ export const ramDjangoTrail: Trail = {
   modules: ramDjangoModules,
   lab: null,
   bossFight: {
-    bossName: 'o Monólito',
+    bossName: 'O Monólito',
     tagline: 'O BLOCO QUE QUERIA SER O SITE INTEIRO',
     intro: [
       'O Monólito é um bloco de pedra do tamanho de um prédio, com código escrito em todas as faces. Views, HTML, SQL, tudo misturado.',

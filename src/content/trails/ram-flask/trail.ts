@@ -20,7 +20,7 @@ export const ramFlaskTrail: Trail = {
   modules: ramFlaskModules,
   lab: null,
   bossFight: {
-    bossName: 'o Borbulha',
+    bossName: 'O Borbulha',
     tagline: 'O FRASCO QUE FERVE TUDO JUNTO',
     intro: [
       'O Borbulha é um frasco de vidro rachado, borbulhando código. Cada bolha que estoura espalha uma rota no lugar errado.',
