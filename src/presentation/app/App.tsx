@@ -22,6 +22,7 @@ const WorkshopListPage = lazy(() => import('@/presentation/features/workshop').t
 const WorkshopPage = lazy(() => import('@/presentation/features/workshop').then((m) => ({ default: m.WorkshopPage })));
 const EcoSoltoPage = lazy(() => import('@/presentation/features/events').then((m) => ({ default: m.EcoSoltoPage })));
 const LeaguePage = lazy(() => import('@/presentation/features/league').then((m) => ({ default: m.LeaguePage })));
+const ArchivePage = lazy(() => import('@/presentation/features/comets').then((m) => ({ default: m.ArchivePage })));
 const ShopPage = lazy(() => import('@/presentation/features/shop').then((m) => ({ default: m.ShopPage })));
 const SettingsPage = lazy(() =>
   import('@/presentation/features/settings').then((m) => ({ default: m.SettingsPage })),
@@ -64,6 +65,7 @@ function AppRoutes() {
           <Route path="privacidade" element={<PrivacyPage />} />
           <Route path="hall" element={<HallPage />} />
           <Route path="liga" element={<LeaguePage />} />
+          <Route path="arquivo" element={<ArchivePage />} />
           <Route path="evento/eco-solto" element={<EcoSoltoPage />} />
           <Route path="oficina" element={<WorkshopListPage />} />
           <Route path="oficina/:workshopId" element={<WorkshopPage />} />

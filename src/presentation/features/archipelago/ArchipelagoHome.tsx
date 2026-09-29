@@ -2,6 +2,8 @@ import { useEffect, useMemo } from 'react';
 import { Navigate, useNavigate, useOutletContext } from 'react-router-dom';
 import { getNexus, getTimeline, getTraveler, getTrailProgress } from '@/application/usecases';
 import { nexusEvents } from '@/content/nexus';
+import { cometCalendar } from '@/content/comets/calendar';
+import { CometSky } from '@/presentation/features/comets';
 import { trailRegistry } from '@/content/registry';
 import { isEraRestored } from '@/domain/progress';
 import { useServices } from '@/presentation/app/ServicesContext';
@@ -57,6 +59,7 @@ export function ArchipelagoHome() {
   const firstSteps = Object.values(byEra).every((p) => p.done === 0);
 
   return (
+    <>
     <TimeMap
       summary={summary}
       onlinePlayers={onlinePlayers}
@@ -66,5 +69,11 @@ export function ArchipelagoHome() {
       onEnterEra={(era: MapEra) => era.trailId && navigate(`/trilhas/${era.trailId}`)}
       ecoEra={getTimeline({ repository: progressRepository }).state.ecoEra}
     />
+    {/* Céu dos Cometas de tecnologia (expansão Nexus): por cima do mapa, fora da câmera. */}
+    <CometSky
+      calendar={cometCalendar}
+      trailCount={(id) => trailRegistry.find((t) => t.id === id)?.modules.length ?? 0}
+    />
+    </>
   );
 }

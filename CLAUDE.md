@@ -296,6 +296,16 @@ Depois de vencer o chefe de uma lua de linguagem, a linha do tempo se ramifica e
 3. Com `launched: false`, os portais aparecem "Em breve". Ligue `launched: true` quando as três trilhas existirem: `content/nexus.test.ts` recusa evento lançado que aponta para trilha que não existe.
 4. A cena completa (flash, distorção, fios crescendo) toca uma vez por lua. Isso fica marcado em `progress.nexusSeen`, campo opcional que entra no merge.
 
+### Cometas de tecnologia
+
+Os cometas são eventos temporários com trilha própria. As datas ficam em `src/content/comets/calendar.ts`, as regras em `domain/comets` e a tela em `presentation/features/comets`.
+
+1. A trilha do cometa é uma trilha comum (`content/trails/<id>/` + `registry.ts`), com chefe.
+2. No calendário, cada cometa tem `id`, `trailId`, `name`, `from` e `to` (ISO com fuso, ex.: `2026-10-12T00:00:00-03:00`, com `to` não incluído), mais `rareBadgeId` e `commonBadgeId`.
+3. O `bossFight.badgeId` da trilha é a insígnia **comum**. Quem vence o chefe com o cometa no céu leva a **rara** no lugar dela (`rare: true` no catálogo).
+4. Cada cometa fica 14 dias no céu, com pelo menos 1 dia de céu limpo antes do próximo. `content/comets.test.ts` confere isso.
+5. A posição no céu sai só do tempo. Nas últimas 24 horas o cometa fica rosa e treme. Antes de chegar, a trilha fica fechada; depois que passa, ela fica no Arquivo da AVT (`/arquivo`).
+
 ### Eventos: como o autor cria um evento só editando `calendar.ts`
 
 Todos os eventos vivem em `src/content/events/calendar.ts` (lista `eventCalendar`). Nenhum outro arquivo precisa mudar.

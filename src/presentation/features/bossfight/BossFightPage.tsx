@@ -7,6 +7,7 @@ import {
   loseBossFight,
   startBossFight,
   winBossFight,
+  bossBadgeFor,
 } from '@/application/usecases';
 import {
   applyBossAttempt,
@@ -34,6 +35,7 @@ import {
 } from '@/presentation/design-system';
 import { getBadgeById } from '@/content/badges/catalog';
 import { nexusEvents } from '@/content/nexus';
+import { cometCalendar } from '@/content/comets/calendar';
 import { nexusForIsland } from '@/domain/nexus';
 import { useServices } from '@/presentation/app/ServicesContext';
 import { hasSeenTrailIntro, TrailIntroDialogue } from '@/presentation/features/trail';
@@ -161,12 +163,18 @@ function BossFightArena({
     setEliminated([]);
   }, [state.roundIndex, state.stepIndex, phase]);
 
+  // Insígnia desta vitória: a do chefe, ou (nos cometas) a rara/comum conforme a data.
+  const [wonBadgeId, setWonBadgeId] = useState(bossFight.badgeId);
+
   function finishWin() {
+    const wonBadgeId = bossBadgeFor({ calendar: cometCalendar, trailId: trail.id, badgeId: bossFight.badgeId });
+    setWonBadgeId(wonBadgeId);
     const uuid = getOrCreateTravelerUuid({ repository: progressRepository });
     const { name } = getTraveler({ repository: progressRepository });
     winBossFight(
       { repository: progressRepository, analytics, leaderboard },
-      { trailId: trail.id, badgeId: bossFight.badgeId, traveler: { uuid, name } },
+      // Nos cometas, a insígnia depende da data: rara durante o evento, comum pelo Arquivo.
+      { trailId: trail.id, badgeId: wonBadgeId, traveler: { uuid, name } },
     );
     setPhase('won');
     playVictorySound();
@@ -426,7 +434,7 @@ function BossFightArena({
           </p>
           <div className={styles.badgeCard}>
             {(() => {
-              const badge = getBadgeById(bossFight.badgeId);
+              const badge = getBadgeById(wonBadgeId);
               return badge ? <BadgeMedal badge={badge} earned size={140} showCaption={false} /> : null;
             })()}
             <h3>Insígnia conquistada: {bossFight.badgeTitle}</h3>

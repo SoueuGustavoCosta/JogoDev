@@ -14,6 +14,8 @@
   --color-bad: #ff5d7a;
   --color-cyan: #5ee7ff;
   --color-gold: #ffd479;
+  /* Cometas nas últimas 24 horas (expansão Nexus). */
+  --color-pink: #ff3db8;
   --color-code-str: #8be9b0;
   --color-code-num: #ffd479;
 
