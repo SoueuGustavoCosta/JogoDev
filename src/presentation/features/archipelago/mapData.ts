@@ -115,7 +115,7 @@ export const ERAS: MapEra[] = [
         color: '#c9a2ff',
         years: 'LUA DOS DADOS',
         description:
-          'A Lua da Modelagem: 5 módulos para desenhar o banco antes do SQL. Tipos de bancos, MER e DER, álgebra relacional e normalização.',
+          'A Lua da Modelagem: 5 módulos para desenhar o banco antes do SQL (tipos de bancos, MER e DER, álgebra relacional e normalização) e o chefe Duplicador, que repete dados em todo lugar.',
       },
       {
         id: 'dados-guardiao',
@@ -126,7 +126,7 @@ export const ERAS: MapEra[] = [
         color: '#3ee0a1',
         years: 'LUA DOS DADOS',
         description:
-          'A Lua do Guardião: 5 módulos para cuidar do banco no ar. Índices, transações, views, segurança e um projeto final.',
+          'A Lua do Guardião: 5 módulos para cuidar do banco no ar (índices, transações, views, segurança e um projeto final) e o chefe Impasse, que trava tudo e vaza dados.',
       },
     ],
   },
