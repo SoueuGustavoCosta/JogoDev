@@ -23,3 +23,4 @@ export * from './events';
 export * from './workshop';
 export * from './install';
 export * from './nexus';
+export * from './comets';
