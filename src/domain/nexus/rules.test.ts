@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createEmptyProgress, mergeProgress, type Progress } from '../progress';
-import { markNexusSeen, mergeNexusSeen, nexusForIsland, nexusState, shouldPlayNexus } from './rules';
+import { markNexusSeen, mergeNexusSeen, nexusForIsland, nexusOfBranch, nexusState, shouldPlayNexus } from './rules';
 import { nexusEventSchema } from './schema';
 import type { NexusEvent } from './types';
 
@@ -53,5 +53,7 @@ describe('Evento Nexus', () => {
     expect(() => nexusEventSchema.parse(repeated)).toThrow();
     expect(() => nexusEventSchema.parse({ ...example, branches: example.branches.slice(0, 2) })).toThrow();
     expect(nexusForIsland([example], 'lua-x')).toBe(example);
+    expect(nexusOfBranch([example], 'ram-b')).toBe(example);
+    expect(nexusOfBranch([example], 'lua-x')).toBeUndefined();
   });
 });

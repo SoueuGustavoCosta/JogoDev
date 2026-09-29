@@ -28,3 +28,8 @@ export function mergeNexusSeen(a: Progress['nexusSeen'], b: Progress['nexusSeen'
 export function nexusForIsland(events: readonly NexusEvent[], island: string): NexusEvent | undefined {
   return events.find((e) => e.island === island);
 }
+
+/** O Evento Nexus de onde sai uma Ramificação (ou nada, se a trilha não é Ramificação). */
+export function nexusOfBranch(events: readonly NexusEvent[], trailId: string): NexusEvent | undefined {
+  return events.find((e) => e.branches.some((b) => b.trailId === trailId));
+}

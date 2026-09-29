@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { Link, Navigate, Outlet, useLocation, useParams } from 'react-router-dom';
-import { getLessonMode, getMyBadges, getTrailProgress } from '@/application/usecases';
-import { getTrailById } from '@/content/registry';
+import { getBranchLock, getLessonMode, getMyBadges, getTrailProgress } from '@/application/usecases';
+import { getTrailById, trailRegistry } from '@/content/registry';
 import { badgeCatalog, BADGE_TRAIL_TO_TRAIL_ID } from '@/content/badges/catalog';
 import { DEFAULT_EXPLORATION_MODE, DEFAULT_LESSON_MODE } from '@/config/exploration';
 import { isModuleUnlocked } from '@/domain/progress';
 import { BadgeMedal, Modal } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
+import { BranchGate } from '@/presentation/features/nexus';
+import { nexusEvents } from '@/content/nexus';
 import styles from './TrailShell.module.css';
 
 export type TrailOutletContext = { refresh: () => void };
@@ -21,6 +23,10 @@ export function TrailShell() {
 
   const trail = trailId ? getTrailById(trailId) : undefined;
   if (!trail) return <Navigate to="/" replace />;
+
+  // Ramificação ainda fechada (chefe da lua não vencido): nada da trilha abre, nem por endereço.
+  const lock = getBranchLock({ repository: progressRepository }, { events: nexusEvents, trailId: trail.id, trails: trailRegistry });
+  if (lock) return <BranchGate trail={trail} island={lock.island} />;
 
   const { trailProgress } = getTrailProgress({ repository: progressRepository }, { trail });
   const firstOpen = trail.modules.findIndex((m) => !trailProgress?.modules[m.id]?.completed);

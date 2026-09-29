@@ -3,7 +3,7 @@ import { createEmptyProgress, type Progress } from '@/domain/progress';
 import type { NexusEvent } from '@/domain/nexus';
 import type { Module, Trail } from '@/domain/trail';
 import type { AnalyticsPort, ProgressRepository } from '../ports';
-import { getNexus, markNexusPlayed } from './nexus';
+import { getBranchLock, getNexus, markNexusPlayed } from './nexus';
 
 const event: NexusEvent = {
   island: 'lua',
@@ -50,5 +50,18 @@ describe('getNexus / markNexusPlayed', () => {
     markNexusPlayed({ repository: r, analytics: a }, { island: 'lua' });
     expect(a.events).toEqual(['nexus_event_seen']);
     expect(getNexus({ repository: r }, { event, trails }).play).toBe(false);
+  });
+
+  it('Ramificação fechada até vencer o chefe da lua; trilha comum nunca trava', () => {
+    const lua: Trail = { id: 'lua', title: 'Lua', tagline: 't', symbol: 's', accent: '#000', modules: [] };
+    const all = [...trails, lua];
+    const locked = repo(createEmptyProgress());
+    expect(getBranchLock({ repository: locked }, { events: [event], trailId: 'ram-a', trails: all })?.island).toBe(lua);
+    expect(getBranchLock({ repository: locked }, { events: [event], trailId: 'lua', trails: all })).toBeNull();
+    const open = repo({
+      ...createEmptyProgress(),
+      trails: { lua: { trailId: 'lua', modules: {}, missionsCompleted: {}, trophyAwarded: true, bossDefeated: true } },
+    });
+    expect(getBranchLock({ repository: open }, { events: [event], trailId: 'ram-a', trails: all })).toBeNull();
   });
 });

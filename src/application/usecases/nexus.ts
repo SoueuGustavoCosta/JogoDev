@@ -1,4 +1,4 @@
-import { markNexusSeen, nexusState, shouldPlayNexus, type NexusBranch, type NexusEvent, type NexusState } from '@/domain/nexus';
+import { markNexusSeen, nexusOfBranch, nexusState, shouldPlayNexus, type NexusBranch, type NexusEvent, type NexusState } from '@/domain/nexus';
 import { createEmptyProgress } from '@/domain/progress';
 import type { Trail } from '@/domain/trail';
 import type { AnalyticsPort, ProgressRepository } from '../ports';
@@ -45,4 +45,19 @@ export function markNexusPlayed(
   if (next === progress) return;
   deps.repository.save(next);
   deps.analytics.track('nexus_event_seen', { island: params.island });
+}
+
+/**
+ * Ramificação ainda fechada: devolve a lua de onde ela sai (o chefe dela ainda não foi
+ * vencido). `null` quando a trilha pode abrir, inclusive quando não é uma Ramificação.
+ */
+export function getBranchLock(
+  deps: { repository: ProgressRepository },
+  params: { events: readonly NexusEvent[]; trailId: string; trails: readonly Trail[] },
+): { island: Trail | undefined } | null {
+  const event = nexusOfBranch(params.events, params.trailId);
+  if (!event) return null;
+  const progress = deps.repository.load() ?? createEmptyProgress();
+  if (nexusState(event, progress.trails[event.island]) === 'open') return null;
+  return { island: params.trails.find((t) => t.id === event.island) };
 }
