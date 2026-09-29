@@ -1,10 +1,13 @@
 import {
   migrateQuizResultKeys,
+  relocateModules,
   restoreFromQuizBackup,
   withQuizBackup,
+  type ModuleRelocation,
   type Progress,
   type QuizIdIndex,
 } from '@/domain/progress';
+import type { Trail } from '@/domain/trail';
 import type { ProgressRepository } from '../ports';
 
 /**
@@ -22,10 +25,23 @@ import type { ProgressRepository } from '../ports';
  * na cópia. Assim, se uma aba com o app antigo juntar cópias com o merge antigo (que
  * descarta as chaves por id), nada se perde. TODO(autor): remover a partir de 2026-10-24.
  *
- * `index` vem do conteúdo (`buildQuizIdIndex(trailRegistry)`), que só a apresentação conhece.
+ * Etapa 14A: pelo mesmo ponto passa a mudança de trilha dos módulos (`relocation`, ver
+ * `relocateModules`). Ela roda antes de converter as posições (um módulo fundido tem a
+ * própria ordem antiga) e de novo depois de restaurar a cópia, que ainda pode apontar
+ * para o lugar antigo.
+ *
+ * `index` e `relocation` vêm do conteúdo (`buildQuizIdIndex(trailRegistry)`,
+ * `moduleRelocations`), que só a apresentação conhece.
  */
-export function withQuizIdMigration(repository: ProgressRepository, index: QuizIdIndex): ProgressRepository {
-  const migrate = (progress: Progress) => restoreFromQuizBackup(migrateQuizResultKeys(progress, index));
+export function withQuizIdMigration(
+  repository: ProgressRepository,
+  index: QuizIdIndex,
+  relocation?: { modules: readonly ModuleRelocation[]; trails: readonly Trail[] },
+): ProgressRepository {
+  const relocate = (progress: Progress) =>
+    relocation ? relocateModules(progress, relocation.modules, relocation.trails) : progress;
+  const migrate = (progress: Progress) =>
+    relocate(restoreFromQuizBackup(migrateQuizResultKeys(relocate(progress), index)));
   return {
     load() {
       const progress = repository.load();

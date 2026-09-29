@@ -14,3 +14,4 @@ export * from './fragments';
 export * from './weeklyXp';
 export * from './bonusXp';
 export * from './workshops';
+export * from './relocate';

@@ -48,6 +48,23 @@ const SYMBOLS: Record<string, (stroke: string) => ReactNode> = {
       <path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3" />
     </>
   ),
+  // Lua da Modelagem: duas entidades ligadas por um relacionamento (losango).
+  'data-model': () => (
+    <>
+      <rect x="2" y="4" width="6" height="5" rx="1" />
+      <rect x="16" y="15" width="6" height="5" rx="1" />
+      <path d="M12 9l3 3-3 3-3-3z" />
+      <path d="M5 9v3h4M15 12h4v3" />
+    </>
+  ),
+  // Lua do Guardião: um escudo com a tampa do cilindro de dados.
+  'data-guard': () => (
+    <>
+      <path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z" />
+      <ellipse cx="12" cy="10" rx="4" ry="1.6" />
+      <path d="M8 10v4c0 .9 1.8 1.6 4 1.6s4-.7 4-1.6v-4" />
+    </>
+  ),
   'logic-diamond': () => (
     <>
       <path d="M12 3l6 6-6 6-6-6z" />

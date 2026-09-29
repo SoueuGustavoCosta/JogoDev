@@ -277,6 +277,16 @@ Um bloco `{ t: 'try', engine, brief, starter, hint, ... }` vira uma tela "sua ve
 
 Diretrizes de conteúdo: português do Brasil, tom acolhedor e direto, um exemplo real por conceito, exemplos que o aluno consegue **executar**, quiz ao fim de cada módulo (perguntas de múltipla escolha e de completar). O conteúdo é **original**: use materiais da faculdade e vídeos só como inspiração, sem copiar trechos, nem figuras.
 
+### Mudar um módulo de trilha (ou fundir dois módulos)
+
+O progresso é guardado por trilha → módulo → pergunta. Para mover um módulo para outra trilha sem que ninguém perca nada (Etapa 14A fez isso com a Era dos Dados):
+
+1. Mova o arquivo do módulo para `content/trails/<nova>/modules/` sem mudar o `id` do módulo nem das perguntas.
+2. Para fundir dois módulos, use `foldModules(host, absorvido)` (`domain/trail/fold.ts`): o fundido fica com o id do `host`, e as perguntas do absorvido ganham o prefixo `<id-do-absorvido>-` (dois módulos costumam ter `q1`).
+3. Acrescente uma linha em `src/content/relocations.ts` (`fold: ...` para o fundido). A lista só cresce: nunca tire uma linha.
+4. A migração (`relocateModules`, chamada em `withQuizIdMigration`) leva o progresso de quem tiver algo no lugar antigo: aparelho, nuvem, código importado e até uma aba com o app antigo. Módulo fundido conta como concluído se qualquer um dos dois estava; quem tinha os dois ganha os 150 XP da conclusão perdida como XP extra, então o XP total não muda.
+5. Rode `npm test`: `content/relocations.test.ts` confere que cada linha aponta para um módulo que existe, e `quizIds.test.ts` segue os ids publicados até o lugar novo.
+
 ### Eventos: como o autor cria um evento só editando `calendar.ts`
 
 Todos os eventos vivem em `src/content/events/calendar.ts` (lista `eventCalendar`). Nenhum outro arquivo precisa mudar.

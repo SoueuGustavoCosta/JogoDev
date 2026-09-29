@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { QUIZ_ID_PATTERN } from '@/domain/trail';
 import { trailRegistry } from './registry';
+import { moduleRelocations } from './relocations';
 
 /**
  * Ids publicados na Etapa 3.5 (q1..qN, na ordem das perguntas daquele dia). O progresso do
@@ -74,21 +75,42 @@ const PUBLISHED_QUIZ_COUNT: Record<string, number> = {
   'php/superglobais-web-php': 5,
 };
 
+/**
+ * Onde cada módulo publicado vive hoje (Etapa 14A: módulos da Era dos Dados mudaram de
+ * trilha e dois foram fundidos, ver `relocations.ts`), e os ids que ele precisa ter lá.
+ */
+function publishedIdsByCurrentModule(): Map<string, string[]> {
+  const out = new Map<string, string[]>();
+  for (const [key, count] of Object.entries(PUBLISHED_QUIZ_COUNT)) {
+    const [trailId, moduleId] = key.split('/');
+    const r = moduleRelocations.find((x) => x.fromTrail === trailId && x.moduleId === moduleId);
+    const where = r ? `${r.toTrail}/${r.fold?.toModule ?? moduleId}` : key;
+    const prefix = r?.fold?.quizIdPrefix ?? '';
+    const ids = out.get(where) ?? [];
+    for (let n = 1; n <= count; n++) ids.push(`${prefix}q${n}`);
+    out.set(where, ids);
+  }
+  return out;
+}
+
 describe('ids das perguntas', () => {
+  const published = publishedIdsByCurrentModule();
   for (const trail of trailRegistry) {
     for (const mod of trail.modules) {
       it(`${trail.id}/${mod.id}`, () => {
         const ids = mod.quiz.map((item) => item.id);
         expect(new Set(ids).size).toBe(ids.length);
         for (const id of ids) expect(id).toMatch(QUIZ_ID_PATTERN);
-        const published = PUBLISHED_QUIZ_COUNT[`${trail.id}/${mod.id}`] ?? 0;
-        for (let n = 1; n <= published; n++) expect(ids).toContain(`q${n}`);
+        for (const id of published.get(`${trail.id}/${mod.id}`) ?? []) expect(ids).toContain(id);
       });
     }
   }
 
-  it('todo módulo publicado continua existindo', () => {
+  it('todo módulo publicado continua existindo (no lugar novo, se mudou de trilha)', () => {
     const current = new Set(trailRegistry.flatMap((t) => t.modules.map((m) => `${t.id}/${m.id}`)));
-    for (const key of Object.keys(PUBLISHED_QUIZ_COUNT)) expect(current.has(key), key).toBe(true);
+    for (const key of published.keys()) expect(current.has(key), key).toBe(true);
+    // Toda chave publicada foi contada em algum módulo de hoje.
+    const total = [...published.values()].reduce((sum, ids) => sum + ids.length, 0);
+    expect(total).toBe(Object.values(PUBLISHED_QUIZ_COUNT).reduce((a, b) => a + b, 0));
   });
 });

@@ -30,7 +30,7 @@ export const bancoDeDadosMissions: Mission[] = [
     ds: "vazio",
     kind: 'state',
     brief: "No banco vazio, crie a tabela <code>alunos</code> com: <code>id</code> (SERIAL, chave primária), <code>nome</code> (VARCHAR(80), obrigatório) e <code>xp</code> (INTEGER, com valor padrão 0).",
-    hint: "Veja o módulo 6. Lembre de PRIMARY KEY, NOT NULL e DEFAULT.",
+    hint: "Veja o módulo \"CREATE DATABASE e TABLE\" (o 4º da era). Lembre de PRIMARY KEY, NOT NULL e DEFAULT.",
     verify: "SELECT column_name, data_type, is_nullable FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'alunos' ORDER BY ordinal_position",
     expect: [["id","integer","NO"],["nome","character varying","NO"],["xp","integer","YES"]],
   },

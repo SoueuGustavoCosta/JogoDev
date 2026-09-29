@@ -1,7 +1,4 @@
 import { modPorque } from './porque';
-import { modTipos } from './tipos';
-import { modArquitetura } from './arquitetura';
-import { modInterface } from './interface';
 import { modSintaxe } from './sintaxe';
 import { modTiposdados } from './tiposdados';
 import { modRelacional } from './relacional';
@@ -9,44 +6,38 @@ import { modCreate } from './create';
 import { modInsert } from './insert';
 import { modWhere } from './where';
 import { modUpdate } from './update';
-import { modMer } from './mer';
 import { modJoin } from './join';
-import { modAlgebra } from './algebra';
 import { modAgg } from './agg';
 import { modSubconsultas } from './subconsultas';
-import { modNorm } from './norm';
-import { modIndices } from './indices';
-import { modTransacoes } from './transacoes';
-import { modViews } from './views';
-import { modSeguranca } from './seguranca';
-import { modProjeto } from './projeto';
+import { foldModules } from '@/domain/trail/fold';
 import type { Module } from '@/domain/trail/types';
 
 /**
- * Ordem final dos 22 módulos, migrada de legacy/Trilha_PostgreSQL_com_Laboratorio.html
- * (ordem definida pela IIFE "EXPANSÃO UNIVERSITÁRIA" no protótipo original).
+ * "Sintaxe e indentação" com "Tipos de dados" dentro (Etapa 14A): o módulo fundido fica
+ * com o id `sintaxe`; as perguntas de `tiposdados` viram `tiposdados-q1`... (ver
+ * `foldModules` e `content/relocations.ts`, que leva o progresso junto).
+ */
+export const modSintaxeETipos: Module = foldModules(modSintaxe, modTiposdados, {
+  short: 'Sintaxe e tipos de dados',
+  title: 'Sintaxe, indentação e tipos de dados',
+  lead: 'O PostgreSQL entende SQL de qualquer jeito. Pessoas, não. Aprenda as regras, as boas maneiras e o tipo certo para cada coluna.',
+});
+
+/**
+ * Os 10 módulos principais da Era dos Dados (Etapa 14A). Os 22 módulos migrados de
+ * legacy/Trilha_PostgreSQL_com_Laboratorio.html continuam todos no jogo: 2 foram fundidos
+ * (sintaxe + tiposdados aqui; tipos + arquitetura na Lua da Modelagem) e o resto foi para
+ * as luas `dados-modelagem` e `dados-guardiao`, na mesma ordem relativa de antes.
  */
 export const bancoDeDadosModules: Module[] = [
   modPorque,
-  modTipos,
-  modArquitetura,
-  modInterface,
-  modSintaxe,
-  modTiposdados,
   modRelacional,
+  modSintaxeETipos,
   modCreate,
   modInsert,
   modWhere,
   modUpdate,
-  modMer,
   modJoin,
-  modAlgebra,
   modAgg,
   modSubconsultas,
-  modNorm,
-  modIndices,
-  modTransacoes,
-  modViews,
-  modSeguranca,
-  modProjeto,
 ];
