@@ -73,15 +73,47 @@ export type DailyAnomalyPick = {
   fallback: boolean;
 };
 
+/** Quantas vezes o viajante já consertou cada anomalia (por id), sem contar o dia de hoje. */
+export type AnomalyHistory = ReadonlyMap<string, number>;
+
 /**
- * A anomalia do dia para um viajante. Anomalias de eras que ele ainda não abriu são
- * permitidas, mas só de nível "Base": se a do dia for de outro nível numa era que ele não
- * abriu, ele recebe a reserva Base do dia (também igual para todos nessa situação).
+ * A anomalia do dia para um viajante.
+ *
+ * - Parte da anomalia global do dia (igual para todos). Anomalias de eras que ele ainda não
+ *   abriu só valem no nível "Base": se a do dia for de outro nível numa era que ele não
+ *   abriu, ele recebe a reserva Base do dia.
+ * - Não repete (Etapa 15A): dentro da ilha sorteada, só valem as anomalias que o viajante
+ *   consertou menos vezes. Se a global do dia estiver entre elas, é ela (a mesma para todos);
+ *   senão, uma das que faltam, sorteada pelo dia. Quando ele já viu todas da ilha, o ciclo
+ *   recomeça. O histórico nunca inclui o dia de hoje, então a escolha não muda depois de
+ *   consertar.
  */
-export function pickAnomaly(dayISO: string, pool: readonly Anomaly[], openedEras: ReadonlySet<string>): DailyAnomalyPick {
-  const anomaly = globalAnomalyForDay(dayISO, pool);
-  if (anomaly.level === 'Base' || openedEras.has(anomaly.era)) return { anomaly, fallback: false };
-  const base = pool.filter((a) => a.level === 'Base').sort((a, b) => a.id.localeCompare(b.id));
-  if (base.length === 0) return { anomaly, fallback: false };
-  return { anomaly: base[hash(`reserva:${dayISO}`) % base.length], fallback: true };
+export function pickAnomaly(
+  dayISO: string,
+  pool: readonly Anomaly[],
+  openedEras: ReadonlySet<string>,
+  history: AnomalyHistory = new Map(),
+): DailyAnomalyPick {
+  const global = globalAnomalyForDay(dayISO, pool);
+  const sorted = [...pool].sort((a, b) => a.id.localeCompare(b.id));
+  const allowed = (a: Anomaly) => a.level === 'Base' || openedEras.has(a.era);
+
+  if (allowed(global)) {
+    const group = sorted.filter((a) => a.era === global.era && allowed(a));
+    return { anomaly: leastSeen(group, global, history, `ilha:${dayISO}:${global.era}`), fallback: false };
+  }
+  const base = sorted.filter((a) => a.level === 'Base');
+  if (base.length === 0) return { anomaly: global, fallback: false };
+  const reserve = base[hash(`reserva:${dayISO}`) % base.length];
+  const group = base.filter((a) => a.era === reserve.era);
+  return { anomaly: leastSeen(group, reserve, history, `reserva:${dayISO}:${reserve.era}`), fallback: true };
+}
+
+/** A preferida, se o viajante a viu tão pouco quanto as outras; senão, uma das menos vistas. */
+function leastSeen(group: readonly Anomaly[], preferred: Anomaly, history: AnomalyHistory, seed: string): Anomaly {
+  const seen = (a: Anomaly) => history.get(a.id) ?? 0;
+  const min = Math.min(...group.map(seen));
+  const candidates = group.filter((a) => seen(a) === min);
+  if (candidates.some((a) => a.id === preferred.id)) return preferred;
+  return candidates[hash(seed) % candidates.length] ?? preferred;
 }

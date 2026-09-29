@@ -83,6 +83,22 @@ describe('Anomalia do Dia (casos de uso)', () => {
     expect(summary.fragments).toBe(10);
   });
 
+  it('não repete para quem já consertou, e a de hoje não muda depois de consertar (Etapa 15A)', () => {
+    const repository = new Memory();
+    const today = getDailyAnomaly({ repository }, { pool, now });
+    // Quem consertou a de hoje numa data anterior recebe outra ainda não vista.
+    repository.save({
+      version: 1,
+      trails: {},
+      anomalies: { '2026-09-01': { anomalyId: today.anomaly.id, tries: 1, solvedAt: '2026-09-01T12:00:00.000Z', xp: 30, fragments: 10 } },
+    });
+    const other = getDailyAnomaly({ repository }, { pool, now });
+    expect(other.anomaly.id).not.toBe(today.anomaly.id);
+    // Consertar hoje não troca a anomalia de hoje.
+    solveAnomaly({ repository, analytics: new Recording(), leaderboard }, { day: other.day, anomaly: other.anomaly, tries: 1, now });
+    expect(getDailyAnomaly({ repository }, { pool, now }).anomaly.id).toBe(other.anomaly.id);
+  });
+
   it('sem viajante identificado, não tenta registrar na turma (mas guarda a recompensa)', () => {
     calls.length = 0;
     const repository = new Memory();
