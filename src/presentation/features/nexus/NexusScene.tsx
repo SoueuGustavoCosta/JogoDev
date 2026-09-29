@@ -15,6 +15,8 @@ type Props = {
   play: boolean;
   onPlayed?: () => void;
   onEnter?: (trailId: string) => void;
+  /** Texto de cada portal aberto na lista (padrão: "X/Y trilhas"). A Era da Web usa "em construção". */
+  branchCaption?: (branch: NexusBranchView) => string;
 };
 
 /**
@@ -23,7 +25,7 @@ type Props = {
  * `transform` e `opacity` animam; com `prefers-reduced-motion` a cena
  * já aparece no estado final (ver o CSS).
  */
-export function NexusScene({ islandName, islandColor, bossName, state, branches, play, onPlayed, onEnter }: Props) {
+export function NexusScene({ islandName, islandColor, bossName, state, branches, play, onPlayed, onEnter, branchCaption }: Props) {
   const [opened, setOpened] = useState(state === 'open' && !play);
   const [flash, setFlash] = useState(false);
 
@@ -136,7 +138,7 @@ export function NexusScene({ islandName, islandColor, bossName, state, branches,
               <button type="button" className={styles.branchButton} style={{ borderColor: b.color }} onClick={() => onEnter(b.trailId)}>
                 <span style={{ color: b.color }}>{b.name}</span>
                 <small>
-                  {b.done}/{b.total} trilhas ▸
+                  {branchCaption ? branchCaption(b) : `${b.done}/${b.total} trilhas`} ▸
                 </small>
               </button>
             ) : (

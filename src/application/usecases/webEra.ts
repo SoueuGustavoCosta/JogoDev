@@ -3,6 +3,7 @@ import {
   markWebIntroSeen,
   recordWebStage,
   saveWebPortfolio,
+  WEB_NEXUS_KEY,
   webEraOf,
   webStageXp,
   type WebEraProgress,
@@ -14,12 +15,32 @@ import { awardBadge } from './badges';
 import { recordXpGain, syncWeeklyXp } from './league';
 import { getOrCreateTravelerUuid, getTraveler } from './traveler';
 
-/** O progresso da Era da Web e o nome do viajante (para as falas e o portfólio). */
-export function getWebEra(deps: { repository: ProgressRepository }): { web: WebEraProgress; travelerName: string } {
-  return { web: webEraOf(deps.repository.load()), travelerName: getTraveler(deps).name };
+export type WebEraView = {
+  web: WebEraProgress;
+  travelerName: string;
+  /** Insígnias conquistadas (catálogo compartilhado), por id. */
+  badgesEarned: Record<string, string>;
+  /** A cena do Evento Nexus da Web já tocou (toca uma vez). */
+  nexusSeen: boolean;
+};
+
+/** O progresso da Era da Web, o nome do viajante (falas e portfólio) e as insígnias. */
+export function getWebEra(deps: { repository: ProgressRepository }): WebEraView {
+  const progress = deps.repository.load();
+  return {
+    web: webEraOf(progress),
+    travelerName: getTraveler(deps).name,
+    badgesEarned: progress?.badgesEarned ?? {},
+    nexusSeen: Boolean(progress?.nexusSeen?.[WEB_NEXUS_KEY]),
+  };
 }
 
-const isBoss = (kind: WebStageKind) => kind === 'boss' || kind === 'moonboss';
+/** Entrou na era (ou numa lua dela). */
+export function openWebEra(deps: { analytics: AnalyticsPort }, params: { moon?: string } = {}): void {
+  deps.analytics.track('island_opened', { island: params.moon ? `web-${params.moon}` : 'web' });
+}
+
+const isBoss =(kind: WebStageKind) => kind === 'boss' || kind === 'moonboss';
 
 export function startWebStage(deps: { analytics: AnalyticsPort }, params: { stageId: string; kind: WebStageKind }): void {
   if (isBoss(params.kind)) deps.analytics.track('boss_fight_started', { island: 'web', boss: params.stageId });
