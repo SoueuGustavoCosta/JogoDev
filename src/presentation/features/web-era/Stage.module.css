@@ -949,6 +949,268 @@
   white-space: nowrap;
 }
 
+/* diálogo: só avança com toque */
+.more {
+  display: block;
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--web-pink);
+  animation: nudge 1.2s ease-in-out infinite;
+}
+
+@keyframes nudge {
+  50% {
+    transform: translateX(4px);
+    opacity: 0.6;
+  }
+}
+
+/* timer: vermelho e pulsando nos últimos 30% */
+.timer i.low {
+  box-shadow: 0 0 12px var(--web-bad);
+  animation: tpulse 0.5s ease-in-out infinite;
+}
+
+@keyframes tpulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* acerto: brilho neon na arena */
+.arena {
+  transition:
+    box-shadow 0.3s,
+    border-color 0.3s;
+}
+
+.glow {
+  border-color: var(--web-neon);
+  box-shadow:
+    0 0 0 1px var(--web-neon),
+    0 0 30px -4px var(--web-neon);
+}
+
+/* blocos e lacuna */
+.ctx,
+.fillcode {
+  margin: 0;
+  padding: 10px 12px;
+  font-family: var(--font-mono);
+  font-size: 0.86rem;
+  color: #bfe6ff;
+  background: var(--web-editor);
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-variant-ligatures: none;
+}
+
+.fillcode {
+  border-bottom: 1px solid var(--web-line);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.gap {
+  display: inline-block;
+  min-width: 3.5em;
+  padding: 0 6px;
+  border-radius: 6px;
+  border: 1.5px dashed var(--web-pink);
+  color: var(--web-pink);
+  text-align: center;
+}
+
+.gapOk {
+  border-style: solid;
+  border-color: var(--web-neon);
+  color: var(--web-neon);
+  box-shadow: 0 0 14px -2px var(--web-neon);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
+}
+
+.three {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 520px) {
+  .three {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.tokGood {
+  border-color: var(--web-neon);
+  color: var(--web-neon);
+  box-shadow: 0 0 16px -2px var(--web-neon);
+}
+
+.tokBad {
+  border-color: var(--web-bad);
+  color: var(--web-bad);
+  opacity: 0.55;
+}
+
+.tabbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #1a2238;
+  padding: 6px 10px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--web-text);
+  border-top: 1px solid var(--web-line);
+}
+
+.tabbar i {
+  width: 10px;
+  height: 10px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--web-css);
+  box-shadow: 0 0 8px var(--web-css);
+}
+
+.tabbar span {
+  background: var(--web-panel);
+  border-radius: 8px 8px 0 0;
+  padding: 4px 12px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* interrogatório da AVT */
+.avt {
+  display: grid;
+}
+
+.avtEyebrow {
+  color: var(--web-bad);
+  padding: 10px 12px 0;
+}
+
+.avtQ {
+  margin: 0;
+  padding: 12px 12px 0;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+/* poda */
+.snips {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+}
+
+.snip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  border: 1px solid var(--web-line);
+  background: var(--web-panel-2);
+  border-radius: 12px;
+  padding: 12px;
+  min-height: 48px;
+  color: var(--web-text);
+  cursor: pointer;
+  font: inherit;
+}
+
+.snip code {
+  font-family: var(--font-mono);
+  font-size: 0.86rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-variant-ligatures: none;
+}
+
+.snip:hover {
+  border-color: var(--web-pink);
+}
+
+.cut {
+  color: var(--web-pink);
+  font-size: 1.1rem;
+}
+
+.cutDone {
+  border-color: var(--web-neon);
+  color: var(--web-neon);
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+/* desarme a variante */
+.bomb {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 12px 12px 0;
+}
+
+.bomb b {
+  font-family: var(--font-mono);
+  font-size: 2.2rem;
+  color: var(--web-js);
+  text-shadow: 0 0 16px var(--web-js);
+}
+
+.bomb b.bombHot {
+  color: var(--web-bad);
+  text-shadow: 0 0 18px var(--web-bad);
+  animation: tpulse 0.5s ease-in-out infinite;
+}
+
+.bomb small {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--web-muted);
+}
+
+/* portal instável: o anel encolhe com o tempo (--tf vai de 1 a 0, no palco) */
+.portalBox {
+  position: relative;
+  height: 96px;
+  display: grid;
+  place-items: center;
+  border-bottom: 1px dashed var(--web-line);
+}
+
+.pring {
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  transform: scale(calc(0.25 + var(--tf, 1) * 0.75));
+  transition: transform 0.1s linear;
+  background: conic-gradient(from 0deg, var(--c), transparent 30%, var(--c) 55%, transparent 80%, var(--c));
+  -webkit-mask: radial-gradient(circle, transparent 55%, #000 58%);
+  mask: radial-gradient(circle, transparent 55%, #000 58%);
+  box-shadow: 0 0 30px -6px var(--c);
+}
+
+.portalBox span {
+  position: absolute;
+  bottom: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--web-muted);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .sx,
   .caret,
@@ -960,7 +1222,10 @@
   .hurt,
   .wrong,
   .flash,
-  .toast {
+  .toast,
+  .more,
+  .timer i.low,
+  .bomb b.bombHot {
     animation: none;
   }
   .it,

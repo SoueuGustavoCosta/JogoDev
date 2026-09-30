@@ -31,15 +31,25 @@ HTML, CSS e JavaScript. Protótipo aprovado (fonte da verdade de textos, regras 
 
 ## Motores de missão
 
-`order` (peças na ordem), `sort` (baldes), `catch` (chuva de itens, `requestAnimationFrame`), `bug` (linhas com bug), `code` (editor + prévia ao vivo num iframe `srcdoc`, conferência automática com debounce de 450 ms e teclas rápidas) e `tune` (arena com alvo tracejado: box, flex, grid e position). O palco controla missão X/N, tempo, 3 corações, dica da Sintaxe depois de um erro e "A linha do tempo ramificou".
+- `order` (peças na ordem), `sort` (baldes), `bug` (linhas com bug) e `tune` (arena com alvo tracejado: box, flex, grid e position).
+- `catch` (palavras caindo): começa devagar e acelera a cada acerto; no máximo 2 na tela nas fases iniciais; se nenhuma certa está caindo, a próxima é certa (`catchPace`).
+- `blocks` (montar código com blocos, estilo Duolingo) e `fill` (completar uma lacuna pequena), com prévia ao vivo. Substituem a digitação livre para iniciantes.
+- `code` (editor + prévia ao vivo): só na fase final (w10) e nos 4 chefes, com 1 ou 2 linhas a escrever.
+- Minijogos de pressão: `defuse` (Desarme a variante: ache a linha com bug antes do reset), `quiz` (Interrogatório da AVT: o que isso imprime? errou, perde vida), `portal` (Portal instável: peças na ordem enquanto o anel encolhe) e `prune` (Poda: 3 trechos, corte o inválido).
+
+O palco controla missão X/N, 3 corações, dica depois de um erro e "A linha do tempo ramificou". As falas da Sintaxe só avançam com toque (tocar enquanto digita mostra a fala inteira); o botão de começar aparece depois da última. O tempo só corre com o desafio na tela, 50% maior no começo da era e diminuindo fase a fase (`webStageDifficulty`/`webMissionTime`); nos últimos 30% a barra fica vermelha e pulsa. Acerto: brilho neon e som; erro: tremida, flash e som (respeitam o modo mudo do jogo).
 
 ## Como mexer no conteúdo
 
 - Cada missão é um objeto em `src/content/webEra/`. Missão de código precisa de `solution` (uma resposta certa): o teste `src/content/webEra.test.ts` roda a resposta e o código inicial das missões de HTML e JS no jsdom (a resposta passa, o início não).
 - As missões de CSS dependem do navegador calcular o estilo (o jsdom não faz cascata, grid nem media query). Todas as 26 missões de código, inclusive as de CSS, foram conferidas no Chromium na criação da era.
+- Falas: no máximo 2 por fase, com até 12 palavras cada (o teste confere).
 - Mudou uma gema (cor, ícone, lados)? Redesenhe os SVGs: `UPDATE_WEB_BADGES=1 npx vitest run src/content/webEra.test.ts`.
 
 ## Diferenças em relação ao protótipo
+
+A versão para iniciantes do protótipo é `claude_Era_da_Web.html` (mesmas mudanças de ritmo, falas, blocos e minijogos do jogo).
+
 
 - Nome do viajante: o do prólogo (o jogo já tem), então a era não pede de novo.
 - A Sintaxe é o `SintaxeFace` do jogo, não a versão do protótipo.

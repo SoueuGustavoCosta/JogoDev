@@ -1,15 +1,18 @@
 import { useEffect, useRef, useState, type PointerEvent } from 'react';
-import type { CatchMission as Catch } from '@/domain/webEra';
+import { catchPace, type CatchMission as Catch } from '@/domain/webEra';
+import { playCorrectSound } from '@/presentation/design-system';
 import styles from '../Stage.module.css';
 import type { EngineProps } from './types';
 
 type Faller = { el: HTMLButtonElement; x: number; y: number; v: number; dead?: boolean };
 
 /**
- * Chuva de itens (requestAnimationFrame): toque só nos certos até pegar `need`. A queda
- * mexe direto no `transform` dos botões (nada de re-render por quadro); o placar é estado.
+ * Chuva de itens (requestAnimationFrame): toque só nos certos até pegar `need`. Começa devagar
+ * e acelera a cada acerto; nas fases iniciais, no máximo 2 palavras na tela (ver `catchPace`).
+ * Se nenhuma palavra certa está caindo, a próxima é certa: o jogador nunca fica só esperando.
+ * A queda mexe direto no `transform` dos botões (nada de re-render por quadro).
  */
-export function CatchMission({ mission, api }: EngineProps<Catch>) {
+export function CatchMission({ mission, api, difficulty }: EngineProps<Catch>) {
   const max = mission.maxErr ?? 3;
   const arenaRef = useRef<HTMLDivElement>(null);
   const [got, setGot] = useState(0);
@@ -27,8 +30,10 @@ export function CatchMission({ mission, api }: EngineProps<Catch>) {
     let spawnAt = 0;
     let alive = true;
 
+    const pace = catchPace(difficulty);
     const spawn = () => {
-      const good = Math.random() < 0.58;
+      const noGoodFalling = !items.current.some((i) => !i.dead && i.el.dataset.good === '1');
+      const good = noGoodFalling || Math.random() < 0.6;
       const list = good ? mission.good : mission.bad;
       const el = document.createElement('button');
       el.type = 'button';
@@ -37,7 +42,7 @@ export function CatchMission({ mission, api }: EngineProps<Catch>) {
       el.dataset.good = good ? '1' : '0';
       arena.appendChild(el);
       const x = 8 + Math.random() * Math.max(10, arena.clientWidth - el.offsetWidth - 16);
-      const it: Faller = { el, x, y: -40, v: 55 + Math.random() * 40 + counts.current.got * 4 };
+      const it: Faller = { el, x, y: -40, v: pace.baseSpeed + Math.random() * 10 + counts.current.got * pace.speedPerHit };
       el.style.transform = `translate(${x}px,${it.y}px)`;
       items.current.push(it);
     };
@@ -46,9 +51,9 @@ export function CatchMission({ mission, api }: EngineProps<Catch>) {
       if (!alive) return;
       const dt = last ? (ts - last) / 1000 : 0;
       last = ts;
-      if (ts > spawnAt) {
+      if (ts > spawnAt && items.current.length < pace.maxOnScreen) {
         spawn();
-        spawnAt = ts + 620 + Math.random() * 380;
+        spawnAt = ts + pace.spawnMs + Math.random() * 300;
       }
       const h = arena.clientHeight;
       items.current = items.current.filter((it) => {
@@ -70,7 +75,7 @@ export function CatchMission({ mission, api }: EngineProps<Catch>) {
       for (const it of items.current) it.el.remove();
       items.current = [];
     };
-  }, [mission]);
+  }, [mission, difficulty]);
 
   const onPointerDown = (e: PointerEvent<HTMLDivElement>) => {
     const el = (e.target as HTMLElement).closest('button');
@@ -81,6 +86,7 @@ export function CatchMission({ mission, api }: EngineProps<Catch>) {
     const c = counts.current;
     if (el.dataset.good === '1') {
       el.classList.add(styles.hit!);
+      playCorrectSound();
       c.got += 1;
       setGot(c.got);
       if (c.got >= mission.need) {

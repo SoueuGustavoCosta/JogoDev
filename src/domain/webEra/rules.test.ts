@@ -4,6 +4,7 @@ import {
   areAllMoonsDone,
   areMoonsOpen,
   badgesForWebStage,
+  catchPace,
   isEcoUnlocked,
   isEraTrailUnlocked,
   isMoonBossUnlocked,
@@ -17,6 +18,8 @@ import {
   unlockedPieces,
   webEraOf,
   webEraXpTotal,
+  webMissionTime,
+  webStageDifficulty,
   webStageXp,
 } from './rules';
 import type { GemSpec, WebEraTrail, WebMoon } from './types';
@@ -109,5 +112,26 @@ describe('Era da Web: regras', () => {
     expect(merged.introSeen).toBe(true);
     expect(mergeProgress(a, b).webEra).toEqual(merged);
     expect(mergeProgress(createEmptyProgress(), createEmptyProgress()).webEra).toBeUndefined();
+  });
+});
+
+
+describe('Era da Web: pressão que cresce aos poucos', () => {
+  it('o tempo começa 50% maior e diminui fase a fase', () => {
+    const first = webMissionTime(20, webStageDifficulty('trail', 0));
+    const last = webMissionTime(20, webStageDifficulty('trail', 9));
+    expect(first).toBe(30);
+    expect(last).toBeLessThan(first);
+    expect(webMissionTime(20, webStageDifficulty('moonboss'))).toBe(20);
+  });
+
+  it('palavras caindo: no máximo 2 na tela no começo, mais rápidas e mais numerosas depois', () => {
+    const early = catchPace(webStageDifficulty('trail', 0));
+    const late = catchPace(webStageDifficulty('moonboss'));
+    expect(early.maxOnScreen).toBe(2);
+    expect(catchPace(webStageDifficulty('trail', 3)).maxOnScreen).toBe(2);
+    expect(late.maxOnScreen).toBeGreaterThan(2);
+    expect(late.baseSpeed).toBeGreaterThan(early.baseSpeed);
+    expect(early.speedPerHit).toBeGreaterThan(0);
   });
 });

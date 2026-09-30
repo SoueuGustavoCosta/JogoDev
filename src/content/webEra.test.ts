@@ -3,12 +3,16 @@ import { dirname, resolve } from 'node:path';
 import { JSDOM } from 'jsdom';
 import { describe, expect, it } from 'vitest';
 import {
+  blocksSource,
   buildCodePreview,
+  fillTemplate,
   webBossSchema,
   webBranchSchema,
   webEraTrailSchema,
   webMoonSchema,
+  type BlocksMission,
   type CodeMission,
+  type FillMission,
   type WebMission,
 } from '@/domain/webEra';
 import { gemSvg } from '@/presentation/design-system/gemSvg';
@@ -34,9 +38,9 @@ describe('Era da Web: conteúdo', () => {
     for (const b of webBranches) expect(() => webBranchSchema.parse(b), b.id).not.toThrow();
   });
 
-  it('tem 10 trilhas, o Eco com 6 missões e 3 luas (HTML, CSS, JS) com 5 trilhas + chefe', () => {
+  it('tem 10 trilhas, o Eco com 7 missões e 3 luas (HTML, CSS, JS) com 5 trilhas + chefe', () => {
     expect(webEraTrails).toHaveLength(10);
-    expect(ecoBoss.rounds).toHaveLength(6);
+    expect(ecoBoss.rounds).toHaveLength(7);
     expect(webMoons.map((m) => m.short)).toEqual(['HTML', 'CSS', 'JS']);
     for (const m of webMoons) expect(m.trails, m.id).toHaveLength(5);
   });
@@ -89,13 +93,32 @@ describe('Era da Web: conteúdo', () => {
     expect(webBranches.filter((b) => b.future).map((b) => b.id)).toEqual(['node']);
   });
 
-  it('mais ação, menos leitura: falas curtas da Sintaxe (no máximo 2 balões por entrada)', () => {
-    const says = [...webEraTrails.map((t) => t.say), ecoBoss.say, ...webMoons.flatMap((m) => [m.boss.say, ...m.trails.map((t) => t.say)])];
+  it('mais ação, menos leitura: no máximo 2 falas por fase, com até 12 palavras cada', () => {
+    const words = (line: string) => line.trim().split(/\s+/).length;
+    const says = [
+      ...webEraTrails.map((t) => t.say),
+      ecoBoss.say,
+      ...webMoons.flatMap((m) => [m.boss.say, ...m.trails.map((t) => t.say)]),
+      webEraCopy.intro,
+    ];
     for (const say of says) {
       expect(say.length, say.join(' | ')).toBeLessThanOrEqual(2);
-      for (const line of say) expect(line.length, line).toBeLessThanOrEqual(120);
+      for (const line of say) expect(words(line), line).toBeLessThanOrEqual(12);
     }
-    for (const line of webEraCopy.intro) expect(line.length, line).toBeLessThanOrEqual(120);
+  });
+
+  it('digitar código só na fase final e nos chefes, com no máximo 2 linhas a escrever', () => {
+    const allowed = new Set(['w10', 'eco', ...webMoons.map((m) => m.boss.id)]);
+    for (const [id, m] of codeMissions) {
+      expect(allowed.has(id.split(' ')[0]!), id).toBe(true);
+      const typed = m.solution.split('\n').length - (m.start ?? '').split('\n').filter((l) => l.trim()).length;
+      expect(typed, id).toBeLessThanOrEqual(2);
+    }
+  });
+
+  it('peças com {NAME} e {USER} viram o nome do viajante', () => {
+    expect(fillTemplate('Portfólio de {NAME}', 'Ana Souza')).toBe('Portfólio de Ana Souza');
+    expect(fillTemplate('github.com/{USER}', 'Ána Souza')).toBe('github.com/anasouza');
   });
 
   it('missões de pegar: a meta cabe na variedade de itens certos', () => {
@@ -131,14 +154,42 @@ describe('Era da Web: missões de código', () => {
     }
   });
 
-  it('o que o viajante escreve vai para o portfólio (nome, bio, título, links)', () => {
-    const captured = codeMissions.filter(([, m]) => m.capture && m.lang === 'html').map(([, m]) => {
-      const dom = new JSDOM(buildCodePreview(m, m.solution));
+  it('o que o viajante monta vai para o portfólio (nome, bio, título, links)', () => {
+    const name = 'Ana Souza';
+    const t = (x: string) => fillTemplate(x, name);
+    const htmlWithCapture = missions
+      .map(([, m]) => m)
+      .filter((m): m is BlocksMission | FillMission => (m.type === 'blocks' || m.type === 'fill') && m.lang === 'html' && Boolean(m.capture));
+    const captured = htmlWithCapture.map((m) => {
+      const src =
+        m.type === 'blocks'
+          ? blocksSource({ ...m, pre: t(m.pre ?? ''), post: t(m.post ?? '') }, m.tokens.map(t))
+          : t(m.pre) + t(Array.isArray(m.answer) ? m.answer[0]! : m.answer) + t(m.post);
+      const dom = new JSDOM(buildCodePreview(m, src));
       const win = dom.window as unknown as Window;
-      return m.capture!({ win, doc: win.document, src: m.solution });
+      return m.capture!({ win, doc: win.document, src });
     });
     const merged = Object.assign({}, ...captured);
-    expect(merged).toMatchObject({ title: 'Portfólio de Ana', name: 'Ana Souza', bio: 'Estudo programação e crio sites.' });
-    expect(merged.links).toEqual([{ href: 'https://github.com/seuusuario', t: 'GitHub' }]);
+    expect(merged).toMatchObject({ title: 'Portfólio de Ana Souza', name: 'Ana Souza', bio: 'Estudo programação e crio sites.' });
+    expect(merged.links).toEqual([{ href: 'https://github.com/anasouza', t: 'Meu GitHub' }]);
+  });
+
+  it('blocos: montando as peças na ordem, o código funciona (JS roda sem erro)', () => {
+    for (const [id, m] of missions) {
+      if (m.type !== 'blocks' || m.lang !== 'js') continue;
+      const dom = new JSDOM(buildCodePreview(m, blocksSource(m, m.tokens)), { runScripts: 'dangerously' });
+      expect((dom.window as unknown as { __err?: string | null }).__err ?? null, id).toBeNull();
+      dom.window.close();
+    }
+  });
+
+  it('lacunas de JS: a peça certa roda sem erro e mostra a saída na prévia', () => {
+    for (const [id, m] of missions) {
+      if (m.type !== 'fill' || m.lang !== 'js') continue;
+      const answer = Array.isArray(m.answer) ? m.answer[0]! : m.answer;
+      const dom = new JSDOM(buildCodePreview(m, m.pre + answer + m.post), { runScripts: 'dangerously' });
+      expect((dom.window as unknown as { __err?: string | null }).__err ?? null, id).toBeNull();
+      dom.window.close();
+    }
   });
 });
