@@ -28,7 +28,7 @@ export function WebMoonPage() {
   const { progressRepository, analytics } = useServices();
   const screen = useWebEraScreen();
   const moon = getWebMoon(moonId);
-  const { web, nexusSeen } = screen.view;
+  const { web, nexusSeen, travelerName } = screen.view;
 
   useEffect(() => {
     if (moon) openWebEra({ analytics }, { moon: moon.id });
@@ -94,7 +94,7 @@ export function WebMoonPage() {
           ◂ Era da Web
         </Link>
       </header>
-      <SintaxeTalk key={`${done}-${bossDown}`} lines={[bossDown ? `Você venceu ${moon.boss.name}. A ${moon.gem.name} é sua!` : moon.description]} />
+      <SintaxeTalk key={`${done}-${bossDown}`} lines={[bossDown ? `Você venceu ${moon.boss.name}. A ${moon.gem.name} é sua!` : `${moon.name}: 5 trilhas e o chefe ${moon.boss.name}.`]} />
 
       <div className={styles.secTitle}>
         <h2 style={{ color: moon.color }}>5 trilhas + chefe</h2>
@@ -117,6 +117,7 @@ export function WebMoonPage() {
       {screen.stage ? (
         <StageRunner
           stage={screen.stage}
+          travelerName={travelerName}
           onClose={screen.closeStage}
           onSeeBranches={() => {
             screen.closeStage();

@@ -7,6 +7,7 @@ import {
   WEB_HEARTS,
   WEB_XP_BONUS,
   WEB_XP_PER_MISSION,
+  webMissionTime,
   type DocLink,
   type GemSpec,
   type WebMission,
@@ -14,7 +15,7 @@ import {
   type WebStageKind,
 } from '@/domain/webEra';
 import { webEraCopy, webMoons, webSpecialGems } from '@/content/webEra';
-import { GemBadge, SintaxeFace } from '@/presentation/design-system';
+import { GemBadge, SintaxeFace, playCorrectSound, playVictorySound, playWrongSound } from '@/presentation/design-system';
 import { useServices } from '@/presentation/app/ServicesContext';
 import { MissionEngine, type MissionApi } from './engines';
 import { reducedMotion } from './engines/types';
@@ -36,6 +37,8 @@ export type WebStage = {
   gem?: GemSpec;
   pieceName?: string;
   moonName?: string;
+  /** Pressão da etapa (0 a 1, ver `webStageDifficulty`): tempo e ritmo das palavras caindo. */
+  difficulty: number;
 };
 
 type Phase = 'intro' | 'play' | 'over' | 'won';
@@ -51,8 +54,11 @@ export function StageRunner({
   onClose,
   onSeePortfolio,
   onSeeBranches,
+  travelerName,
 }: {
   stage: WebStage;
+  /** Nome do viajante, para os blocos com {NAME}. */
+  travelerName: string;
   onClose: () => void;
   onSeePortfolio?: () => void;
   onSeeBranches?: () => void;
@@ -71,8 +77,13 @@ export function StageRunner({
   const [flash, setFlash] = useState<{ color: string; n: number } | null>(null);
   const [hurt, setHurt] = useState(0);
   const [reward, setReward] = useState<Reward | null>(null);
+  // A intro só avança com toque; o botão de começar aparece depois da última fala.
+  const [introDone, setIntroDone] = useState(false);
+  const [glow, setGlow] = useState(0);
+  const [shakeArena, setShakeArena] = useState(0);
   const roundOver = useRef(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  const arenaRef = useRef<HTMLDivElement>(null);
   const mission = stage.rounds[i];
 
   // Tela cheia: a página de trás não rola, e o foco vem para o palco.
@@ -96,6 +107,15 @@ export function StageRunner({
     const t = window.setTimeout(() => setToast(null), 1400);
     return () => window.clearTimeout(t);
   }, [toast]);
+
+  // Erro: a arena treme. Reinicia a animação sem remontar o minijogo (que perderia o estado).
+  useEffect(() => {
+    const el = arenaRef.current;
+    if (!shakeArena || !el) return;
+    el.classList.remove(styles.shake!);
+    void el.offsetWidth;
+    el.classList.add(styles.shake!);
+  }, [shakeArena]);
 
   const showToast = useCallback((msg: string, bad = false) => setToast((t) => ({ msg, bad, n: (t?.n ?? 0) + 1 })), []);
   const doFlash = useCallback((color: string) => setFlash((f) => ({ color, n: (f?.n ?? 0) + 1 })), []);
@@ -129,6 +149,7 @@ export function StageRunner({
       }
       setReward(r);
       setPhase('won');
+      playVictorySound();
     },
     [stage, total, progressRepository, analytics, leaderboard],
   );
@@ -136,6 +157,7 @@ export function StageRunner({
   const startRound = useCallback(() => {
     roundOver.current = false;
     setTimeLeft(1);
+    setGlow(0);
     setAttempt((a) => a + 1);
     setPhase('play');
   }, []);
@@ -162,6 +184,7 @@ export function StageRunner({
         roundOver.current = true;
         showToast(msg || 'Ops!', true);
         doFlash('var(--web-bad)');
+        playWrongSound();
         const left = hearts - 1;
         setHearts(left);
         setLost((l) => l + 1);
@@ -173,13 +196,19 @@ export function StageRunner({
       },
       err: () => {
         doFlash('var(--web-bad)');
+        playWrongSound();
+        setShakeArena((n) => n + 1);
         try {
           navigator.vibrate?.(40);
         } catch {
           // Vibração é um extra.
         }
       },
-      ok: () => doFlash('var(--web-neon)'),
+      ok: () => {
+        doFlash('var(--web-neon)');
+        playCorrectSound();
+        setGlow((n) => n + 1);
+      },
       hint: () => setShowHint(true),
       toast: (msg: string) => showToast(msg),
       capture: (patch: Partial<WebPortfolio>) => saveWebPortfolioPiece({ repository: progressRepository }, { patch }),
@@ -189,21 +218,25 @@ export function StageRunner({
   const apiRef = useRef(api);
   apiRef.current = api;
 
-  // Barra de tempo: missão com `time` perde um coração quando o tempo acaba.
+  // Tempo da missão já com a pressão da etapa (50% maior no começo da era).
+  const seconds = mission?.time ? webMissionTime(mission.time, stage.difficulty) : 0;
+  const timeoutMsg = mission?.timeout ?? 'Tempo esgotado!';
+
+  // Barra de tempo: só começa com o desafio na tela (fase 'play'), nunca durante as falas.
   useEffect(() => {
-    if (phase !== 'play' || !mission?.time) return;
+    if (phase !== 'play' || !seconds) return;
     const t0 = Date.now();
-    const ms = mission.time * 1000;
+    const ms = seconds * 1000;
     const id = window.setInterval(() => {
       const f = 1 - (Date.now() - t0) / ms;
       setTimeLeft(Math.max(0, f));
       if (f <= 0) {
         window.clearInterval(id);
-        apiRef.current.fail('Tempo esgotado!');
+        apiRef.current.fail(timeoutMsg);
       }
     }, 100);
     return () => window.clearInterval(id);
-  }, [phase, attempt, mission]);
+  }, [phase, attempt, seconds, timeoutMsg]);
 
   const begin = () => {
     startWebStage({ analytics }, { stageId: stage.stageId, kind: stage.kind });
@@ -222,7 +255,7 @@ export function StageRunner({
   const accent = reward && reward.medals.some((g) => g.tier === 'lendaria') ? 'var(--web-gold)' : stage.color;
 
   return createPortal(
-    <div ref={rootRef} className={styles.stage} style={{ ['--c' as string]: stage.color }} role="dialog" aria-modal="true" aria-label={stage.title} tabIndex={-1}>
+    <div ref={rootRef} className={styles.stage} style={{ ['--c' as string]: stage.color, ['--tf' as string]: timeLeft }} role="dialog" aria-modal="true" aria-label={stage.title} tabIndex={-1}>
       <div className={styles.inner}>
         <div className={styles.top}>
           <button type="button" className={styles.x} onClick={onClose} aria-label="Sair">
@@ -263,11 +296,13 @@ export function StageRunner({
               <span className={styles.eyebrow}>{isBoss ? 'batalha' : 'portal'}</span>
               <h3>{stage.title}</h3>
             </div>
-            <SintaxeTalk lines={stage.say} />
+            <SintaxeTalk lines={stage.say} onLastLine={() => setIntroDone(true)} />
             <div className={styles.row}>
-              <button type="button" className={`${styles.btn} ${isBoss ? styles.red : styles.hot}`} onClick={begin} autoFocus>
-                {isBoss ? 'Lutar!' : 'Bora!'}
-              </button>
+              {introDone ? (
+                <button type="button" className={`${styles.btn} ${isBoss ? styles.red : styles.hot}`} onClick={begin} autoFocus>
+                  {isBoss ? 'Lutar!' : 'Bora!'}
+                </button>
+              ) : null}
               {stage.doc ? (
                 <p className={styles.docl}>
                   doc ·{' '}
@@ -285,18 +320,26 @@ export function StageRunner({
             <div className={styles.mission}>
               <span className={styles.eyebrow}>
                 missão {i + 1}/{total}
-                {mission.time ? ` · ${mission.time}s` : ''}
+                {seconds ? ` · ${seconds}s` : ''}
               </span>
               <h3>{mission.title}</h3>
               <p>{mission.sub}</p>
             </div>
-            {mission.time ? (
+            {seconds ? (
               <div className={styles.timer} aria-hidden="true">
                 <i className={timeLeft < 0.3 ? styles.low : undefined} style={{ width: `${timeLeft * 100}%` }} />
               </div>
             ) : null}
-            <div className={styles.arena}>
-              <MissionEngine key={attempt} mission={mission} api={api} />
+            {/* Acerto = brilho neon; erro = tremida (ver o efeito de `shakeArena`). */}
+            <div ref={arenaRef} className={`${styles.arena} ${glow ? styles.glow : ''}`}>
+              <MissionEngine
+                key={attempt}
+                mission={mission}
+                api={api}
+                difficulty={stage.difficulty}
+                travelerName={travelerName}
+                seconds={seconds}
+              />
             </div>
             {showHint ? (
               <div className={styles.hintbar}>

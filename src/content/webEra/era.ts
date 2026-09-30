@@ -1,9 +1,11 @@
 import type { GemSpec, WebBoss, WebEraTrail } from '@/domain/webEra';
 
 /**
- * Era da Web: as 10 trilhas, o chefe Eco e as insígnias especiais. Porte fiel do protótipo
- * aprovado (`docs/eras/web/Era_da_Web.html`, fonte da verdade de textos e regras). Os links
- * de documentação são da MDN e do W3C.
+ * Era da Web: as 10 trilhas, o chefe Eco e as insígnias especiais. Base: o protótipo aprovado
+ * (`docs/eras/web/Era_da_Web.html`), com a versão para iniciantes (`claude_Era_da_Web.html`):
+ * falas curtas, código montado com blocos ou lacuna (digitar só na fase final e nos chefes) e
+ * os minijogos de pressão (desarme, interrogatório, portal e poda). Docs: MDN e W3C.
+ * `{NAME}` e `{USER}` viram o nome do viajante na tela.
  */
 
 export const TAGS_HTML = ['<p>', '<h1>', '<h2>', '<body>', '<head>', '<title>', '<a>', '<img>', '<ul>', '<li>', '<main>', '<nav>', '<footer>', '<section>', '<button>'];
@@ -15,6 +17,8 @@ export const BASE_CARDS = `<div class="grade">
   <div class="outro">Rascunho</div>
 </div>`;
 
+const DARK_HTML = '<style>.escuro{background:#111;color:#eee}</style><button id="tema">Tema</button>';
+
 /** Cada trilha: missões curtas (ação) + 1 peça do portfólio. */
 export const webEraTrails: WebEraTrail[] = [
   {
@@ -25,10 +29,7 @@ export const webEraTrails: WebEraTrail[] = [
     gem: { badgeId: 'web-faisca', name: 'Faísca da Web', icon: 'globe', sides: 8, c1: '#d9c6ff', c2: '#5b2bd6', tier: 'comum' },
     piece: 'files',
     pieceName: 'pasta do projeto',
-    say: [
-      'CERN, 1989. Tim Berners-Lee queria que cientistas ligassem documentos por links.',
-      'O Eco, a sua variante, está apagando essa linha do tempo. Bora consertar!',
-    ],
+    say: ['CERN, 1989: Tim Berners-Lee inventa a Web.', 'O Eco quer apagar tudo. Bora consertar!'],
     doc: { label: 'W3C · história do CSS', url: 'https://www.w3.org/Style/CSS20/history.html' },
     rounds: [
       {
@@ -48,7 +49,7 @@ export const webEraTrails: WebEraTrail[] = [
       {
         type: 'sort',
         title: 'Quem faz o quê?',
-        sub: 'Toque rápido no dono de cada peça.',
+        sub: 'Toque no dono de cada peça.',
         time: 30,
         maxErr: 3,
         buckets: [
@@ -89,7 +90,7 @@ export const webEraTrails: WebEraTrail[] = [
     gem: { badgeId: 'web-esqueleto', name: 'Esqueleto de Tags', icon: 'skeleton', sides: 6, c1: '#ffb38a', c2: '#c2410c', tier: 'comum' },
     piece: 'title',
     pieceName: 'título da aba',
-    say: ['Todo site nasce de um esqueleto. Sem ele, o navegador fica perdido.', 'Monta rápido, viajante!'],
+    say: ['Todo site nasce de um esqueleto HTML.', 'Monta rápido, viajante!'],
     doc: {
       label: 'MDN · estrutura de um documento',
       url: 'https://developer.mozilla.org/pt-BR/docs/Learn_web_development/Core/Structuring_content/Basic_HTML_syntax',
@@ -98,22 +99,22 @@ export const webEraTrails: WebEraTrail[] = [
       {
         type: 'order',
         title: 'Monte o esqueleto',
-        sub: 'Toque na ordem de cima pra baixo.',
+        sub: 'Toque de cima pra baixo.',
         block: true,
         preview: true,
         tokens: ['<!DOCTYPE html>', '<html lang="pt-BR">', '<head>', '<title>Meu Portfólio</title>', '</head>', '<body>', '<h1>Olá!</h1>', '</body>', '</html>'],
         extra: ['<bodi>', '</title>'],
       },
-      { type: 'catch', title: 'Chuva de tags', sub: 'Pegue só tags que existem.', time: 25, need: 9, maxErr: 3, good: TAGS_HTML, bad: TAGS_FAKE },
+      { type: 'catch', title: 'Chuva de tags', sub: 'Pegue só tags que existem.', time: 25, need: 8, maxErr: 3, good: TAGS_HTML, bad: TAGS_FAKE },
       {
-        type: 'code',
+        type: 'blocks',
         lang: 'html',
         title: 'Dê nome à aba',
-        sub: 'Escreva um <title> com o seu nome.',
-        start: '<!DOCTYPE html>\n<html lang="pt-BR">\n<head>\n  \n</head>\n<body></body>\n</html>',
-        hint: 'Dentro do <head>: <title>Portfólio de Ana</title>',
-        solution: '<!DOCTYPE html>\n<html lang="pt-BR">\n<head>\n  <title>Portfólio de Ana</title>\n</head>\n<body></body>\n</html>',
-        check: ({ doc }) => doc.title.trim().length > 2 || 'O navegador ainda não achou um <title> com texto.',
+        sub: 'Monte o <head>. Olhe a aba mudar!',
+        block: true,
+        tab: true,
+        tokens: ['<head>', '<title>Portfólio de {NAME}</title>', '</head>'],
+        extra: ['<titel>Portfólio</titel>', '<body>'],
         capture: ({ doc }) => ({ title: doc.title.trim() }),
       },
     ],
@@ -126,24 +127,19 @@ export const webEraTrails: WebEraTrail[] = [
     gem: { badgeId: 'web-voz-h1', name: 'Voz do H1', icon: 'h1', sides: 8, c1: '#ffc38a', c2: '#d9480f', tier: 'comum' },
     piece: 'hero',
     pieceName: 'seu nome + bio',
-    say: ['Agora o portfólio precisa falar quem você é.', 'Tudo que você escrever aqui vai pro SEU site.'],
+    say: ['Agora o site precisa dizer quem você é.', 'Tudo aqui vai pro SEU portfólio.'],
     doc: {
       label: 'MDN · títulos e parágrafos',
       url: 'https://developer.mozilla.org/pt-BR/docs/Learn_web_development/Core/Structuring_content/Headings_and_paragraphs',
     },
     rounds: [
       {
-        type: 'code',
+        type: 'blocks',
         lang: 'html',
         title: 'Seu nome em destaque',
-        sub: 'Crie um <h1> com seu nome.',
-        start: '',
-        hint: '<h1>Seu Nome</h1>',
-        solution: '<h1>Ana Souza</h1>',
-        check: ({ doc }) => {
-          const h = doc.querySelector('h1');
-          return (h !== null && (h.textContent ?? '').trim().length > 1) || 'Falta um <h1> com texto dentro.';
-        },
+        sub: 'Monte o <h1> com seu nome.',
+        tokens: ['<h1>', '{NAME}', '</h1>'],
+        extra: ['<h7>', '</p>'],
         capture: ({ doc }) => ({ name: doc.querySelector('h1')?.textContent?.trim() }),
       },
       {
@@ -155,17 +151,14 @@ export const webEraTrails: WebEraTrail[] = [
         bad: [0, 2, 4],
       },
       {
-        type: 'code',
+        type: 'fill',
         lang: 'html',
-        title: 'Escreva sua bio',
-        sub: 'Um <p> contando o que você faz.',
-        start: '<h1>Eu</h1>\n',
-        hint: '<p>Estudo programação e crio sites.</p>',
-        solution: '<h1>Eu</h1>\n<p>Estudo programação e crio sites.</p>',
-        check: ({ doc }) => {
-          const p = doc.querySelector('p');
-          return (p !== null && (p.textContent ?? '').trim().length >= 12) || 'Crie um <p> com pelo menos uma frase.';
-        },
+        title: 'Sua bio',
+        sub: 'Qual tag faz um parágrafo?',
+        pre: '<h1>{NAME}</h1>\n<',
+        options: ['p', 'h7', 'bio'],
+        answer: 'p',
+        post: '>Estudo programação e crio sites.</p>',
         capture: ({ doc }) => ({ bio: doc.querySelector('p')?.textContent?.trim() }),
       },
     ],
@@ -178,7 +171,7 @@ export const webEraTrails: WebEraTrail[] = [
     gem: { badgeId: 'web-elo-hipertexto', name: 'Elo do Hipertexto', icon: 'link', sides: 10, c1: '#ffd08a', c2: '#b45309', tier: 'comum' },
     piece: 'links',
     pieceName: 'seus links',
-    say: ['O “H” de HTML é de Hiper: texto que pula pra outro texto.', 'Links são o coração da Web.'],
+    say: ['O “H” de HTML é de Hiper: texto que pula.', 'Links são o coração da Web.'],
     doc: {
       label: 'MDN · criando links',
       url: 'https://developer.mozilla.org/pt-BR/docs/Learn_web_development/Core/Structuring_content/Creating_links',
@@ -191,6 +184,16 @@ export const webEraTrails: WebEraTrail[] = [
         preview: true,
         tokens: ['<a', 'href="https://github.com"', 'target="_blank">', 'Meu GitHub', '</a>'],
         extra: ['src="github"'],
+      },
+      {
+        type: 'prune',
+        title: 'Poda',
+        sub: '3 trechos, 1 inválido. Corte ele!',
+        sets: [
+          { snips: ['<a href="/sobre">Sobre</a>', '<a src="/sobre">Sobre</a>', '<a href="#topo">Topo</a>'], bad: 1, why: 'link usa href, não src' },
+          { snips: ['<img src="eu.png" alt="Eu">', '<img href="eu.png" alt="Eu">', '<img src="logo.svg" alt="Logo">'], bad: 1, why: 'imagem usa src' },
+          { snips: ['<a href="https://site.com">Site</a>', '<a href="mailto:oi@ana.dev">E-mail</a>', '<a href=https://site.com>Site<a>'], bad: 2, why: 'faltou fechar com </a>' },
+        ],
       },
       {
         type: 'bug',
@@ -208,22 +211,16 @@ export const webEraTrails: WebEraTrail[] = [
         why: ['', 'img sem alt: leitor de tela não sabe o que é', 'link usa href, não src', '', 'aspas no valor do atributo'],
       },
       {
-        type: 'code',
+        type: 'fill',
         lang: 'html',
         title: 'Seu link de verdade',
-        sub: 'Crie um <a> com href começando em https://',
-        start: '',
-        hint: '<a href="https://github.com/seuusuario">GitHub</a>',
-        solution: '<a href="https://github.com/seuusuario">GitHub</a>',
-        check: ({ doc }) => {
-          const a = doc.querySelector('a[href^="http"]');
-          return a !== null && (a.textContent ?? '').trim() ? true : 'Falta um <a href="https://..."> com texto.';
-        },
+        sub: 'Qual atributo guarda o endereço?',
+        pre: '<a ',
+        options: ['href', 'src', 'link'],
+        answer: 'href',
+        post: '="https://github.com/{USER}">Meu GitHub</a>',
         capture: ({ doc }) => ({
-          links: [...doc.querySelectorAll('a[href^="http"]')].slice(0, 4).map((a) => ({
-            href: a.getAttribute('href') ?? '',
-            t: (a.textContent ?? '').trim(),
-          })),
+          links: [...doc.querySelectorAll('a[href^="http"]')].slice(0, 4).map((a) => ({ href: a.getAttribute('href') ?? '', t: (a.textContent ?? '').trim() })),
         }),
       },
     ],
@@ -236,7 +233,7 @@ export const webEraTrails: WebEraTrail[] = [
     gem: { badgeId: 'web-arquiteto-semantico', name: 'Arquiteto Semântico', icon: 'layout', sides: 6, c1: '#ffa06b', c2: '#9a3412', tier: 'comum' },
     piece: 'sections',
     pieceName: 'seções do site',
-    say: ['Tags com significado ajudam o Google e quem usa leitor de tela.', 'Divida o site em partes com nome.'],
+    say: ['Tags com significado ajudam o Google e leitores de tela.', 'Divida o site em partes com nome.'],
     doc: {
       label: 'MDN · estrutura do site',
       url: 'https://developer.mozilla.org/pt-BR/docs/Learn_web_development/Core/Structuring_content/Structuring_documents',
@@ -290,26 +287,22 @@ export const webEraTrails: WebEraTrail[] = [
     gem: { badgeId: 'web-pincel-neon', name: 'Pincel Neon', icon: 'brush', sides: 8, c1: '#8ad8ff', c2: '#1d4ed8', tier: 'comum' },
     piece: 'color',
     pieceName: 'cor do seu site',
-    say: ['10 de outubro de 1994: Håkon Lie propõe o CSS. A Web era só texto cru.', 'Separe o conteúdo da aparência!'],
+    say: ['1994: Håkon Lie propõe o CSS.', 'Conteúdo num lugar, aparência no outro!'],
     doc: {
       label: 'MDN · seletores CSS',
       url: 'https://developer.mozilla.org/pt-BR/docs/Learn_web_development/Core/Styling_basics/Basic_selectors',
     },
     rounds: [
       {
-        type: 'code',
+        type: 'fill',
         lang: 'css',
         title: 'Pinte seu nome',
-        sub: 'Dê uma cor ao h1. Essa vira a cor do seu site!',
-        html: '<h1>Seu Nome</h1><p>Portfólio</p>',
-        start: 'h1 {\n  color: ;\n}',
-        hint: 'h1 { color: #ff6ad5; }  (ou tomato, deepskyblue...)',
-        solution: 'h1 {\n  color: tomato;\n}',
-        check: ({ win, doc }) => {
-          // Compara com a cor herdada do body (no protótipo, comparar com preto deixava passar sem cor nenhuma).
-          const h = doc.querySelector('h1');
-          return (h !== null && win.getComputedStyle(h).color !== win.getComputedStyle(doc.body).color) || 'O h1 ainda está preto. Tente color: tomato;';
-        },
+        sub: 'Escolha a cor do SEU site.',
+        html: '<h1>{NAME}</h1><p>Portfólio</p>',
+        pre: 'h1 {\n  color: ',
+        options: ['tomato', 'deepskyblue', 'hotpink', 'cor-rosa'],
+        answer: ['tomato', 'deepskyblue', 'hotpink'],
+        post: ';\n}',
         capture: ({ win, doc }) => {
           const h = doc.querySelector('h1');
           return h ? { color: win.getComputedStyle(h).color } : {};
@@ -326,20 +319,25 @@ export const webEraTrails: WebEraTrail[] = [
         bad: ['..card', '#', '<p>', 'h1{', 'cor:azul', '.', '@@'],
       },
       {
-        type: 'code',
+        type: 'prune',
+        title: 'Poda do CSS',
+        sub: 'Corte a regra quebrada.',
+        sets: [
+          { snips: ['h1 { color: red; }', 'h1 ( color: red; )', 'p { font-size: 20px; }'], bad: 1, why: 'CSS usa chaves { }' },
+          { snips: ['.card { padding: 8px; }', '.card { padding 8px; }', '#topo { margin: 0; }'], bad: 1, why: 'faltaram os dois-pontos' },
+          { snips: ['a:hover { color: gold; }', 'nav a { color: white; }', 'a hover { color: gold; }'], bad: 2, why: ':hover leva dois-pontos' },
+        ],
+      },
+      {
+        type: 'fill',
         lang: 'css',
         title: 'Mira no alvo',
-        sub: 'Só os .projeto ganham borda. O “Rascunho” não!',
+        sub: 'Só os .projeto ganham borda.',
         html: BASE_CARDS,
-        start: '\n',
-        hint: '.projeto { border: 2px solid deeppink; }',
-        solution: '.projeto { border: 2px solid deeppink; }',
-        check: ({ win, doc }) => {
-          const projetos = [...doc.querySelectorAll('.projeto')].every((e) => parseFloat(win.getComputedStyle(e).borderTopWidth) > 0);
-          const outro = doc.querySelector('.outro');
-          const limpo = outro !== null && parseFloat(win.getComputedStyle(outro).borderTopWidth) === 0;
-          return (projetos && limpo) || (!projetos ? 'Os .projeto ainda estão sem borda.' : 'O Rascunho também pegou borda. Use o seletor de classe .projeto');
-        },
+        pre: '',
+        options: ['.projeto', 'projeto', '#projeto'],
+        answer: '.projeto',
+        post: ' { border: 2px solid deeppink; }',
       },
     ],
   },
@@ -351,7 +349,7 @@ export const webEraTrails: WebEraTrail[] = [
     gem: { badgeId: 'web-caixa-perfeita', name: 'Caixa Perfeita', icon: 'box', sides: 4, c1: '#9be3ff', c2: '#0e7490', tier: 'comum' },
     piece: 'cards',
     pieceName: 'cards de projeto',
-    say: ['Para o CSS, tudo é uma caixa: conteúdo, padding, borda e margem.', 'Ajuste até ficar igual ao alvo.'],
+    say: ['Pro CSS, tudo é caixa: conteúdo, padding, borda e margem.', 'Ajuste até ficar igual ao alvo.'],
     doc: { label: 'MDN · box model', url: 'https://developer.mozilla.org/pt-BR/docs/Learn_web_development/Core/Styling_basics/Box_model' },
     rounds: [
       {
@@ -388,20 +386,15 @@ export const webEraTrails: WebEraTrail[] = [
         target: { padding: '28px', 'border-width': '2px', 'border-radius': '20px' },
       },
       {
-        type: 'code',
+        type: 'fill',
         lang: 'css',
         title: 'Card de projeto',
-        sub: 'Dê padding: 20px e cantos arredondados ao .card',
+        sub: 'Qual valor de padding funciona?',
         html: '<div class="card">Meu projeto</div>',
-        start: '.card {\n  border: 2px solid #3db8ff;\n  \n}',
-        hint: 'padding: 20px;  border-radius: 12px;',
-        solution: '.card {\n  border: 2px solid #3db8ff;\n  padding: 20px;\n  border-radius: 12px;\n}',
-        check: ({ win, doc }) => {
-          const card = doc.querySelector('.card');
-          if (!card) return 'Cadê o .card?';
-          const s = win.getComputedStyle(card);
-          return (s.paddingTop === '20px' && parseFloat(s.borderTopLeftRadius) > 0) || 'Precisa de padding: 20px e border-radius maior que 0.';
-        },
+        pre: '.card {\n  border: 2px solid #3db8ff;\n  padding: ',
+        options: ['20px', '20', 'vinte'],
+        answer: '20px',
+        post: ';\n  border-radius: 12px;\n}',
       },
     ],
   },
@@ -413,7 +406,7 @@ export const webEraTrails: WebEraTrail[] = [
     gem: { badgeId: 'web-mestre-flex', name: 'Mestre do Flex', icon: 'flex', sides: 8, c1: '#7cc7ff', c2: '#4338ca', tier: 'comum' },
     piece: 'flex',
     pieceName: 'projetos lado a lado',
-    say: ['Flexbox alinha caixas numa linha ou coluna, sem gambiarra.', 'Mova as peças até o alvo!'],
+    say: ['Flexbox alinha caixas em linha ou coluna.', 'Mova as peças até o alvo!'],
     doc: { label: 'MDN · flexbox', url: 'https://developer.mozilla.org/pt-BR/docs/Learn_web_development/Core/CSS_layout/Flexbox' },
     rounds: [
       {
@@ -448,20 +441,15 @@ export const webEraTrails: WebEraTrail[] = [
         target: { 'flex-direction': 'column', 'justify-content': 'center', 'align-items': 'flex-end' },
       },
       {
-        type: 'code',
+        type: 'fill',
         lang: 'css',
         title: 'Projetos lado a lado',
-        sub: 'Faça a .grade virar flex, com gap.',
+        sub: 'Qual display põe lado a lado?',
         html: BASE_CARDS,
-        start: '.grade {\n  \n}\n.projeto, .outro { padding: 16px; background: #e0f2fe; }',
-        hint: '.grade { display: flex; gap: 12px; }',
-        solution: '.grade {\n  display: flex;\n  gap: 12px;\n}\n.projeto, .outro { padding: 16px; background: #e0f2fe; }',
-        check: ({ win, doc }) => {
-          const grade = doc.querySelector('.grade');
-          if (!grade) return 'Cadê a .grade?';
-          const s = win.getComputedStyle(grade);
-          return (s.display === 'flex' && parseFloat(s.columnGap || s.gap) > 0) || 'Use display: flex e gap na .grade';
-        },
+        pre: '.grade {\n  display: ',
+        options: ['flex', 'flexbox', 'lado-a-lado'],
+        answer: 'flex',
+        post: ';\n  gap: 12px;\n}\n.projeto, .outro { padding: 16px; background: #e0f2fe; }',
       },
     ],
   },
@@ -473,10 +461,7 @@ export const webEraTrails: WebEraTrail[] = [
     gem: { badgeId: 'web-raio-eich', name: 'Raio de Eich', icon: 'bolt', sides: 6, c1: '#fff08a', c2: '#ca8a04', tier: 'comum' },
     piece: 'greet',
     pieceName: 'saudação viva',
-    say: [
-      'Maio de 1995: Brendan Eich cria o JavaScript na Netscape, em cerca de 10 dias.',
-      'Nome antes: Mocha, depois LiveScript. Agora dá vida a página!',
-    ],
+    say: ['1995: Brendan Eich cria o JavaScript em uns 10 dias.', 'Agora a página ganha vida!'],
     doc: { label: 'MDN · eventos', url: 'https://developer.mozilla.org/pt-BR/docs/Learn_web_development/Core/Scripting/Events' },
     rounds: [
       {
@@ -509,23 +494,26 @@ export const webEraTrails: WebEraTrail[] = [
         extra: ['var=', 'querySelector'],
       },
       {
-        type: 'code',
+        type: 'quiz',
+        title: 'Interrogatório da AVT',
+        sub: 'Errou? Perde uma vida.',
+        time: 25,
+        code: 'let x = "1" + 1;\nconsole.log(x);',
+        options: ['11', '2', '"1"1'],
+        answer: '11',
+      },
+      {
+        type: 'blocks',
         lang: 'js',
         title: 'Contador de cliques',
-        sub: 'Cada clique soma +1 no número.',
+        sub: 'Monte o que o clique faz. Depois, teste!',
+        block: true,
+        joiner: '\n',
         html: '<button>Curtir</button> <span id="n">0</span>',
-        start:
-          'const botao = document.querySelector("button");\nconst n = document.querySelector("#n");\nlet cliques = 0;\n\nbotao.addEventListener("click", () => {\n  // some 1 e mostre no span\n  \n});',
-        hint: 'cliques++;  n.textContent = cliques;',
-        solution:
-          'const botao = document.querySelector("button");\nconst n = document.querySelector("#n");\nlet cliques = 0;\n\nbotao.addEventListener("click", () => {\n  cliques++;\n  n.textContent = cliques;\n});',
-        check: ({ win, doc }) => {
-          if (win.__err) return 'Erro: ' + win.__err;
-          const b = doc.querySelector('button');
-          b?.click();
-          b?.click();
-          return (doc.querySelector('#n')?.textContent ?? '').trim() === '2' || 'Cliquei 2 vezes, mas o número não virou 2.';
-        },
+        pre: 'const botao = document.querySelector("button");\nconst n = document.querySelector("#n");\nlet cliques = 0;\nbotao.addEventListener("click", () => {\n',
+        tokens: ['  cliques++;', '  n.textContent = cliques;'],
+        extra: ['  cliques--;'],
+        post: '\n});',
       },
     ],
   },
@@ -537,34 +525,28 @@ export const webEraTrails: WebEraTrail[] = [
     gem: { badgeId: 'web-raiz-dom', name: 'Raiz do DOM', icon: 'tree', sides: 10, c1: '#ffe98a', c2: '#a16207', tier: 'comum' },
     piece: 'dark',
     pieceName: 'modo escuro',
-    say: ['O DOM é a árvore da página. O JS mexe nela ao vivo.', 'Último passo antes do chefe!'],
+    say: ['O DOM é a árvore da página.', 'O JS mexe nela ao vivo. Último passo!'],
     doc: {
       label: 'MDN · manipulando o DOM',
       url: 'https://developer.mozilla.org/pt-BR/docs/Learn_web_development/Core/Scripting/DOM_scripting',
     },
     rounds: [
       {
-        type: 'bug',
-        title: 'Bugs no script',
-        sub: 'Toque nas 3 linhas erradas.',
-        time: 30,
-        mono: true,
-        lines: [
-          'const titulo = document.querySelector("#titulo");',
-          'titulo.textContent = "Oi!";',
-          'document.querySelecter("p");',
-          'botao.addEventListener("clik", abrir);',
-          'const x = 5;',
-          'x = 6;',
-        ],
-        bad: [2, 3, 5],
-        why: ['', '', 'querySelector com “o”', 'o evento é "click"', '', 'const não pode ser reatribuída'],
+        type: 'defuse',
+        title: 'Desarme a variante',
+        sub: 'Toque na linha com bug antes do reset!',
+        time: 20,
+        maxErr: 2,
+        timeout: 'Reset! A variante escapou.',
+        lines: ['const titulo = document.querySelector("#titulo");', 'titulo.textContent = "Oi!";', 'document.querySelecter("p");', 'const x = 5;'],
+        bad: 2,
+        why: 'querySelector com “o”',
       },
       {
         type: 'code',
         lang: 'js',
         title: 'Troque o título',
-        sub: 'Mude o texto do #titulo pelo seu nome.',
+        sub: 'Escreva 1 linha: o #titulo vira seu nome.',
         html: '<h1 id="titulo">Carregando...</h1>',
         start: 'const titulo = document.querySelector("#titulo");\n',
         hint: 'titulo.textContent = "Ana Souza";',
@@ -579,8 +561,8 @@ export const webEraTrails: WebEraTrail[] = [
         type: 'code',
         lang: 'js',
         title: 'Modo escuro',
-        sub: 'Ao clicar em #tema, alterne a classe "escuro" no body.',
-        html: '<style>.escuro{background:#111;color:#eee}</style><button id="tema">Tema</button><p>Meu portfólio</p>',
+        sub: '1 linha: o clique alterna a classe "escuro" no body.',
+        html: `${DARK_HTML}<p>Meu portfólio</p>`,
         start: 'const tema = document.querySelector("#tema");\n\ntema.addEventListener("click", () => {\n  \n});',
         hint: 'document.body.classList.toggle("escuro");',
         solution: 'const tema = document.querySelector("#tema");\n\ntema.addEventListener("click", () => {\n  document.body.classList.toggle("escuro");\n});',
@@ -603,16 +585,13 @@ export const ecoBoss: WebBoss = {
   id: 'eco',
   name: 'Eco',
   face: 'E C O',
-  say: [
-    'Ele chegou. O Eco tem a sua cara, mas espalha erro 404 por onde passa. Ele apagou seu portfólio!',
-    'Cada golpe certo devolve um pedaço. Sem perder coração = insígnia lendária.',
-  ],
+  say: ['O Eco chegou e apagou seu portfólio!', 'Sem perder vida, a insígnia lendária é sua.'],
   rounds: [
     { type: 'catch', title: 'Fragmentos do Eco', sub: 'Pegue só tags reais. Rápido!', time: 18, need: 9, maxErr: 2, good: TAGS_HTML, bad: [...TAGS_FAKE, '404', '<null>'] },
     {
-      type: 'order',
-      title: 'Reerga o esqueleto',
-      sub: 'Sem errar!',
+      type: 'portal',
+      title: 'Portal instável',
+      sub: 'Reerga o esqueleto antes do portal fechar!',
       block: true,
       time: 40,
       tokens: ['<!DOCTYPE html>', '<html>', '<head>', '<link rel="stylesheet" href="style.css">', '</head>', '<body>', '<script src="script.js"></script>', '</body>', '</html>'],
@@ -670,14 +649,23 @@ export const ecoBoss: WebBoss = {
       ],
     },
     {
+      type: 'quiz',
+      title: 'Interrogatório da AVT',
+      sub: 'O Eco quer saber. Errou, perde vida!',
+      time: 20,
+      code: 'const tags = ["h1", "p"];\nconsole.log(tags.length);',
+      options: ['2', '1', '"h1p"'],
+      answer: '2',
+    },
+    {
       type: 'code',
       lang: 'js',
       title: 'Golpe final',
-      sub: 'Faça o #tema alternar a classe "escuro" no body.',
-      html: '<style>.escuro{background:#111;color:#eee}</style><button id="tema">Tema</button><p>O Eco não passará</p>',
-      start: '',
-      hint: 'document.querySelector("#tema").addEventListener("click", () => document.body.classList.toggle("escuro"));',
-      solution: 'document.querySelector("#tema").addEventListener("click", () => document.body.classList.toggle("escuro"));',
+      sub: '1 linha: o clique alterna a classe "escuro".',
+      html: `${DARK_HTML}<p>O Eco não passará</p>`,
+      start: 'const tema = document.querySelector("#tema");\ntema.addEventListener("click", () => {\n  \n});',
+      hint: 'document.body.classList.toggle("escuro");',
+      solution: 'const tema = document.querySelector("#tema");\ntema.addEventListener("click", () => {\n  document.body.classList.toggle("escuro");\n});',
       check: ({ win, doc }) => {
         if (win.__err) return 'Erro: ' + win.__err;
         const b = doc.querySelector<HTMLElement>('#tema');

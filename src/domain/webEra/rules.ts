@@ -190,3 +190,41 @@ export function badgesForWebStage(
   if (stage.kind === 'moon') return [];
   return stage.gem ? [stage.gem] : [];
 }
+
+/**
+ * Pressão da etapa, de 0 (primeira trilha da era) a 1 (chefes de lua). Cresce aos poucos,
+ * fase a fase: trilhas da era 0 → 0,7, Eco 0,85, trilhas de lua 0,6, chefes de lua 1.
+ */
+export function webStageDifficulty(kind: WebStageKind, trailIndex = 0, trailCount = 10): number {
+  if (kind === 'trail') return trailCount > 1 ? (Math.max(0, trailIndex) / (trailCount - 1)) * 0.7 : 0;
+  if (kind === 'boss') return 0.85;
+  if (kind === 'moon') return 0.6;
+  return 1;
+}
+
+/** Tempo da missão já ajustado: 50% maior no começo da era, o tempo normal nos chefes de lua. */
+export function webMissionTime(seconds: number, difficulty: number): number {
+  return Math.round(seconds * (1.5 - 0.5 * Math.min(1, Math.max(0, difficulty))));
+}
+
+export type CatchPace = {
+  /** Máximo de palavras caindo ao mesmo tempo (2 nas fases iniciais). */
+  maxOnScreen: number;
+  /** Velocidade da primeira palavra, em px/s. */
+  baseSpeed: number;
+  /** Quanto cada acerto acelera as próximas, em px/s. */
+  speedPerHit: number;
+  /** Intervalo mínimo entre uma palavra e a próxima, em ms. */
+  spawnMs: number;
+};
+
+/** Ritmo da chuva de palavras: começa devagar e acelera a cada acerto. */
+export function catchPace(difficulty: number): CatchPace {
+  const d = Math.min(1, Math.max(0, difficulty));
+  return {
+    maxOnScreen: d < 0.35 ? 2 : d < 0.75 ? 3 : 4,
+    baseSpeed: 40 + d * 36,
+    speedPerHit: 3 + d * 5,
+    spawnMs: 1150 - d * 450,
+  };
+}

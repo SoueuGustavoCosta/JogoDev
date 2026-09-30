@@ -15,6 +15,8 @@ type MissionBase = {
   time?: number;
   /** Dica da Sintaxe, mostrada depois de um erro. */
   hint?: string;
+  /** Mensagem quando o tempo acaba (padrão: "Tempo esgotado!"). */
+  timeout?: string;
 };
 
 /** Toque as peças na ordem certa. Acerto encaixa, erro treme; 3 erros = falha. */
@@ -108,7 +110,83 @@ export type TuneMission = MissionBase & {
   target: Record<string, string>;
 };
 
-export type WebMission = OrderMission | SortMission | CatchMission | BugMission | CodeMission | TuneMission;
+/**
+ * Montar código com blocos (estilo Duolingo): toque nas peças na ordem, com prévia ao vivo.
+ * `{NAME}` e `{USER}` viram o nome do viajante (ver `fillTemplate`).
+ */
+export type BlocksMission = MissionBase & {
+  type: 'blocks';
+  lang: WebLang;
+  html?: string;
+  /** Código fixo antes e depois das peças (contexto). */
+  pre?: string;
+  post?: string;
+  tokens: string[];
+  extra?: string[];
+  block?: boolean;
+  /** Como as peças se juntam (padrão: nova linha se `block`, senão nada). */
+  joiner?: string;
+  /** Mostra a aba do navegador com o `<title>` montado. */
+  tab?: boolean;
+  narrow?: boolean;
+  capture?: CodeCapture;
+};
+
+/** Completar uma lacuna pequena: escolha a peça que falta, com prévia ao vivo. */
+export type FillMission = MissionBase & {
+  type: 'fill';
+  lang: WebLang;
+  html?: string;
+  pre: string;
+  post: string;
+  options: string[];
+  /** Peça certa (ou peças certas, quando qualquer uma serve: ex. a cor do site). */
+  answer: string | string[];
+  narrow?: boolean;
+  capture?: CodeCapture;
+};
+
+/** Interrogatório da AVT: o chefe mostra um código e pergunta o que ele imprime. Errou, perde vida. */
+export type QuizMission = MissionBase & {
+  type: 'quiz';
+  code: string;
+  q?: string;
+  options: string[];
+  answer: string;
+};
+
+/** Poda: 3 trechos de código, 1 inválido. Corte o inválido, várias vezes seguidas. */
+export type PruneMission = MissionBase & {
+  type: 'prune';
+  sets: { snips: string[]; bad: number; why?: string }[];
+  maxErr?: number;
+};
+
+/** Desarme a variante: uma linha com bug e o contador do reset correndo. */
+export type DefuseMission = MissionBase & {
+  type: 'defuse';
+  lines: string[];
+  bad: number;
+  why?: string;
+  maxErr?: number;
+};
+
+/** Portal instável: peças na ordem antes que o portal feche (o anel encolhe com o tempo). */
+export type PortalMission = Omit<OrderMission, 'type'> & { type: 'portal' };
+
+export type WebMission =
+  | OrderMission
+  | SortMission
+  | CatchMission
+  | BugMission
+  | CodeMission
+  | TuneMission
+  | BlocksMission
+  | FillMission
+  | QuizMission
+  | PruneMission
+  | DefuseMission
+  | PortalMission;
 export type WebMissionType = WebMission['type'];
 
 /** Nível visual da insígnia-gema (ver `GemBadge`). */

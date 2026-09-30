@@ -9,7 +9,9 @@ const base = {
   sub: text,
   time: z.number().int().positive().optional(),
   hint: text.optional(),
+  timeout: text.optional(),
 };
+const lang = z.enum(['html', 'css', 'js']);
 
 const order = z
   .object({
@@ -82,7 +84,84 @@ const tune = z
   )
   .refine((m) => m.ctrls.some((c) => c.o[0] !== m.target[c.p]), 'o alvo já começa encaixado');
 
-export const webMissionSchema = z.union([order, sort, catchMission, bug, code, tune]);
+const blocks = z
+  .object({
+    ...base,
+    type: z.literal('blocks'),
+    lang,
+    html: z.string().optional(),
+    pre: z.string().optional(),
+    post: z.string().optional(),
+    tokens: z.array(text).min(2),
+    extra: z.array(text).optional(),
+    block: z.boolean().optional(),
+    joiner: z.string().optional(),
+    tab: z.boolean().optional(),
+    narrow: z.boolean().optional(),
+    capture: z.function().optional(),
+  })
+  .refine((m) => !(m.extra ?? []).some((e) => m.tokens.includes(e)), 'bloco extra igual a um bloco certo');
+
+const fill = z
+  .object({
+    ...base,
+    type: z.literal('fill'),
+    lang,
+    html: z.string().optional(),
+    pre: z.string(),
+    post: z.string(),
+    options: z.array(text).min(2).max(4),
+    answer: z.union([text, z.array(text).min(1)]),
+    narrow: z.boolean().optional(),
+    capture: z.function().optional(),
+  })
+  .refine((m) => (Array.isArray(m.answer) ? m.answer : [m.answer]).every((a) => m.options.includes(a)), 'resposta fora das opções')
+  .refine((m) => m.options.some((o) => !(Array.isArray(m.answer) ? m.answer : [m.answer]).includes(o)), 'nenhuma opção errada')
+  .refine((m) => new Set(m.options).size === m.options.length, 'opção repetida');
+
+const quiz = z
+  .object({ ...base, type: z.literal('quiz'), time: z.number().int().positive(), code: text, q: text.optional(), options: z.array(text).length(3), answer: text })
+  .refine((m) => m.options.includes(m.answer), 'resposta fora das opções')
+  .refine((m) => new Set(m.options).size === 3, 'opção repetida');
+
+const prune = z.object({
+  ...base,
+  type: z.literal('prune'),
+  maxErr: z.number().int().positive().optional(),
+  sets: z
+    .array(
+      z
+        .object({ snips: z.array(text).length(3), bad: z.number().int().min(0).max(2), why: text.optional() })
+        .refine((x) => new Set(x.snips).size === 3, 'trecho repetido'),
+    )
+    .min(1),
+});
+
+const defuse = z
+  .object({
+    ...base,
+    type: z.literal('defuse'),
+    time: z.number().int().positive(),
+    lines: z.array(z.string()).min(3),
+    bad: z.number().int().nonnegative(),
+    why: text.optional(),
+    maxErr: z.number().int().positive().optional(),
+  })
+  .refine((m) => m.bad < m.lines.length && m.lines[m.bad]!.trim() !== '', 'linha com bug fora da lista ou vazia');
+
+const portal = z
+  .object({
+    ...base,
+    type: z.literal('portal'),
+    time: z.number().int().positive(),
+    tokens: z.array(text).min(2),
+    extra: z.array(text).optional(),
+    block: z.boolean().optional(),
+    preview: z.boolean().optional(),
+  })
+  .refine((m) => !(m.extra ?? []).some((e) => m.tokens.includes(e)), 'peça extra igual a uma peça certa');
+
+export const webMissionSchema = z.union([order, sort, catchMission, bug, code, tune, blocks, fill, quiz, prune, defuse, portal]);
 
 const gem = z.object({
   badgeId: text,

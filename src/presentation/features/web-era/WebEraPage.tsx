@@ -56,7 +56,7 @@ export function WebEraPage() {
           <span className={styles.g2}>da</span>
           <span className={styles.g3}>Web</span>
         </h1>
-        <SintaxeTalk lines={webEraCopy.intro} mode="tap" onLastLine={() => setIntroReady(true)} />
+        <SintaxeTalk lines={webEraCopy.intro} onLastLine={() => setIntroReady(true)} />
         <p className={styles.docl}>Toque no balão para avançar.</p>
         <div className={styles.row}>
           <button
@@ -192,6 +192,7 @@ export function WebEraPage() {
       {screen.stage ? (
         <StageRunner
           stage={screen.stage}
+          travelerName={travelerName}
           onClose={screen.closeStage}
           onSeePortfolio={() => {
             screen.closeStage();

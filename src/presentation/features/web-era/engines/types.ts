@@ -17,7 +17,16 @@ export type MissionApi = {
   capture: (patch: Partial<WebPortfolio>) => void;
 };
 
-export type EngineProps<M extends WebMission> = { mission: M; api: MissionApi };
+export type EngineProps<M extends WebMission> = {
+  mission: M;
+  api: MissionApi;
+  /** Pressão da etapa (0 a 1): ritmo das palavras caindo. */
+  difficulty: number;
+  /** Nome do viajante, que troca o `{NAME}` e o `{USER}` das missões. */
+  travelerName: string;
+  /** Tempo da missão já ajustado pela pressão (0 = sem tempo). */
+  seconds: number;
+};
 
 /** Embaralha sem mexer no original. */
 export function shuffle<T>(items: readonly T[]): T[] {

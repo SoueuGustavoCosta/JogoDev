@@ -19,8 +19,19 @@ export const webMoons: WebMoon[] = [
       id: 'mh-chefe',
       name: 'O Silenciador',
       face: '< />',
-      say: ['O Silenciador apaga o significado das tags. Leitores de tela ficam mudos.'],
+      say: ['O Silenciador apaga o significado das tags.', 'Leitores de tela ficaram mudos!'],
       rounds: [
+        {
+          type: 'defuse',
+          title: 'Desarme o Silenciador',
+          sub: 'Ache a tag sem significado antes do reset!',
+          time: 16,
+          maxErr: 2,
+          timeout: 'Reset! O Silenciador venceu essa.',
+          lines: ['<header>', '<nav>', '<div onclick="abrir()">Menu</div>', '<main>', '<footer>'],
+          bad: 2,
+          why: 'div clicável: use <button>',
+        },
         {
           type: 'bug',
           title: 'Significado roubado',
@@ -33,7 +44,7 @@ export const webMoons: WebMoon[] = [
           type: 'code',
           lang: 'html',
           title: 'Devolva a voz',
-          sub: 'Um <form> com <label for> ligado a um <input type="email" id>.',
+          sub: '2 linhas: <label for> ligado a <input type="email" id>.',
           start: '<form>\n\n</form>',
           hint: '<label for="e">E-mail</label><input type="email" id="e">',
           solution: '<form>\n<label for="e">E-mail</label><input type="email" id="e">\n</form>',
@@ -75,15 +86,13 @@ export const webMoons: WebMoon[] = [
             bad: ['mail', 'senha', 'numero', 'texto', 'clique'],
           },
           {
-            type: 'code',
+            type: 'blocks',
             lang: 'html',
             title: 'Form de contato',
-            sub: 'Um <form> com <input type="email"> e um <button>.',
-            start: '<form>\n  \n</form>',
-            hint: '<input type="email" placeholder="seu@email.com">\n<button>Enviar</button>',
-            solution: '<form>\n  <input type="email" placeholder="seu@email.com">\n  <button>Enviar</button>\n</form>',
-            check: ({ doc }) =>
-              doc.querySelector('form input[type=email]') && doc.querySelector('form button') ? true : 'Falta o input de e-mail ou o botão dentro do form.',
+            sub: 'Monte o form de cima pra baixo.',
+            block: true,
+            tokens: ['<form>', '<input type="email" placeholder="seu@email.com">', '<button>Enviar</button>', '</form>'],
+            extra: ['<input type="mail">'],
           },
         ],
       },
@@ -132,14 +141,13 @@ export const webMoons: WebMoon[] = [
         doc: { label: 'MDN · Listas e Mídia', url: 'https://developer.mozilla.org/pt-BR/docs/Learn_web_development/Core/Structuring_content/HTML_video_and_audio' },
         rounds: [
           {
-            type: 'code',
+            type: 'blocks',
             lang: 'html',
             title: 'Lista de skills',
-            sub: 'Um <ul> com 3 <li>.',
-            start: '<ul>\n  \n</ul>',
-            hint: '<li>HTML</li><li>CSS</li><li>JS</li>',
-            solution: '<ul>\n  <li>HTML</li><li>CSS</li><li>JS</li>\n</ul>',
-            check: ({ doc }) => doc.querySelectorAll('ul > li').length >= 3 || 'Preciso ver 3 <li> dentro do <ul>.',
+            sub: 'Monte o <ul>: HTML, CSS, JS.',
+            block: true,
+            tokens: ['<ul>', '<li>HTML</li>', '<li>CSS</li>', '<li>JS</li>', '</ul>'],
+            extra: ['<p>JS</p>'],
           },
           {
             type: 'bug',
@@ -169,17 +177,14 @@ export const webMoons: WebMoon[] = [
             why: ['falta alt', '', 'botão sem texto', '', 'use <button>, não div clicável'],
           },
           {
-            type: 'code',
+            type: 'fill',
             lang: 'html',
             title: 'Rótulo ligado',
-            sub: 'Um <label for="nome"> e um <input id="nome">.',
-            start: '',
-            hint: '<label for="nome">Nome</label>\n<input id="nome">',
-            solution: '<label for="nome">Nome</label>\n<input id="nome">',
-            check: ({ doc }) => {
-              const l = doc.querySelector('label[for]');
-              return l && doc.getElementById(l.getAttribute('for') ?? '') ? true : 'O for do label precisa bater com o id do input.';
-            },
+            sub: 'O que liga o input ao label?',
+            pre: '<label for="nome">Nome</label>\n<input ',
+            options: ['id', 'for', 'label'],
+            answer: 'id',
+            post: '="nome">',
           },
         ],
       },
@@ -187,7 +192,7 @@ export const webMoons: WebMoon[] = [
         id: 'mh5',
         title: 'Meta e SEO',
         icon: 'meta',
-        say: ['As metas no <head> dizem ao Google e ao celular quem é seu site.'],
+        say: ['As metas do <head> apresentam seu site ao Google.'],
         doc: { label: 'MDN · Meta e SEO', url: 'https://developer.mozilla.org/pt-BR/docs/Learn_web_development/Core/Structuring_content/Webpage_metadata' },
         rounds: [
           {
@@ -221,7 +226,7 @@ export const webMoons: WebMoon[] = [
       id: 'mc-chefe',
       name: 'Glitch Cromático',
       face: '#!?',
-      say: ['O Glitch Cromático bagunçou cores e layouts de todos os sites.'],
+      say: ['O Glitch Cromático bagunçou cores e layouts da Web!'],
       rounds: [
         {
           type: 'tune',
@@ -236,6 +241,15 @@ export const webMoons: WebMoon[] = [
           target: { 'grid-template-columns': '1fr 1fr 1fr', gap: '6px' },
         },
         {
+          type: 'portal',
+          title: 'Portal instável',
+          sub: 'Monte a regra antes do portal fechar!',
+          block: true,
+          time: 22,
+          tokens: ['.grade {', '  display: grid;', '  grid-template-columns: 1fr 1fr;', '}'],
+          extra: ['  display: grade;'],
+        },
+        {
           type: 'bug',
           title: 'CSS corrompido',
           sub: '3 bugs.',
@@ -247,7 +261,7 @@ export const webMoons: WebMoon[] = [
           type: 'code',
           lang: 'css',
           title: 'Golpe cromático',
-          sub: 'Use uma variável --c no :root e aplique como background do body.',
+          sub: '2 linhas: crie --c no :root e use no background do body.',
           html: '<p>Cor restaurada</p>',
           start: '',
           hint: ':root{--c:#0ea5e9} body{background:var(--c)}',
@@ -278,20 +292,15 @@ export const webMoons: WebMoon[] = [
             target: { 'grid-template-columns': '2fr 1fr', gap: '16px' },
           },
           {
-            type: 'code',
+            type: 'fill',
             lang: 'css',
             title: 'Galeria',
-            sub: '.grade em grid com 3 colunas iguais.',
+            sub: '3 colunas iguais. Qual valor?',
             html: BASE_CARDS,
-            start: '.grade {\n  \n}',
-            hint: 'display: grid; grid-template-columns: repeat(3, 1fr);',
-            solution: '.grade {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n}',
-            check: ({ win, doc }) => {
-              const grade = doc.querySelector('.grade');
-              if (!grade) return 'Cadê a .grade?';
-              const s = win.getComputedStyle(grade);
-              return (s.display === 'grid' && s.gridTemplateColumns.split(' ').length === 3) || 'Use display: grid e 3 colunas.';
-            },
+            pre: '.grade {\n  display: grid;\n  grid-template-columns: ',
+            options: ['repeat(3, 1fr)', '3 colunas', '1fr, 1fr, 1fr'],
+            answer: 'repeat(3, 1fr)',
+            post: ';\n  gap: 8px;\n}',
           },
         ],
       },
@@ -309,20 +318,16 @@ export const webMoons: WebMoon[] = [
             tokens: ['@media', '(max-width: 600px)', '{', ' .grade { flex-direction: column; }', '}'],
           },
           {
-            type: 'code',
+            type: 'fill',
             lang: 'css',
             title: 'Tela de celular',
-            sub: 'A prévia tem 360px. Faça a .grade virar coluna só em telas até 600px.',
+            sub: 'A prévia tem 360px. Qual condição empilha?',
             narrow: true,
             html: BASE_CARDS,
-            start: '.grade { display: flex; gap: 8px; }\n\n',
-            hint: '@media (max-width: 600px) { .grade { flex-direction: column; } }',
-            solution: '.grade { display: flex; gap: 8px; }\n\n@media (max-width: 600px) { .grade { flex-direction: column; } }',
-            check: ({ win, doc, src }) => {
-              const grade = doc.querySelector('.grade');
-              if (!grade) return 'Cadê a .grade?';
-              return (win.getComputedStyle(grade).flexDirection === 'column' && /@media/.test(src)) || 'Use @media (max-width: 600px) com flex-direction: column.';
-            },
+            pre: '.grade { display: flex; gap: 8px; }\n@media (',
+            options: ['max-width: 600px', 'min-width: 900px', 'tela: celular'],
+            answer: 'max-width: 600px',
+            post: ') {\n  .grade { flex-direction: column; }\n}',
           },
         ],
       },
@@ -344,18 +349,15 @@ export const webMoons: WebMoon[] = [
             bad: ['$cor', 'var(cor)', '-cor: red', '@cor', 'var[--cor]'],
           },
           {
-            type: 'code',
+            type: 'fill',
             lang: 'css',
             title: 'Tema com variável',
-            sub: 'Crie --destaque no :root e use no h1.',
+            sub: 'Use a variável no h1.',
             html: '<h1>Ana</h1>',
-            start: ':root {\n  \n}\nh1 {\n  \n}',
-            hint: ':root { --destaque: hotpink; }  h1 { color: var(--destaque); }',
-            solution: ':root {\n  --destaque: hotpink;\n}\nh1 {\n  color: var(--destaque);\n}',
-            check: ({ win, doc, src }) => {
-              const h = doc.querySelector('h1');
-              return (/var\(--/.test(src) && h !== null && win.getComputedStyle(h).color !== win.getComputedStyle(doc.body).color) || 'Use var(--destaque) no h1.';
-            },
+            pre: ':root { --destaque: hotpink; }\nh1 { color: ',
+            options: ['var(--destaque)', '--destaque', '$destaque'],
+            answer: 'var(--destaque)',
+            post: '; }',
           },
         ],
       },
@@ -374,18 +376,15 @@ export const webMoons: WebMoon[] = [
             tokens: ['@keyframes pulo {', '  from { transform: translateY(0); }', '  to { transform: translateY(-10px); }', '}'],
           },
           {
-            type: 'code',
+            type: 'fill',
             lang: 'css',
             title: 'Botão suave',
-            sub: 'Dê transition ao .btn.',
+            sub: 'Passe o mouse no botão depois!',
             html: '<button class="btn">Contrate-me</button>',
-            start: '.btn {\n  \n}\n.btn:hover { transform: scale(1.1); }',
-            hint: 'transition: transform .3s;',
-            solution: '.btn {\n  transition: transform .3s;\n}\n.btn:hover { transform: scale(1.1); }',
-            check: ({ win, doc }) => {
-              const btn = doc.querySelector('.btn');
-              return (btn !== null && parseFloat(win.getComputedStyle(btn).transitionDuration) > 0) || 'Falta a transition no .btn.';
-            },
+            pre: '.btn {\n  transition: ',
+            options: ['transform .3s', '3 segundos', 'devagar'],
+            answer: 'transform .3s',
+            post: ';\n}\n.btn:hover { transform: scale(1.1); }',
           },
         ],
       },
@@ -442,7 +441,7 @@ export const webMoons: WebMoon[] = [
       id: 'mj-chefe',
       name: 'Loop Infinito',
       face: '∞',
-      say: ['O Loop Infinito prende o navegador girando para sempre. Só lógica limpa quebra o ciclo.'],
+      say: ['O Loop Infinito prende o navegador para sempre.', 'Só lógica limpa quebra o ciclo.'],
       rounds: [
         {
           type: 'bug',
@@ -453,16 +452,27 @@ export const webMoons: WebMoon[] = [
           bad: [0, 2, 4],
         },
         {
-          type: 'order',
-          title: 'Quebre o loop',
-          sub: 'Monte certo.',
+          type: 'quiz',
+          title: 'Interrogatório da AVT',
+          sub: 'Errou? Perde uma vida.',
+          time: 18,
+          code: 'const a = [1, 2, 3];\nconsole.log(a[0] + a[2]);',
+          options: ['4', '13', '3'],
+          answer: '4',
+        },
+        {
+          type: 'portal',
+          title: 'Portal instável',
+          sub: 'Quebre o loop antes do portal fechar!',
+          time: 22,
           tokens: ['for', '(let i = 0;', 'i < lista.length;', 'i++)', '{ total += lista[i] }'],
+          extra: ['i--)'],
         },
         {
           type: 'code',
           lang: 'js',
           title: 'Golpe final',
-          sub: 'Crie function total(arr) que soma os números do array.',
+          sub: '1 linha: total(arr) soma os números.',
           html: '',
           start: 'function total(arr) {\n  \n}',
           hint: 'return arr.reduce((a, b) => a + b, 0);',
@@ -486,16 +496,15 @@ export const webMoons: WebMoon[] = [
         rounds: [
           { type: 'order', title: 'Monte o for', sub: 'Conte de 0 a 2.', tokens: ['for', '(let i = 0;', 'i < 3;', 'i++)', '{ console.log(i) }'] },
           {
-            type: 'code',
+            type: 'fill',
             lang: 'js',
             title: 'Lista de projetos',
-            sub: 'Para cada item do array, crie um <li> no #lista.',
+            sub: 'O que vira um <li> por item?',
             html: '<ul id="lista"></ul>',
-            start: 'const projetos = ["Portfólio", "Calculadora", "To-do"];\nconst lista = document.querySelector("#lista");\n\nprojetos.forEach(p => {\n  \n});',
-            hint: 'lista.innerHTML += `<li>${p}</li>`;',
-            solution:
-              'const projetos = ["Portfólio", "Calculadora", "To-do"];\nconst lista = document.querySelector("#lista");\n\nprojetos.forEach(p => {\n  lista.innerHTML += `<li>${p}</li>`;\n});',
-            check: ({ win, doc }) => (win.__err ? 'Erro: ' + win.__err : doc.querySelectorAll('#lista li').length === 3 || 'Preciso de 3 <li> no #lista.'),
+            pre: 'const projetos = ["Portfólio", "Calculadora", "To-do"];\nconst lista = document.querySelector("#lista");\nprojetos.forEach(p => {\n  lista.innerHTML += ',
+            options: ['`<li>${p}</li>`', '<li>p</li>', 'p.li'],
+            answer: '`<li>${p}</li>`',
+            post: ';\n});',
           },
         ],
       },
@@ -507,19 +516,14 @@ export const webMoons: WebMoon[] = [
         doc: { label: 'MDN · Funções', url: 'https://developer.mozilla.org/pt-BR/docs/Learn_web_development/Core/Scripting/Functions' },
         rounds: [
           {
-            type: 'code',
+            type: 'fill',
             lang: 'js',
             title: 'Função dobro',
-            sub: 'Crie function dobro(n) que retorna n * 2.',
-            html: '',
-            start: 'function dobro(n) {\n  \n}',
-            hint: 'return n * 2;',
-            solution: 'function dobro(n) {\n  return n * 2;\n}',
-            check: ({ win }) => {
-              if (win.__err) return 'Erro: ' + win.__err;
-              const dobro = globalOf(win, 'dobro');
-              return (typeof dobro === 'function' && dobro(4) === 8 && dobro(-1) === -2) || 'dobro(4) precisa dar 8.';
-            },
+            sub: 'dobro(4) precisa dar 8.',
+            pre: 'function dobro(n) {\n  return ',
+            options: ['n * 2', 'n ** 2', '2'],
+            answer: 'n * 2',
+            post: ';\n}\nconsole.log(dobro(4));',
           },
           {
             type: 'bug',
@@ -549,19 +553,14 @@ export const webMoons: WebMoon[] = [
             bad: ["{nome:'Ana'}", "{'a':1}", '[1,2,]', '{ok:true}', 'undefined'],
           },
           {
-            type: 'code',
+            type: 'fill',
             lang: 'js',
             title: 'Seu perfil',
-            sub: 'Crie const perfil com nome (string) e skills (array).',
-            html: '',
-            start: 'const perfil = {\n  \n};\nwindow.perfil = perfil;',
-            hint: 'nome: "Ana", skills: ["HTML","CSS","JS"]',
-            solution: 'const perfil = {\n  nome: "Ana", skills: ["HTML", "CSS", "JS"]\n};\nwindow.perfil = perfil;',
-            check: ({ win }) => {
-              if (win.__err) return 'Erro: ' + win.__err;
-              const perfil = globalOf(win, 'perfil') as { nome?: unknown; skills?: unknown } | undefined;
-              return (Boolean(perfil) && typeof perfil?.nome === 'string' && Array.isArray(perfil?.skills)) || 'perfil precisa de nome e skills.';
-            },
+            sub: 'skills é uma lista. Qual valor?',
+            pre: 'const perfil = {\n  nome: "Ana",\n  skills: ',
+            options: ['["HTML", "CSS"]', '"HTML", "CSS"', '{HTML, CSS}'],
+            answer: '["HTML", "CSS"]',
+            post: '\n};\nconsole.log(perfil.skills.length);',
           },
         ],
       },
