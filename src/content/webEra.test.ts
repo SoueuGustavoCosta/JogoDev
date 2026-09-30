@@ -11,7 +11,6 @@ import {
   webEraTrailSchema,
   webMoonSchema,
   type BlocksMission,
-  type CodeMission,
   type FillMission,
   type WebMission,
 } from '@/domain/webEra';
@@ -28,7 +27,6 @@ const missions: [string, WebMission][] = [
     ...m.boss.rounds.map((r, i): [string, WebMission] => [`${m.boss.id} #${i + 1}`, r]),
   ]),
 ];
-const codeMissions = missions.filter((m): m is [string, CodeMission] => m[1].type === 'code');
 
 describe('Era da Web: conteúdo', () => {
   it('valida contra os esquemas Zod', () => {
@@ -107,13 +105,8 @@ describe('Era da Web: conteúdo', () => {
     }
   });
 
-  it('digitar código só na fase final e nos chefes, com no máximo 2 linhas a escrever', () => {
-    const allowed = new Set(['w10', 'eco', ...webMoons.map((m) => m.boss.id)]);
-    for (const [id, m] of codeMissions) {
-      expect(allowed.has(id.split(' ')[0]!), id).toBe(true);
-      const typed = m.solution.split('\n').length - (m.start ?? '').split('\n').filter((l) => l.trim()).length;
-      expect(typed, id).toBeLessThanOrEqual(2);
-    }
+  it('nenhuma missão pede para digitar código: tudo é montado com blocos ou lacunas', () => {
+    expect(missions.filter(([, m]) => m.type === 'code').map(([id]) => id)).toEqual([]);
   });
 
   it('peças com {NAME} e {USER} viram o nome do viajante', () => {
@@ -127,31 +120,49 @@ describe('Era da Web: conteúdo', () => {
 });
 
 /**
- * Cada missão de código tem uma resposta certa (`solution`): ela precisa passar na conferência,
- * e o código inicial sozinho não. O jsdom executa HTML e JS de verdade, mas não calcula o
- * CSS (cascata, grid, media query) como um navegador; as missões de CSS foram conferidas no
- * Chromium (ver docs/eras/web/README.md) e aqui só se confere que a resposta existe.
+ * O jsdom executa HTML e JS de verdade (mas não calcula CSS como um navegador): aqui se confere
+ * que o código montado com as peças certas funciona e mostra o resultado na prévia.
  */
-describe('Era da Web: missões de código', () => {
-  const run = (m: CodeMission, src: string) => {
-    const dom = new JSDOM(buildCodePreview(m, src), { runScripts: 'dangerously' });
-    const win = dom.window as unknown as Window & { __err?: string | null };
-    try {
-      return m.check({ win, doc: win.document, src });
-    } finally {
-      dom.window.close();
-    }
+describe('Era da Web: código montado', () => {
+  const find = (title: string) => missions.find(([, m]) => m.title === title)![1];
+  const assemble = (m: WebMission, name = 'Ana Souza') => {
+    const t = (x: string) => fillTemplate(x, name);
+    if (m.type === 'blocks') return blocksSource({ ...m, pre: t(m.pre ?? ''), post: t(m.post ?? '') }, m.tokens.map(t));
+    if (m.type === 'fill') return t(m.pre) + t(Array.isArray(m.answer) ? m.answer[0]! : m.answer) + t(m.post);
+    throw new Error(`sem montagem para ${m.type}`);
+  };
+  const open = (m: BlocksMission | FillMission) => {
+    const dom = new JSDOM(buildCodePreview(m, assemble(m)), { runScripts: 'dangerously' });
+    return dom.window as unknown as Window & { __err?: string | null };
   };
 
-  it.each(codeMissions.filter(([, m]) => m.lang !== 'css'))('%s: a resposta passa e o código inicial não', (_id, m) => {
-    expect(run(m, m.solution)).toBe(true);
-    expect(run(m, m.start ?? '')).not.toBe(true);
+  it('Troque o título: o #titulo vira o nome do viajante', () => {
+    const win = open(find('Troque o título') as BlocksMission);
+    expect(win.__err ?? null).toBeNull();
+    expect(win.document.querySelector('#titulo')?.textContent).toBe('Ana Souza');
   });
 
-  it('toda missão de CSS tem resposta e começa diferente dela', () => {
-    for (const [id, m] of codeMissions.filter(([, x]) => x.lang === 'css')) {
-      expect(m.solution.trim(), id).not.toBe((m.start ?? '').trim());
+  it('Modo escuro e o golpe final do Eco: o clique liga e desliga a classe "escuro"', () => {
+    for (const m of [webEraTrails[9]!.rounds.find((r) => r.title === 'Modo escuro')!, ecoBoss.rounds.at(-1)!]) {
+      const win = open(m as BlocksMission);
+      const b = win.document.querySelector<HTMLElement>('#tema')!;
+      b.click();
+      expect(win.document.body.classList.contains('escuro'), m.title).toBe(true);
+      b.click();
+      expect(win.document.body.classList.contains('escuro'), m.title).toBe(false);
     }
+  });
+
+  it('Devolva a voz: o rótulo fica ligado ao campo de e-mail', () => {
+    const win = open(webMoons[0]!.boss.rounds.find((r) => r.title === 'Devolva a voz') as BlocksMission);
+    const label = win.document.querySelector('form label[for]')!;
+    expect((win.document.getElementById(label.getAttribute('for')!) as HTMLInputElement).type).toBe('email');
+  });
+
+  it('Golpe final do Loop Infinito: total([1, 2, 3]) mostra 6 na prévia', () => {
+    const win = open(webMoons[2]!.boss.rounds.at(-1) as FillMission);
+    expect(win.__err ?? null).toBeNull();
+    expect(win.document.querySelector('pre')?.textContent).toBe('> 6');
   });
 
   it('o que o viajante monta vai para o portfólio (nome, bio, título, links)', () => {

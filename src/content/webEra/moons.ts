@@ -1,9 +1,6 @@
 import type { WebMoon } from '@/domain/webEra';
 import { BASE_CARDS } from './era';
 
-/** Uma função ou objeto que o código do viajante deixou na janela da prévia. */
-const globalOf = (win: Window, name: string): unknown => (win as unknown as Record<string, unknown>)[name];
-
 /**
  * As 3 luas que nascem da vitória sobre o Eco (protótipo: `MOONS`). Cada uma tem 5 trilhas,
  * um chefe e uma insígnia exclusiva. Elas orbitam o portal da Era da Web no mapa principal.
@@ -41,18 +38,15 @@ export const webMoons: WebMoon[] = [
           bad: [0, 2, 4],
         },
         {
-          type: 'code',
+          type: 'blocks',
           lang: 'html',
           title: 'Devolva a voz',
-          sub: '2 linhas: <label for> ligado a <input type="email" id>.',
-          start: '<form>\n\n</form>',
-          hint: '<label for="e">E-mail</label><input type="email" id="e">',
-          solution: '<form>\n<label for="e">E-mail</label><input type="email" id="e">\n</form>',
-          check: ({ doc }) => {
-            const l = doc.querySelector('form label[for]');
-            const i = (l ? doc.getElementById(l.getAttribute('for') ?? '') : null) as HTMLInputElement | null;
-            return i?.type === 'email' || 'Ligue o label ao input type="email".';
-          },
+          sub: 'Monte o form com o rótulo ligado ao campo.',
+          block: true,
+          pre: '<form>\n',
+          tokens: ['<label for="email">', 'E-mail', '</label>', '<input type="email" id="email">'],
+          extra: ['<input type="mail">', '<label>'],
+          post: '\n</form>',
         },
         {
           type: 'catch',
@@ -258,16 +252,14 @@ export const webMoons: WebMoon[] = [
           bad: [1, 4, 5],
         },
         {
-          type: 'code',
+          type: 'blocks',
           lang: 'css',
           title: 'Golpe cromático',
-          sub: '2 linhas: crie --c no :root e use no background do body.',
+          sub: 'Crie a variável --c e pinte o fundo com ela.',
+          block: true,
           html: '<p>Cor restaurada</p>',
-          start: '',
-          hint: ':root{--c:#0ea5e9} body{background:var(--c)}',
-          solution: ':root { --c: #0ea5e9; }\nbody { background: var(--c); }',
-          check: ({ win, doc, src }) =>
-            (/var\(--c\)/.test(src) && win.getComputedStyle(doc.body).backgroundColor !== 'rgba(0, 0, 0, 0)') || 'Crie --c e use em background do body.',
+          tokens: [':root {', '  --c: #0ea5e9;', '}', 'body { background: var(--c); }'],
+          extra: ['body { background: --c; }', '  $c: #0ea5e9;'],
         },
       ],
     },
@@ -469,19 +461,14 @@ export const webMoons: WebMoon[] = [
           extra: ['i--)'],
         },
         {
-          type: 'code',
+          type: 'fill',
           lang: 'js',
           title: 'Golpe final',
-          sub: '1 linha: total(arr) soma os números.',
-          html: '',
-          start: 'function total(arr) {\n  \n}',
-          hint: 'return arr.reduce((a, b) => a + b, 0);',
-          solution: 'function total(arr) {\n  return arr.reduce((a, b) => a + b, 0);\n}',
-          check: ({ win }) => {
-            if (win.__err) return 'Erro: ' + win.__err;
-            const total = globalOf(win, 'total');
-            return (typeof total === 'function' && total([1, 2, 3]) === 6 && total([]) === 0) || 'total([1,2,3]) precisa dar 6 e total([]) dar 0.';
-          },
+          sub: 'total([1, 2, 3]) precisa dar 6.',
+          pre: 'function total(arr) {\n  return arr.reduce((a, b) => ',
+          options: ['a + b', 'a * b', 'a - b'],
+          answer: 'a + b',
+          post: ', 0);\n}\nconsole.log(total([1, 2, 3]));',
         },
       ],
     },

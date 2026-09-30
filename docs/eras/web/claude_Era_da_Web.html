@@ -439,7 +439,7 @@ const BASE_CARDS = `<div class="grade">
 
 /* Cada trilha: missões curtas (ação) + 1 peça do portfólio.
    Formatos: order (peças na ordem), sort (baldes), catch (palavras caindo), bug (linhas com bug),
-   blocks (montar código com blocos), fill (completar a lacuna), code (digitar 1 ou 2 linhas: só nas fases finais e chefes),
+   blocks (montar código com blocos), fill (completar a lacuna); nenhuma fase pede para digitar código,
    tune (ajustar CSS), e os minijogos de pressão: defuse (desarme a variante), quiz (interrogatório da AVT),
    portal (portal instável) e prune (poda). {NAME} vira o nome do viajante e {USER} o apelido sem espaço. */
 const ERA = [
@@ -588,12 +588,10 @@ const ERA = [
   rounds:[
     {type:'defuse', title:'Desarme a variante', sub:'Toque na linha com bug antes do reset!', time:20, maxErr:2, timeout:'Reset! A variante escapou.',
       lines:['const titulo = document.querySelector("#titulo");','titulo.textContent = "Oi!";','document.querySelecter("p");','const x = 5;'], bad:2, why:'querySelector com “o”'},
-    {type:'code', lang:'js', title:'Troque o título', sub:'Escreva 1 linha: o #titulo vira seu nome.', html:'<h1 id="titulo">Carregando...</h1>',
-      start:'const titulo = document.querySelector("#titulo");\n', hint:'titulo.textContent = "Ana Souza";',
-      check:(w,d)=>{if(w.__err)return 'Erro: '+w.__err;const t=d.querySelector('#titulo').textContent.trim();return (t&&t!=='Carregando...')||'O título ainda diz Carregando...'}},
-    {type:'code', lang:'js', title:'Modo escuro', sub:'1 linha: o clique alterna a classe "escuro" no body.', html:'<style>.escuro{background:#111;color:#eee}</style><button id="tema">Tema</button><p>Meu portfólio</p>',
-      start:'const tema = document.querySelector("#tema");\n\ntema.addEventListener("click", () => {\n  \n});', hint:'document.body.classList.toggle("escuro");',
-      check:(w,d)=>{if(w.__err)return 'Erro: '+w.__err;const b=d.querySelector('#tema');b.click();const a=d.body.classList.contains('escuro');b.click();const z=!d.body.classList.contains('escuro');return (a&&z)||'Clique deve ligar E desligar a classe "escuro" (toggle).'}}
+    {type:'blocks', lang:'js', title:'Troque o título', sub:'Monte a linha: o #titulo vira seu nome.', html:'<h1 id="titulo">Carregando...</h1>',
+      pre:'const titulo = document.querySelector("#titulo");\n', tokens:['titulo','.textContent',' = ','"{NAME}"',';'], extra:['.textContnet',' == ']},
+    {type:'blocks', lang:'js', title:'Modo escuro', sub:'Monte o clique. Depois, toque em Tema!', html:'<style>.escuro{background:#111;color:#eee}</style><button id="tema">Tema</button><p>Meu portfólio</p>',
+      pre:'const tema = document.querySelector("#tema");\ntema.addEventListener("click", () => {\n  ', tokens:['document.body','.classList','.toggle(','"escuro"',');'], extra:['.add(','.style'], post:'\n});'}
   ]}
 ];
 
@@ -614,9 +612,8 @@ const ERA_BOSS = {
       items:[['<section>','h'],['display: flex','c'],['addEventListener','j'],['<nav>','h'],['border-radius','c'],['const','j'],['alt="foto"','h'],[':hover','c'],['classList.toggle','j']]},
     {type:'quiz', title:'Interrogatório da AVT', sub:'O Eco quer saber. Errou, perde vida!', time:20, lang:'js',
       code:'const tags = ["h1", "p"];\nconsole.log(tags.length);', options:['2','1','"h1p"'], answer:'2'},
-    {type:'code', lang:'js', title:'Golpe final', sub:'1 linha: o clique alterna a classe "escuro".', html:'<style>.escuro{background:#111;color:#eee}</style><button id="tema">Tema</button><p>O Eco não passará</p>',
-      start:'const tema = document.querySelector("#tema");\ntema.addEventListener("click", () => {\n  \n});', hint:'document.body.classList.toggle("escuro");',
-      check:(w,d)=>{if(w.__err)return 'Erro: '+w.__err;const b=d.querySelector('#tema');b.click();const a=d.body.classList.contains('escuro');b.click();return (a&&!d.body.classList.contains('escuro'))||'Ainda não alterna.'}}
+    {type:'blocks', lang:'js', title:'Golpe final', sub:'Monte o clique que acende o modo escuro!', html:'<style>.escuro{background:#111;color:#eee}</style><button id="tema">Tema</button><p>O Eco não passará</p>',
+      pre:'const tema = document.querySelector("#tema");\ntema.addEventListener(', tokens:['"click"',', () => ','document.body.classList.toggle("escuro")',');'], extra:['"clik"','document.body.classList.add("escuro")']}
   ]
 };
 
@@ -655,8 +652,8 @@ const MOONS = [
     {type:'defuse', title:'Desarme o Silenciador', sub:'Ache a tag sem significado antes do reset!', time:16, maxErr:2, timeout:'Reset! O Silenciador venceu essa.',
       lines:['<header>','<nav>','<div onclick="abrir()">Menu</div>','<main>','<footer>'], bad:2, why:'div clicável: use <button>'},
     {type:'bug', title:'Significado roubado', sub:'Ache as 3 falhas.', time:22, lines:['<div class="menu">','<nav>','<img src="eu.png">','<h1>Ana</h1>','<input type="mail">'], bad:[0,2,4]},
-    {type:'code', lang:'html', title:'Devolva a voz', sub:'2 linhas: <label for> ligado a <input type="email" id>.', start:'<form>\n\n</form>', hint:'<label for="e">E-mail</label><input type="email" id="e">',
-      check:(w,d)=>{const l=d.querySelector('form label[for]');const i=l&&d.getElementById(l.getAttribute('for'));return (i&&i.type==='email')||'Ligue o label ao input type="email".'}},
+    {type:'blocks', lang:'html', title:'Devolva a voz', sub:'Monte o form com o rótulo ligado ao campo.', block:true,
+      pre:'<form>\n', tokens:['<label for="email">','E-mail','</label>','<input type="email" id="email">'], extra:['<input type="mail">','<label>'], post:'\n</form>'},
     {type:'catch', title:'Última onda', sub:'Só semânticas!', time:18, need:8, maxErr:2, good:['<header>','<nav>','<main>','<article>','<footer>','<label>','<figure>','<table>'], bad:['<div>','<span>','<font>','<center>','<b>']}
   ]},
 { id:'mc', name:'Lua CSS', short:'CSS', c:'#3db8ff', r:'130px', t:'34s',
@@ -689,8 +686,8 @@ const MOONS = [
     {type:'portal', title:'Portal instável', sub:'Monte a regra antes do portal fechar!', block:true, time:22,
       tokens:['.grade {','  display: grid;','  grid-template-columns: 1fr 1fr;','}'], extra:['  display: grade;']},
     {type:'bug', title:'CSS corrompido', sub:'3 bugs.', time:22, lines:['h1 { color: var(--cor) }','.card { paddin: 10px; }','@media (max-width: 600px) { }','.btn { transition: .3s }','p { color: red', '.a { position: absolut; }'], bad:[1,4,5]},
-    {type:'code', lang:'css', title:'Golpe cromático', sub:'2 linhas: crie --c no :root e use no background do body.', html:'<p>Cor restaurada</p>', start:'', hint:':root { --c: #0ea5e9; }\nbody { background: var(--c); }',
-      check:(w,d,src)=>(/var\(--c\)/.test(src)&&w.getComputedStyle(d.body).backgroundColor!=='rgba(0, 0, 0, 0)')||'Crie --c e use em background do body.'}
+    {type:'blocks', lang:'css', title:'Golpe cromático', sub:'Crie a variável --c e pinte o fundo com ela.', block:true, html:'<p>Cor restaurada</p>',
+      tokens:[':root {','  --c: #0ea5e9;','}','body { background: var(--c); }'], extra:['body { background: --c; }','  $c: #0ea5e9;']}
   ]},
 { id:'mj', name:'Lua JS', short:'JS', c:'#ffe14d', r:'140px', t:'42s',
   boss:{name:'Loop Infinito', face:'∞', hp:3, say:['O Loop Infinito prende o navegador para sempre.','Só lógica limpa quebra o ciclo.']},
@@ -721,8 +718,8 @@ const MOONS = [
     {type:'quiz', title:'Interrogatório da AVT', sub:'Errou? Perde uma vida.', time:18, lang:'js',
       code:'const a = [1, 2, 3];\nconsole.log(a[0] + a[2]);', options:['4','13','3'], answer:'4'},
     {type:'portal', title:'Portal instável', sub:'Quebre o loop antes do portal fechar!', time:22, tokens:['for','(let i = 0;','i < lista.length;','i++)','{ total += lista[i] }'], extra:['i--)']},
-    {type:'code', lang:'js', title:'Golpe final', sub:'1 linha: total(arr) soma os números.', html:'', start:'function total(arr) {\n  \n}', hint:'return arr.reduce((a, b) => a + b, 0);',
-      check:(w)=>w.__err?'Erro: '+w.__err:(typeof w.total==='function'&&w.total([1,2,3])===6&&w.total([])===0)||'total([1,2,3]) precisa dar 6 e total([]) dar 0.'}
+    {type:'fill', lang:'js', title:'Golpe final', sub:'total([1, 2, 3]) precisa dar 6.',
+      pre:'function total(arr) {\n  return arr.reduce((a, b) => ', options:['a + b','a * b','a - b'], answer:'a + b', post:', 0);\n}\nconsole.log(total([1, 2, 3]));'}
   ]}
 ];
 

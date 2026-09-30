@@ -543,38 +543,25 @@ export const webEraTrails: WebEraTrail[] = [
         why: 'querySelector com “o”',
       },
       {
-        type: 'code',
+        type: 'blocks',
         lang: 'js',
         title: 'Troque o título',
-        sub: 'Escreva 1 linha: o #titulo vira seu nome.',
+        sub: 'Monte a linha: o #titulo vira seu nome.',
         html: '<h1 id="titulo">Carregando...</h1>',
-        start: 'const titulo = document.querySelector("#titulo");\n',
-        hint: 'titulo.textContent = "Ana Souza";',
-        solution: 'const titulo = document.querySelector("#titulo");\ntitulo.textContent = "Ana Souza";',
-        check: ({ win, doc }) => {
-          if (win.__err) return 'Erro: ' + win.__err;
-          const t = (doc.querySelector('#titulo')?.textContent ?? '').trim();
-          return (t !== '' && t !== 'Carregando...') || 'O título ainda diz Carregando...';
-        },
+        pre: 'const titulo = document.querySelector("#titulo");\n',
+        tokens: ['titulo', '.textContent', ' = ', '"{NAME}"', ';'],
+        extra: ['.textContnet', ' == '],
       },
       {
-        type: 'code',
+        type: 'blocks',
         lang: 'js',
         title: 'Modo escuro',
-        sub: '1 linha: o clique alterna a classe "escuro" no body.',
+        sub: 'Monte o clique. Depois, toque em Tema!',
         html: `${DARK_HTML}<p>Meu portfólio</p>`,
-        start: 'const tema = document.querySelector("#tema");\n\ntema.addEventListener("click", () => {\n  \n});',
-        hint: 'document.body.classList.toggle("escuro");',
-        solution: 'const tema = document.querySelector("#tema");\n\ntema.addEventListener("click", () => {\n  document.body.classList.toggle("escuro");\n});',
-        check: ({ win, doc }) => {
-          if (win.__err) return 'Erro: ' + win.__err;
-          const b = doc.querySelector<HTMLElement>('#tema');
-          b?.click();
-          const on = doc.body.classList.contains('escuro');
-          b?.click();
-          const off = !doc.body.classList.contains('escuro');
-          return (on && off) || 'Clique deve ligar E desligar a classe "escuro" (toggle).';
-        },
+        pre: 'const tema = document.querySelector("#tema");\ntema.addEventListener("click", () => {\n  ',
+        tokens: ['document.body', '.classList', '.toggle(', '"escuro"', ');'],
+        extra: ['.add(', '.style'],
+        post: '\n});',
       },
     ],
   },
@@ -658,22 +645,14 @@ export const ecoBoss: WebBoss = {
       answer: '2',
     },
     {
-      type: 'code',
+      type: 'blocks',
       lang: 'js',
       title: 'Golpe final',
-      sub: '1 linha: o clique alterna a classe "escuro".',
+      sub: 'Monte o clique que acende o modo escuro!',
       html: `${DARK_HTML}<p>O Eco não passará</p>`,
-      start: 'const tema = document.querySelector("#tema");\ntema.addEventListener("click", () => {\n  \n});',
-      hint: 'document.body.classList.toggle("escuro");',
-      solution: 'const tema = document.querySelector("#tema");\ntema.addEventListener("click", () => {\n  document.body.classList.toggle("escuro");\n});',
-      check: ({ win, doc }) => {
-        if (win.__err) return 'Erro: ' + win.__err;
-        const b = doc.querySelector<HTMLElement>('#tema');
-        b?.click();
-        const on = doc.body.classList.contains('escuro');
-        b?.click();
-        return (on && !doc.body.classList.contains('escuro')) || 'Ainda não alterna.';
-      },
+      pre: 'const tema = document.querySelector("#tema");\ntema.addEventListener(',
+      tokens: ['"click"', ', () => ', 'document.body.classList.toggle("escuro")', ');'],
+      extra: ['"clik"', 'document.body.classList.add("escuro")'],
     },
   ],
 };
